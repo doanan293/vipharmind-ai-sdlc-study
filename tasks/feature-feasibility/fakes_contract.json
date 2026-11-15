@@ -1,0 +1,566 @@
+{
+ "F01": {
+  "n": 4,
+  "by_file": {
+   "domain/factories.py": 4
+  },
+  "names": {
+   "domain/factories.py": [
+    "make_hit",
+    "make_item",
+    "make_run",
+    "search_result"
+   ]
+  }
+ },
+ "F02": {
+  "n": 16,
+  "by_file": {
+   "fakes.py": 16
+  },
+  "names": {
+   "fakes.py": [
+    "FakeHydrator",
+    "FakeHydrator.hydrate",
+    "FakeLlm",
+    "FakeLlm.calls_for",
+    "FakeLlm.script",
+    "FakeLlm.stream",
+    "FakeLlm.structured",
+    "FakeReranker",
+    "FakeReranker.rerank",
+    "FakeRetriever",
+    "FakeRetriever.search_many",
+    "FakeSkillCatalog",
+    "FakeSkillCatalog.get_by_ids",
+    "FakeSkillCatalog.list_catalog",
+    "build_deps",
+    "monograph_skill"
+   ]
+  }
+ },
+ "F03": {
+  "n": 20,
+  "by_file": {
+   "api/harness.py": 5,
+   "memory_repository.py": 11,
+   "postgres.py": 4
+  },
+  "names": {
+   "api/harness.py": [
+    "Harness",
+    "_ok",
+    "build_harness",
+    "parse_sse",
+    "settings"
+   ],
+   "memory_repository.py": [
+    "InMemoryConversationRepository",
+    "InMemoryConversationRepository.append_turn",
+    "InMemoryConversationRepository.create",
+    "InMemoryConversationRepository.delete",
+    "InMemoryConversationRepository.get",
+    "InMemoryConversationRepository.list_for_user",
+    "InMemoryConversationRepository.messages",
+    "InMemoryConversationRepository.recent_turns",
+    "InMemoryConversationRepository.turns_since",
+    "InMemoryConversationRepository.update_summary",
+    "InMemoryConversationRepository.update_title"
+   ],
+   "postgres.py": [
+    "create_database",
+    "fresh_database_dsn",
+    "migrated_dsn",
+    "postgres_dsn"
+   ]
+  }
+ },
+ "F04": {
+  "n": 16,
+  "by_file": {
+   "api/harness.py": 2,
+   "memory_repository.py": 14
+  },
+  "names": {
+   "api/harness.py": [
+    "RecordingScoreSink",
+    "RecordingScoreSink.record_feedback"
+   ],
+   "memory_repository.py": [
+    "InMemoryConversationRepository.get_message",
+    "InMemoryFeedbackRepository",
+    "InMemoryFeedbackRepository.get",
+    "InMemoryFeedbackRepository.save",
+    "InMemorySkillRepository",
+    "InMemorySkillRepository.create",
+    "InMemorySkillRepository.delete_owned",
+    "InMemorySkillRepository.get_by_ids",
+    "InMemorySkillRepository.get_owned",
+    "InMemorySkillRepository.list_catalog",
+    "InMemorySkillRepository.list_for_user",
+    "InMemorySkillRepository.list_system",
+    "InMemorySkillRepository.set_enabled",
+    "InMemorySkillRepository.upsert_system"
+   ]
+  }
+ },
+ "F05": {
+  "n": 0,
+  "by_file": {},
+  "names": {}
+ },
+ "F06": {
+  "n": 44,
+  "by_file": {
+   "corpus_fixtures.py": 9,
+   "corpus_memory.py": 28,
+   "fakes.py": 5,
+   "qdrant.py": 2
+  },
+  "names": {
+   "corpus_fixtures.py": [
+    "_colloquial_mappings",
+    "_documents",
+    "_glossary",
+    "_pharmacology_paragraphs",
+    "_sections",
+    "build_small_bundle",
+    "regenerate",
+    "small_bundle",
+    "with_section_text"
+   ],
+   "corpus_memory.py": [
+    "CorpusAdapters",
+    "InMemoryCorpusRepository",
+    "InMemoryCorpusRepository.find_release",
+    "InMemoryCorpusRepository.get_collection",
+    "InMemoryCorpusRepository.get_release",
+    "InMemoryCorpusRepository.index_items",
+    "InMemoryCorpusRepository.list_releases",
+    "InMemoryCorpusRepository.mark_ready",
+    "InMemoryCorpusRepository.publish",
+    "InMemoryCorpusRepository.purge_retired",
+    "InMemoryCorpusRepository.retire",
+    "InMemoryCorpusRepository.stage_release",
+    "InMemoryEmbeddingCache",
+    "InMemoryEmbeddingCache.get_many",
+    "InMemoryEmbeddingCache.missing",
+    "InMemoryEmbeddingCache.put_many",
+    "InMemoryVectorIndex",
+    "InMemoryVectorIndex.count_release",
+    "InMemoryVectorIndex.delete",
+    "InMemoryVectorIndex.ensure_collection",
+    "InMemoryVectorIndex.existing_ids",
+    "InMemoryVectorIndex.release_ids_of",
+    "InMemoryVectorIndex.set_release_ids",
+    "InMemoryVectorIndex.upsert",
+    "SteppingClock",
+    "SteppingClock.now",
+    "build_importer",
+    "build_release_service"
+   ],
+   "fakes.py": [
+    "FakeEmbedder",
+    "FakeEmbedder.dimension",
+    "FakeEmbedder.embed",
+    "FakeEmbedder.model",
+    "fake_vector"
+   ],
+   "qdrant.py": [
+    "qdrant_client",
+    "qdrant_url"
+   ]
+  }
+ },
+ "F07": {
+  "n": 14,
+  "by_file": {
+   "corpus_rows.py": 9,
+   "domain/factories.py": 5
+  },
+  "names": {
+   "corpus_rows.py": [
+    "SeededRelease",
+    "dosage_section",
+    "leaflet_document",
+    "leaflet_section",
+    "long_paragraph",
+    "paracetamol_document",
+    "reset_corpus",
+    "seed_release",
+    "table_section"
+   ],
+   "domain/factories.py": [
+    "chunk_of",
+    "chunk_uuid",
+    "make_chunk",
+    "make_citation",
+    "revision_uuid"
+   ]
+  }
+ },
+ "F08": {
+  "n": 0,
+  "by_file": {},
+  "names": {}
+ },
+ "F09": {
+  "n": 35,
+  "by_file": {
+   "api/harness.py": 1,
+   "citations.py": 2,
+   "contract/invariants.py": 1,
+   "contract/ui_chunks.py": 22,
+   "corpus_rows.py": 5,
+   "memory_repository.py": 4
+  },
+  "names": {
+   "api/harness.py": [
+    "ui_chunks"
+   ],
+   "citations.py": [
+    "build_citation",
+    "chunk_id"
+   ],
+   "contract/invariants.py": [
+    "assert_stream_invariants"
+   ],
+   "contract/ui_chunks.py": [
+    "AbortChunk",
+    "ConversationData",
+    "DataChunk",
+    "ErrorChunk",
+    "EvidenceData",
+    "EvidenceEntry",
+    "FinishChunk",
+    "FinishMetadata",
+    "MessageMetadataChunk",
+    "PharmaSource",
+    "PhaseData",
+    "SkillRef",
+    "SkillsData",
+    "SourceDocumentChunk",
+    "StartChunk",
+    "StrictChunk",
+    "TextDeltaChunk",
+    "TextEndChunk",
+    "TextStartChunk",
+    "UsageMetadata",
+    "_chunk_tag",
+    "validate_chunk"
+   ],
+   "corpus_rows.py": [
+    "add_release",
+    "citation_for",
+    "dosage_drafts",
+    "hit_for",
+    "seed_cited_release"
+   ],
+   "memory_repository.py": [
+    "InMemoryCitationReader",
+    "InMemoryCitationReader.citation_block",
+    "InMemoryCitationReader.current_release_ids",
+    "InMemoryFeedbackRepository.for_messages"
+   ]
+  }
+ },
+ "F10": {
+  "n": 20,
+  "by_file": {
+   "api/postgres_app.py": 6,
+   "e2e/scenario_llm.py": 3,
+   "e2e/server.py": 11
+  },
+  "names": {
+   "api/postgres_app.py": [
+    "cookie_login",
+    "csrf_header",
+    "new_email",
+    "postgres_app",
+    "register",
+    "set_cookie"
+   ],
+   "e2e/scenario_llm.py": [
+    "ScenarioLlm",
+    "ScenarioLlm.structured",
+    "_scripted"
+   ],
+   "e2e/server.py": [
+    "E2EConfig",
+    "E2EConfig.from_env",
+    "IsolatedSettings",
+    "IsolatedSettings.settings_customise_sources",
+    "build_e2e_app",
+    "e2e_container_factory",
+    "e2e_settings",
+    "main",
+    "prepare_backing_services",
+    "reset_database",
+    "reset_qdrant"
+   ]
+  }
+ },
+ "F11": {
+  "n": 55,
+  "by_file": {
+   "api/harness.py": 1,
+   "api/postgres_app.py": 6,
+   "citations.py": 2,
+   "contract/invariants.py": 1,
+   "contract/ui_chunks.py": 22,
+   "corpus_rows.py": 5,
+   "e2e/scenario_llm.py": 3,
+   "e2e/server.py": 11,
+   "memory_repository.py": 4
+  },
+  "names": {
+   "api/harness.py": [
+    "ui_chunks"
+   ],
+   "api/postgres_app.py": [
+    "cookie_login",
+    "csrf_header",
+    "new_email",
+    "postgres_app",
+    "register",
+    "set_cookie"
+   ],
+   "citations.py": [
+    "build_citation",
+    "chunk_id"
+   ],
+   "contract/invariants.py": [
+    "assert_stream_invariants"
+   ],
+   "contract/ui_chunks.py": [
+    "AbortChunk",
+    "ConversationData",
+    "DataChunk",
+    "ErrorChunk",
+    "EvidenceData",
+    "EvidenceEntry",
+    "FinishChunk",
+    "FinishMetadata",
+    "MessageMetadataChunk",
+    "PharmaSource",
+    "PhaseData",
+    "SkillRef",
+    "SkillsData",
+    "SourceDocumentChunk",
+    "StartChunk",
+    "StrictChunk",
+    "TextDeltaChunk",
+    "TextEndChunk",
+    "TextStartChunk",
+    "UsageMetadata",
+    "_chunk_tag",
+    "validate_chunk"
+   ],
+   "corpus_rows.py": [
+    "add_release",
+    "citation_for",
+    "dosage_drafts",
+    "hit_for",
+    "seed_cited_release"
+   ],
+   "e2e/scenario_llm.py": [
+    "ScenarioLlm",
+    "ScenarioLlm.structured",
+    "_scripted"
+   ],
+   "e2e/server.py": [
+    "E2EConfig",
+    "E2EConfig.from_env",
+    "IsolatedSettings",
+    "IsolatedSettings.settings_customise_sources",
+    "build_e2e_app",
+    "e2e_container_factory",
+    "e2e_settings",
+    "main",
+    "prepare_backing_services",
+    "reset_database",
+    "reset_qdrant"
+   ],
+   "memory_repository.py": [
+    "InMemoryCitationReader",
+    "InMemoryCitationReader.citation_block",
+    "InMemoryCitationReader.current_release_ids",
+    "InMemoryFeedbackRepository.for_messages"
+   ]
+  }
+ },
+ "F12": {
+  "n": 47,
+  "by_file": {
+   "account_fakes.py": 45,
+   "api/postgres_app.py": 2
+  },
+  "names": {
+   "account_fakes.py": [
+    "AccountFakes",
+    "InMemoryAccounts",
+    "InMemoryAccounts.add",
+    "InMemoryAccounts.create_phone_user",
+    "InMemoryAccounts.get",
+    "InMemoryAccounts.get_by_email",
+    "InMemoryAccounts.get_by_phone",
+    "InMemoryAccounts.hashed_password",
+    "InMemoryAccounts.mark_email_verified",
+    "InMemoryAccounts.set_email",
+    "InMemoryAccounts.set_password",
+    "InMemoryAccounts.set_phone",
+    "InMemoryAccounts.unlink_oauth",
+    "InMemoryAccounts.update_display_name",
+    "InMemoryCodes",
+    "InMemoryCodes.consume",
+    "InMemoryCodes.find_active",
+    "InMemoryCodes.issue",
+    "InMemoryCodes.record_failure",
+    "InMemoryCodes.revoke",
+    "InMemoryLimiter",
+    "InMemoryLimiter.check",
+    "InMemoryLimiter.hit",
+    "InMemorySessions",
+    "InMemorySessions.add",
+    "InMemorySessions.delete",
+    "InMemorySessions.delete_all",
+    "InMemorySessions.for_user",
+    "MutableClock",
+    "MutableClock.advance",
+    "MutableClock.now",
+    "PlainHasher",
+    "PlainHasher.hash",
+    "PlainHasher.verify",
+    "RecordingEmailSender",
+    "RecordingEmailSender.last_code",
+    "RecordingEmailSender.send",
+    "RecordingSmsSender",
+    "RecordingSmsSender.last_code",
+    "RecordingSmsSender.send",
+    "SentEmail",
+    "SentSms",
+    "StoredCode",
+    "build_account_service",
+    "code_in"
+   ],
+   "api/postgres_app.py": [
+    "AppOutbox",
+    "verified_register"
+   ]
+  }
+ },
+ "F13": {
+  "n": 36,
+  "by_file": {
+   "organization_fakes.py": 36
+  },
+  "names": {
+   "organization_fakes.py": [
+    "InMemoryAuditLog",
+    "InMemoryAuditLog.actions",
+    "InMemoryAuditLog.all",
+    "InMemoryAuditLog.for_organization",
+    "InMemoryAuditLog.for_user",
+    "InMemoryAuditLog.record",
+    "InMemoryInvitations",
+    "InMemoryInvitations.create",
+    "InMemoryInvitations.get",
+    "InMemoryInvitations.get_by_token_hash",
+    "InMemoryInvitations.list_for_organization",
+    "InMemoryInvitations.open_for",
+    "InMemoryInvitations.update",
+    "InMemoryOrganizations",
+    "InMemoryOrganizations.add_member",
+    "InMemoryOrganizations.create",
+    "InMemoryOrganizations.delete",
+    "InMemoryOrganizations.get",
+    "InMemoryOrganizations.list_all",
+    "InMemoryOrganizations.list_for_user",
+    "InMemoryOrganizations.member_count",
+    "InMemoryOrganizations.members",
+    "InMemoryOrganizations.memberships_of",
+    "InMemoryOrganizations.owner_count",
+    "InMemoryOrganizations.remove_member",
+    "InMemoryOrganizations.rename",
+    "InMemoryOrganizations.role_of",
+    "InMemoryOrganizations.seed_member",
+    "InMemoryOrganizations.set_quotas",
+    "InMemoryOrganizations.set_role",
+    "InMemoryTransactions",
+    "InMemoryTransactions.begin",
+    "InMemoryTx",
+    "InMemoryTx.later",
+    "_tx",
+    "actor"
+   ]
+  }
+ },
+ "F14": {
+  "n": 0,
+  "by_file": {},
+  "names": {}
+ },
+ "F15": {
+  "n": 14,
+  "by_file": {
+   "collection_fakes.py": 13,
+   "memory_repository.py": 1
+  },
+  "names": {
+   "collection_fakes.py": [
+    "InMemoryCollections",
+    "InMemoryCollections.count_owned",
+    "InMemoryCollections.create",
+    "InMemoryCollections.current_releases",
+    "InMemoryCollections.deleted_with_releases",
+    "InMemoryCollections.get",
+    "InMemoryCollections.live_release_ids",
+    "InMemoryCollections.mark_deleted",
+    "InMemoryCollections.rename",
+    "InMemoryCollections.set_visibility",
+    "InMemoryCollections.visible_for",
+    "_tx",
+    "build_collection_service"
+   ],
+   "memory_repository.py": [
+    "InMemoryConversationRepository.update_scope"
+   ]
+  }
+ },
+ "F16": {
+  "n": 23,
+  "by_file": {
+   "api/postgres_app.py": 1,
+   "collection_fakes.py": 22
+  },
+  "names": {
+   "api/postgres_app.py": [
+    "AppOutbox.drain_jobs"
+   ],
+   "collection_fakes.py": [
+    "InMemoryCollections.live",
+    "InMemoryJobs",
+    "InMemoryJobs.create",
+    "InMemoryJobs.get",
+    "InMemoryJobs.list_recent",
+    "InMemoryJobs.open_for",
+    "InMemoryJobs.update",
+    "InMemorySources",
+    "InMemorySources.colloquial",
+    "InMemorySources.count_documents",
+    "InMemorySources.create_document",
+    "InMemorySources.delete_document",
+    "InMemorySources.document_keys",
+    "InMemorySources.get_document",
+    "InMemorySources.glossary",
+    "InMemorySources.list_documents",
+    "InMemorySources.replace_colloquial",
+    "InMemorySources.replace_glossary",
+    "InMemorySources.text_usage",
+    "InMemorySources.update_document",
+    "RecordingDispatcher",
+    "RecordingDispatcher.enqueue"
+   ]
+  }
+ }
+}

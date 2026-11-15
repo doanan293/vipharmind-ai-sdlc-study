@@ -35,8 +35,10 @@ phân tích phản biện (25%): có đối chứng, số liệu thật, lặp l
   không?
 - **RQ5.** Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn (Claude Opus 5.5 so
   với Claude Sonnet 5.5, cùng trong Claude Code)?
+- **RQ6 (khám phá).** Khoảng cách giữa hai cách làm thay đổi thế nào khi nhiệm vụ lớn cỡ một tính năng
+  (nhiều commit, 750–1.500 dòng) thay vì một commit?
 
-RQ1, RQ2 do phần hồi cứu trả lời. RQ3, RQ4, RQ5 do phần thực nghiệm trả lời.
+RQ1, RQ2 do phần hồi cứu trả lời. RQ3 đến RQ6 do phần thực nghiệm trả lời.
 
 ## 4. Mục tiêu, ngoài phạm vi, điều phải tránh
 
@@ -193,6 +195,34 @@ do AI soạn, tác giả không sửa.
 commit và gắn thẻ git `prereg-v1` trước lượt chạy chính đầu tiên. Lượt chạy trên 2 nhiệm vụ thử được
 phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong báo cáo kèm lý do.
 
+### 7.2b Tầng tính năng (khám phá, RQ6)
+
+**Lý do.** Đề một commit có trung vị 120 dòng, trong khi một plan của ViPharmind gồm khoảng 11 phần
+việc (khoảng 11 commit). Đề nhỏ có thể làm lợi ích của làm theo đặc tả không lộ ra (quyết định của An,
+2026-11-15).
+
+**Cách chọn.** Khảo sát khả thi ngày 2026-11-15 (`tasks/feature-feasibility/`): gom nguyên plan không
+dùng được vì commit của các plan đan xen (dải dài tới 286 commit). Cắt phần lõi của từng plan backend
+thành 16 đoạn commit liền nhau (4–12 commit) và chạy bộ test thật ở đầu và cuối mỗi đoạn. Chọn 3 đoạn
+mà test ẩn chỉ cần đề bài nêu ít tên (6–25) và collect được độc lập:
+
+| Mã | base | end | commit | Dòng src |
+| --- | --- | --- | --- | --- |
+| F08 web-api | `45271fddc023` | `cc0f06a67bfa` | 6 | 764 |
+| F14 invitations | `c2935909a101` | `11079ab21c7f` | 4 | 1.464 |
+| F15 collections | `11079ab21c7f` | `ef23fe8cb403` | 5 | 1.367 |
+
+F09 và F04 bị loại vì đề bài phải nêu 30–35 tên, gần như là một bản thiết kế viết sẵn, làm nhiễu phép
+so sánh. F08 chứa commit của nhiệm vụ nhỏ t03 và nhiệm vụ thử p02; báo cáo ghi chú, phân tích hai tầng
+tách riêng.
+
+**Khác với tầng nhỏ.** Mã nền là commit `base`; test ẩn là mọi `test_*.py` thêm hoặc sửa trong đoạn;
+khi chấm khôi phục mọi file `backend/tests` đổi trong đoạn và `pyproject.toml`/`uv.lock` từ `end`, rồi
+chạy toàn bộ test không mang nhãn `integration`. Đề bài có thêm mục "giao diện bắt buộc" sinh từ
+`coupling.json` và `fakes_contract.json`. Chỉ chạy trên `claude-sonnet` và `claude-opus`: 3 nhiệm vụ ×
+2 cách làm × 3 lần lặp × 2 mô hình = **36 lượt**. Phân tích chỉ mô tả, kèm khoảng tin cậy, không kết
+luận thống kê.
+
 ### 7.3 Hai cách làm
 
 | | Theo đặc tả | Vibe coding |
@@ -245,7 +275,7 @@ riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lư
 ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
 Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi mô hình**. Đợt 1 có hai mô hình nên
-180 lượt; tổng cả ba đợt là **360 lượt**.
+180 lượt; tổng cả ba đợt là **360 lượt**, cộng 36 lượt của tầng tính năng (mục 7.2b).
 
 | Đợt | Công cụ (bản lúc thiết kế) | Lệnh chạy tự động | Mô hình | Vai trò |
 | --- | --- | --- | --- | --- |
