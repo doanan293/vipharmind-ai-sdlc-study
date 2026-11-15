@@ -6,6 +6,7 @@ cohort's next account, and when every account of a cohort ran out the cohort wai
 """
 
 import fcntl
+import hashlib
 import json
 import logging
 import os
@@ -29,7 +30,16 @@ from sdlc_harness.agents import build_command, is_quota_error, parse_usage
 from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
-from sdlc_harness.workspace import Agent, collect_patch, prepare_config, prepare_workspace
+from sdlc_harness.workspace import (
+    PROXY_KEY_ENV,
+    Agent,
+    ContaminatedTreeError,
+    assert_clean_tree,
+    collect_patch,
+    config_manifest,
+    prepare_config,
+    prepare_workspace,
+)
 
 log = logging.getLogger(__name__)
 
@@ -46,13 +56,23 @@ STUDY_ROOT = Path(__file__).resolve().parents[3]
 # task files, other reps) and outside any tree whose ancestors hold agent instructions or config.
 DEFAULT_WORK_ROOT = Path(os.environ.get("SDLC_WORK_ROOT") or "/tmp/sdlc-runs")
 AGENT_MARKERS = ("CLAUDE.md", "AGENTS.md", "GEMINI.md", ".claude", ".codex")
-# provider and parent-session variables that could override the account's login, endpoint or
-# model; prepare_config's own variables are added back after the scrub
-ENV_DROP_PREFIXES = {
-    "claude": ("ANTHROPIC_", "CLAUDE_CODE_", "CLAUDECODE"),
-    "agy": ("GEMINI_", "GOOGLE_"),
-    "codex": ("OPENAI_", "CODEX_"),
-}
+# provider and parent-session variables that could override an account's login, endpoint or
+# model, and XDG dirs that would point back into the real home. One list for every agent, so all
+# three start from the same environment; prepare_config's own variables are added after the scrub.
+ENV_DROP_PREFIXES = (
+    "ANTHROPIC_",
+    "CLAUDE",
+    "OPENAI_",
+    "CODEX_",
+    "GEMINI_",
+    "GOOGLE_",
+    "SDLC_PROXY",
+    "XDG_CONFIG_HOME",
+    "XDG_DATA_HOME",
+    "XDG_STATE_HOME",
+    "XDG_CACHE_HOME",
+    "VIRTUAL_ENV",
+)
 
 
 @dataclass(frozen=True)
@@ -89,6 +109,7 @@ class RunConfig:
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
     _task_locks: dict[str, threading.Lock] = field(default_factory=dict, init=False, repr=False)
     _warm: set[str] = field(default_factory=set, init=False, repr=False)
+    _parity: dict[tuple, str] = field(default_factory=dict, init=False, repr=False)
 
     def task_lock(self, task_id: str) -> threading.Lock:
         with self._lock:
@@ -222,15 +243,15 @@ def tool_version(agent: str) -> str | None:
 
 
 def scrub_env(agent: str, environ: dict[str, str], extra: dict[str, str]) -> dict[str, str]:
-    """The agent's env: no provider/session overrides, no harness venv; then `extra` on top."""
+    """The agent's env: no provider/session overrides, no harness venv; then `extra` on top.
+
+    `agent` is kept for the interface: the scrub is the same for every agent (parity).
+    """
+    del agent
     venv_bins = {Path(environ["VIRTUAL_ENV"]) / "bin"} if environ.get("VIRTUAL_ENV") else set()
     if sys.prefix != sys.base_prefix:
         venv_bins.add(Path(sys.prefix) / "bin")
-    env = {
-        k: v
-        for k, v in environ.items()
-        if k != "VIRTUAL_ENV" and not k.startswith(ENV_DROP_PREFIXES[agent])
-    }
+    env = {k: v for k, v in environ.items() if not k.startswith(ENV_DROP_PREFIXES)}
     if "PATH" in env:
         env["PATH"] = os.pathsep.join(
             p for p in env["PATH"].split(os.pathsep) if p and Path(p) not in venv_bins
@@ -250,6 +271,17 @@ def _kill_group(pid: int) -> None:
         os.killpg(pid, signal.SIGKILL)
     except (ProcessLookupError, PermissionError):
         pass
+
+
+class ParityError(RuntimeError):
+    """Two units that must see the same prompt or the same task tree did not."""
+
+
+def _check_same(cfg: "RunConfig", kind: str, key: tuple, value: str) -> None:
+    with cfg._lock:
+        seen = cfg._parity.setdefault((kind, *key), value)
+    if seen != value:
+        raise ParityError(f"{kind} differs from an earlier unit of {key}: {value} != {seen}")
 
 
 class RunCancelled(BaseException):
@@ -307,6 +339,12 @@ def _invoke(
         return returncode, timed_out, round(time.monotonic() - t0, 3)
 
 
+def _git_out(work: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", "-C", str(work), *args], check=True, text=True, capture_output=True
+    ).stdout.strip()
+
+
 def _grade(cfg: RunConfig, task: Task, work: Path) -> Grade:
     """Grade; the first grade of a task holds a lock so its reference runs are cached once."""
     if task.id not in cfg._warm:
@@ -355,17 +393,37 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "status": None,
         "work_dir": str(scratch / "work"),
         "kept_dir": str(kept_root(cfg.work_root) / scratch.name) if cfg.keep_work else None,
+        "removed_from_tree": None,
+        "prompt_sha256": None,
+        "tree_sha": None,
+        "tree_files": None,
+        "config_files": None,
+        "env_names": None,
+        "endpoint": None,
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
-        (out / "prompt.txt").write_text(render_prompt(task, unit.arm, cfg.prompts_dir))
-        work = prepare_workspace(cfg.repo, task, scratch, cfg.grade_timeout_s)
+        prompt = render_prompt(task, unit.arm, cfg.prompts_dir).encode()
+        (out / "prompt.txt").write_bytes(prompt)
+        meta["prompt_sha256"] = hashlib.sha256(prompt).hexdigest()
+        # every cohort gets the same bytes for a (task, arm)
+        _check_same(cfg, "prompt", (unit.task_id, unit.arm), meta["prompt_sha256"])
+        removed: list[str] = []
+        work = prepare_workspace(cfg.repo, task, scratch, cfg.grade_timeout_s, removed=removed)
+        meta["removed_from_tree"] = removed
+        assert_clean_tree(work)  # never start an agent on a tree with specs, plans or agent files
+        meta["tree_sha"] = _git_out(work, "rev-parse", "baseline^{tree}")
+        meta["tree_files"] = len(_git_out(work, "ls-files").splitlines())
+        _check_same(cfg, "tree", (unit.task_id,), meta["tree_sha"])  # same tree for every unit
         meta["tool_version"] = tool_version(cohort.agent)
         cmd = _agent_prefix() + build_command(
             cohort.agent, cohort.model, cohort.effort, out / "prompt.txt"
         )
         try:
             env = _agent_env(cohort, scratch, account, cfg.accounts_file)
+            meta["config_files"] = config_manifest(scratch / "config")
+            meta["env_names"] = sorted(env)
+            meta["endpoint"] = "proxy" if PROXY_KEY_ENV in env else "direct"
             meta["started_at"] = datetime.now(UTC).isoformat(timespec="seconds")
             rc, timed_out, wall = _invoke(cmd, work, out, env, cfg.timeout_s)
         finally:
@@ -397,6 +455,10 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         return "done"
     except GradingError as e:
         meta.update(status="error", error=f"grading: {e}")
+    except ContaminatedTreeError as e:
+        meta.update(status="error", error=f"contaminated tree: {e}")
+    except ParityError as e:
+        meta.update(status="error", error=f"parity: {e}")
     except Exception as e:  # one broken unit must not stop the whole run
         log.exception("unit %s failed", unit)
         meta.update(status="error", error=f"{type(e).__name__}: {e}")

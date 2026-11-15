@@ -1,7 +1,8 @@
 # Run cohorts: one agent CLI + model each; every cohort runs at medium effort.
 # accounts are indices into accounts.local.toml (never emails or tokens); a cohort switches
-# to its next account when the current one runs out of quota. Add more indices as accounts
-# are set up (Task 9).
+# to its next account when the current one runs out of quota.
+# Pilot (Task 9): claude and agy run direct on one subscription login each; codex account 1 is
+# the local cli-proxy-api, which itself round-robins over its codex logins (docs/pilot-report.md).
 
 [cohort.claude-sonnet]
 agent = "claude"

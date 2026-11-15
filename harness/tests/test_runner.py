@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import signal
+import subprocess
 import sys
 import threading
 import time
@@ -161,6 +162,7 @@ def test_runner_requeues_quota_without_counting(world, fake, tmp_path):
         "output_tokens": 7,
         "turns": 3,
         "model_served": "fake-model-served",
+        "reasoning_tokens": None,
     }
     assert {"started_at", "wall_s"} <= meta.keys()
     assert json.loads((d / "grade.json").read_text())["task_pass"] is True
@@ -321,17 +323,22 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
         "GOOGLE_API_KEY": "g",
         "GOOGLE_CLOUD_PROJECT": "p",
     }
-    claude = scrub_env("claude", environ, {"CLAUDE_CONFIG_DIR": "/cfg"})
-    assert claude["CLAUDE_CONFIG_DIR"] == "/cfg"
-    assert not [k for k in claude if k.startswith(("ANTHROPIC_", "CLAUDE_CODE_", "CLAUDECODE"))]
-    assert "VIRTUAL_ENV" not in claude
-    assert venv_bin not in claude["PATH"].split(":") and "/usr/bin" in claude["PATH"]
-    assert claude["HOME"] == "/home/x"
-    codex = scrub_env("codex", environ, {"CODEX_HOME": "/cfg"})
-    assert codex["CODEX_HOME"] == "/cfg"
-    assert not [k for k in codex if k.startswith("OPENAI_")]
-    agy = scrub_env("agy", environ, {})
-    assert not [k for k in agy if k.startswith(("GEMINI_", "GOOGLE_"))]
+    environ["XDG_CONFIG_HOME"] = "/home/x/.config"
+    environ["XDG_RUNTIME_DIR"] = "/run/user/1"
+    environ["SDLC_PROXY_API_KEY"] = "leak"
+    scrubbed = {
+        agent: scrub_env(agent, environ, {"HOME": "/fresh"}) for agent in ("claude", "agy", "codex")
+    }
+    # one scrub for every agent: the same variable names survive for all three
+    assert scrubbed["claude"] == scrubbed["agy"] == scrubbed["codex"]
+    env = scrubbed["claude"]
+    assert not [k for k in env if k.startswith(("ANTHROPIC_", "CLAUDE", "OPENAI_", "CODEX_"))]
+    assert not [k for k in env if k.startswith(("GEMINI_", "GOOGLE_", "SDLC_PROXY"))]
+    assert "VIRTUAL_ENV" not in env and "XDG_CONFIG_HOME" not in env
+    assert env["XDG_RUNTIME_DIR"] == "/run/user/1"
+    assert venv_bin not in env["PATH"].split(":") and "/usr/bin" in env["PATH"]
+    assert env["HOME"] == "/fresh"
+    assert scrub_env("codex", environ, {"CODEX_HOME": "/c"})["CODEX_HOME"] == "/c"
 
 
 def test_quota_retries_are_capped(world, fake, tmp_path):
@@ -440,3 +447,78 @@ def test_work_root_in_use_by_another_run_is_refused(world, tmp_path):
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
         with pytest.raises(ValueError, match="in use"):
             run_all([UNIT], cfg, tmp_path / "raw", jobs=1)
+
+
+def test_meta_records_removed_from_tree(world, fake, tmp_path):
+    out = tmp_path / "out"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out)["removed_from_tree"] == []
+
+
+def test_contaminated_tree_is_refused_before_the_agent_starts(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    real = runner.prepare_workspace
+
+    def leaky(*args, **kwargs):
+        work = real(*args, **kwargs)
+        (work / "docs/superpowers/plans").mkdir(parents=True)
+        (work / "docs/superpowers/plans/p.md").write_text("the answer")
+        return work
+
+    fake.setattr(runner, "prepare_workspace", leaky)
+    fake.setenv("FAKE_AGENT_CWDLOG", str(tmp_path / "cwd.log"))
+    out = tmp_path / "out"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "error"
+    meta = _meta(out)
+    assert meta["status"] == "error" and "docs/superpowers" in meta["error"]
+    assert not (tmp_path / "cwd.log").exists()  # the agent never ran
+    assert not (unit_dir(out, UNIT) / "grade.json").exists()
+
+
+def test_meta_records_parity_evidence(world, fake, tmp_path):
+    import hashlib
+
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    other = RunUnit("claude-sonnet", "t01", "vibe", 2)
+    assert run_unit(UNIT, cfg, out) == "done"
+    assert run_unit(other, cfg, out) == "done"
+    one, two = _meta(out), _meta(out, other)
+    prompt = (unit_dir(out, UNIT) / "prompt.txt").read_bytes()
+    assert one["prompt_sha256"] == hashlib.sha256(prompt).hexdigest() == two["prompt_sha256"]
+    assert one["tree_sha"] and one["tree_sha"] == two["tree_sha"]
+    assert one["tree_files"] > 0
+    assert one["config_files"] == ["home/.claude/.credentials.json"] == two["config_files"]
+    assert "HOME" in one["env_names"] and "CLAUDE_CONFIG_DIR" in one["env_names"]
+    assert not [n for n in one["env_names"] if n.startswith(("ANTHROPIC_", "OPENAI_"))]
+
+
+def test_prompt_or_tree_drift_between_units_is_refused(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    real = runner.render_prompt
+    fake.setattr(runner, "render_prompt", lambda *a, **k: real(*a, **k) + "extra\n")
+    rep2 = RunUnit("claude-sonnet", "t01", "vibe", 2)
+    assert run_unit(rep2, cfg, out) == "error"
+    assert "prompt" in _meta(out, rep2)["error"]
+    fake.setattr(runner, "render_prompt", real)
+    real_prep = runner.prepare_workspace
+
+    def drift(*args, **kwargs):
+        work = real_prep(*args, **kwargs)
+        (work / "extra.txt").write_text("x")
+        subprocess.run(["git", "-C", str(work), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(work), "commit", "-qm", "x", "--amend"], check=True)
+        subprocess.run(
+            ["git", "-C", str(work), "tag", "-f", "baseline"], check=True, capture_output=True
+        )
+        return work
+
+    fake.setattr(runner, "prepare_workspace", drift)
+    rep3 = RunUnit("claude-sonnet", "t01", "vibe", 3)
+    assert run_unit(rep3, cfg, out) == "error"
+    assert "tree" in _meta(out, rep3)["error"]
