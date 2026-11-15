@@ -402,8 +402,8 @@ harness/                  bộ chạy và bộ chấm
 results/raw/              kết quả thô từng lượt
 results/analysis/         bảng, hình, mã phân tích
 labeling/                 bảng nhãn, phiếu gán nhãn của hai người, kết quả phân xử
-report/                   báo cáo 15–20 trang
-slides/                   bài thuyết trình 15 phút
+docs/report/              báo cáo 15–20 trang
+docs/presentation/        bài thuyết trình 15 phút (template-vi.pptx)
 team/                     bản kê đóng góp, mẫu đánh giá chéo, khai báo sử dụng AI, tài liệu chuẩn bị hỏi đáp
 ```
 
@@ -412,14 +412,14 @@ Sản phẩm theo yêu cầu của thầy:
 | Yêu cầu | Ở đâu |
 | --- | --- |
 | Đề cương 1–2 trang | `proposal/`, rút từ mục 1, 3, 5, 7 |
-| Báo cáo viết 15–20 trang | `report/` |
-| Thuyết trình 15 phút, hỏi đáp 5 phút | `slides/`, `team/` |
+| Báo cáo viết 15–20 trang | `docs/report/` |
+| Thuyết trình 15 phút, hỏi đáp 5 phút | `docs/presentation/`, `team/` |
 | Kho mã, dữ liệu, nội dung yêu cầu đã dùng, kết quả thô | repo này; đề bài ở `tasks/` và `prompts/`, kết quả thô ở `results/raw/` |
 | Bản kê đóng góp cá nhân và khai báo sử dụng AI | `team/` |
 
 Tổng quan tài liệu trong báo cáo: tìm có quy trình, ghi lại từ khóa, nguồn, tiêu chí chọn, số bài tìm
 được, sàng lọc, giữ lại; khoảng 15–25 nguồn, ưu tiên hội nghị và tạp chí có bình duyệt, 2023–2026.
-Nhật ký tìm kiếm ở `report/literature-log.md`. Ba nhóm:
+Nhật ký tìm kiếm ở `docs/report/literature-log.md`. Ba nhóm:
 bộ đo cho trợ lý lập trình và hạn chế của chúng; nghiên cứu về năng suất khi dùng AI; phát triển
 theo đặc tả với AI. Mọi trích dẫn phải được mở và kiểm tra, không trích theo trí nhớ.
 
