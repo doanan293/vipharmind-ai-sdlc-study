@@ -225,6 +225,13 @@ def _pytest_table(source: str | None) -> object:
     return tomllib.loads(source).get("tool", {}).get("pytest")
 
 
+def _same_file(a: Path, b: Path) -> bool:
+    """Both missing, or both files with the same bytes."""
+    if not a.is_file() or not b.is_file():
+        return not a.is_file() and not b.is_file()
+    return a.read_bytes() == b.read_bytes()
+
+
 def _pytest_config_touched(work: Path, files: list["FilePatch"]) -> bool:
     for f in files:
         name = f.path.rsplit("/", 1)[-1]
@@ -521,29 +528,45 @@ def grade(
     # a grader timeout or crash says nothing about the AI's work: GradingError, so the unit is a
     # system error and is rerun (not a task_pass = false)
     timed_out = False
-    # a patch that touches pytest config, conftest, pyproject or the lock can break the run itself:
-    # that is the patch's fault (a fail grade); the same failure on an untouched setup is infra
+    # a patch that touches pytest config, conftest, pyproject or the lock can break the run itself.
+    # Only trigger files that survive into the graded tree count (a range task restores some).
+    # The final run is repeated once; the patch is blamed only for the same failure twice
+    # (a fail grade). Anything else, and every OSError, is infra: GradingError, so a rerun.
     breaks_test_setup = any(
         f.path.rsplit("/", 1)[-1] in PYTEST_CONFIG_FILES | {"pyproject.toml", "uv.lock"}
+        and _same_file(work / f.path, graded / f.path)
         for f in all_files
     )
-    try:
-        report = run_backend_tests(graded, timeout_s)
-    except subprocess.TimeoutExpired:
-        timed_out = True  # the grade below is the fail grade the caller may keep (see below)
-        notes.append("final test run timed out")
-    except (subprocess.SubprocessError, OSError) as e:
-        if not breaks_test_setup:
+    failures: list[str] = []
+    for _ in range(2 if breaks_test_setup else 1):
+        failure = None
+        try:
+            report = run_backend_tests(graded, timeout_s)
+        except subprocess.TimeoutExpired:
+            timed_out = True  # the grade below is the fail grade the caller may keep (see below)
+            notes.append("final test run timed out")
+            break
+        except OSError as e:
             raise GradingError(f"final test run failed: {e}") from e
-        notes.append(f"final test run failed, caused by the patch (config or lock change): {e}")
-    else:
-        final = report.outcomes
-        if not final:
-            if not breaks_test_setup:
-                raise GradingError(f"final test run produced no report: {report.stderr_tail}")
-            notes.append("final test run produced no report, caused by the patch (config change)")
-        elif report.collection_error:
-            notes.append("final test run had collection errors")
+        except subprocess.SubprocessError as e:
+            failure = f"failed: {e}"
+        else:
+            final = report.outcomes
+            if not final:
+                failure = f"produced no report: {report.stderr_tail}"
+        if failure is None:
+            if report.collection_error:
+                notes.append("final test run had collection errors")
+            break
+        failures.append(failure)
+    if failures and not timed_out and not final:
+        if (
+            not breaks_test_setup
+            or len(failures) < 2
+            or (failures[0].split(":")[0] != failures[1].split(":")[0])
+        ):
+            raise GradingError(f"final test run {failures[-1]}")
+        notes.append(f"final test run {failures[-1]} twice, caused by the patch (config or lock)")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
     hidden_failed = {n: final.get(n, "missing") for n in hidden_ids if final.get(n) != "passed"}

@@ -303,4 +303,4 @@ def config_manifest(config: Path) -> list[str]:
 def collect_patch(work: Path) -> str:
     """Everything the agent changed since baseline, as a unified diff."""
     _git(work, "add", "-A")
-    return _git(work, "diff", "--cached", BASELINE)
+    return _git(work, "diff", "--binary", "--cached", BASELINE)

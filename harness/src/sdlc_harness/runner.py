@@ -738,6 +738,10 @@ def regrade_unit(unit_out: Path, cfg: RunConfig) -> tuple[dict, dict]:
         new = grade_to_dict(_grade_with_timeout_retry(cfg, task, work, patch))
     finally:
         _dispose(scratch, False)
+    if GRADER_TIMEOUT_NOTE in new["grading_notes"]:  # a grader hang must not replace a good grade
+        raise GradingError("grader timeout on the saved patch (twice); old grade kept")
+    meta.pop("regrade_status", None)
+    meta.pop("regrade_error", None)
     meta["regraded_at"] = datetime.now(UTC).isoformat(timespec="seconds")
     _write_json(unit_out / META, meta)
     _write_json(unit_out / GRADE, new)

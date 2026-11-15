@@ -780,33 +780,93 @@ def test_coverage_none_when_run_never_starts(ws, monkeypatch):
     assert any("no data" in n for n in g.grading_notes)
 
 
-# --- a patch that breaks the test setup is the patch's fault ------------------------------
+# --- a patch that breaks the test setup is the patch's fault, if it fails the same way twice ----
 
 
-@pytest.mark.parametrize(
-    "exc",
-    [subprocess.CalledProcessError(1, ["uv", "sync"]), None],
-    ids=["sync-failed", "no-report"],
-)
-def test_failure_caused_by_a_config_change_is_a_fail_grade(ws, monkeypatch, exc):
+def _break_final(monkeypatch, ws, failures: list):
+    """The graded copy's test run raises/returns each item of `failures` in turn, then works."""
     import sdlc_harness.grade as grade_mod
+
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _grade(ws)  # fill the reference cache
+    (work / "backend/tests/conftest.py").write_text("# touched\n")
+    real = grade_mod.run_backend_tests
+    queue = list(failures)
+
+    def broken(tree, timeout_s=900):
+        if tree.name == "graded" and queue:
+            item = queue.pop(0)
+            if isinstance(item, Exception):
+                raise item
+            return item
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", broken)
+
+
+def _sync_fail():
+    return subprocess.CalledProcessError(1, ["uv", "sync"])
+
+
+def test_setup_failure_that_clears_on_retry_is_graded_normally(ws, monkeypatch):
+    _break_final(monkeypatch, ws, [_sync_fail()])
+    g = _grade(ws)
+    assert not any("caused by the patch" in n for n in g.grading_notes)
+    assert g.hidden_passed == g.hidden_total > 0
+
+
+@pytest.mark.parametrize("kind", ["sync", "no-report"])
+def test_same_setup_failure_twice_is_a_fail_grade(ws, monkeypatch, kind):
     from sdlc_harness.pytest_run import TestReport
+
+    one = (lambda: _sync_fail()) if kind == "sync" else (lambda: TestReport({}, 0.0, True, "x"))
+    _break_final(monkeypatch, ws, [one(), one()])
+    g = _grade(ws)
+    assert g.task_pass is False and g.hidden_passed == 0
+    assert any("twice, caused by the patch" in n for n in g.grading_notes)
+
+
+def test_different_setup_failures_or_oserror_stay_errors(ws, monkeypatch):
+    from sdlc_harness.pytest_run import TestReport
+
+    _break_final(monkeypatch, ws, [_sync_fail(), TestReport({}, 0.0, True, "x")])
+    with pytest.raises(GradingError):
+        _grade(ws)
+
+
+def test_oserror_is_never_blamed_on_the_patch(ws, monkeypatch):
+    _break_final(monkeypatch, ws, [OSError("no space"), OSError("no space")])
+    with pytest.raises(GradingError, match="no space"):
+        _grade(ws)
+
+
+def test_same_file_compares_bytes_and_absence(tmp_path):
+    from sdlc_harness.grade import _same_file
+
+    a, b = tmp_path / "a", tmp_path / "b"
+    assert _same_file(a, b)  # both missing: the deletion survived
+    a.write_text("x")
+    assert not _same_file(a, b)  # restored or removed in the graded copy: does not count
+    b.write_text("x")
+    assert _same_file(a, b)
+    b.write_text("y")
+    assert not _same_file(a, b)
+
+
+def test_setup_failure_without_a_trigger_file_is_infra(ws, monkeypatch):
+    import sdlc_harness.grade as grade_mod
 
     repo, task, work, _ = ws
     _apply_original(repo, task, work)
     _grade(ws)
-    (work / "backend/tests/conftest.py").write_text("raise SystemExit(4)\n")  # breaks pytest
     real = grade_mod.run_backend_tests
 
     def broken(tree, timeout_s=900):
-        if tree.name != "graded":
-            return real(tree, timeout_s)
-        if exc is not None:
-            raise exc
-        return TestReport({}, 0.0, True, "usage error")
+        if tree.name == "graded":
+            raise _sync_fail()
+        return real(tree, timeout_s)
 
     monkeypatch.setattr(grade_mod, "run_backend_tests", broken)
-    g = _grade(ws)
-    assert g.task_pass is False and g.hidden_passed == 0
-    assert g.pytest_config_touched is True
-    assert any("caused by the patch" in n for n in g.grading_notes)
+    with pytest.raises(GradingError):
+        _grade(ws)

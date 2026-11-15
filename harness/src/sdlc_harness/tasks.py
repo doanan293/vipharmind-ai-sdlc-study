@@ -138,8 +138,6 @@ def _mentions(text: str, name: str) -> bool:
 
 def validate_task(task: Task) -> list[str]:
     errors = [f"{task.id}: task.toml missing key '{k}'" for k in task.missing_keys]
-    if task.tier not in TIERS:
-        errors.append(f"{task.id}: tier '{task.tier}' is not one of {', '.join(TIERS)}")
     n = count_sentences(task.prompt)
     top = MAX_RANGE_SENTENCES if task.kind == "range" else MAX_SENTENCES
     if not MIN_SENTENCES <= n <= top:

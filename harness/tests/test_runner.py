@@ -877,14 +877,53 @@ def _done_unit_copy(world, fake, tmp_path):
     return out, cfg
 
 
-def test_regrade_applies_the_twice_timeout_rule(world, fake, tmp_path, monkeypatch):
-    from sdlc_harness.runner import regrade_unit
+def test_regrade_second_grader_timeout_keeps_the_old_grade(world, fake, tmp_path, monkeypatch):
+    from sdlc_harness.runner import regrade_all
 
     out, cfg = _done_unit_copy(world, fake, tmp_path)
+    d = unit_dir(out, UNIT)
     _time_out_grader(monkeypatch, times=2)
-    old, new = regrade_unit(unit_dir(out, UNIT), cfg)
-    assert old["task_pass"] is True and new["task_pass"] is False
-    assert "grader timeout on agent patch (twice)" in new["grading_notes"]
+    [(_, old, new)] = regrade_all([d], cfg)
+    assert "regrade_error" in new and old["task_pass"] is True
+    assert json.loads((d / "grade.json").read_text())["task_pass"] is True
+    assert json.loads((d / "meta.json").read_text())["regrade_status"] == "error"
+    # a later successful regrade clears the stale error
+    [(_, _, new)] = regrade_all([d], cfg)
+    assert "regrade_error" not in new
+    meta = json.loads((d / "meta.json").read_text())
+    assert "regrade_status" not in meta and "regrade_error" not in meta
+
+
+def test_collected_patch_replays_binary_files_with_git_apply(tmp_path):
+    import sdlc_harness.workspace as ws_mod
+
+    work = tmp_path / "bin"
+    subprocess.run(["git", "init", "-q", str(work)], check=True)
+    (work / "a.bin").write_bytes(bytes(range(256)))
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(work),
+            "-c",
+            "user.name=t",
+            "-c",
+            "user.email=t@t",
+            "commit",
+            "-q",
+            "--allow-empty",
+            "-m",
+            "m",
+        ],
+        check=True,
+    )
+    subprocess.run(["git", "-C", str(work), "branch", "-f", ws_mod.BASELINE], check=True)
+    patch = ws_mod.collect_patch(work)
+    assert "GIT binary patch" in patch
+    clone = tmp_path / "clone"
+    subprocess.run(["git", "init", "-q", str(clone)], check=True)
+    subprocess.run(["git", "-C", str(clone), "apply"], input=patch, text=True, check=True)
+    assert (clone / "a.bin").read_bytes() == bytes(range(256))
 
 
 def test_regrade_all_records_a_failing_unit_and_continues(world, fake, tmp_path):
