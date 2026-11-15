@@ -388,6 +388,18 @@ vụ trong từng tầng. Phân tích bổ trợ trên cả 18 nhiệm vụ: h�
 vụ ở tầng tính năng, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
 chiều) đều được báo cáo như nhau.
 
+**Hiệu quả chi phí (bổ sung, quyết định của An 2026-11-15).** Với từng nhóm và từng tầng, báo cáo số
+lượt đạt trên mỗi đô quy đổi (tổng lượt đạt chia tổng chi phí quy đổi) của hai cách làm, và chi phí
+quy đổi trung bình cho một lượt đạt, kèm khoảng tin cậy bootstrap theo nhiệm vụ.
+
+**Ca nghiên cứu định tính (bổ sung, quyết định của An 2026-11-15).** Quy tắc chọn chốt trước: trong tầng
+tính năng, với nhóm `claude-sonnet`, lấy nhiệm vụ có trị tuyệt đối hiệu số tỉ lệ đạt giữa hai cách
+làm lớn nhất (hòa thì lấy nhiệm vụ có bản vá gốc lớn hơn); trong nhiệm vụ đó, lấy lượt có số lần lặp
+nhỏ nhất của mỗi cách làm (ưu tiên một lượt đạt và một lượt không đạt nếu hai cách làm khác kết quả).
+Đặt cạnh nhau: thiết kế và kế hoạch AI viết (cách làm theo đặc tả), chuỗi hành động chính, chỗ sai,
+cách sửa, test ẩn trượt, chi phí. Trích nguyên văn nhật ký, đã xóa email. Phần này minh họa cơ chế,
+không dùng để kết luận.
+
 **Theo kích thước nhiệm vụ.** Chia 15 nhiệm vụ theo số dòng thay đổi của bản vá gốc (nhỏ, vừa, lớn,
 ngưỡng chốt trước thẻ `prereg-v1`) và báo cáo hiệu số giữa hai cách làm ở từng nhóm. Đây là phân tích
 khám phá vì mỗi nhóm chỉ có khoảng 5 nhiệm vụ, không dùng để kết luận.
