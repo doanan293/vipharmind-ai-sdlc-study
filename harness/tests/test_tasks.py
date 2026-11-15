@@ -119,6 +119,18 @@ def test_cli_tasks_validate_requires_17_tasks(tmp_path: Path):
     assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
 
 
+def test_cli_tasks_validate_accepts_feature_tasks(tmp_path: Path):
+    _write_set(tmp_path)
+    for tid in ("f08", "f14", "f15"):
+        write_task(tmp_path / tid, _task(id=tid))
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 0
+    write_task(tmp_path / "f99", _task(id="f99"))
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
+    (tmp_path / "t15" / "task.toml").unlink()
+    (tmp_path / "f99" / "task.toml").unlink()
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
+
+
 # --- baseline keys round trip and generate ------------------------------------------------------
 
 
