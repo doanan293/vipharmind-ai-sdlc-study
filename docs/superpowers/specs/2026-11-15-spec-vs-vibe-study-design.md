@@ -33,8 +33,10 @@ phân tích phản biện (25%): có đối chứng, số liệu thật, lặp l
   tốt hơn giao việc trực tiếp (vibe coding) không, và tốn thêm bao nhiêu chi phí?
 - **RQ4.** Kết luận của RQ3 có giữ nguyên khi đổi sang trợ lý lập trình và mô hình của hãng khác
   không?
+- **RQ5.** Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn (Claude Opus 5.5 so
+  với Claude Sonnet 5.5, cùng trong Claude Code)?
 
-RQ1, RQ2 do phần hồi cứu trả lời. RQ3, RQ4 do phần thực nghiệm trả lời.
+RQ1, RQ2 do phần hồi cứu trả lời. RQ3, RQ4, RQ5 do phần thực nghiệm trả lời.
 
 ## 4. Mục tiêu, ngoài phạm vi, điều phải tránh
 
@@ -50,8 +52,9 @@ RQ1, RQ2 do phần hồi cứu trả lời. RQ3, RQ4 do phần thực nghiệm t
 - Không đánh giá lại chất lượng trả lời của ViPharmind.
 - Không làm thí nghiệm trên frontend và `pharma-lab`; thực nghiệm chỉ dùng `backend/`.
 - Không có nhánh thứ ba "đặc tả do người duyệt". Lý do ở mục 7.3.
-- Không so sánh công cụ với công cụ hay mô hình với mô hình. Mỗi công cụ dùng một mô hình cố định,
-  ba mô hình khác hạng nhau; phép so sánh luôn là hai cách làm trong cùng một công cụ.
+- Không so sánh công cụ với công cụ. Ba công cụ dùng mô hình khác hãng, khác hạng nhau; phép so sánh
+  luôn là hai cách làm trong cùng một công cụ. Ngoại lệ duy nhất là Sonnet với Opus trong Claude Code
+  (RQ5): cùng công cụ, cùng hãng, chỉ khác mô hình, nên là phép so sánh sạch.
 - Không sửa gì trong repo ViPharmind.
 
 **Điều phải tránh** (bài hỏng dù chạy được)
@@ -92,6 +95,10 @@ Hai quyết định đi kèm, An đã đồng ý:
 
 - Chạy ba công cụ theo ba đợt. Claude Code là kết quả chính; Antigravity và Codex chạy sau trên cùng
   bộ nhiệm vụ để trả lời RQ4.
+- Đợt 1 chạy hai mô hình, Claude Sonnet 5.5 và Claude Opus 5.5, để trả lời RQ5. Mọi mô hình ở mọi đợt
+  dùng mức effort hoặc mức suy luận medium.
+- Nhánh theo đặc tả tái hiện quy trình An thực sự dùng khi làm ViPharmind (spec, plan, làm theo plan),
+  với cách chia việc tự nhiên, không ép số bước.
 - Chạy bằng gói thuê bao sẵn có của An, không dùng khóa API trả theo lượng dùng.
 - Hai thành viên thuyết trình gán nhãn nguyên nhân thất bại độc lập.
 
@@ -100,7 +107,9 @@ Hai quyết định đi kèm, An đã đồng ý:
 ### 7.1 Phần hồi cứu (RQ1, RQ2)
 
 **Vai trò:** bối cảnh cho thực nghiệm, chiếm khoảng 3–4 trang trong báo cáo. Dữ liệu chỉ cho thống
-kê mô tả (mục giới hạn bên dưới), nên không dàn trải thêm; sức chính dồn vào thực nghiệm (RQ3, RQ4).
+kê mô tả (mục giới hạn bên dưới), nên không dàn trải thêm; sức chính dồn vào thực nghiệm (RQ3 đến RQ5).
+Phần này cũng cho thấy An đã làm ViPharmind theo quy trình spec, plan nào, là quy trình mà nhánh theo
+đặc tả của thực nghiệm tái hiện.
 
 **Tập commit phân tích:** hợp của hai mốc `main` và `camera-ready` ở mục 5, mỗi commit tính một lần.
 Lấy hợp vì khâu nghiên cứu và viết bài nằm trên `camera-ready`, còn sản phẩm nằm trên `main`. Các
@@ -181,7 +190,7 @@ phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong b�
 | | Theo đặc tả | Vibe coding |
 | --- | --- | --- |
 | Đầu vào | Đề bài | Đề bài |
-| Quy trình yêu cầu | Viết tài liệu thiết kế, rồi kế hoạch từng bước, rồi cài đặt theo kế hoạch và tự viết test | "Cài đặt việc này" |
+| Quy trình yêu cầu | Viết tài liệu thiết kế (spec), rồi kế hoạch (plan) chia thành các phần việc, rồi cài đặt theo kế hoạch và tự viết test | "Cài đặt việc này" |
 | Người can thiệp | Không | Không |
 
 Khác biệt duy nhất giữa hai cách là lời dặn về quy trình, lưu thành hai file mẫu trong repo. Cùng mô
@@ -193,11 +202,16 @@ thời gian tính cho cả phiên. Không chia thành ba lần gọi riêng, đ�
 Lượt theo đặc tả mà không để lại file thiết kế và kế hoạch được đánh dấu "không tuân thủ quy trình",
 vẫn chấm và báo cáo riêng.
 
+**Tái hiện quy trình thật.** Lời dặn của nhánh theo đặc tả mô tả đúng quy trình An dùng khi làm
+ViPharmind: viết spec, viết plan, rồi làm theo plan. Plan chia việc theo kích thước tự nhiên, mỗi phần
+là một đơn vị trọn vẹn như trong các plan cũ của ViPharmind; lời dặn không đặt số bước hay độ nhỏ của
+bước. Lời dặn được viết dựa trên các file spec, plan trong lịch sử ViPharmind (phần hồi cứu) và không
+chép nguyên văn skill nào.
+
 **Gọi đúng tên.** Trong báo cáo, nhánh này được gọi là "quy trình đặc tả tự động": AI tự viết thiết kế
-và kế hoạch rồi cài đặt, không có người duyệt. Lời dặn bám theo các bước của một quy trình đã công bố
-(GitHub Spec Kit: đặc tả, kế hoạch, danh sách việc, cài đặt; `taghavi_2026`) và ghi rõ nguồn trong
-file mẫu. Báo cáo đối chiếu với cách người làm nghề thực hành phát triển theo đặc tả (`agarwal_2026`)
-để nói rõ thí nghiệm đo phần nào của quy trình đó.
+và kế hoạch rồi cài đặt, không có người duyệt. Báo cáo đặt nó cạnh các quy trình cùng họ đã công bố
+(GitHub Spec Kit, `taghavi_2026`) và đối chiếu với cách người làm nghề thực hành phát triển theo đặc tả
+(`agarwal_2026`, `hill_2026`) để nói rõ thí nghiệm đo phần nào của quy trình đó.
 
 Lý do không có nhánh "đặc tả do người duyệt": đặc tả gốc trong lịch sử ViPharmind được viết cho những
 phần việc lớn hơn một commit và chỉ có ở một số nhiệm vụ, nên không ghép đều được vào 15 nhiệm vụ.
@@ -222,11 +236,13 @@ Mỗi lượt chạy:
 riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lượt. Thứ tự các lượt được xáo trộn
 ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
-Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi công cụ**, 270 lượt cho ba công cụ.
+Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi mô hình**. Đợt 1 có hai mô hình nên
+180 lượt; tổng cả ba đợt là **360 lượt**.
 
 | Đợt | Công cụ (bản lúc thiết kế) | Lệnh chạy tự động | Mô hình | Vai trò |
 | --- | --- | --- | --- | --- |
-| 1 | Claude Code 2.1.325 | `claude -p` | Claude Sonnet 5.5 (`claude-sonnet-5-5`) | Kết quả chính, RQ3 |
+| 1 | Claude Code 2.1.325 | `claude -p` | Claude Sonnet 5.5 (`claude-sonnet-5-5`), effort medium | Kết quả chính, RQ3 |
+| 1 | Claude Code 2.1.325 | `claude -p` | Claude Opus 5.5 (`claude-opus-5-5`), effort medium | RQ3, RQ5 |
 | 2 | Antigravity CLI 1.5.8 | `agy -p` | Gemini 3.8 Flash Medium (`gemini-3.8-flash-medium`) | Kiểm chứng, RQ4 |
 | 3 | Codex CLI 0.162.1 | `codex exec` | `gpt-6-luna`, mức suy luận medium | Kiểm chứng, RQ4 |
 
@@ -235,10 +251,10 @@ Ba đợt dùng cùng nhiệm vụ, cùng đề bài, cùng lời dặn. Đợt 
 
 Lý do chọn mô hình:
 
-- **Claude Sonnet 5.5** cho đợt chính: hạng giữa, để tránh hiệu ứng trần (mô hình mạnh nhất có thể
-  đạt gần hết nhiệm vụ ở cả hai cách, không còn chênh lệch để đo) và vừa hạn mức gói thuê bao cho 90
-  lượt. Nếu ở 2 nhiệm vụ thử mọi lượt đều đạt hoặc đều hỏng ở cả hai cách, xem lại lựa chọn này trước
-  thẻ `prereg-v1`.
+- **Claude Sonnet 5.5 và Claude Opus 5.5** cho đợt chính, đều ở effort medium: một mô hình hạng giữa
+  và một mô hình mạnh nhất của cùng hãng, chạy trong cùng công cụ. Nếu Opus đạt gần hết nhiệm vụ ở cả
+  hai cách (hiệu ứng trần), đó là kết quả cho RQ5, không phải lỗi thiết kế. Nếu ở 2 nhiệm vụ thử mọi
+  lượt của Sonnet đều hỏng ở cả hai cách, xem lại bộ nhiệm vụ trước thẻ `prereg-v1`.
 - **Gemini 3.8 Flash Medium:** An chọn mức Medium trong các mô hình của Google mà tài khoản
   Antigravity có. Không dùng các mô hình Claude có trong Antigravity vì cùng họ với đợt 1.
 - **`gpt-6-luna`:** mô hình duy nhất tài khoản Codex của An có.
@@ -297,11 +313,20 @@ mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" 
 
 **Giả thuyết ghi trước:** H1, làm theo đặc tả có tỉ lệ đạt nhiệm vụ cao hơn vibe coding. H2, làm
 theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh, ít hồi
-quy hơn và có chỉ số bảo trì không kém hơn.
+quy hơn và có chỉ số bảo trì không kém hơn. H4, khoảng cách về tỉ lệ đạt giữa hai cách làm ở Sonnet
+lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn.
 
 **Phân tích.** So sánh theo cặp trên từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy
 mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
 vào ngưỡng p. Báo cáo cả độ dao động giữa 3 lần lặp của cùng một nhiệm vụ.
+
+Với RQ5, phân tích đợt 1 như một thiết kế 2 × 2 (cách làm × mô hình): báo cáo bốn tỉ lệ đạt, hiệu số
+giữa hai cách làm ở từng mô hình, và hiệu của hai hiệu số đó (tương tác) kèm khoảng tin cậy bootstrap
+theo nhiệm vụ. So sánh thêm Sonnet theo đặc tả với Opus vibe coding về tỉ lệ đạt và chi phí quy đổi.
+
+**Theo kích thước nhiệm vụ.** Chia 15 nhiệm vụ theo số dòng thay đổi của bản vá gốc (nhỏ, vừa, lớn,
+ngưỡng chốt trước thẻ `prereg-v1`) và báo cáo hiệu số giữa hai cách làm ở từng nhóm. Đây là phân tích
+khám phá vì mỗi nhóm chỉ có khoảng 5 nhiệm vụ, không dùng để kết luận.
 
 ### 7.6 Phân tích lỗi và kiểm tra bằng người
 

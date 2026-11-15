@@ -17,7 +17,7 @@ fi
 
 # Gộp các dòng để cụm từ bị ngắt dòng vẫn tìm được.
 text=$(pdftotext -layout "$pdf" - | tr -s ' \n' '  ')
-for needle in "505" "15 nhiệm vụ" "270" "Claude Sonnet 5.5" "Gemini 3.8 Flash" "gpt-6-luna" \
+for needle in "505" "15 nhiệm vụ" "360" "Claude Opus 5.5" "Claude Sonnet 5.5" "Gemini 3.8 Flash" "gpt-6-luna" \
   "vibe coding" "không so sánh công cụ với công cụ"; do
   if ! grep -qF -- "$needle" <<<"$text"; then
     errors+=("thiếu: $needle")

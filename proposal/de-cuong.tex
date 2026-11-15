@@ -53,6 +53,7 @@ trong kho mã?
 và tốn thêm bao nhiêu chi phí?
 \item \textbf{RQ4.} Kết luận của RQ3 có giữ nguyên khi đổi sang trợ lý lập trình và mô hình của hãng
 khác không?
+\item \textbf{RQ5.} Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn?
 \end{itemize}
 
 \section{Phương pháp}
@@ -62,15 +63,16 @@ Claude Code còn giữ được (không đầy đủ). Mỗi commit được gá
 file và loại commit. Mức phải sửa lại được đo bằng số commit \texttt{fix}, \texttt{refactor} chạm cùng
 file trong 14 ngày sau mỗi commit \texttt{feat}. Đây là phân tích quan sát, làm bối cảnh cho thực nghiệm.
 
-\subsection{Thực nghiệm đối chứng (RQ3, RQ4)}
+\subsection{Thực nghiệm đối chứng (RQ3 đến RQ5)}
 Từ 110 commit \texttt{feat} chạm cả mã và test của backend, sàng lọc theo tiêu chí ghi trước rồi lấy
 mẫu ngẫu nhiên phân tầng 15 nhiệm vụ. Mỗi nhiệm vụ quay mã về commit cha, giấu các test mà commit gốc
 thêm hoặc sửa (test ẩn), và giao cho AI một đề bài. Hai cách làm nhận cùng đề bài, cùng mô hình, cùng giới
-hạn; chỉ khác lời dặn về quy trình: vibe coding cài đặt ngay, còn quy trình đặc tả tự động viết thiết
-kế, kế hoạch rồi mới cài đặt, theo các bước của Spec Kit \cite{taghavi_2026}. Nhiệm vụ, đề bài, giả thuyết và kế hoạch phân
-tích được chốt bằng thẻ git trước lượt chạy chính đầu tiên. Quy mô: 15 nhiệm vụ $\times$ 2 cách làm
-$\times$ 3 lần lặp = 90 lượt mỗi công cụ, 270 lượt tổng. Nghiên cứu không so sánh công cụ với công cụ;
-phép so sánh luôn là hai cách làm trong cùng một công cụ.
+hạn; chỉ khác lời dặn về quy trình: vibe coding cài đặt ngay, còn quy trình đặc tả tự động tái hiện cách
+An đã làm ViPharmind: viết spec, viết plan chia việc theo kích thước tự nhiên, rồi cài đặt theo plan. Nhiệm vụ, đề bài, giả thuyết và kế hoạch phân
+tích được chốt bằng thẻ git trước lượt chạy chính đầu tiên. Mỗi mô hình chạy 15 nhiệm vụ $\times$ 2 cách
+làm $\times$ 3 lần lặp = 90 lượt; đợt 1 có hai mô hình, tổng ba đợt là 360 lượt, mọi mô hình ở mức
+effort medium. Nghiên cứu không so sánh công cụ với công cụ; phép so sánh luôn là hai cách làm trong
+cùng một công cụ. Riêng Sonnet và Opus chạy trong cùng Claude Code nên so được với nhau (RQ5).
 
 \begin{center}\small
 \begin{tabular}{@{}llll@{}}
@@ -78,6 +80,7 @@ phép so sánh luôn là hai cách làm trong cùng một công cụ.
 Đợt & Công cụ & Mô hình & Vai trò \\
 \midrule
 1 & Claude Code & Claude Sonnet 5.5 & Kết quả chính (RQ3) \\
+1 & Claude Code & Claude Opus 5.5 & RQ3, RQ5 \\
 2 & Antigravity & Gemini 3.8 Flash Medium & Kiểm chứng (RQ4) \\
 3 & Codex CLI & \texttt{gpt-6-luna} & Kiểm chứng (RQ4) \\
 \bottomrule
@@ -87,9 +90,11 @@ phép so sánh luôn là hai cách làm trong cùng một công cụ.
 \subsection{Chỉ số và phân tích}
 Chỉ số chính là \emph{đạt nhiệm vụ}: mọi test ẩn đạt và không test cũ nào hỏng. Chỉ số phụ: tỉ lệ test
 ẩn đạt, hồi quy, lỗi phân tích tĩnh (\texttt{ruff}, \texttt{pyrefly}), chỉ số bảo trì (\texttt{radon}),
-độ phủ test do AI viết, token, thời gian. Ba giả thuyết ghi trước: theo đặc tả đạt nhiều nhiệm vụ hơn
-(H1), tốn token và thời gian hơn (H2), ít lỗi tĩnh và hồi quy hơn (H3). So sánh theo cặp trên từng
-nhiệm vụ, báo cáo hiệu số kèm khoảng tin cậy bootstrap và độ dao động giữa các lần lặp. Hai thành viên
+độ phủ test do AI viết, token, thời gian. Bốn giả thuyết ghi trước: theo đặc tả đạt nhiều nhiệm vụ hơn
+(H1), tốn token và thời gian hơn (H2), ít lỗi tĩnh và hồi quy hơn (H3), và khoảng
+cách giữa hai cách làm ở Sonnet lớn hơn ở Opus (H4). So sánh theo cặp trên từng
+nhiệm vụ, báo cáo hiệu số kèm khoảng tin cậy bootstrap và độ dao động giữa các lần lặp; với RQ5 báo cáo
+tương tác giữa cách làm và mô hình, và phân tích thêm theo kích thước nhiệm vụ. Hai thành viên
 gán nhãn nguyên nhân thất bại độc lập, không biết lượt đó thuộc cách làm nào; báo cáo hệ số kappa.
 
 \section{Kết quả dự kiến và hạn chế}
