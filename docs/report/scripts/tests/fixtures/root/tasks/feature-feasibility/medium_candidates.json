@@ -1,0 +1,5 @@
+{"meta": {}, "candidates": [
+ {"id": "F05_69-70", "n_commits": 2, "eligible": true, "selected": true, "selected_as": "m01"},
+ {"id": "F05_70-71", "n_commits": 2, "eligible": true, "selected": false, "selected_as": null},
+ {"id": "F01_1-2", "n_commits": 2, "eligible": false, "selected": false, "selected_as": null}
+], "large_rechecks": []}

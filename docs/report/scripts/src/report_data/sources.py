@@ -18,8 +18,7 @@ RETRO_CSV = {
     "spec_trace": "spec_trace.csv",
     "link_check": "link-check.csv",
 }
-# Ba đoạn của tầng tính năng, cố định trong bản thiết kế nghiên cứu mục 7.2b.
-FEATURE_IDS = ("F08", "F14", "F15")
+PILOT_RUNS = Path("analysis/out/pilot/runs.csv")
 
 
 def _csv(path: Path) -> list[dict[str, str]] | None:
@@ -36,18 +35,38 @@ def _tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
     return [tomllib.loads(p.read_text(encoding="utf-8")) for p in found]
 
 
-def _features(root: Path) -> list[dict[str, Any]] | None:
-    path = root / "tasks" / "feature-feasibility" / "ranges.json"
-    if not path.exists():
+def _json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def _range_tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
+    """Nhiệm vụ nhiều commit (tầng vừa m*, tầng lớn f*), kèm số commit `n_commits`.
+
+    Số commit lấy từ hồ sơ chọn nhiệm vụ: `medium_candidates.json` (trường `selected_as`) cho tầng
+    vừa, `ranges.json` (mã đoạn viết hoa) cho tầng lớn. Không tìm thấy thì `n_commits` là None.
+    """
+    tasks = _tasks(root, pattern)
+    if tasks is None:
         return None
-    ranges = json.loads(path.read_text(encoding="utf-8"))["sub_ranges"]
-    picked = [r for r in ranges if r["id"] in FEATURE_IDS]
-    return picked or None
+    feas = root / "tasks" / "feature-feasibility"
+    commits: dict[str, int] = {}
+    medium = _json(feas / "medium_candidates.json")
+    if medium:
+        for c in medium["candidates"]:
+            if c.get("selected_as"):
+                commits[c["selected_as"]] = int(c["n_commits"])
+    ranges = _json(feas / "ranges.json")
+    if ranges:
+        for r in ranges["sub_ranges"]:
+            commits[r["id"].lower()] = int(r["n_commits"])
+    return [t | {"n_commits": commits.get(t["id"])} for t in tasks]
 
 
 def _pilot_results(root: Path) -> list[dict[str, Any]] | None:
-    """results/raw/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong."""
-    raw = root / "results" / "raw"
+    """results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong.
+
+    Chỉ đọc thư mục chạy thử; kết quả lượt chạy chính do gói analysis/ tổng hợp."""
+    raw = root / "results" / "raw" / "pilot"
     units = []
     for grade in sorted(raw.glob("*/*/*/grade.json")):
         arm, _, rep = grade.parent.name.rpartition("-r")
@@ -72,8 +91,13 @@ def load(root: Path) -> dict[str, Any]:
     )
     data["tasks"] = _tasks(root, "t*")
     data["pilots"] = _tasks(root, "p*")
-    data["features"] = _features(root)
+    data["medium"] = _range_tasks(root, "m[0-9]*")
+    data["features"] = _range_tasks(root, "f[0-9]*")
+    data["graded_lines"] = _json(root / "tasks" / "graded_lines.json")
+    medium = _json(root / "tasks" / "feature-feasibility" / "medium_candidates.json")
+    data["medium_candidates"] = medium["candidates"] if medium else None
     lit = root / "docs" / "report" / "data" / "literature.toml"
     data["literature"] = tomllib.loads(lit.read_text(encoding="utf-8")) if lit.exists() else None
     data["pilot_results"] = _pilot_results(root)
+    data["pilot_runs"] = _csv(root / PILOT_RUNS)
     return data

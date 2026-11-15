@@ -1,0 +1,6 @@
+cohort,status,tokens_total_input,tok_cache_read,turns
+agy-gemini,done,3000000,2900000,40
+agy-gemini,quota,1000000,900000,60
+claude-sonnet,done,300000,280000,10
+claude-sonnet,done,500000,450000,14
+codex-luna,done,400000,300000,1

@@ -233,6 +233,14 @@ SCREENING_KEYS = (
 )
 
 
+# Thiết kế chạy chính (prereg-v1 mục 3, 4): 4 nhóm chạy × 2 cách làm × 3 lần lặp cho mỗi nhiệm vụ.
+COHORTS, N_ARMS, REPS = 4, 2, 3
+
+
+def _runs(n_tasks: int) -> str:
+    return fmt.number(n_tasks * COHORTS * N_ARMS * REPS)
+
+
 def _tasks(rows: list[dict[str, Any]]) -> Numbers:
     lines = [int(t["src_lines"]) for t in rows]
     layers = Counter(t["layer"] for t in rows)
@@ -241,9 +249,7 @@ def _tasks(rows: list[dict[str, Any]]) -> Numbers:
         "TaskSrcLinesMin": fmt.number(min(lines)),
         "TaskSrcLinesMax": fmt.number(max(lines)),
         "TaskSrcLinesMedian": fmt.number(int(statistics.median_low(lines))),
-        # 2 cách làm × 3 lần lặp mỗi mô hình; 4 mô hình qua ba đợt (bản thiết kế mục 7.4).
-        "RunsPerModel": fmt.number(len(rows) * 2 * 3),
-        "RunsSmallTotal": fmt.number(len(rows) * 2 * 3 * 4),
+        "RunsSmallTotal": _runs(len(rows)),
     }
     for layer in LAYERS:
         out[f"Tasks{layer.capitalize()}"] = fmt.number(layers.get(layer, 0))
@@ -255,32 +261,121 @@ TASKS_KEYS = [
     "TaskSrcLinesMin",
     "TaskSrcLinesMax",
     "TaskSrcLinesMedian",
-    "RunsPerModel",
     "RunsSmallTotal",
 ] + [f"Tasks{layer.capitalize()}" for layer in LAYERS]
 
 
-def _features(rows: list[dict[str, Any]]) -> Numbers:
-    commits = [int(r["n_commits"]) for r in rows]
-    lines = [int(r["src_lines"]) for r in rows]
+def _range_tier(prefix: str, runs_key: str) -> Callable[[list[dict[str, Any]]], Numbers]:
+    """Tầng nhiều commit: số nhiệm vụ, khoảng số commit và số dòng, số lượt chạy chính."""
+
+    def compute(rows: list[dict[str, Any]]) -> Numbers:
+        commits = [int(r["n_commits"]) for r in rows if r.get("n_commits") is not None]
+        lines = [int(r["src_lines"]) for r in rows]
+        return {
+            f"{prefix}Tasks": fmt.number(len(rows)),
+            f"{prefix}CommitsMin": fmt.number(min(commits)) if commits else None,
+            f"{prefix}CommitsMax": fmt.number(max(commits)) if commits else None,
+            f"{prefix}SrcLinesMin": fmt.number(min(lines)),
+            f"{prefix}SrcLinesMax": fmt.number(max(lines)),
+            runs_key: _runs(len(rows)),
+        }
+
+    return compute
+
+
+def _range_keys(prefix: str, runs_key: str) -> list[str]:
+    return [
+        f"{prefix}{k}" for k in ("Tasks", "CommitsMin", "CommitsMax", "SrcLinesMin", "SrcLinesMax")
+    ] + [runs_key]
+
+
+MEDIUM_KEYS = _range_keys("Medium", "RunsMediumTotal")
+FEATURES_KEYS = _range_keys("Feature", "RunsLargeTotal")
+
+
+def _all_tiers(src: tuple[list, list, list]) -> Numbers:
+    n = sum(len(rows) for rows in src)
+    return {"TasksMain": fmt.number(n), "RunsTotal": _runs(n)}
+
+
+TIER_OF = {"t": "Small", "m": "Medium", "f": "Large"}
+
+
+def _graded(graded: dict[str, Any]) -> Numbers:
+    """graded_src_lines (prereg-v1.1): nhỏ nhất, lớn nhất theo tầng; nhiệm vụ tầng vừa nhỏ nhất."""
+    by: dict[str, dict[str, int]] = {}
+    for task, rec in graded.items():
+        if rec.get("graded_src_lines") is not None and task[0] in TIER_OF:
+            by.setdefault(TIER_OF[task[0]], {})[task] = int(rec["graded_src_lines"])
+    out: Numbers = {}
+    for tier in TIER_OF.values():
+        vals = by.get(tier, {})
+        out[f"Graded{tier}Min"] = fmt.number(min(vals.values())) if vals else None
+        out[f"Graded{tier}Max"] = fmt.number(max(vals.values())) if vals else None
+    medium = by.get("Medium", {})
+    low = min(medium.values()) if medium else None
+    out["GradedMediumMinTasks"] = (
+        " và ".join(f"\\texttt{{{t}}}" for t in sorted(medium) if medium[t] == low)
+        if medium
+        else None
+    )
+    return out
+
+
+GRADED_KEYS = [f"Graded{t}{m}" for t in TIER_OF.values() for m in ("Min", "Max")] + [
+    "GradedMediumMinTasks"
+]
+
+
+def _medium_candidates(rows: list[dict[str, Any]]) -> Numbers:
     return {
-        "FeatureTasks": fmt.number(len(rows)),
-        "FeatureCommitsMin": fmt.number(min(commits)),
-        "FeatureCommitsMax": fmt.number(max(commits)),
-        "FeatureSrcLinesMin": fmt.number(min(lines)),
-        "FeatureSrcLinesMax": fmt.number(max(lines)),
-        # 2 cách làm × 3 lần lặp × 2 mô hình Claude (bản thiết kế mục 7.2b).
-        "FeatureRuns": fmt.number(len(rows) * 2 * 3 * 2),
+        "MediumWindows": fmt.number(len(rows)),
+        "MediumEligible": fmt.number(sum(bool(r.get("eligible")) for r in rows)),
     }
 
 
-FEATURES_KEYS = [
-    "FeatureTasks",
-    "FeatureCommitsMin",
-    "FeatureCommitsMax",
-    "FeatureSrcLinesMin",
-    "FeatureSrcLinesMax",
-    "FeatureRuns",
+def _pilot_runs(rows: list[dict[str, str]]) -> Numbers:
+    """Token và số lượt gọi mô hình của lượt chạy thử (analysis/out/pilot/runs.csv).
+
+    Lấy mọi lượt có số token, kể cả lượt agy bị ngắt vì hạn mức (nhật ký vẫn ghi lượng dùng).
+    Token vào gồm token đọc và ghi cache."""
+
+    def of(cohort: str) -> list[dict[str, str]]:
+        return [r for r in rows if r["cohort"] == cohort and r["tokens_total_input"]]
+
+    agy, sonnet = of("agy-gemini"), of("claude-sonnet")
+
+    def med(rs: list[dict[str, str]], field: str) -> float:
+        return statistics.median(float(r[field]) for r in rs)
+
+    out: Numbers = dict.fromkeys(PILOT_RUN_KEYS)
+    if not agy or not sonnet:
+        return out
+    agy_in, son_in = med(agy, "tokens_total_input"), med(sonnet, "tokens_total_input")
+    cache = sum(float(r["tok_cache_read"] or 0) for r in agy)
+    total = sum(float(r["tokens_total_input"]) for r in agy)
+    out |= {
+        "PilotAgyRuns": fmt.number(len(agy)),
+        "PilotAgyInputMedianM": fmt.number(agy_in / 1e6, 1),
+        "PilotAgyTurnsMedian": fmt.number(med(agy, "turns"), 0),
+        "PilotAgyCacheReadPct": fmt.number(100 * cache / total, 0),
+        "PilotSonnetRuns": fmt.number(len(sonnet)),
+        "PilotSonnetInputMedianM": fmt.number(son_in / 1e6, 2),
+        "PilotSonnetTurnsMedian": fmt.number(med(sonnet, "turns"), 0),
+        "PilotAgyInputRatio": fmt.number(agy_in / son_in, 0),
+    }
+    return out
+
+
+PILOT_RUN_KEYS = [
+    "PilotAgyRuns",
+    "PilotAgyInputMedianM",
+    "PilotAgyTurnsMedian",
+    "PilotAgyCacheReadPct",
+    "PilotSonnetRuns",
+    "PilotSonnetInputMedianM",
+    "PilotSonnetTurnsMedian",
+    "PilotAgyInputRatio",
 ]
 
 
@@ -354,7 +449,17 @@ def numbers(data: dict[str, Any]) -> Numbers:
     out |= _group(SCREENING_KEYS, data.get("screening"), _screening)
     out |= _group(TASKS_KEYS, data.get("tasks"), _tasks)
     out |= _group(["PilotTasks"], data.get("pilots"), lambda r: {"PilotTasks": fmt.number(len(r))})
-    out |= _group(FEATURES_KEYS, data.get("features"), _features)
+    out |= _group(MEDIUM_KEYS, data.get("medium"), _range_tier("Medium", "RunsMediumTotal"))
+    out |= _group(FEATURES_KEYS, data.get("features"), _range_tier("Feature", "RunsLargeTotal"))
+    tiers = (data.get("tasks"), data.get("medium"), data.get("features"))
+    out |= _group(
+        ["TasksMain", "RunsTotal"], tiers if all(t is not None for t in tiers) else None, _all_tiers
+    )
+    out |= _group(GRADED_KEYS, data.get("graded_lines"), _graded)
+    out |= _group(
+        ["MediumWindows", "MediumEligible"], data.get("medium_candidates"), _medium_candidates
+    )
+    out |= _group(PILOT_RUN_KEYS, data.get("pilot_runs"), _pilot_runs)
     out |= _group(LIT_KEYS, data.get("literature"), _literature)
     out |= _group(PILOT_KEYS, data.get("pilot_results"), _pilot)
     return out
@@ -434,50 +539,64 @@ def _funnel_table(rows: list[dict[str, Any]]) -> str:
     return _tabular("p{0.62\\linewidth}rr", ["Bước", "Còn lại", "Bị loại"], body)
 
 
-def _short(sha: str) -> str:
-    return f"\\texttt{{{sha[:10]}}}"
+def _short(sha: str, n: int = 10) -> str:
+    return f"\\texttt{{{sha[:n]}}}"
+
+
+TASK_COLS = 7
 
 
 def _tasks_table(
-    tasks: list[dict] | None, pilots: list[dict] | None, features: list[dict] | None
+    tasks: list[dict] | None,
+    pilots: list[dict] | None,
+    medium: list[dict] | None,
+    features: list[dict] | None,
+    graded: dict[str, Any] | None,
 ) -> str:
-    def task_rows(rows: list[dict] | None, name: str) -> list[list[str]]:
-        if rows is None:
-            return [[f"\\multicolumn{{5}}{{c}}{{\\pending{{{name}}}}}"]]
-        return [
-            [
-                f"\\texttt{{{t['id']}}}",
-                t["layer"] or "",
-                _short(t["commit"]),
-                fmt.number(int(t["src_lines"])),
-                fmt.number(len(t["hidden_tests"])),
-            ]
-            for t in rows
-        ]
+    """Nhiệm vụ của ba tầng và nhiệm vụ thử. Nhiệm vụ nhiều commit ghi base..end."""
 
-    body = task_rows(tasks, "tasks")
-    body += [["\\midrule\\multicolumn{5}{l}{\\textit{Nhiệm vụ thử}}"]]
-    body += task_rows(pilots, "pilots")
-    body += [
-        [
-            "\\midrule\\multicolumn{5}{l}{\\textit{Tầng tính năng"
-            " (cột hai: số commit; cột ba: base..end)}}"
-        ]
-    ]
-    if features is None:
-        body += [["\\multicolumn{5}{c}{\\pending{features}}"]]
-    else:
-        body += [
-            [
-                f"\\texttt{{{f['id']}}}",
-                f"{fmt.number(int(f['n_commits']))} commit",
-                f"{_short(f['base'])}..{_short(f['end'])}",
-                fmt.number(int(f["src_lines"])),
-                fmt.number(len(f["hidden_tests"])),
-            ]
-            for f in features
-        ]
-    return _tabular("llllr", ["Mã", "Lớp", "Commit gốc", "Dòng src", "File test ẩn"], body)
+    def graded_of(t: dict) -> str:
+        rec = (graded or {}).get(t["id"])
+        if rec is None or rec.get("graded_src_lines") is None:
+            return "--"
+        return fmt.number(int(rec["graded_src_lines"]))
+
+    def rows(src: list[dict] | None, name: str) -> list[list[str]]:
+        if src is None:
+            return [[f"\\multicolumn{{{TASK_COLS}}}{{c}}{{\\pending{{{name}}}}}"]]
+        out = []
+        for t in src:
+            if t.get("base"):
+                where = f"{_short(t['base'], 7)}..{_short(t['commit'], 7)}"
+                n = fmt.number(int(t["n_commits"])) if t.get("n_commits") else "--"
+            else:
+                where, n = _short(t["commit"]), "1"
+            out.append(
+                [
+                    f"\\texttt{{{t['id']}}}",
+                    t["layer"] or "",
+                    where,
+                    n,
+                    fmt.number(int(t["src_lines"])),
+                    graded_of(t),
+                    fmt.number(len(t["hidden_tests"])),
+                ]
+            )
+        return out
+
+    def heading(text: str) -> list[list[str]]:
+        return [[f"\\midrule\\multicolumn{{{TASK_COLS}}}{{l}}{{\\textit{{{text}}}}}"]]
+
+    body = [[f"\\multicolumn{{{TASK_COLS}}}{{l}}{{\\textit{{Tầng nhỏ}}}}"]]
+    body += rows(tasks, "tasks")
+    body += heading("Tầng vừa") + rows(medium, "medium")
+    body += heading("Tầng lớn") + rows(features, "features")
+    body += heading("Nhiệm vụ thử (không tính vào kết quả)") + rows(pilots, "pilots")
+    return _tabular(
+        "llllrrr",
+        ["Mã", "Lớp", "Commit", "Số commit", "Dòng src", "Dòng chấm", "File test ẩn"],
+        body,
+    )
 
 
 def _literature_table(lit: dict[str, Any]) -> str:
@@ -644,7 +763,14 @@ def write(data: dict[str, Any], out: Path) -> None:
     table("literature", data.get("literature"), _literature_table, 2)
     table("pilot", data.get("pilot_results"), _pilot_table, 3)
     (out / "tables" / "tasks.tex").write_text(
-        _tasks_table(data.get("tasks"), data.get("pilots"), data.get("features")), encoding="utf-8"
+        _tasks_table(
+            data.get("tasks"),
+            data.get("pilots"),
+            data.get("medium"),
+            data.get("features"),
+            data.get("graded_lines"),
+        ),
+        encoding="utf-8",
     )
 
     for name, source, render in (

@@ -63,6 +63,11 @@ def test_fixture_values(tmp_path):
     assert n["LinkAgreeAI"] == "1"
     assert n["Candidates"] == "3" and n["Eligible"] == "1"
     assert n["Tasks"] == "1" and n["PilotTasks"] == "1" and n["FeatureTasks"] == "1"
+    assert n["MediumTasks"] == "1" and n["MediumCommitsMin"] == "2"
+    assert n["FeatureCommitsMax"] == "6"  # từ ranges.json, đoạn F08
+    assert (n["TasksMain"], n["RunsTotal"]) == ("3", "72")  # 3 nhiệm vụ × 4 nhóm × 2 × 3
+    assert (n["MediumWindows"], n["MediumEligible"]) == ("3", "2")
+    assert n["GradedMediumMin"] == "46" and n["GradedMediumMinTasks"] == r"\texttt{m01}"
     assert n["LitPengFasterPct"] == "55,8"
     assert n["ReworkWithPlanMean"] == "2,00"
 
@@ -82,7 +87,7 @@ def test_pilot_results_counted(tmp_path):
         ("claude-sonnet", "spec", 1, True),
         ("claude-sonnet", "vibe", 1, False),
     ]:
-        d = root / "results" / "raw" / cohort / "p01" / f"{arm}-r{rep}"
+        d = root / "results" / "raw" / "pilot" / cohort / "p01" / f"{arm}-r{rep}"
         d.mkdir(parents=True)
         (d / "grade.json").write_text(json.dumps({"task_pass": ok}))
     data = sources.load(root)
@@ -126,3 +131,19 @@ def test_link_errors_real():
     n = build.numbers(sources.load(REPO))
     assert (n["LinkFalsePositive"], n["LinkFalseNegative"]) == ("4", "1")
     assert n["FeatInTestStage"] == "94"
+
+
+def test_pilot_run_tokens():
+    n = build.numbers(sources.load(FIXTURE))
+    assert n["PilotAgyRuns"] == "2" and n["PilotAgyInputMedianM"] == "2,0"
+    assert n["PilotAgyTurnsMedian"] == "50" and n["PilotAgyCacheReadPct"] == "95"
+    assert n["PilotSonnetInputMedianM"] == "0,40" and n["PilotSonnetTurnsMedian"] == "12"
+    assert n["PilotAgyInputRatio"] == "5"
+
+
+@pytest.mark.skipif(not HAS_REPO_DATA, reason="cần dữ liệu thật trong repo")
+def test_tiers_real():
+    n = build.numbers(sources.load(REPO))
+    assert (n["Tasks"], n["MediumTasks"], n["FeatureTasks"]) == ("15", "5", "3")
+    assert n["RunsTotal"] == "552"
+    assert n["GradedMediumMin"] == "46"
