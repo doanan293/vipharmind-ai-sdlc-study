@@ -25,7 +25,7 @@
         "src_lines": 46
       }
     ],
-    "n_secondary_comparisons": 20,
+    "n_secondary_comparisons": 19,
     "versions": {
       "numpy": "2.5.4",
       "pandas": "3.1.1",
@@ -156,6 +156,7 @@
     "cohorts": [],
     "reason": "no cohort is complete in all three tiers"
   },
+  "case_study": null,
   "overlap": null,
   "estimates": {
     "pass_diff.claude-sonnet.small": {
@@ -1323,6 +1324,80 @@
       "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
       "n_runs_without_cost": 0
     },
+    "cost_eff_upper.codex-luna.small.spec.passes_per_usd": {
+      "estimate": 15.380265530030865,
+      "ci_low": 0.0,
+      "ci_high": 23.189493798858816,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.19505515,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.spec.cost_per_pass": {
+      "estimate": 0.06501838333333333,
+      "ci_low": 0.04312297666666667,
+      "ci_high": 0.06501838333333333,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.19505515,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.vibe.passes_per_usd": {
+      "estimate": 29.417607129180578,
+      "ci_low": 18.392269214265706,
+      "ci_high": 36.76366064102099,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.13597299000000002,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.vibe.cost_per_pass": {
+      "estimate": 0.033993247500000004,
+      "ci_low": 0.027200773333333334,
+      "ci_high": 0.05437067,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.13597299000000002,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.diff.passes_per_usd": {
+      "estimate": -14.037341599149713,
+      "ci_low": -18.392269214265706,
+      "ci_high": -13.574166842162175,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.diff.cost_per_pass": {
+      "estimate": 0.031025135833333328,
+      "ci_low": 0.015922203333333333,
+      "ci_high": 0.031025135833333328,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
     "variability.codex-luna.small": {
       "cells": 4,
       "disagree": 1,
@@ -2332,7 +2407,83 @@
         "of": 12,
         "share": 1.0
       }
-    ]
+    ],
+    "offtable_model_cost": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "offtable_models": [],
+    "codex_runs_with_several_usage_records": 0,
+    "shared_cpu_window": {
+      "window_utc": [
+        "2026-11-15T12:16:00+00:00",
+        "2026-11-15T12:52:00+00:00"
+      ],
+      "runs_started": 0,
+      "timeouts": 0,
+      "by_cohort": []
+    },
+    "concurrent_tiers_window": {
+      "window_utc": [
+        "2026-11-15T12:58:00+00:00",
+        null
+      ],
+      "note": "no small-tier run after start"
+    }
   },
   "labels": null,
   "figures": [
