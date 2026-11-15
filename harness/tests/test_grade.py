@@ -10,6 +10,7 @@ from conftest import BASE_FILES, ToyRepo
 from radon.metrics import mi_visit
 
 from sdlc_harness.grade import (
+    GraderTimeout,
     GradingError,
     ensure_baseline_radon,
     grade,
@@ -669,21 +670,27 @@ def _fail_final(monkeypatch, exc):
     monkeypatch.setattr(grade_mod, "run_backend_tests", fake)
 
 
-@pytest.mark.parametrize(
-    ("exc", "note"),
-    [
-        (subprocess.TimeoutExpired(["pytest"], 1), "final test run timed out"),
-        (subprocess.CalledProcessError(1, ["uv", "sync"]), "final test run failed"),
-    ],
-)
-def test_final_run_failure_is_a_grading_error(ws, monkeypatch, exc, note):
-    """A grader timeout or crash is a system error (rerun), not an AI failure."""
+def test_final_run_timeout_raises_with_the_fail_grade(ws, monkeypatch):
+    """The caller reruns once; if it times out again the carried grade is kept as a fail."""
     repo, task, work, _ = ws
     _apply_original(repo, task, work)
     _grade(ws)  # fill the reference cache with the real runner
-    _fail_final(monkeypatch, exc)
-    with pytest.raises(GradingError, match=note):
+    _fail_final(monkeypatch, subprocess.TimeoutExpired(["pytest"], 1))
+    with pytest.raises(GraderTimeout) as info:
         _grade(ws)
+    g = info.value.grade
+    assert g.task_pass is False and g.hidden_passed == 0
+    assert any("final test run timed out" in n for n in g.grading_notes)
+
+
+def test_final_run_crash_is_a_grading_error(ws, monkeypatch):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _grade(ws)
+    _fail_final(monkeypatch, subprocess.CalledProcessError(1, ["uv", "sync"]))
+    with pytest.raises(GradingError, match="final test run failed") as info:
+        _grade(ws)
+    assert not isinstance(info.value, GraderTimeout)
 
 
 def test_final_run_without_report_is_a_grading_error(ws, monkeypatch):

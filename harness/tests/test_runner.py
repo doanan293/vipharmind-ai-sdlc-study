@@ -693,23 +693,68 @@ def test_auth_failure_gives_up_after_the_retry_cap(world, fake, tmp_path):
 # --- run status rules (B4) ---------------------------------------------------------------
 
 
-def test_grader_timeout_is_an_error_not_a_fail(world, fake, tmp_path, monkeypatch):
+def _time_out_grader(monkeypatch, times: int):
+    """The graded copy's test run times out `times` times, then works."""
     import sdlc_harness.grade as grade_mod
 
-    out = tmp_path / "raw"
-    cfg = _cfg(world, tmp_path)
-    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"  # fills the reference cache
     real = grade_mod.run_backend_tests
+    calls = {"n": 0}
 
-    def timing_out(tree, timeout_s=900):
-        if tree.name == "graded":
+    def flaky(tree, timeout_s=900):
+        if tree.name == "graded" and calls["n"] < times:
+            calls["n"] += 1
             raise subprocess.TimeoutExpired(["pytest"], 1)
         return real(tree, timeout_s)
 
-    monkeypatch.setattr(grade_mod, "run_backend_tests", timing_out)
+    monkeypatch.setattr(grade_mod, "run_backend_tests", flaky)
+    return calls
+
+
+def test_grader_timeout_regrades_once_and_a_second_timeout_is_a_fail(
+    world, fake, tmp_path, monkeypatch
+):
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"  # fills the reference cache
+    cwd_log = tmp_path / "cwd.log"
+    fake.setenv("FAKE_AGENT_CWDLOG", str(cwd_log))
+    calls = _time_out_grader(monkeypatch, times=2)
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, cfg, out) == "done"
+    assert calls["n"] == 2
+    assert cwd_log.read_text().count("\n") == 1  # the agent ran once
+    grade = json.loads((unit_dir(out, UNIT) / "grade.json").read_text())
+    assert grade["task_pass"] is False
+    assert "grader timeout on agent patch (twice)" in grade["grading_notes"]
+    assert _meta(out)["status"] == "done"
+
+
+def test_grader_timeout_once_then_success_is_graded_normally(world, fake, tmp_path, monkeypatch):
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"
+    _time_out_grader(monkeypatch, times=1)
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, cfg, out) == "done"
+    grade = json.loads((unit_dir(out, UNIT) / "grade.json").read_text())
+    assert grade["task_pass"] is True
+    assert not any("grader timeout" in n for n in grade["grading_notes"])
+
+
+def test_grader_crash_is_an_error_not_a_fail(world, fake, tmp_path, monkeypatch):
+    import sdlc_harness.grade as grade_mod
+
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"
+    real = grade_mod.run_backend_tests
+
+    def crashing(tree, timeout_s=900):
+        if tree.name == "graded":
+            raise subprocess.CalledProcessError(1, ["uv", "sync"])
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", crashing)
+    out = tmp_path / "raw"
     assert run_unit(UNIT, cfg, out) == "error"
     assert _meta(out)["status"] == "error"
-    assert "timed out" in _meta(out)["error"]
     assert not (unit_dir(out, UNIT) / "grade.json").exists()
 
 
@@ -727,7 +772,7 @@ def test_system_errors_are_rerun_twice_then_excluded_and_listed(world, fake, tmp
     meta = _meta(out, unit)
     assert meta["status"] == "error" and meta["error_attempts"] == 3
     report = status_report(out)
-    assert report["counts"] == {"claude-sonnet": {"commit": {"error": 1}}}
+    assert report["counts"] == {"claude-sonnet": {"small": {"error": 1}}}
     assert [e["unit"] for e in report["excluded"]] == ["claude-sonnet/t02/spec-r1"]
     assert "hidden tests do not pass" in report["excluded"][0]["error"]
 
@@ -748,7 +793,7 @@ def test_cli_status_prints_counts_and_excluded_units(world, fake, tmp_path, caps
     run_all([UNIT], cfg, out, jobs=1)
     assert main(["status", "--out", str(out)]) == 0
     text = capsys.readouterr().out
-    assert "claude-sonnet" in text and "commit" in text
+    assert "claude-sonnet small" in text
     assert "done 1" in text and "error 1" in text
     assert "claude-sonnet/t02/spec-r1" in text
 
@@ -782,3 +827,9 @@ def test_meta_records_which_spec_docs_the_agent_left(world, fake, tmp_path, writ
     assert _meta(out, unit)["spec_docs_present"] == expected
     # what is graded does not change: the docs are not in the graded patch metrics
     assert json.loads((unit_dir(out, unit) / "grade.json").read_text())["task_pass"] is True
+
+
+def test_meta_records_tier(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out)["tier"] == "small"

@@ -14,6 +14,7 @@ from sdlc_harness.vcs import read_file
 REQUIRED_KEYS = ("id", "commit", "parent", "layer", "src_lines", "hidden_tests", "pilot")
 MIN_SENTENCES = 5
 MAX_SENTENCES = 10
+TIERS = ("small", "medium", "large")
 MAX_RANGE_SENTENCES = 12  # feature-tier (range) prompts describe a whole feature
 
 _CODE_SPAN = re.compile(r"```.*?```|`[^`]*`", re.DOTALL)
@@ -36,6 +37,7 @@ class Task:
     baseline_radon_mi: float | None = None
     base: str = ""  # range tasks: the commit the agent starts from (commit tasks: the parent)
     kind: str = "commit"  # "commit" (one commit) or "range" (base..commit, commit is the end)
+    tier: str = "small"  # size tier: small | medium | large (range tasks must say which)
 
     @property
     def start(self) -> str:
@@ -63,8 +65,8 @@ def _opt_float(v: object) -> float | None:
 
 
 def _required(data: dict) -> tuple[str, ...]:
-    if data.get("kind") == "range":  # a range starts at `base`; no parent needed
-        return tuple("base" if k == "parent" else k for k in REQUIRED_KEYS)
+    if data.get("kind") == "range":  # a range starts at `base`; no parent needed; tier is explicit
+        return (*("base" if k == "parent" else k for k in REQUIRED_KEYS), "tier")
     return REQUIRED_KEYS
 
 
@@ -98,6 +100,7 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         baseline_radon_mi=_opt_float(data.get("baseline_radon_mi")),
         base=str(data.get("base", "")),
         kind=kind,
+        tier=str(data.get("tier", "small")),
     )
 
 
@@ -113,6 +116,7 @@ def write_task(dir: Path, task: Task) -> None:
         f"src_lines = {task.src_lines}\n"
         f"hidden_tests = [{hidden}]\n"
         f"pilot = {'true' if task.pilot else 'false'}\n"
+        f'tier = "{task.tier}"\n'
         + (
             f"baseline_radon_cc = {task.baseline_radon_cc!r}\n"
             f"baseline_radon_mi = {task.baseline_radon_mi!r}\n"
@@ -129,6 +133,8 @@ def _mentions(text: str, name: str) -> bool:
 
 def validate_task(task: Task) -> list[str]:
     errors = [f"{task.id}: task.toml missing key '{k}'" for k in task.missing_keys]
+    if task.tier not in TIERS:
+        errors.append(f"{task.id}: tier '{task.tier}' is not one of {', '.join(TIERS)}")
     n = count_sentences(task.prompt)
     top = MAX_RANGE_SENTENCES if task.kind == "range" else MAX_SENTENCES
     if not MIN_SENTENCES <= n <= top:

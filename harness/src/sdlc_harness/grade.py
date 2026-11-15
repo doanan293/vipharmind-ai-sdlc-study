@@ -65,6 +65,14 @@ class Grade:
     hidden_failed: dict[str, str] = field(default_factory=dict)
 
 
+class GraderTimeout(GradingError):
+    """The final test run timed out. `grade` is the fail grade for the patch, if it is kept."""
+
+    def __init__(self, grade: Grade):
+        super().__init__("final test run timed out")
+        self.grade = grade
+
+
 def grade_to_dict(g: Grade) -> dict:
     return asdict(g)
 
@@ -512,17 +520,20 @@ def grade(
     final: dict[str, Outcome] = {}
     # a grader timeout or crash says nothing about the AI's work: GradingError, so the unit is a
     # system error and is rerun (not a task_pass = false)
+    timed_out = False
     try:
         report = run_backend_tests(graded, timeout_s)
-    except subprocess.TimeoutExpired as e:
-        raise GradingError("final test run timed out") from e
+    except subprocess.TimeoutExpired:
+        timed_out = True  # the grade below is the fail grade the caller may keep (see below)
+        notes.append("final test run timed out")
     except (subprocess.SubprocessError, OSError) as e:
         raise GradingError(f"final test run failed: {e}") from e
-    final = report.outcomes
-    if not final:
-        raise GradingError(f"final test run produced no report: {report.stderr_tail}")
-    if report.collection_error:
-        notes.append("final test run had collection errors")
+    else:
+        final = report.outcomes
+        if not final:
+            raise GradingError(f"final test run produced no report: {report.stderr_tail}")
+        if report.collection_error:
+            notes.append("final test run had collection errors")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
     hidden_failed = {n: final.get(n, "missing") for n in hidden_ids if final.get(n) != "passed"}
@@ -536,7 +547,7 @@ def grade(
     arch += [n for n in final if n.startswith(ARCH_PREFIX) and n not in old]
     architecture_pass = all(final.get(n) == "passed" for n in arch)
 
-    return Grade(
+    result = Grade(
         task_pass=hidden_passed == len(hidden_ids) and not regressions,
         hidden_passed=hidden_passed,
         hidden_total=len(hidden_ids),
@@ -558,6 +569,9 @@ def grade(
         grading_notes=notes,
         hidden_failed=hidden_failed,
     )
+    if timed_out:
+        raise GraderTimeout(result)
+    return result
 
 
 # --- baseline maintainability ---------------------------------------------------------------

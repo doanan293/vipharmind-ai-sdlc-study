@@ -33,7 +33,14 @@ from sdlc_harness.agents import (
     parse_usage,
     upstream_urls,
 )
-from sdlc_harness.grade import PROCESS_FILES, Grade, GradingError, grade, grade_to_dict
+from sdlc_harness.grade import (
+    PROCESS_FILES,
+    Grade,
+    GraderTimeout,
+    GradingError,
+    grade,
+    grade_to_dict,
+)
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
 from sdlc_harness.workspace import (
@@ -394,6 +401,25 @@ def _grade(cfg: RunConfig, task: Task, work: Path) -> Grade:
     return grade(cfg.repo, task, work, cfg.cache_dir, cfg.grade_timeout_s)
 
 
+GRADER_TIMEOUT_NOTE = "grader timeout on agent patch (twice)"
+
+
+def _grade_with_timeout_retry(cfg: RunConfig, task: Task, work: Path) -> Grade:
+    """Grade; on a grader timeout grade the same patch once more (the agent is not rerun).
+
+    A second timeout is a deterministic hang caused by the patch: a graded fail, not an error.
+    """
+    try:
+        return _grade(cfg, task, work)
+    except GraderTimeout:
+        log.warning("grader timed out on %s; grading the same patch once more", task.id)
+    try:
+        return _grade(cfg, task, work)
+    except GraderTimeout as e:
+        e.grade.grading_notes.append(GRADER_TIMEOUT_NOTE)
+        return e.grade
+
+
 def _write_json(path: Path, data: dict) -> None:
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
@@ -432,7 +458,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "agent_exit": None,  # ok | nonzero | timeout
         "spec_docs_present": None,  # {"design": bool, "plan": bool}: left in the workspace
         "error_attempts": error_attempts,  # system errors so far; reruns are capped
-        "task_kind": None,
+        "tier": None,
         "usage": None,
         "status": None,
         "work_dir": str(scratch / "work"),
@@ -447,7 +473,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
-        meta["task_kind"] = task.kind
+        meta["tier"] = task.tier
         prompt = render_prompt(task, unit.arm, cfg.prompts_dir).encode()
         (out / "prompt.txt").write_bytes(prompt)
         meta["prompt_sha256"] = hashlib.sha256(prompt).hexdigest()
@@ -513,7 +539,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
                 f.write(f"{unit.arm}-r{unit.rep} account={account}\n")
             return "auth"
         (out / "patch.diff").write_text(collect_patch(work))
-        result = _grade(cfg, task, work)
+        result = _grade_with_timeout_retry(cfg, task, work)
         if _stop.is_set():  # Ctrl-C reaches the grader's test runs too: do not trust this grade
             raise RunCancelled
         meta["status"] = "done"
@@ -726,15 +752,13 @@ def regrade_all(
 
 
 def status_report(out_root: Path) -> dict:
-    """Counts by status per cohort and tier (task kind), and the units excluded after reruns."""
+    """Counts by status per cohort and tier, and the units excluded after reruns."""
     counts: dict[str, dict[str, dict[str, int]]] = {}
     excluded: list[dict] = []
     for path in sorted(out_root.glob("*/*/*/" + META)):
         meta = json.loads(path.read_text())
         status = "done" if (path.parent / GRADE).is_file() else meta.get("status") or "unknown"
-        cell = counts.setdefault(path.parts[-4], {}).setdefault(
-            meta.get("task_kind") or "unknown", {}
-        )
+        cell = counts.setdefault(path.parts[-4], {}).setdefault(meta.get("tier") or "unknown", {})
         cell[status] = cell.get(status, 0) + 1
         if status == "error" and meta.get("error_attempts", 0) >= MAX_ERROR_RERUNS + 1:
             excluded.append(
