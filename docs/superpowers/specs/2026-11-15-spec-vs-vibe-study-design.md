@@ -99,6 +99,9 @@ Hai quyết định đi kèm, An đã đồng ý:
 
 ### 7.1 Phần hồi cứu (RQ1, RQ2)
 
+**Vai trò:** bối cảnh cho thực nghiệm, chiếm khoảng 3–4 trang trong báo cáo. Dữ liệu chỉ cho thống
+kê mô tả (mục giới hạn bên dưới), nên không dàn trải thêm; sức chính dồn vào thực nghiệm (RQ3, RQ4).
+
 **Tập commit phân tích:** hợp của hai mốc `main` và `camera-ready` ở mục 5, mỗi commit tính một lần.
 Lấy hợp vì khâu nghiên cứu và viết bài nằm trên `camera-ready`, còn sản phẩm nằm trên `main`. Các
 nhánh khác (`dev`, `v2.0.0`) không tính.
@@ -190,6 +193,12 @@ thời gian tính cho cả phiên. Không chia thành ba lần gọi riêng, đ�
 Lượt theo đặc tả mà không để lại file thiết kế và kế hoạch được đánh dấu "không tuân thủ quy trình",
 vẫn chấm và báo cáo riêng.
 
+**Gọi đúng tên.** Trong báo cáo, nhánh này được gọi là "quy trình đặc tả tự động": AI tự viết thiết kế
+và kế hoạch rồi cài đặt, không có người duyệt. Lời dặn bám theo các bước của một quy trình đã công bố
+(GitHub Spec Kit: đặc tả, kế hoạch, danh sách việc, cài đặt; `taghavi_2026`) và ghi rõ nguồn trong
+file mẫu. Báo cáo đối chiếu với cách người làm nghề thực hành phát triển theo đặc tả (`agarwal_2026`)
+để nói rõ thí nghiệm đo phần nào của quy trình đó.
+
 Lý do không có nhánh "đặc tả do người duyệt": đặc tả gốc trong lịch sử ViPharmind được viết cho những
 phần việc lớn hơn một commit và chỉ có ở một số nhiệm vụ, nên không ghép đều được vào 15 nhiệm vụ.
 Hệ quả phải nêu ở phần hạn chế: nhánh "theo đặc tả" ở đây là bản tự động, không có bước người duyệt
@@ -208,6 +217,10 @@ Mỗi lượt chạy:
 4. Khi AI dừng hoặc chạm giới hạn, chép test ẩn vào lại và chấm.
 5. Lưu kết quả thô: đề bài đã gửi, toàn bộ nhật ký lượt chạy, bản vá, kết quả từng test, số liệu chi
    phí.
+
+**Chạy song song.** Các lượt chạy song song, mỗi lượt một thư mục làm việc và một thư mục cấu hình
+riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lượt. Thứ tự các lượt được xáo trộn
+ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
 Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi công cụ**, 270 lượt cho ba công cụ.
 
@@ -277,13 +290,14 @@ mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" 
 | Tỉ lệ test ẩn đạt | Số test ẩn đạt trên tổng |
 | Hồi quy | Số test cũ bị hỏng |
 | Chất lượng tĩnh | Số lỗi `ruff check`, số lỗi `pyrefly check`, test kiến trúc `tests/architecture` |
+| Khả năng bảo trì | Độ phức tạp chu trình và chỉ số bảo trì (`radon cc`, `radon mi`) trên các file mã bị thay đổi, so với bản gốc |
 | Test do AI viết | Số test thêm mới, độ phủ dòng trên phần mã thay đổi |
 | Kích thước | Số dòng thêm, bớt so với bản vá gốc |
 | Chi phí | Token vào, ra; chi phí quy đổi; thời gian chạy; số lượt |
 
 **Giả thuyết ghi trước:** H1, làm theo đặc tả có tỉ lệ đạt nhiệm vụ cao hơn vibe coding. H2, làm
-theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh và ít hồi
-quy hơn.
+theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh, ít hồi
+quy hơn và có chỉ số bảo trì không kém hơn.
 
 **Phân tích.** So sánh theo cặp trên từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy
 mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
@@ -340,7 +354,9 @@ Sản phẩm theo yêu cầu của thầy:
 | Kho mã, dữ liệu, nội dung yêu cầu đã dùng, kết quả thô | repo này; đề bài ở `tasks/` và `prompts/`, kết quả thô ở `results/raw/` |
 | Bản kê đóng góp cá nhân và khai báo sử dụng AI | `team/` |
 
-Tổng quan tài liệu trong báo cáo: tìm có quy trình, ghi lại từ khóa, nguồn, tiêu chí chọn. Ba nhóm:
+Tổng quan tài liệu trong báo cáo: tìm có quy trình, ghi lại từ khóa, nguồn, tiêu chí chọn, số bài tìm
+được, sàng lọc, giữ lại; khoảng 15–25 nguồn, ưu tiên hội nghị và tạp chí có bình duyệt, 2023–2026.
+Nhật ký tìm kiếm ở `report/literature-log.md`. Ba nhóm:
 bộ đo cho trợ lý lập trình và hạn chế của chúng; nghiên cứu về năng suất khi dùng AI; phát triển
 theo đặc tả với AI. Mọi trích dẫn phải được mở và kiểm tra, không trích theo trí nhớ.
 
@@ -350,12 +366,19 @@ slide, và là đối tượng được đo.
 Thứ tự làm, mỗi bước là một kế hoạch riêng:
 
 1. Đề cương.
-2. Phân tích hồi cứu.
-3. Bộ nhiệm vụ và bộ chạy, chạy thử, gắn thẻ `prereg-v1`.
-4. Đợt 1 (Claude Code) và phân tích.
-5. Gán nhãn và kiểm tra bằng người.
+2. Bộ nhiệm vụ và bộ chạy, chạy thử 2 nhiệm vụ, gắn thẻ `prereg-v1`. Làm sớm vì đây là rủi ro khả
+   thi lớn nhất (hạn mức, tắt truy cập web, số token).
+3. Đợt 1 (Claude Code) và phân tích. Kết quả đầu tiên dùng cho báo cáo tiến độ.
+4. Gán nhãn và kiểm tra bằng người.
+5. Phân tích hồi cứu, bản gọn.
 6. Đợt 2 (Antigravity) và đợt 3 (Codex).
 7. Báo cáo, slide, tài liệu hỏi đáp.
+
+Việc không phụ thuộc nhau thì chạy song song: tổng quan tài liệu và phân tích hồi cứu chạy cùng lúc
+với bước 2–3; đợt 2 và đợt 3 chạy cùng lúc với nhau.
+
+**Báo cáo tiến độ** (mốc thứ ba của thầy): nộp sau khi có kết quả chạy thử hoặc đợt 1, kèm số liệu
+đầu tiên, để góp ý của thầy còn kịp vào thiết kế.
 
 ## 9. Phần để người thực hiện tự quyết
 
