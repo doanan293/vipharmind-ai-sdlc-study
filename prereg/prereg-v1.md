@@ -408,3 +408,6 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
    ngày của commit mang thẻ. Ngày mở kết quả tầng nhỏ: chưa mở; được thêm thành một dòng ở mục này khi mở
    (không sớm hơn thẻ `prereg-v1-analysis`). Đã xem trước khi ghi: nhiều nhất là số lượt theo trạng thái. Commit: commit
    mang thẻ `prereg-v1.1`.
+
+- **2026-11-15, F09.** F09 giữ nguyên quyết định loại của đợt chọn đầu (trước chạy thử), không xét lại theo
+  ngưỡng 35 tên; lý do ở `prereg-v1.1.md`. Tầng lớn giữ F08, F14, F15; m03 giữ nguyên.

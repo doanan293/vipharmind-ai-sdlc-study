@@ -53,13 +53,11 @@ chấm cần, gồm cả phương thức dịch vụ và phương thức port m�
 `tasks/EXTRA_REVIEW.md` và `large_rechecks` trong `medium_candidates.json`). Bản vá gốc của cả hai chấm
 sạch. Không lượt AI nào chạy trên hai đoạn này.
 
-**F09 chưa được xét lại.** Ràng buộc 3 của `prereg-v1` nêu F09 phải được xét lại theo cùng ngưỡng 35 tên
-như F04 và F07. Bản này chưa làm việc đó: F09 (`cc0f06a67b..bbeed71482`, 7 commit gồm một commit `test`,
-1.096 dòng `backend/src`, 15 file test ẩn) chưa được chấm bản vá gốc và chưa được đếm tay số tên. Số liệu
-đã có: trong đợt chọn đầu, đề F09 ước phải nêu 30–35 tên (bản thiết kế, mục chọn tầng lớn); số tên cơ học
-là 22. F09 chứa ba commit của m03 (F09_107-109). Nếu F09 vào tầng lớn thì m03 vi phạm tiêu chí 5 và bị thay
-theo quy tắc thay thế. Quyết định về F09 thuộc về An và được ghi ở mục 11 của `prereg-v1` trước khi gắn
-thẻ này.
+**F09 không vào tầng lớn (quyết định 2026-11-15, An ủy quyền).** F09 (`cc0f06a67b..bbeed71482`, 7 commit gồm
+một commit `test`, 1.096 dòng `backend/src`) đã bị loại trong đợt chọn đầu, trước chạy thử, vì đề phải nêu
+30–35 tên và gần như là một bản thiết kế viết sẵn (bản thiết kế, mục 7.2b). Quyết định đó được giữ nguyên:
+đưa F09 trở lại lúc này là đảo một quyết định cũ sau khi đã thấy các con số chọn tầng vừa, và F09 chứa cả
+ba commit của m03. F09 không được chấm bản vá gốc và không được đếm tay số tên; báo cáo ghi rõ điều này.
 
 **Cách đếm tên trong bảng (dùng cho cả hai tầng).**
 
