@@ -40,7 +40,7 @@ Khâu của một commit là khâu có nhiều dòng thay đổi nhất trong co
 
 - File spec, plan từng được thêm vào: 43 (16 spec, 27 plan). Chi tiết: `spec_trace.csv`.
 - Commit `feat` có plan đi trước (quy tắc 14 ngày, plan nêu file mã mà commit chạm): 196/221 (88.7%).
-- Độ chính xác của quy tắc nối: chưa chấm
+- Độ chính xác của quy tắc nối: 15/20
 
 ## Mức phải sửa lại (RQ2)
 
