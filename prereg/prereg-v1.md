@@ -416,3 +416,43 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (`/tmp/sdlc-runs-medium`, `/tmp/sdlc-runs-large`) vì bộ chạy khóa thư mục làm việc theo từng lệnh; cờ này
   chỉ đổi nơi đặt thư mục tạm, không đổi điều kiện chạy. Khoảng chạy chồng có thể làm tăng `wall_s`; báo cáo
   so số lượt hết giờ trong và ngoài khoảng này.
+- **2026-11-15, mục 9 điểm 4 (công cụ ước lượng mô hình hỗn hợp và khoảng tin cậy).** Cũ: `glmer` của
+  `lme4` (R), báo cáo hệ số tương tác, sai số chuẩn và khoảng tin cậy 95%; lùi mô hình khi không hội tụ
+  hoặc suy biến. Mới: `BinomialBayesMixedGLM` của statsmodels (Python), ước lượng biến phân (variational
+  Bayes), hệ số là trung bình hậu nghiệm. Gói này chỉ ước lượng các thành phần phương sai độc lập, nên mô
+  hình có tương quan `(1 + arm | task)` không ước lượng được: thứ tự lùi bắt đầu từ bước lùi (1). Khoảng
+  tin cậy 95% là **bootstrap cụm theo nhiệm vụ của cả phép ước lượng**: lấy mẫu lại nhiệm vụ có hoàn lại
+  trong từng tầng, giữ mọi lượt của nhiệm vụ được chọn, ước lượng lại mô hình đã chọn trên mỗi mẫu (mặc
+  định 999 lần, hạt giống `20261115`), khoảng phân vị 2,5%–97,5%; "sai số chuẩn" là độ lệch chuẩn của các
+  hệ số bootstrap. "Suy biến" là khi độ lệch chuẩn ước lượng của một thành phần ngẫu nhiên dưới 0,30, ngưỡng
+  hiệu chỉnh bằng mô phỏng trên thiết kế 23 nhiệm vụ (`analysis/calibration/singular_sd.py`). Bước lùi
+  (3) cho độ dốc trên thang hiệu số, không phải thang logit, nên nếu phải lùi tới đó thì H5 không thể
+  "được ủng hộ". Lý do: máy không có R; độ lệch chuẩn hậu nghiệm biến phân hẹp hơn độ dao động thật của
+  ước lượng khoảng một phần ba (mô phỏng của Fable 5.2: khoảng ±1,96 độ lệch chuẩn chỉ phủ 65–87%), và
+  ngưỡng suy biến cũ (1e-3) không bao giờ đạt được vì phân phối tiên nghiệm của log độ lệch chuẩn. Chi
+  tiết: `analysis/README.md`, ghi chú 1–4. Đã xem trước khi đổi: chưa xem kết quả chính nào (chỉ dữ liệu
+  chạy thử và dữ liệu mô phỏng). Commit: commit mang thẻ `prereg-v1-analysis`.
+- **2026-11-15, mục 9 điểm 4 (dữ liệu của mô hình hỗn hợp).** Cũ: "mọi lượt hợp lệ của ba tầng". Mới: mọi
+  lượt hợp lệ của ba tầng thuộc các nhóm đủ ở cả ba tầng, tức đúng các nhóm của phép thử chính H5 (mục
+  10). Lý do: hai phép thử của H5 dùng cùng tập nhóm; nhóm chưa đủ chỉ được báo cáo mô tả. Đã xem trước
+  khi đổi: chưa xem kết quả chính nào. Commit: commit mang thẻ `prereg-v1-analysis`.
+- **2026-11-15, mục 7 (ngưỡng 272.000 token của `gpt-6-luna`).** Cũ: ngưỡng xét theo từng lời gọi. Mới:
+  Codex CLI chỉ ghi một bản ghi lượng dùng cho cả lượt (chạy thử: một `turn.completed` với 428.199 token
+  vào qua nhiều lời gọi), nên không xét được từng lời gọi. `cost_usd` tính mọi token theo giá lời gọi
+  ≤ 272.000 token và là **cận dưới**; `cost_usd_upper` tính theo giá > 272.000 token và là cận trên;
+  phân tích hiệu quả chi phí của `codex-luna` được báo cáo theo cả hai (`cost_eff` và `cost_eff_upper`).
+  Lý do: dữ liệu công cụ ghi không đủ chi tiết. Đã xem trước khi đổi: chưa xem kết quả chính nào. Commit:
+  commit mang thẻ `prereg-v1-analysis`.
+- **2026-11-15, mục 7 (token ghi cache Claude không tách thời gian giữ).** Mới: token ghi cache của Claude
+  mà nhật ký không tách theo 5 phút / 1 giờ được tính theo giá giữ 1 giờ (cận trên; Claude Code ghi cache
+  1 giờ). Lý do: bảng giá có hai giá ghi cache. Đã xem trước khi đổi: chưa xem kết quả chính nào.
+  Commit: commit mang thẻ `prereg-v1-analysis`.
+- **2026-11-15, ràng buộc 7 và phân tích độ nhạy của H5 (mục 9 điểm 7), làm rõ.** Commit của một nhiệm vụ
+  là `git rev-list base..end` (nhiệm vụ một commit: chính commit đó), không gồm `base`. Hai nhiệm vụ khác
+  tầng "có commit nằm trong nhau" khi hai tập commit giao nhau, và cả hai bị bỏ trong phân tích độ nhạy.
+  Theo cách đọc này chỉ có cặp f08–t03 (commit `c3a88b2659`): `base` của f14 là commit của t01 và `base`
+  của m04 là commit của t10, nên f14 và m04 không bị bỏ. Ngoặc "(tầng lớn: f08 và f14 thuộc loại đó)"
+  trong `prereg-v1.1.md` được sửa thành "(tầng lớn: f08)". Lý do: câu đó của `prereg-v1.1` tự mâu thuẫn
+  (cùng câu nói không nhiệm vụ tầng vừa nào thuộc loại đó, trong khi m04 ở cùng trường hợp với f14); bỏ cả
+  f14 sẽ chỉ còn f15 ở tầng lớn. Đã xem trước khi đổi: chưa xem kết quả chính nào. Commit: commit mang
+  thẻ `prereg-v1-analysis`.
