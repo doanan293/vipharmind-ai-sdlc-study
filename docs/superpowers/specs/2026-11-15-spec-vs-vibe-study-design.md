@@ -35,8 +35,9 @@ phân tích phản biện (25%): có đối chứng, số liệu thật, lặp l
   không?
 - **RQ5.** Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn (Claude Opus 5.5 so
   với Claude Sonnet 5.5, cùng trong Claude Code)?
-- **RQ6 (khám phá).** Khoảng cách giữa hai cách làm thay đổi thế nào khi nhiệm vụ lớn cỡ một tính năng
-  (nhiều commit, 750–1.500 dòng) thay vì một commit?
+- **RQ6.** Khoảng cách giữa hai cách làm thay đổi thế nào theo kích thước nhiệm vụ, từ một commit nhỏ
+  tới cỡ một tính năng (nhiều commit, 750–1.500 dòng)? Đây là trục chính của câu chuyện nghiên cứu:
+  làm theo đặc tả có một chi phí cố định (thiết kế, kế hoạch), chỉ có thể đáng khi nhiệm vụ đủ lớn.
 
 RQ1, RQ2 do phần hồi cứu trả lời. RQ3 đến RQ6 do phần thực nghiệm trả lời.
 
@@ -195,7 +196,7 @@ do AI soạn, tác giả không sửa.
 commit và gắn thẻ git `prereg-v1` trước lượt chạy chính đầu tiên. Lượt chạy trên 2 nhiệm vụ thử được
 phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong báo cáo kèm lý do.
 
-### 7.2b Tầng tính năng (khám phá, RQ6)
+### 7.2b Tầng tính năng (RQ6, H5)
 
 **Lý do.** Đề một commit có trung vị 120 dòng, trong khi một plan của ViPharmind gồm khoảng 11 phần
 việc (khoảng 11 commit). Đề nhỏ có thể làm lợi ích của làm theo đặc tả không lộ ra (quyết định của An,
@@ -219,9 +220,19 @@ tách riêng.
 **Khác với tầng nhỏ.** Mã nền là commit `base`; test ẩn là mọi `test_*.py` thêm hoặc sửa trong đoạn;
 khi chấm khôi phục mọi file `backend/tests` đổi trong đoạn và `pyproject.toml`/`uv.lock` từ `end`, rồi
 chạy toàn bộ test không mang nhãn `integration`. Đề bài có thêm mục "giao diện bắt buộc" sinh từ
-`coupling.json` và `fakes_contract.json`. Chỉ chạy trên `claude-sonnet` và `claude-opus`: 3 nhiệm vụ ×
-2 cách làm × 3 lần lặp × 2 mô hình = **36 lượt**. Phân tích chỉ mô tả, kèm khoảng tin cậy, không kết
-luận thống kê.
+`coupling.json` và `fakes_contract.json`, được Fable 5.2 duyệt độc lập (`tasks/FEATURE_REVIEW_fable.md`)
+rồi An duyệt. Chạy trên cả 4 nhóm với 5 lần lặp: 3 nhiệm vụ × 2 cách làm × 5 lần lặp × 4 nhóm =
+**120 lượt**. Giới hạn thời gian bằng 3 lần `timeout_s` của tầng nhỏ.
+
+**Vì sao mở rộng (quyết định của An, 2026-11-15, sau chạy thử, trước thẻ `prereg-v1`).** Chạy thử cho
+thấy Claude gần đạt trần trên đề nhỏ ở cả hai cách làm (11/12 và 12/12), nên khác biệt chỉ có thể lộ
+ra ở nhiệm vụ lớn. Chỉ có 3 đoạn commit đủ sạch nên không thêm được đề; tăng lần lặp và số nhóm để
+ước lượng ở tầng này đủ chặt. Quyết định này dựa trên hiện tượng chạm trần, không dựa trên hiệu số
+giữa hai cách làm ở chạy thử (2 đề, chênh 1 lượt, không có ý nghĩa).
+
+**Giới hạn của bộ chấm ở tầng này.** Test mang nhãn `integration` (cần Postgres thật) không nằm trong
+bộ chấm, nên repository Postgres, migration và CLI quản trị của F14, F15 (khoảng một phần ba F15)
+không được chấm. Giới hạn này như nhau cho hai cách làm.
 
 ### 7.3 Hai cách làm
 
@@ -278,7 +289,8 @@ riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lư
 ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
 Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi mô hình**. Đợt 1 có hai mô hình nên
-180 lượt; tổng cả ba đợt là **360 lượt**, cộng 36 lượt của tầng tính năng (mục 7.2b).
+180 lượt; tổng cả ba đợt là **360 lượt**, cộng 120 lượt của tầng tính năng (mục 7.2b), tổng
+**480 lượt**.
 
 | Đợt | Công cụ (bản lúc thiết kế) | Lệnh chạy tự động | Mô hình | Vai trò |
 | --- | --- | --- | --- | --- |
@@ -357,7 +369,8 @@ mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" 
 **Giả thuyết ghi trước:** H1, làm theo đặc tả có tỉ lệ đạt nhiệm vụ cao hơn vibe coding. H2, làm
 theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh, ít hồi
 quy hơn và có chỉ số bảo trì không kém hơn. H4, khoảng cách về tỉ lệ đạt giữa hai cách làm ở Sonnet
-lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn.
+lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn. H5, hiệu số tỉ lệ đạt (đặc tả trừ
+vibe) ở tầng tính năng lớn hơn ở tầng nhỏ, và tăng theo kích thước bản vá gốc.
 
 **Phân tích.** So sánh theo cặp trên từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy
 mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
@@ -366,6 +379,14 @@ vào ngưỡng p. Báo cáo cả độ dao động giữa 3 lần lặp của c�
 Với RQ5, phân tích đợt 1 như một thiết kế 2 × 2 (cách làm × mô hình): báo cáo bốn tỉ lệ đạt, hiệu số
 giữa hai cách làm ở từng mô hình, và hiệu của hai hiệu số đó (tương tác) kèm khoảng tin cậy bootstrap
 theo nhiệm vụ. So sánh thêm Sonnet theo đặc tả với Opus vibe coding về tỉ lệ đạt và chi phí quy đổi.
+
+**H5, tương tác cách làm × kích thước.** Phép thử chính: hiệu của hai hiệu số (tầng tính năng trừ tầng
+nhỏ) của tỉ lệ đạt đặc tả trừ vibe, gộp 4 nhóm, kèm khoảng tin cậy bootstrap lấy mẫu lại theo nhiệm
+vụ trong từng tầng. Phân tích bổ trợ trên cả 18 nhiệm vụ: hồi quy logistic hỗn hợp
+`pass ~ arm × log(dòng của bản vá gốc) + (1 | task) + (1 | cohort)`; báo cáo hệ số tương tác và hình
+"hiệu số theo kích thước" (mỗi điểm là một nhiệm vụ, đường xu hướng kèm dải tin cậy). Chỉ có 3 nhiệm
+vụ ở tầng tính năng, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
+chiều) đều được báo cáo như nhau.
 
 **Theo kích thước nhiệm vụ.** Chia 15 nhiệm vụ theo số dòng thay đổi của bản vá gốc (nhỏ, vừa, lớn,
 ngưỡng chốt trước thẻ `prereg-v1`) và báo cáo hiệu số giữa hai cách làm ở từng nhóm. Đây là phân tích
