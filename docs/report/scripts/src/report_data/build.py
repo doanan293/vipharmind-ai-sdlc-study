@@ -159,11 +159,15 @@ REWORK_KEYS = ["FeatWithPlan", "FeatWithoutPlan", "FeatWithPlanPct"] + [
 
 def _link_check(rows: list[dict[str, str]]) -> Numbers:
     correct = sum(r["an_verdict"] == "correct" for r in rows)
+    judged = [(r, r["an_verdict"] == "wrong") for r in rows]
     return {
         "LinkChecked": fmt.number(len(rows)),
         "LinkCorrect": fmt.number(correct),
         "LinkCorrectPct": fmt.percent(correct, len(rows)),
         "LinkAgreeAI": fmt.number(sum(r["an_verdict"] == r["ai_suggestion"] for r in rows)),
+        # sai khi quy tắc nối với một plan (dương tính giả) và khi quy tắc không thấy plan nào
+        "LinkFalsePositive": fmt.number(sum(wrong and bool(r["rule_plan"]) for r, wrong in judged)),
+        "LinkFalseNegative": fmt.number(sum(wrong and not r["rule_plan"] for r, wrong in judged)),
     }
 
 
@@ -182,6 +186,8 @@ def _sessions(rows: list[dict[str, str]]) -> Numbers:
         "SessionAssistantTurns": total("assistant_turns", rows),
         "SessionToolCalls": total("tool_calls", rows),
         "SessionInterrupts": total("user_interrupts", rows),
+        "SessionFirstDate": min(r["first_ts"] for r in rows),
+        "SessionLastDate": max(r["first_ts"] for r in rows),
     }
 
 
@@ -314,7 +320,14 @@ def numbers(data: dict[str, Any]) -> Numbers:
     out |= _group(["SpecPlanFiles", "SpecFiles", "PlanFiles"], data.get("spec_trace"), _spec_trace)
     out |= _group(REWORK_KEYS, data.get("rework_summary"), _rework)
     out |= _group(
-        ["LinkChecked", "LinkCorrect", "LinkCorrectPct", "LinkAgreeAI"],
+        [
+            "LinkChecked",
+            "LinkCorrect",
+            "LinkCorrectPct",
+            "LinkAgreeAI",
+            "LinkFalsePositive",
+            "LinkFalseNegative",
+        ],
         data.get("link_check"),
         _link_check,
     )
@@ -326,11 +339,18 @@ def numbers(data: dict[str, Any]) -> Numbers:
             "SessionAssistantTurns",
             "SessionToolCalls",
             "SessionInterrupts",
+            "SessionFirstDate",
+            "SessionLastDate",
         ],
         data.get("sessions"),
         _sessions,
     )
     out |= _group(["ToolBashCalls", "ToolBashPct"], data.get("session_tools"), _session_tools)
+    out |= _group(
+        ["FeatInTestStage"],
+        data.get("rework"),
+        lambda r: {"FeatInTestStage": fmt.number(sum(x["stage"] == "test" for x in r))},
+    )
     out |= _group(SCREENING_KEYS, data.get("screening"), _screening)
     out |= _group(TASKS_KEYS, data.get("tasks"), _tasks)
     out |= _group(["PilotTasks"], data.get("pilots"), lambda r: {"PilotTasks": fmt.number(len(r))})
@@ -441,7 +461,7 @@ def _tasks_table(
     body += [
         [
             "\\midrule\\multicolumn{5}{l}{\\textit{Tầng tính năng"
-            " (cột hai: số commit; cột ba: commit đầu..cuối)}}"
+            " (cột hai: số commit; cột ba: base..end)}}"
         ]
     ]
     if features is None:

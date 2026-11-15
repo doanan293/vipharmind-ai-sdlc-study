@@ -7,3 +7,4 @@
 14          # cửa sổ 14 ngày của quy tắc nối commit và đo sửa lại (bản thiết kế mục 7.1)
 750         # cỡ tầng tính năng trong RQ6 (bản thiết kế mục 3)
 1.500       # cỡ tầng tính năng trong RQ6
+20261115    # hạt giống ngẫu nhiên của bộ chạy (bản thiết kế, harness)

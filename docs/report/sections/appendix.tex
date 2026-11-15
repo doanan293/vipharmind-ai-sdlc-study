@@ -1,2 +1,24 @@
-\section{Phụ lục}\label{sec:appendix}
-\pending{phụ lục}
+\section{Lời dặn của hai cách làm}\label{app:prompts}
+
+Lời dặn đặt trước đề bài của mỗi nhiệm vụ, chép nguyên văn từ thư mục \texttt{prompts/} của kho mã.
+
+\subsection*{Vibe coding (\texttt{prompts/vibe.md})}
+{\small\VerbatimInput[breaklines]{../../prompts/vibe.md}}
+
+\subsection*{Theo đặc tả (\texttt{prompts/spec.md})}
+{\small\VerbatimInput[breaklines]{../../prompts/spec.md}}
+
+\section{Danh sách nhiệm vụ}\label{app:tasks}
+
+Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của bản vá gốc. Cột cuối là số file test ẩn.
+Mã commit đầy đủ nằm trong \texttt{tasks/*/task.toml} và
+\texttt{tasks/feature-\allowbreak feasibility/\allowbreak ranges.json}.
+
+\begin{table}[H]
+\centering\small
+\caption{Nhiệm vụ chính, nhiệm vụ thử và tầng tính năng}\label{tab:tasks}
+\input{generated/tables/tasks}
+\end{table}
+
+\section{Khai báo sử dụng AI và bản kê đóng góp}\label{app:ai}
+\pending{khai báo sử dụng AI và bản kê đóng góp, dạng cuối}

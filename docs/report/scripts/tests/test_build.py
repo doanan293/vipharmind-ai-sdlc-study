@@ -107,3 +107,22 @@ def test_link_accuracy():
     n = build.numbers(sources.load(REPO))
     assert (n["LinkCorrect"], n["LinkChecked"]) == ("15", "20")
     assert n["FeatWithPlanPct"] == "88,7"
+
+
+def test_link_errors_split_by_direction():
+    # fixture: a3 không có plan theo quy tắc nhưng An ghi wrong → bỏ sót (âm tính giả)
+    n = build.numbers(sources.load(FIXTURE))
+    assert (n["LinkFalsePositive"], n["LinkFalseNegative"]) == ("0", "1")
+
+
+def test_feat_stage_and_session_span():
+    n = build.numbers(sources.load(FIXTURE))
+    assert n["FeatInTestStage"] == "1"
+    assert (n["SessionFirstDate"], n["SessionLastDate"]) == ("2026-10-25", "2026-10-25")
+
+
+@pytest.mark.skipif(not HAS_REPO_DATA, reason="cần dữ liệu thật trong repo")
+def test_link_errors_real():
+    n = build.numbers(sources.load(REPO))
+    assert (n["LinkFalsePositive"], n["LinkFalseNegative"]) == ("4", "1")
+    assert n["FeatInTestStage"] == "94"
