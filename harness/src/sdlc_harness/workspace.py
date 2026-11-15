@@ -53,7 +53,7 @@ def prepare_workspace(repo: Path, task: Task, run_dir: Path, timeout_s: int = 90
             timeout=timeout_s,
         )
 
-    _git(work, "init", "-q", "-b", "main")
+    _git(work, "init", "-q", "--template=", "-b", "main")
     _git(work, "config", "user.name", "harness")
     _git(work, "config", "user.email", "harness@localhost")
     _git(work, "config", "commit.gpgsign", "false")
@@ -75,11 +75,8 @@ def _account_source(agent: str, account: int, accounts_file: Path) -> Path:
         raise KeyError(f"no {agent} account {account} in {accounts_file}") from None
 
 
-def _copy(src: Path, dest: Path) -> None:
-    if src.is_dir():
-        shutil.copytree(src, dest, dirs_exist_ok=True)
-    else:
-        shutil.copy2(src, dest / src.name)
+CREDENTIALS = {"claude": ".credentials.json", "codex": "auth.json"}
+ENV_VAR = {"claude": "CLAUDE_CONFIG_DIR", "codex": "CODEX_HOME"}
 
 
 def prepare_config(
@@ -89,13 +86,12 @@ def prepare_config(
     if agent == "agy":
         raise NotImplementedError("agy config is set up in the pilot task")
     src = _account_source(agent, account, accounts_file or ACCOUNTS_FILE)
+    name = CREDENTIALS[agent]
+    cred = src / name if src.is_dir() else src
     config = run_dir / "config"
     config.mkdir(parents=True, exist_ok=True)
-    if agent == "codex":
-        _copy(src / "auth.json" if src.is_dir() else src, config)
-        return {"CODEX_HOME": str(config)}
-    _copy(src, config)
-    return {"CLAUDE_CONFIG_DIR": str(config)}
+    shutil.copy2(cred, config / name)
+    return {ENV_VAR[agent]: str(config)}
 
 
 def collect_patch(work: Path) -> str:

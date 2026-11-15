@@ -40,8 +40,16 @@ def test_workspace_has_no_original_history(prepared):
     toy, _, _, work = prepared
     log = _git(work, "log", "--format=%H %s").splitlines()
     assert len(log) == 1 and log[0].endswith(" baseline")
-    all_shas = toy.git("rev-list", "--all").split()
-    assert not any(sha in log[0] for sha in all_shas)
+    assert len(_git(work, "rev-list", "--all").splitlines()) == 1
+    assert _git(work, "tag").splitlines() == ["baseline"]
+    assert _git(work, "branch", "--format=%(refname:short)").splitlines() == ["main"]
+    for sha in toy.git("rev-list", "--all").split():
+        assert (
+            subprocess.run(
+                ["git", "-C", str(work), "cat-file", "-e", sha], check=False, capture_output=True
+            ).returncode
+            != 0
+        )
     assert _git(work, "rev-parse", "baseline") == _git(work, "rev-parse", "HEAD")
 
 
@@ -90,3 +98,29 @@ def test_prepare_config_codex_copies_only_auth_json(tmp_path):
 def test_prepare_config_agy_not_yet_supported(tmp_path):
     with pytest.raises(NotImplementedError):
         prepare_config("agy", tmp_path, 1)
+
+
+def test_prepare_config_claude_directory_source_copies_only_credentials(tmp_path):
+    src = tmp_path / "claude-home"
+    (src / "plugins").mkdir(parents=True)
+    (src / "skills").mkdir()
+    (src / ".credentials.json").write_text("{}")
+    (src / "settings.json").write_text("{}")
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text(f'[claude]\n1 = "{src}"\n')
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    assert [p.name for p in (tmp_path / "run" / "config").iterdir()] == [".credentials.json"]
+
+
+def test_prepare_config_normalizes_file_source_names(tmp_path):
+    (tmp_path / "creds-acct1.json").write_text("{}")
+    (tmp_path / "auth-acct2.json").write_text("{}")
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text(
+        f'[claude]\n1 = "{tmp_path / "creds-acct1.json"}"\n'
+        f'[codex]\n2 = "{tmp_path / "auth-acct2.json"}"\n'
+    )
+    prepare_config("claude", tmp_path / "r1", 1, accounts)
+    prepare_config("codex", tmp_path / "r2", 2, accounts)
+    assert [p.name for p in (tmp_path / "r1" / "config").iterdir()] == [".credentials.json"]
+    assert [p.name for p in (tmp_path / "r2" / "config").iterdir()] == ["auth.json"]
