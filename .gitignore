@@ -1,0 +1,13 @@
+# Thư mục làm việc của superpowers (sổ theo dõi, bản tóm tắt nhiệm vụ)
+.superpowers/
+
+# File trung gian của LaTeX; PDF được commit
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.xdv
+*.bbl
+*.blg
+*.out
+*.synctex.gz
