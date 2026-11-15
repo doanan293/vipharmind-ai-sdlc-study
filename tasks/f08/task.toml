@@ -1,0 +1,10 @@
+id = "f08"
+commit = "cc0f06a67bfa888ef5d7e1ebd1715a517079bbc9"
+kind = "range"
+base = "45271fddc0236bc3f3336b30d99771abf626f14c"
+layer = "api"
+src_lines = 764
+hidden_tests = ["backend/tests/api/test_conversations_api.py", "backend/tests/api/test_e2e_postgres.py", "backend/tests/api/test_openapi.py", "backend/tests/api/test_problem_details.py", "backend/tests/api/test_skills_api.py", "backend/tests/application/test_chat_service.py", "backend/tests/application/test_feedback_service.py", "backend/tests/application/test_pagination.py", "backend/tests/application/test_queries.py", "backend/tests/application/test_summarize.py", "backend/tests/domain/test_conversation.py", "backend/tests/infrastructure/test_container.py", "backend/tests/infrastructure/test_conversation_repository.py", "backend/tests/infrastructure/test_migrations.py", "backend/tests/test_cli.py"]
+pilot = false
+baseline_radon_cc = 2.1243781094527363
+baseline_radon_mi = 63.547261766456046
