@@ -6,7 +6,7 @@ nghiệm đối chứng trên một dự án phần mềm AI cho ngành dược 
 cách phân tích **trước lượt chạy chính đầu tiên**. Mọi thay đổi sau thẻ `prereg-v1` được ghi ở mục 11,
 kèm ngày và lý do. Chỗ văn bản này khác bản thiết kế thì văn bản này được áp dụng.
 
-An duyệt văn bản này ngày: **<An điền trước khi gắn thẻ>**.
+An duyệt văn bản này ngày: **2026-11-15** (cùng ngày An duyệt lại đề t05, t07, t13; hạn thu dữ liệu 2026-11-29 và ngưỡng −5 điểm MI được An xác nhận).
 
 ## Phạm vi và bản bổ sung `prereg-v1.1`
 
