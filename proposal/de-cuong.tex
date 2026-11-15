@@ -38,7 +38,7 @@ chấm bằng mô hình ngôn ngữ \cite{taghavi_2026}, còn bộ đo phổ bi�
 có lời giải rò rỉ và test yếu \cite{aleithan_2024}. Thí nghiệm có đối chứng trên lập trình viên thật
 còn cho thấy cảm nhận về năng suất có thể ngược với số đo \cite{becker_2025}.
 
-Đề tài dùng một dự án thật làm đối tượng: ViPharmind, phần mềm AI cho ngành dược Việt Nam do tác giả xây
+Đề tài dùng một dự án thật làm đối tượng: ViPharmind, phần mềm AI cho ngành dược Việt Nam do Doãn Văn An xây
 dựng và đã triển khai. Kho mã có 505 commit từ 2026-07-23 đến 2026-11-10, và trợ lý AI tham gia mọi
 khâu từ nghiên cứu, dữ liệu, mã, kiểm thử đến triển khai. Thứ được đo là \emph{quá trình phát triển có
 AI tham gia}, không phải chất lượng trả lời của sản phẩm. Đề tài thuộc hướng B3, mở rộng sang B4, B1
@@ -68,7 +68,7 @@ Từ 110 commit \texttt{feat} chạm cả mã và test của backend, sàng lọ
 mẫu ngẫu nhiên phân tầng 15 nhiệm vụ. Mỗi nhiệm vụ quay mã về commit cha, giấu các test mà commit gốc
 thêm hoặc sửa (test ẩn), và giao cho AI một đề bài. Hai cách làm nhận cùng đề bài, cùng mô hình, cùng giới
 hạn; chỉ khác lời dặn về quy trình: vibe coding cài đặt ngay, còn quy trình đặc tả tự động tái hiện cách
-tác giả đã làm ViPharmind: viết spec, viết plan chia việc theo kích thước tự nhiên, rồi cài đặt theo plan. Nhiệm vụ, đề bài, giả thuyết và kế hoạch phân
+An đã làm ViPharmind: viết spec, viết plan chia việc theo kích thước tự nhiên, rồi cài đặt theo plan. Nhiệm vụ, đề bài, giả thuyết và kế hoạch phân
 tích được chốt bằng thẻ git trước lượt chạy chính đầu tiên. Mỗi mô hình chạy 15 nhiệm vụ $\times$ 2 cách
 làm $\times$ 3 lần lặp = 90 lượt; đợt 1 có hai mô hình, tổng ba đợt là 360 lượt, mọi mô hình ở mức
 effort medium. Nghiên cứu không so sánh công cụ với công cụ; phép so sánh luôn là hai cách làm trong
