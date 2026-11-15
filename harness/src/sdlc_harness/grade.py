@@ -521,18 +521,28 @@ def grade(
     # a grader timeout or crash says nothing about the AI's work: GradingError, so the unit is a
     # system error and is rerun (not a task_pass = false)
     timed_out = False
+    # a patch that touches pytest config, conftest, pyproject or the lock can break the run itself:
+    # that is the patch's fault (a fail grade); the same failure on an untouched setup is infra
+    breaks_test_setup = any(
+        f.path.rsplit("/", 1)[-1] in PYTEST_CONFIG_FILES | {"pyproject.toml", "uv.lock"}
+        for f in all_files
+    )
     try:
         report = run_backend_tests(graded, timeout_s)
     except subprocess.TimeoutExpired:
         timed_out = True  # the grade below is the fail grade the caller may keep (see below)
         notes.append("final test run timed out")
     except (subprocess.SubprocessError, OSError) as e:
-        raise GradingError(f"final test run failed: {e}") from e
+        if not breaks_test_setup:
+            raise GradingError(f"final test run failed: {e}") from e
+        notes.append(f"final test run failed, caused by the patch (config or lock change): {e}")
     else:
         final = report.outcomes
         if not final:
-            raise GradingError(f"final test run produced no report: {report.stderr_tail}")
-        if report.collection_error:
+            if not breaks_test_setup:
+                raise GradingError(f"final test run produced no report: {report.stderr_tail}")
+            notes.append("final test run produced no report, caused by the patch (config change)")
+        elif report.collection_error:
             notes.append("final test run had collection errors")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)

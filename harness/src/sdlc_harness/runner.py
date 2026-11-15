@@ -404,20 +404,37 @@ def _grade(cfg: RunConfig, task: Task, work: Path) -> Grade:
 GRADER_TIMEOUT_NOTE = "grader timeout on agent patch (twice)"
 
 
-def _grade_with_timeout_retry(cfg: RunConfig, task: Task, work: Path) -> Grade:
-    """Grade; on a grader timeout grade the same patch once more (the agent is not rerun).
+def _patched_workspace(cfg: RunConfig, task: Task, patch: Path, scratch: Path) -> Path:
+    """A fresh export of the task's start tree with the saved patch.diff applied on top."""
+    work = prepare_workspace(cfg.repo, task, scratch, cfg.grade_timeout_s)
+    if patch.read_text().strip():
+        subprocess.run(
+            ["git", "-C", str(work), "apply", "--whitespace=nowarn", str(patch.resolve())],
+            check=True,
+            capture_output=True,
+        )
+    return work
 
-    A second timeout is a deterministic hang caused by the patch: a graded fail, not an error.
+
+def _grade_with_timeout_retry(cfg: RunConfig, task: Task, work: Path, patch: Path) -> Grade:
+    """Grade; on a grader timeout grade the saved patch once more in a fresh workspace.
+
+    The agent is not rerun, and the retry starts from the saved patch.diff, not from the first
+    workspace (grading leaves files there). A second timeout is a deterministic hang caused by the
+    patch: a graded fail, not an error.
     """
     try:
         return _grade(cfg, task, work)
     except GraderTimeout:
-        log.warning("grader timed out on %s; grading the same patch once more", task.id)
+        log.warning("grader timed out on %s; grading the saved patch once more", task.id)
+    scratch = cfg.work_root / uuid.uuid4().hex
     try:
-        return _grade(cfg, task, work)
+        return _grade(cfg, task, _patched_workspace(cfg, task, patch, scratch))
     except GraderTimeout as e:
         e.grade.grading_notes.append(GRADER_TIMEOUT_NOTE)
         return e.grade
+    finally:
+        _dispose(scratch, False)
 
 
 def _write_json(path: Path, data: dict) -> None:
@@ -539,7 +556,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
                 f.write(f"{unit.arm}-r{unit.rep} account={account}\n")
             return "auth"
         (out / "patch.diff").write_text(collect_patch(work))
-        result = _grade_with_timeout_retry(cfg, task, work)
+        result = _grade_with_timeout_retry(cfg, task, work, out / "patch.diff")
         if _stop.is_set():  # Ctrl-C reaches the grader's test runs too: do not trust this grade
             raise RunCancelled
         meta["status"] = "done"
@@ -715,22 +732,33 @@ def regrade_unit(unit_out: Path, cfg: RunConfig) -> tuple[dict, dict]:
     old = json.loads((unit_out / GRADE).read_text())
     task = load_task(cfg.tasks_dir / meta["task_id"])
     scratch = cfg.work_root / uuid.uuid4().hex
+    patch = unit_out / "patch.diff"
     try:
-        work = prepare_workspace(cfg.repo, task, scratch, cfg.grade_timeout_s)
-        patch = unit_out / "patch.diff"
-        if patch.read_text().strip():
-            subprocess.run(
-                ["git", "-C", str(work), "apply", "--whitespace=nowarn", str(patch.resolve())],
-                check=True,
-                capture_output=True,
-            )
-        new = grade_to_dict(_grade(cfg, task, work))
+        work = _patched_workspace(cfg, task, patch, scratch)
+        new = grade_to_dict(_grade_with_timeout_retry(cfg, task, work, patch))
     finally:
         _dispose(scratch, False)
     meta["regraded_at"] = datetime.now(UTC).isoformat(timespec="seconds")
     _write_json(unit_out / META, meta)
     _write_json(unit_out / GRADE, new)
     return old, new
+
+
+def _regrade_or_record(unit_out: Path, cfg: RunConfig) -> tuple[dict, dict]:
+    """regrade_unit; a failing unit keeps its old grade and gets regrade_status/error in meta."""
+    try:
+        return regrade_unit(unit_out, cfg)
+    except Exception as e:
+        log.exception("regrade of %s failed", unit_out)
+        why = f"{type(e).__name__}: {e}"
+        try:
+            meta = json.loads((unit_out / META).read_text())
+            meta.update(regrade_status="error", regrade_error=why)
+            _write_json(unit_out / META, meta)
+            old = json.loads((unit_out / GRADE).read_text())
+        except (OSError, ValueError):
+            old = {}
+        return old, {"regrade_error": why}
 
 
 def regrade_all(
@@ -742,7 +770,7 @@ def regrade_all(
     try:
         _prepare_work_root(cfg.work_root)
         with ThreadPoolExecutor(max_workers=jobs) as pool:
-            futures = {pool.submit(regrade_unit, d, cfg): d for d in unit_dirs}
+            futures = {pool.submit(_regrade_or_record, d, cfg): d for d in unit_dirs}
             return [(futures[f], *f.result()) for f in futures]
     finally:
         lock.close()
@@ -756,7 +784,10 @@ def status_report(out_root: Path) -> dict:
     counts: dict[str, dict[str, dict[str, int]]] = {}
     excluded: list[dict] = []
     for path in sorted(out_root.glob("*/*/*/" + META)):
-        meta = json.loads(path.read_text())
+        try:
+            meta = json.loads(path.read_text())
+        except ValueError:
+            meta = {"status": "unreadable"}
         status = "done" if (path.parent / GRADE).is_file() else meta.get("status") or "unknown"
         cell = counts.setdefault(path.parts[-4], {}).setdefault(meta.get("tier") or "unknown", {})
         cell[status] = cell.get(status, 0) + 1

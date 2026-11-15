@@ -718,9 +718,20 @@ def test_grader_timeout_regrades_once_and_a_second_timeout_is_a_fail(
     cwd_log = tmp_path / "cwd.log"
     fake.setenv("FAKE_AGENT_CWDLOG", str(cwd_log))
     calls = _time_out_grader(monkeypatch, times=2)
+    import sdlc_harness.runner as runner_mod
+
+    built: list[Path] = []
+    real_prepare = runner_mod.prepare_workspace
+
+    def spy(*a, **kw):
+        built.append(real_prepare(*a, **kw))
+        return built[-1]
+
+    monkeypatch.setattr(runner_mod, "prepare_workspace", spy)
     out = tmp_path / "raw"
     assert run_unit(UNIT, cfg, out) == "done"
     assert calls["n"] == 2
+    assert len(built) == 2 and built[0] != built[1]  # the retry grades a fresh workspace
     assert cwd_log.read_text().count("\n") == 1  # the agent ran once
     grade = json.loads((unit_dir(out, UNIT) / "grade.json").read_text())
     assert grade["task_pass"] is False
@@ -833,3 +844,63 @@ def test_meta_records_tier(world, fake, tmp_path):
     out = tmp_path / "raw"
     assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
     assert _meta(out)["tier"] == "small"
+
+
+def test_error_then_deferred_keeps_the_attempt_counter(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)  # a grading error whenever it is graded
+    run_all([unit], _cfg(world, tmp_path), out, jobs=1)
+    assert _meta(out, unit)["error_attempts"] == 1
+    fake.setenv("FAKE_AGENT_MODE", "quota_once")
+    capped = _cfg(world, tmp_path, max_quota_retries=0)
+    assert run_all([unit], capped, out, jobs=1)["deferred"] == 1
+    assert _meta(out, unit)["status"] == "deferred"
+    assert _meta(out, unit)["error_attempts"] == 1
+    run_all([unit], capped, out, jobs=1)  # quota is back: graded, errors again
+    assert _meta(out, unit)["error_attempts"] == 2
+
+
+def test_status_tolerates_a_corrupt_meta(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    bad = unit_dir(out, RunUnit("claude-sonnet", "t01", "spec", 1))
+    bad.mkdir(parents=True)
+    (bad / "meta.json").write_text("{not json")
+    counts = status_report(out)["counts"]["claude-sonnet"]
+    assert counts["small"] == {"done": 1} and counts["unknown"] == {"unreadable": 1}
+
+
+def _done_unit_copy(world, fake, tmp_path):
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    return out, cfg
+
+
+def test_regrade_applies_the_twice_timeout_rule(world, fake, tmp_path, monkeypatch):
+    from sdlc_harness.runner import regrade_unit
+
+    out, cfg = _done_unit_copy(world, fake, tmp_path)
+    _time_out_grader(monkeypatch, times=2)
+    old, new = regrade_unit(unit_dir(out, UNIT), cfg)
+    assert old["task_pass"] is True and new["task_pass"] is False
+    assert "grader timeout on agent patch (twice)" in new["grading_notes"]
+
+
+def test_regrade_all_records_a_failing_unit_and_continues(world, fake, tmp_path):
+    import shutil
+
+    from sdlc_harness.runner import regrade_all
+
+    out, cfg = _done_unit_copy(world, fake, tmp_path)
+    bad_unit = RunUnit("claude-sonnet", "t01", "vibe", 2)
+    bad = unit_dir(out, bad_unit)
+    shutil.copytree(unit_dir(out, UNIT), bad)
+    (bad / "patch.diff").write_text("garbage\n")  # does not apply: a per-unit failure
+    results = regrade_all([bad, unit_dir(out, UNIT)], cfg, jobs=1)
+    by_dir = {d: new for d, _, new in results}
+    assert "regrade_error" in by_dir[bad]
+    assert "regrade_error" not in by_dir[unit_dir(out, UNIT)]
+    meta = json.loads((bad / "meta.json").read_text())
+    assert meta["regrade_status"] == "error" and meta["regrade_error"]
+    assert json.loads((bad / "grade.json").read_text())["task_pass"] is True  # old grade kept

@@ -66,7 +66,7 @@ def _opt_float(v: object) -> float | None:
 
 def _required(data: dict) -> tuple[str, ...]:
     if data.get("kind") == "range":  # a range starts at `base`; no parent needed; tier is explicit
-        return (*("base" if k == "parent" else k for k in REQUIRED_KEYS), "tier")
+        return tuple("base" if k == "parent" else k for k in REQUIRED_KEYS)
     return REQUIRED_KEYS
 
 
@@ -85,6 +85,11 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
     kind = str(data.get("kind", "commit"))
     if kind not in ("commit", "range"):
         raise ValueError(f"{dir}: unknown task kind {kind!r}")
+    tier = str(data.get("tier", "small"))
+    if kind == "range" and "tier" not in data:
+        raise ValueError(f"{dir}: range task without tier (small | medium | large)")
+    if tier not in TIERS:
+        raise ValueError(f"{dir}: tier {tier!r} is not one of {', '.join(TIERS)}")
     return Task(
         id=str(data.get("id", dir.name)),
         commit=str(data.get("commit", "")),
@@ -100,7 +105,7 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         baseline_radon_mi=_opt_float(data.get("baseline_radon_mi")),
         base=str(data.get("base", "")),
         kind=kind,
-        tier=str(data.get("tier", "small")),
+        tier=tier,
     )
 
 

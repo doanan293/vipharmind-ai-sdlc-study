@@ -264,17 +264,24 @@ def test_tier_defaults_to_small_for_commit_tasks(tmp_path: Path):
     assert validate_task(load_task(d)) == []
 
 
-def test_tier_is_required_for_range_tasks(tmp_path: Path):
-    errors = validate_task(load_task(_write_toml(tmp_path, "", kind="range")))
-    assert any("missing key 'tier'" in e for e in errors)
+def test_tier_is_required_for_range_tasks_at_load(tmp_path: Path):
+    with pytest.raises(ValueError, match="tier"):
+        load_task(_write_toml(tmp_path, "", kind="range"))
     ok = load_task(_write_toml(tmp_path, 'tier = "large"', kind="range"))
     assert ok.tier == "large"
     assert not any("tier" in e for e in validate_task(ok))
 
 
-def test_unknown_tier_is_a_validation_error(tmp_path: Path):
-    errors = validate_task(load_task(_write_toml(tmp_path, 'tier = "huge"')))
-    assert any("tier" in e and "huge" in e for e in errors)
+def test_unknown_tier_is_refused_at_load(tmp_path: Path):
+    with pytest.raises(ValueError, match="huge"):
+        load_task(_write_toml(tmp_path, 'tier = "huge"'))
+
+
+def test_validate_tasks_reports_a_range_task_without_tier(tmp_path: Path):
+    from sdlc_harness.cli import validate_tasks
+
+    d = _write_toml(tmp_path, "", kind="range")
+    assert any("tier" in e for e in validate_tasks(d.parent, None))
 
 
 def test_feature_tasks_declare_tier_large():

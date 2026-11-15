@@ -108,7 +108,11 @@ def validate_tasks(
             f"missing {missing}, extra {extra}"
         )
     for d in dirs:
-        task = load_task(d, repo)
+        try:
+            task = load_task(d, repo)
+        except ValueError as e:
+            errors.append(f"{d.name}: {e}")
+            continue
         if task.id != d.name:
             errors.append(f"{d.name}: id is '{task.id}'")
         errors.extend(validate_task(task))
@@ -190,10 +194,14 @@ def regrade(args: argparse.Namespace) -> int:
     results = regrade_all(dirs, cfg, args.jobs)
     keys = ("task_pass", "hidden_passed", "hidden_total", "regressions")
     changed = [(d, o, n) for d, o, n in results if any(o.get(k) != n.get(k) for k in keys)]
+    failed = [(d, n["regrade_error"]) for d, _, n in results if "regrade_error" in n]
+    changed = [(d, o, n) for d, o, n in changed if "regrade_error" not in n]
+    for d, why in failed:
+        print(f"FAILED {d}: {why}")
     for d, o, n in changed:
         print(f"CHANGED {d}: " + ", ".join(f"{k} {o.get(k)} -> {n.get(k)}" for k in keys))
-    print(f"{len(results)} regraded, {len(changed)} changed")
-    return 0
+    print(f"{len(results) - len(failed)} regraded, {len(changed)} changed, {len(failed)} failed")
+    return 1 if failed else 0
 
 
 def status(args: argparse.Namespace) -> int:

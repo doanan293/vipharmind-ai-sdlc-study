@@ -778,3 +778,35 @@ def test_coverage_none_when_run_never_starts(ws, monkeypatch):
     g = _grade(ws)
     assert g.ai_changed_line_coverage is None
     assert any("no data" in n for n in g.grading_notes)
+
+
+# --- a patch that breaks the test setup is the patch's fault ------------------------------
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [subprocess.CalledProcessError(1, ["uv", "sync"]), None],
+    ids=["sync-failed", "no-report"],
+)
+def test_failure_caused_by_a_config_change_is_a_fail_grade(ws, monkeypatch, exc):
+    import sdlc_harness.grade as grade_mod
+    from sdlc_harness.pytest_run import TestReport
+
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _grade(ws)
+    (work / "backend/tests/conftest.py").write_text("raise SystemExit(4)\n")  # breaks pytest
+    real = grade_mod.run_backend_tests
+
+    def broken(tree, timeout_s=900):
+        if tree.name != "graded":
+            return real(tree, timeout_s)
+        if exc is not None:
+            raise exc
+        return TestReport({}, 0.0, True, "usage error")
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", broken)
+    g = _grade(ws)
+    assert g.task_pass is False and g.hidden_passed == 0
+    assert g.pytest_config_touched is True
+    assert any("caused by the patch" in n for n in g.grading_notes)
