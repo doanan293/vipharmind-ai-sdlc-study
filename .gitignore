@@ -15,3 +15,6 @@
 # Skill cài cục bộ (ppt-master, latex-document-skill); cài lại theo skills-lock.json
 .agents/
 .claude/skills/
+
+# Account credential sources for harness runs; never commit
+harness/accounts.local.toml

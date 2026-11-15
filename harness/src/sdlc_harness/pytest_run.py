@@ -53,12 +53,16 @@ def _parse_junit(backend: Path, xml_path: Path) -> tuple[dict[str, Outcome], flo
     return outcomes, duration
 
 
+def find_lock_dir(tree: Path) -> Path | None:
+    """Directory holding uv.lock: the tree root, or backend/ when it is its own project."""
+    return next((d for d in (tree, tree / "backend") if (d / "uv.lock").is_file()), None)
+
+
 def run_backend_tests(tree: Path, timeout_s: int = 900) -> TestReport:
     """Run pytest in tree/backend. Uses uv when a uv.lock exists, else this interpreter."""
     backend = tree / "backend"
     env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
-    # uv.lock sits at the workspace root, or in backend/ when the backend is its own project
-    lock_dir = next((d for d in (tree, backend) if (d / "uv.lock").is_file()), None)
+    lock_dir = find_lock_dir(tree)
     if lock_dir is not None:
         subprocess.run(
             ["uv", "sync", "--frozen"],
