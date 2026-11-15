@@ -592,3 +592,48 @@ def test_cli_regrade_reports_changes(world, fake, tmp_path, capsys):
     )
     assert rc == 0
     assert "1 regraded, 0 changed" in capsys.readouterr().out
+
+
+def _creds_file(world, n=1) -> Path:
+    return world[2].parent / "creds" / str(n) / ".credentials.json"
+
+
+def test_rotated_credentials_are_written_back_to_the_account_source(world, fake, tmp_path):
+    src = _creds_file(world)
+    src.write_text("{}")
+    fake.setenv("FAKE_AGENT_ROTATE", '{"token": "rotated"}')
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "done"
+    assert src.read_text() == '{"token": "rotated"}'
+    assert src.stat().st_mode & 0o777 == 0o600
+    src.write_text("{}")
+
+
+def test_no_write_back_when_the_unit_fails_before_launch(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    src = _creds_file(world)
+    src.write_text("{}")
+    fake.setenv("FAKE_AGENT_ROTATE", "rotated")
+    fake.setattr(runner, "config_manifest", lambda *a: (_ for _ in ()).throw(OSError("boom")))
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "error"
+    assert src.read_text() == "{}"
+
+
+def test_meta_upstream_urls_predeclared_on_early_error(world, fake, tmp_path):
+    out = tmp_path / "out"
+    assert run_unit(RunUnit("claude-sonnet", "nope", "vibe", 1), _cfg(world, tmp_path), out) == (
+        "error"
+    )
+    meta = _meta(out, RunUnit("claude-sonnet", "nope", "vibe", 1))
+    assert meta["upstream_urls"] == [] and "endpoint" not in meta
+
+
+def test_upstream_urls_exclude_urls_already_in_the_tree(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    known = "https://github.com/doanan293/ViPharmind"
+    fake.setattr(runner, "tree_urls", lambda root: {known})
+    fake.setenv("FAKE_AGENT_SAY", f"read {known} then fetched https://github.com/doanan293/other")
+    out = tmp_path / "out"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out)["upstream_urls"] == ["https://github.com/doanan293/other"]

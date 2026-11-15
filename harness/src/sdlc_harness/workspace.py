@@ -4,10 +4,12 @@ import functools
 import os
 import shutil
 import subprocess
+import threading
 import tomllib
 from pathlib import Path
 from typing import Literal
 
+from sdlc_harness.agents import urls_in
 from sdlc_harness.pytest_run import find_lock_dir
 from sdlc_harness.tasks import Task
 from sdlc_harness.vcs import export_tree
@@ -27,8 +29,21 @@ BASELINE = "baseline"
 # Files that would steer or inform the agent: the project's historical design specs and plans
 # (written before the commit, they can describe the very feature), agent instruction files and
 # agent config/skill dirs. Removed from the exported tree before the baseline commit.
-CONTAMINANT_DIRS = frozenset({"superpowers", ".claude", ".agents", ".codex", ".gemini"})
-CONTAMINANT_FILES = frozenset({"AGENTS.md", "CLAUDE.md", "GEMINI.md", "skills-lock.json"})
+# Names are matched case-insensitively, at any depth.
+CONTAMINANT_DIRS = frozenset(
+    {"superpowers", ".claude", ".agents", ".codex", ".gemini", ".cursor", ".windsurf"}
+)
+CONTAMINANT_FILES = frozenset(
+    {
+        "agents.md",
+        "claude.md",
+        "gemini.md",
+        "skills-lock.json",
+        ".cursorrules",
+        ".windsurfrules",
+    }
+)
+COPILOT_FILE = ("copilot-instructions.md", ".github")  # (name, parent dir name)
 SCAN_SKIP = frozenset({".git", ".venv", "node_modules"})
 
 
@@ -42,13 +57,31 @@ def find_contaminants(root: Path) -> list[str]:
     for dirpath, dirnames, filenames in os.walk(root):
         here = Path(dirpath)
         for d in sorted(dirnames):
-            if d in CONTAMINANT_DIRS:
+            if d.lower() in CONTAMINANT_DIRS:
                 found.append((here / d).relative_to(root).as_posix())
-        dirnames[:] = sorted(d for d in dirnames if d not in CONTAMINANT_DIRS | SCAN_SKIP)
+        dirnames[:] = sorted(
+            d for d in dirnames if d.lower() not in CONTAMINANT_DIRS and d not in SCAN_SKIP
+        )
         for f in filenames:
-            if f in CONTAMINANT_FILES:
+            low = f.lower()
+            if low in CONTAMINANT_FILES or (low, here.name.lower()) == COPILOT_FILE:
                 found.append((here / f).relative_to(root).as_posix())
     return sorted(found)
+
+
+def tree_urls(root: Path) -> set[str]:
+    """Upstream-repo URLs already present in the exported tree (read as text; .git/.venv skipped),
+    so only URLs the agent introduced count as upstream access."""
+    found: set[str] = set()
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SCAN_SKIP]
+        for f in filenames:
+            try:
+                text = (Path(dirpath) / f).read_text(errors="strict")
+            except (OSError, UnicodeDecodeError):
+                continue
+            found.update(urls_in(text))
+    return found
 
 
 def strip_contaminants(root: Path) -> list[str]:
@@ -121,15 +154,23 @@ def prepare_workspace(
     return work
 
 
-def _account_source(agent: str, account: int, accounts_file: Path) -> str | dict:
+def _account_source(agent: str, account: int, accounts_file: Path) -> Path:
     data = tomllib.loads(accounts_file.read_text())
     try:
-        return data[agent][str(account)]
+        src = data[agent][str(account)]
     except KeyError:
         raise KeyError(f"no {agent} account {account} in {accounts_file}") from None
+    if not isinstance(src, str):
+        raise TypeError(f"{agent} account {account}: expected a path")
+    return Path(src).expanduser()
 
 
-PROXY_KEY_ENV = "SDLC_PROXY_API_KEY"  # codex reads the proxy key from here (never written to disk)
+def _credential_source(agent: str, account: int, accounts_file: Path) -> Path:
+    """The account's credential file: the path itself, or CREDENTIALS[agent] inside a dir."""
+    path = _account_source(agent, account, accounts_file)
+    return path / CREDENTIALS[agent] if path.is_dir() else path
+
+
 CREDENTIALS = {
     "claude": ".credentials.json",
     "codex": "auth.json",
@@ -137,31 +178,19 @@ CREDENTIALS = {
 }
 # where each CLI keeps its state under HOME; HOME is the per-attempt config/home for every agent
 TOOL_DIR = {"claude": ".claude", "codex": ".codex", "agy": ".gemini/antigravity-cli"}
-CODEX_CONFIG = """# written by sdlc-harness: clean, equal conditions (see docs/pilot-report.md)
+CODEX_CONFIG = """# written by sdlc-harness: user-level extras off, stock tools untouched (ruling R11)
 project_doc_max_bytes = 0
 
 [skills]
-bundled = {{ enabled = false }}
+bundled = { enabled = false }
 include_instructions = false
 
 [features]
-browser_use = false
-browser_use_external = false
-computer_use = false
-in_app_browser = false
 apps = false
 plugins = false
 remote_plugin = false
 memories = false
 hooks = false
-image_generation = false
-{provider}"""
-CODEX_PROVIDER = """
-[model_providers.sdlc-proxy]
-name = "cli-proxy-api (local)"
-base_url = "{base_url}"
-env_key = "{env_key}"
-wire_api = "responses"
 """
 
 
@@ -183,20 +212,6 @@ def host_uv_dirs() -> dict[str, str]:
     return out
 
 
-def _proxy_key(proxy_config: Path) -> str:
-    """First entry of `api-keys:` in the proxy's config.yaml (read at run time, never copied)."""
-    lines = proxy_config.read_text().splitlines()
-    for i, line in enumerate(lines):
-        if line.strip() == "api-keys:":
-            for item in lines[i + 1 :]:
-                item = item.strip()
-                if item.startswith("- "):
-                    return item[2:].strip().strip("'\"")
-                if item and not item.startswith("#"):
-                    break
-    raise KeyError(f"no api-keys entry in {proxy_config}")
-
-
 def prepare_config(
     agent: Agent, run_dir: Path, account: int, accounts_file: Path | None = None
 ) -> dict[str, str]:
@@ -205,28 +220,57 @@ def prepare_config(
     Every agent gets the same layout: HOME is the fresh dir (so nothing under the real ~ is
     found: memories, skills, plugins, instructions), uv uses the host cache read-only-in-spirit.
     """
-    src = _account_source(agent, account, accounts_file or ACCOUNTS_FILE)
+    source = _credential_source(agent, account, accounts_file or ACCOUNTS_FILE)
     home = run_dir / "config" / "home"
     tool = home / TOOL_DIR[agent]
     tool.mkdir(parents=True, exist_ok=True)
     env = {"HOME": str(home), **host_uv_dirs()}
-    if agent == "codex" and isinstance(src, dict):
-        provider = CODEX_PROVIDER.format(base_url=src["base_url"], env_key=PROXY_KEY_ENV)
-        (tool / "config.toml").write_text(
-            'model_provider = "sdlc-proxy"\n' + CODEX_CONFIG.format(provider=provider)
-        )
-        env[PROXY_KEY_ENV] = _proxy_key(Path(src["proxy_config"]).expanduser())
-        return {**env, "CODEX_HOME": str(tool)}
-    if not isinstance(src, str):
-        raise TypeError(f"{agent} account {account}: expected a path")
-    path = Path(src).expanduser()
-    shutil.copy2(path / CREDENTIALS[agent] if path.is_dir() else path, tool / CREDENTIALS[agent])
+    dest = tool / CREDENTIALS[agent]
+    shutil.copy2(source, dest)
+    _snapshots[str(dest)] = dest.read_bytes()
     if agent == "claude":
         return {**env, "CLAUDE_CONFIG_DIR": str(tool)}
     if agent == "codex":
-        (tool / "config.toml").write_text(CODEX_CONFIG.format(provider=""))
+        (tool / "config.toml").write_text(CODEX_CONFIG)
         return {**env, "CODEX_HOME": str(tool)}
     return env
+
+
+_snapshots: dict[str, bytes] = {}  # credential copy path -> bytes as copied from the source
+_cred_locks: dict[tuple[str, int], threading.Lock] = {}
+_cred_locks_guard = threading.Lock()
+
+
+def write_back_credentials(
+    agent: str, run_dir: Path, account: int, accounts_file: Path | None = None
+) -> bool:
+    """Copy a token the agent refreshed back to the account source (temp file + os.replace, 0600).
+
+    Only when the run's copy differs from what prepare_config copied; serialised per account.
+    Returns whether the source was updated.
+    """
+    dest = run_dir / "config" / "home" / TOOL_DIR[agent] / CREDENTIALS[agent]
+    original = _snapshots.get(str(dest))
+    if original is None or not dest.is_file():
+        return False
+    new = dest.read_bytes()
+    if new == original:
+        return False
+    source = _credential_source(agent, account, accounts_file or ACCOUNTS_FILE)
+    with _cred_locks_guard:
+        lock = _cred_locks.setdefault((agent, account), threading.Lock())
+    with lock:
+        tmp = source.with_name(f".{source.name}.{os.getpid()}.{threading.get_ident()}.tmp")
+        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        try:
+            with os.fdopen(fd, "wb") as f:
+                f.write(new)
+            os.chmod(tmp, 0o600)
+            os.replace(tmp, source)
+        finally:
+            tmp.unlink(missing_ok=True)
+    _snapshots[str(dest)] = new
+    return True
 
 
 def config_manifest(config: Path) -> list[str]:

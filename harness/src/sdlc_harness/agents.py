@@ -26,6 +26,8 @@ QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
         r"spend limit reached",
         r"out of extra usage",
         r"rate_limit_error",
+        # "5-hour limit reached", "weekly limit reached"; not e.g. "Subagent nesting limit reached"
+        r"\b(?:\d+-?(?:hour|day)|weekly|daily|monthly|session|opus|sonnet|extra usage)\s+limit reached",
     ),
     "agy": (
         r"RESOURCE_EXHAUSTED",  # observed: "RESOURCE_EXHAUSTED (code 429): Individual quota reached"
@@ -113,9 +115,14 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
     raise ValueError(f"unknown agent {agent!r}, expected one of {AGENTS}")
 
 
-def upstream_urls(transcript: str) -> list[str]:
-    """Distinct URLs in a transcript that point at the upstream ViPharmind repo or its owner."""
-    return sorted({m.group(0).rstrip(".,);]}\\") for m in UPSTREAM_RE.finditer(transcript)})
+def urls_in(text: str) -> set[str]:
+    return {m.group(0).rstrip(".,);]}\\") for m in UPSTREAM_RE.finditer(text)}
+
+
+def upstream_urls(transcript: str, exclude: set[str] | frozenset[str] = frozenset()) -> list[str]:
+    """Distinct URLs in a transcript that point at the upstream ViPharmind repo or its owner,
+    minus `exclude` (URLs already in the task tree)."""
+    return sorted(urls_in(transcript) - set(exclude))
 
 
 def _events(transcript: str) -> list[dict]:
@@ -230,9 +237,26 @@ def parse_usage(agent: str, transcript: str) -> Usage:
     raise ValueError(f"unknown agent {agent!r}, expected one of {AGENTS}")
 
 
-def is_quota_error(agent: str, returncode: int, transcript: str) -> bool:
-    """A failed run whose last output reports an exhausted quota or usage limit."""
+def _agy_own_errors(transcript: str) -> str:
+    """agy's own error text in a transcript: AGY_ERROR lines and the final result/error event,
+    never tool output (which can hold code that says "429" or "rate limit")."""
+    parts = [ln for ln in transcript.splitlines() if ln.startswith("AGY_ERROR:")]
+    for e in _events(transcript):
+        if e.get("event") in ("result", "error"):
+            parts.append(json.dumps(e.get("result") if e.get("event") == "result" else e))
+    return "\n".join(parts)
+
+
+def is_quota_error(agent: str, returncode: int, transcript: str, stderr: str = "") -> bool:
+    """A failed run whose output reports an exhausted quota or usage limit.
+
+    claude and codex: the tail of transcript + stderr. agy: only stderr and agy's own error
+    lines/events, so code the agent read cannot look like a quota error.
+    """
     if returncode == 0:
         return False
-    tail = transcript[-QUOTA_TAIL_CHARS:]
+    if agent == "agy":
+        tail = (stderr + "\n" + _agy_own_errors(transcript))[-QUOTA_TAIL_CHARS:]
+    else:
+        tail = f"{transcript}\n{stderr}"[-QUOTA_TAIL_CHARS:]
     return any(re.search(p, tail, re.IGNORECASE) for p in QUOTA_PATTERNS[agent])

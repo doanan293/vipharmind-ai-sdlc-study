@@ -32,6 +32,8 @@ cập nhật lúc 11:06 ngày 2026-11-15, không có cờ hay setting tắt tự
 
 ### 1.1 Đăng nhập trong thư mục cấu hình sạch
 
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
+
 Mỗi lần chạy (mỗi attempt) bộ chạy tạo `config/home` mới và đặt `HOME` vào đó cho cả ba công cụ; trong
 đó chỉ có thông tin đăng nhập của một tài khoản (`workspace.prepare_config`):
 
@@ -45,6 +47,8 @@ Cả ba còn nhận `UV_CACHE_DIR` và `UV_PYTHON_INSTALL_DIR` của máy (đổ
 cần cache để `uv run pytest` chạy không cần mạng). Thư mục `config/` bị xóa ngay khi trợ lý thoát.
 
 ### 1.2 Tắt truy cập web
+
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
 
 Đề bài thử: `fetch https://example.com and print its title` (`results/raw/probes/*-web.jsonl`).
 
@@ -84,6 +88,8 @@ của codex là `null`.
 
 ### 1.4 Codex qua proxy
 
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
+
 `home/.codex/config.toml` (do `prepare_config` ghi) đặt `model_provider = "sdlc-proxy"` với
 `base_url = "http://localhost:8317/v1"`, `wire_api = "responses"`, `env_key = "SDLC_PROXY_API_KEY"`; không có
 `model_reasoning_effort` trong file, mức suy luận chỉ đặt bằng `-c model_reasoning_effort="medium"`. Luật
@@ -117,6 +123,8 @@ your subscription to increase your limits. Resets in 167h3m55s.` và `AGY_ERROR:
 `quota reached` và test cho chuỗi này. claude và codex chưa chạm hạn mức trong lần chạy thử.
 
 ## 2. Bảng điều kiện ngang nhau giữa ba công cụ
+
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
 
 Kiểm tra tự động trong bộ chạy: `meta.json` của mỗi lượt có `prompt_sha256`, `tree_sha` (cây git của
 `baseline`), `tree_files`, `removed_from_tree`, `config_files`, `env_names`, `endpoint`. Trong một lần chạy, lượt có
@@ -159,6 +167,8 @@ trợ lý không được khởi động (`test_contaminated_tree_is_refused_bef
    proxy có thể thêm độ trễ và xoay tài khoản.
 
 ## 3. Điều khoản dịch vụ: chạy tự động và xoay nhiều tài khoản
+
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
 
 Đọc ngày 2026-11-15. Tóm tắt trung thực, kèm dấu hiệu có thể vi phạm. **Không phải ý kiến pháp lý.**
 
@@ -229,6 +239,8 @@ mốc đều trước ngày chốt, nên báo cáo được viết "mô hình ch
 nhãn mốc của nhà cung cấp là đúng.
 
 ## 5. Kết quả chạy thử (bước 2)
+
+(Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
 
 Lệnh (thư mục gốc repo):
 

@@ -7,6 +7,8 @@ It ignores the real CLI flags it receives and acts on environment variables:
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
   FAKE_AGENT_CWDLOG  file to append the agent's working directory to
   FAKE_AGENT_DELAY   seconds to sleep before finishing (ok mode)
+  FAKE_AGENT_ROTATE  claude: rewrite $CLAUDE_CONFIG_DIR/.credentials.json with this text
+  FAKE_AGENT_SAY     text emitted in an assistant event (e.g. a URL the agent "fetched")
   FAKE_AGENT_TIMELOG file to append "<start> <end>" to (CLOCK_MONOTONIC, system-wide on Linux)
 """
 
@@ -33,6 +35,12 @@ def main() -> int:
             f.write(os.getcwd() + "\n")
     mode = os.environ.get("FAKE_AGENT_MODE", "ok")
     emit({"type": "system", "subtype": "init", "model": "fake-model-served"})
+    if os.environ.get("FAKE_AGENT_ROTATE"):
+        (Path(os.environ["CLAUDE_CONFIG_DIR"]) / ".credentials.json").write_text(
+            os.environ["FAKE_AGENT_ROTATE"]
+        )
+    if os.environ.get("FAKE_AGENT_SAY"):
+        emit({"type": "assistant", "text": os.environ["FAKE_AGENT_SAY"]})
     if mode == "quota_once":
         state = Path(os.environ["FAKE_AGENT_STATE"])
         if not state.exists():

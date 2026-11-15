@@ -188,6 +188,8 @@ def test_is_quota_error_needs_failure_and_limit_message():
     ("agent", "message"),
     [
         ("claude", "Usage limit reached"),
+        ("claude", "5-hour limit reached - resets 3pm"),
+        ("claude", "Weekly limit reached"),
         ("claude", "You've hit your session limit · resets 3pm"),
         ("claude", '{"type":"error","error":{"type":"rate_limit_error"}}'),
         ("codex", "You've reached your usage limit. Increase your limits to continue using codex."),
@@ -207,10 +209,13 @@ def test_is_quota_error_needs_failure_and_limit_message():
     ],
 )
 def test_is_quota_error_known_messages(agent, message):
-    assert is_quota_error(agent, 1, message)
+    assert is_quota_error(agent, 1, message, message)  # as transcript and as stderr
+    if agent == "agy":
+        assert is_quota_error(agent, 1, "", message)
 
 
 def test_is_quota_error_ignores_unrelated_limits():
+    assert not is_quota_error("claude", 1, "Subagent nesting limit reached (depth 3 of 3)", "")
     assert not is_quota_error("claude", 1, "Subagent nesting limit reached (depth 3 of 3)")
     assert not is_quota_error("agy", 1, 'AGY_ERROR: {"short_error":"tool \\"swarm\\" not found"}')
 
@@ -227,3 +232,31 @@ def test_upstream_urls_finds_repo_links_only():
         "https://raw.githubusercontent.com/x/vipharmind/main/a.py",
     ]
     assert upstream_urls('{"text": "import vipharmind"}') == []
+
+
+def test_agy_quota_ignores_code_the_agent_read():
+    read = _jsonl(
+        {
+            "event": "step_update",
+            "step_update": {"step_type": "tool", "output": "if status == 429: # rate limit"},
+        },
+        {"event": "result", "result": {"status": "ERROR", "error": "tool crashed"}},
+    )
+    assert not is_quota_error("agy", 3, read, "error: tool crashed")
+    # tool output mentioning quota is not agy's own error either
+    noisy = _jsonl({"event": "step_update", "step_update": {"output": "RESOURCE_EXHAUSTED"}})
+    assert not is_quota_error("agy", 3, noisy, "")
+
+
+def test_agy_quota_from_pilot_result_event_and_agy_error_line():
+    result = _jsonl(
+        {"event": "result", "result": {"status": "ERROR", "error": "Individual quota reached."}}
+    )
+    assert is_quota_error("agy", 3, result, "")
+    line = 'AGY_ERROR: {"short_error":"RESOURCE_EXHAUSTED (code 429): Individual quota reached."}'
+    assert is_quota_error("agy", 3, f"some output\n{line}\n", "")
+    assert not is_quota_error("agy", 0, result, "")
+
+
+def test_agy_generic_429_in_stderr_still_counts():
+    assert is_quota_error("agy", 1, "", "request failed: 429 Too Many Requests")

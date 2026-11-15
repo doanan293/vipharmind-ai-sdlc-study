@@ -31,7 +31,6 @@ from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
 from sdlc_harness.workspace import (
-    PROXY_KEY_ENV,
     Agent,
     ContaminatedTreeError,
     assert_clean_tree,
@@ -39,6 +38,8 @@ from sdlc_harness.workspace import (
     config_manifest,
     prepare_config,
     prepare_workspace,
+    tree_urls,
+    write_back_credentials,
 )
 
 log = logging.getLogger(__name__)
@@ -409,7 +410,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "tree_files": None,
         "config_files": None,
         "env_names": None,
-        "endpoint": None,
+        "upstream_urls": [],
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
@@ -425,18 +426,24 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         meta["tree_sha"] = _git_out(work, "rev-parse", "baseline^{tree}")
         meta["tree_files"] = len(_git_out(work, "ls-files").splitlines())
         _check_same(cfg, "tree", (unit.task_id,), meta["tree_sha"])  # same tree for every unit
+        baseline_urls = tree_urls(work)  # computed once, before the agent runs
         meta["tool_version"] = tool_version(cohort.agent)
         cmd = _agent_prefix() + build_command(
             cohort.agent, cohort.model, cohort.effort, out / "prompt.txt"
         )
+        launched = False
         try:
             env = _agent_env(cohort, scratch, account, cfg.accounts_file)
             meta["config_files"] = config_manifest(scratch / "config")
             meta["env_names"] = sorted(env)
-            meta["endpoint"] = "proxy" if PROXY_KEY_ENV in env else "direct"
             meta["started_at"] = datetime.now(UTC).isoformat(timespec="seconds")
+            launched = True
             rc, timed_out, wall = _invoke(cmd, work, out, env, cfg.timeout_s)
         finally:
+            if launched:  # a refreshed token must outlive the throwaway config dir
+                write_back_credentials(
+                    cast(Agent, cohort.agent), scratch, account, cfg.accounts_file
+                )
             shutil.rmtree(scratch / "config", ignore_errors=True)  # credentials copy
         transcript = (out / "transcript.jsonl").read_text(errors="replace")
         stderr = (out / "stderr.log").read_text(errors="replace")
@@ -447,9 +454,9 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
             wall_s=wall,
             usage=asdict(usage),
             model_served=usage.model_served,
-            upstream_urls=upstream_urls(transcript),
+            upstream_urls=upstream_urls(transcript, baseline_urls),
         )
-        if not timed_out and is_quota_error(cohort.agent, rc, f"{transcript}\n{stderr}"):
+        if not timed_out and is_quota_error(cohort.agent, rc, transcript, stderr):
             meta["status"] = "quota"
             _write_json(out / META, meta)
             with cfg._lock, (out_root / QUOTA_LOG).open("a") as f:
