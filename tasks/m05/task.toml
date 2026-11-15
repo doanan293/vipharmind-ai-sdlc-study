@@ -1,0 +1,11 @@
+id = "m05"
+commit = "adf89a7b629a06a5d864c7b3f78d8f4f5c149b01"
+kind = "range"
+base = "067e562740912786b77a7ee3d22de65e536f0a65"
+layer = "application"
+src_lines = 515
+hidden_tests = ["backend/tests/application/test_import_bundle.py", "backend/tests/application/test_release_service.py"]
+pilot = false
+tier = "medium"
+baseline_radon_cc = 4.407407407407407
+baseline_radon_mi = 60.196758097203016

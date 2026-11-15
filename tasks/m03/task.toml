@@ -1,0 +1,11 @@
+id = "m03"
+commit = "95d69130cd22b4a08738a5ab49e19c61dfe2ae49"
+kind = "range"
+base = "a24bd490804c90b6c5d007d534606ef9527ec973"
+layer = "infrastructure"
+src_lines = 413
+hidden_tests = ["backend/tests/api/test_chat_api.py", "backend/tests/api/test_e2e_postgres.py", "backend/tests/api/test_ui_stream.py", "backend/tests/infrastructure/test_conversation_repository.py", "backend/tests/infrastructure/test_migrations.py"]
+pilot = false
+tier = "medium"
+baseline_radon_cc = 2.1777777777777776
+baseline_radon_mi = 55.26351501354036

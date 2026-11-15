@@ -104,9 +104,9 @@ tier stays f08, f14, f15.
 (Hand counts of the names a prompt would have to give, as in `FEATURE_REVIEW.md`; details in
 `large_rechecks` of `medium_candidates.json`.)
 
-An's verdict on rejecting F07: ___
+An's verdict on rejecting F07: approved in bulk 2026-11-15 (reject)
 
-An's verdict on rejecting F04: ___
+An's verdict on rejecting F04: approved in bulk 2026-11-15 (reject)
 
 ---
 
@@ -129,19 +129,19 @@ An's verdict on rejecting F04: ___
   spec it cites (`backend/docs/superpowers/specs/...`) is stripped from the workspace, so the
   prompt spells out every rule the tests pin.
 
-Draft prompt:
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
 
 ```text
 Add reading and writing of `knowledge-bundle/v1` directories to `pharma_agent.domain.corpus.bundle`, with every problem of an invalid bundle reported at once, and deterministic ids for section revisions and chunk versions in a new module `pharma_agent.domain.corpus.identity`.
-A bundle directory holds `manifest.json`, `documents.jsonl` and `sections.jsonl` (one record per line, UTF-8 without escaping), `glossary.json` and `colloquial_mappings.json` (JSON lists), and for each embedding model `embeddings/<model_slug(model)>.jsonl` with lines `{"embedding_text_sha256", "dims", "vector"}` whose vector is `encode_vector(...)`; `write_bundle(bundle, directory)` writes these files deterministically (embedding models and hashes in sorted order, the `embeddings` folder only when there are embeddings) and returns, and writes as `manifest.json`, a `BundleManifest` that keeps the input manifest's `schema_version`, `collection`, `generator` and `source_digests` but recomputes `document_count`, `section_count`, `files` (each written file name to a `BundleFile` with the hex SHA-256 and the byte size of its content) and `embeddings` (one `BundleEmbeddingFile` per model with its single vector length).
+A bundle directory holds `manifest.json`, `documents.jsonl` and `sections.jsonl` (one record per line, UTF-8 without escaping), `glossary.json` and `colloquial_mappings.json` (JSON lists), and for each embedding model `embeddings/<model_slug(model)>.jsonl` with lines `{"embedding_text_sha256", "dims", "vector"}` whose vector is `encode_vector(...)`; `write_bundle(bundle, directory)` writes these files deterministically (embedding models and hashes in sorted order, the `embeddings` folder only when there are embeddings) and returns, and writes as `manifest.json`, a `BundleManifest` that keeps the input manifest's `schema_version`, `collection`, `generator` and `source_digests` but recomputes `document_count`, `section_count`, `files` (the four record files in the order above, then the embedding files, each name to a `BundleFile` with the hex SHA-256 and the byte size of its content) and `embeddings` (one `BundleEmbeddingFile` per model with its single vector length).
 Before writing anything, `write_bundle` runs the content checks below (with a document's or section's 1-based position as its line) and checks each embedding model, prefix `embeddings['<model>']: `, for the first that applies of `model name must contain letters or digits` (empty slug), `model slug collides with another model` and `vectors must share one non-zero length, got <sorted distinct lengths, e.g. [3, 4]>`, and otherwise reports `'<hash>' is not a sha256 hex digest` for each key that is not 64 lowercase hex characters, and raises `BundleValidationError` with all problems if there are any.
 `read_bundle(directory)` returns the `KnowledgeBundle` or raises `BundleValidationError` whose `problems` are strings in the order given here, where values in quotes are Python reprs, a validation problem is `<where>: <location>: <pydantic message>` with the location built from field names joined by `.` and list indexes written `[i]`, and a missing or invalid manifest stops reading with only `manifest.json: file is missing` or the manifest's validation problems.
 It then checks each manifest embedding entry `i`, prefix `manifest.json: embeddings[i]`, for `.model: must contain letters or digits` (which skips the rest of that entry), `.model: duplicate model '<model>'`, `.dims: must be >= 1, got <dims>`, and either `.file: expected '<embeddings/slug.jsonl>', got '<file>'` or `.file: '<file>' is not listed in files`, then reports `manifest.json: files.<name>: missing entry` for each of the four record files absent from `files`.
 Next, for each `files` entry in manifest order, a name that is neither a record file nor the expected file of an embedding entry gives `manifest.json: files.<name>: not part of knowledge-bundle/v1`, and otherwise the file gives `<name>: file is missing`, or `<name>: size <actual> bytes does not match manifest (<listed>)`, `<name>: sha256 does not match manifest` and `<name>: file is not valid UTF-8` as they apply.
-The JSONL files are validated line by line as `DocumentRecord` and `SectionRecord` (where `<file>:<line>`, 1-based, blank lines skipped), the two JSON files as lists of `GlossaryEntry` and `ColloquialMappingRecord` (where `<file>`), and then `manifest.json: document_count: <n> does not match documents.jsonl (<k> records)` and the same for `section_count` and `sections.jsonl` are reported, counting non-blank lines.
-The content checks, shared with `write_bundle`, report per document `documents.jsonl:<line>: key: must not be empty` or `key: duplicate document key '<key>' (first on line <l>)`, and per section `sections.jsonl:<line>: ` followed by, in this order, `key: must not be empty` or `key: duplicate section key '<key>' (first on line <l>)`, `document_key: unknown document '<key>'`, `ordinal: duplicate ordinal <n> in document '<key>' (first on line <l>)`, the page problems, `blocks: must contain at least one block`, and for each block `blocks[<i>].markdown: must not be empty` followed by its page problems.
+The JSONL files are validated line by line as `DocumentRecord` and `SectionRecord` (where `<file>:<line>`, 1-based, blank lines skipped), the two JSON files each as one list of `GlossaryEntry` or `ColloquialMappingRecord` (where `<file>`; a list with any validation problem counts as empty in the later checks, while an invalid JSONL line drops only that record), and then `manifest.json: document_count: <n> does not match documents.jsonl (<k> records)` and the same for `section_count` and `sections.jsonl` are reported, counting non-blank lines.
+The content checks, shared with `write_bundle`, treat a string that is blank after stripping whitespace as empty and report per document `documents.jsonl:<line>: key: must not be empty` or `key: duplicate document key '<key>' (first on line <l>)`, and per section `sections.jsonl:<line>: ` followed by, in this order, `key: must not be empty` or `key: duplicate section key '<key>' (first on line <l>)`, `document_key: unknown document '<key>'`, `ordinal: duplicate ordinal <n> in document '<key>' (first on line <l>)`, the page problems, `blocks: must contain at least one block`, and for each block `blocks[<i>].markdown: must not be empty` followed by its page problems.
 Page problems are `<prefix>start_page: must be >= 1, got <page>`, the same for `end_page`, and `<prefix>start_page: <start> is after end_page <end>`, with an empty prefix for the section and `blocks[<i>].` for a block; glossary entry `i` gives `glossary.json: [i].term: must not be empty` or `glossary.json: [i].term: duplicate term '<stripped term>' (case-insensitive, first at [j])`, and mapping `i` gives for its section key `j` either `colloquial_mappings.json: [i].section_keys[j]: unknown section '<key>'` or `... section '<key>' is already mapped by [<earlier mapping index>]`.
-Last, for each manifest embedding entry with `dims` of at least 1 whose `file` was read, that file is read line by line as a strict object whose `embedding_text_sha256` must match `^[0-9a-f]{64}$` (validation problems as above), reporting `<file>:<line>: dims: <d> does not match manifest dims <dims>`, else `<file>:<line>: embedding_text_sha256: duplicate of line <l>`, else `<file>:<line>: vector: <message>` when the existing `decode_vector` raises, and the bundle's `embeddings` map each model to its hashes and decoded vectors.
+Last, for each manifest embedding entry with `dims` of at least 1 whose `file` was read, that file is read line by line as a strict object whose `embedding_text_sha256` must match `^[0-9a-f]{64}$` (validation problems as above), reporting `<file>:<line>: dims: <d> does not match manifest dims <dims>`, else `<file>:<line>: embedding_text_sha256: duplicate of line <l>` (the first line with that hash whose dims matched, whether or not its vector decoded), else `<file>:<line>: vector: <message>` when the existing `decode_vector` raises, and the bundle's `embeddings` map each model to its hashes and decoded vectors.
 In `pharma_agent.domain.corpus.identity`, `CORPUS_NAMESPACE` is `uuid.uuid5(uuid.NAMESPACE_URL, "pharma-agent:corpus:v1")`, `canonical_json(value)` is compact JSON (`","` and `":"` separators, sorted keys, no ASCII escaping, no NaN) of the value with every string normalized by the existing `normalize_text`, and `sha256_hex(text)` is the hex SHA-256 of the UTF-8 text.
 `section_revision_id(section_key, blocks)` is `uuid5(CORPUS_NAMESPACE, "section-revision\x1f<section_key>\x1f<sha256_hex(canonical_json of the blocks' model_dump(mode="json") list)>")` and `chunk_version_id(section_key, chunk_text, embedding_text, chunker_version)` is `uuid5(CORPUS_NAMESPACE, "chunk\x1f" + sha256_hex(the four values joined by "\x1f", the two texts normalized by normalize_text))`.
 
@@ -185,7 +185,7 @@ Residual ambiguities:
 3. The byte layout of the written files (indentation of the JSON lists, key order of an embedding
    line) is free as long as it is deterministic and one record sits on one line. Minor.
 
-An's verdict: ___
+An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fable.md)
 
 ---
 
@@ -212,14 +212,14 @@ An's verdict: ___
 - The queries and summary sentences are the approved wording of the old draft's m01 (F03_43-44),
   unchanged; the hidden `test_queries.py` and `test_summarize.py` are byte-identical to that draft's.
 
-Draft prompt:
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
 
 ```text
 Add the use cases that read, rename and delete a user's conversations, a background job that folds finished turns into a rolling conversation summary, a LangGraph checkpointer stored in Postgres, and a service container that owns the long-lived resources of the HTTP service and wires these use cases with the existing chat service.
 `ConversationQueries(conversations, clock)` in `pharma_agent.application.conversation.queries` has `list_conversations(user_id, *, limit, before=None)`, `get_conversation(user_id, conversation_id)`, `list_messages(user_id, conversation_id, *, limit, before=None)`, `rename(user_id, conversation_id, title)` and `delete(user_id, conversation_id)`, which return `ConversationView` (`id`, `title`, `turn_count`, `created_at`, `updated_at`) and `MessageView` (`id`, `role`, `content`, `status`, `citations`, `phases`, `created_at`) models in the order the repository gives.
 All of these except `list_conversations` raise the existing `ConversationNotFound` for a conversation the user does not own, and `rename` renames through the domain model at the clock's time and turns an invalid title into the existing `InvalidInput`.
 `SummarizeConversation(llm, conversations, clock, *, every, max_chars)` in `pharma_agent.application.memory.summarize` has `run_if_needed(*, user_id, conversation_id) -> bool`, which returns False without calling the LLM when the conversation does not exist or its `needs_summary(every)` is false.
-Otherwise it reads the turns since the last summary: if none of them is usable (every status is in `EXCLUDED_STATUSES`) it only advances the summarized turn count and returns False, and if some are it asks the `SUMMARIZER` LLM role for a `ConversationSummary` from `summary_messages(previous summary, usable turns, max_chars=max_chars)`, stores that summary cut to `max_chars` characters with the covered turn count, and returns True, while an `LlmError` keeps the previous summary and count and returns False.
+Otherwise it reads the turns since the last summary: if none of them is usable (every status is in `EXCLUDED_STATUSES`) it only advances the summarized turn count past the turns read and returns False, and if some are it asks the `SUMMARIZER` LLM role for a `ConversationSummary` from `summary_messages(previous summary, usable turns, max_chars=max_chars)`, stores that summary cut to `max_chars` characters and advances the summarized turn count past every turn read, usable or not, and returns True, while an `LlmError` keeps the previous summary and count and returns False.
 In `pharma_agent.infrastructure.langgraph.checkpointer`, `open_postgres_checkpointer(conninfo, *, max_size=10)` is an async context manager that opens a psycopg connection pool for the libpq connection string (autocommit, `prepare_threshold` 0, dict rows, at most `max_size` connections), yields a LangGraph `AsyncPostgresSaver` that uses the existing `checkpoint_serializer()` and has created its tables, and closes the pool on exit, and `build_application(settings, *, checkpointer=None)` passes the checkpointer on to `build_chat_graph`.
 Alembic does not manage the checkpointer's tables (`checkpoints`, `checkpoint_blobs`, `checkpoint_writes`, `checkpoint_migrations`), so add `include_name(name, type_, parent_names)` to `pharma_agent.infrastructure.persistence.postgres.tables`, returning False exactly for a table with one of those names, and pass it as `include_name` to both `context.configure` calls of the migrations environment.
 In `pharma_agent.infrastructure.container`, add a dataclass `Container` with `settings`, `sessions`, `queries`, `chat` (default None), `summarizer` (default None) and `health_checks` (a dict from check name to an async function returning bool), and `open_container(settings)`, an async context manager that opens the existing `Database` from the `postgres` settings, builds a `PostgresConversationRepository` with an `AuditContext` from the retrieval settings, and yields a container whose `queries` are `ConversationQueries` over that repository and the system clock and whose `health_checks` has `"postgres"` (the database ping).
@@ -259,7 +259,7 @@ Residual ambiguities:
    integration tests, so an agent can leave them unfinished without losing `task_pass`. They are
    32% of the exercised src lines, under the 50% limit.
 
-An's verdict: ___
+An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fable.md)
 
 ---
 
@@ -290,14 +290,14 @@ An's verdict: ___
   of restored fakes. Those fakes implement ports that already exist at base, so under the
   amended rule's name count they add no name.
 
-Draft prompt:
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
 
 ```text
 Make `POST /api/v1/chat/stream` speak the AI SDK UI Message Stream v1 instead of named server-sent events, and store the citations of assistant messages in a new `message_citations` table that references corpus chunk versions and releases instead of a JSON column on `messages`.
 In a new module `pharma_agent.api.ui_stream`, `UIMessageStreamEncoder()` is created once per turn and its `encode(event)` maps one `ProgressEvent` to a list of chunk dicts with the existing models and helpers of `pharma_agent.application.conversation.ui_message`: `conversation` gives `{"type": "start", "messageId": <message_id>}` and `{"type": "data-conversation", "transient": true, "data": {"id": <conversation_id>, "title": <title>}}`, `phase` gives `{"type": "data-phase", "id": "phase", "data": {"phase": <phase>}}` with `"round"` added when the event has one, `skills_selected` gives `{"type": "data-skills", "data": {"skills": [{"name", "title"} of each skill]}}`, and `evidence` gives `{"type": "data-evidence", "id": "evidence", "data": {"items": <each item as an EvidenceItem JSON dump>}}`.
 A non-empty `token` gives `{"type": "text-delta", "id": "text", "delta": <text>}`, preceded by `{"type": "text-start", "id": "text"}` when no text part is open, an empty token gives nothing, and an open text part is closed with `{"type": "text-end", "id": "text"}` before the chunks of `citations` (the `source_document_parts_from_event` parts as JSON dumps) and before the chunk of `done`.
 `done` gives `{"type": "finish", "finishReason": ..., "messageMetadata": ...}` with the reason `error` for the statuses `error` and `timeout` and `stop` for every other status, and as metadata the JSON dump, without `feedback`, of a `MessageMetadata` built from the done data's `status`, `created_at`, `error_code`, `usage`, `run_id` and `persisted`.
-`ui_message_stream(events)` is an async generator that sends every chunk of one encoder as an sse-starlette `JSONServerSentEvent` (a single `data:` line of compact JSON, no event name) and then `ServerSentEvent(data="[DONE]")`, and the stream route returns it in its `EventSourceResponse` with the headers `x-vercel-ai-ui-message-stream: v1`, `Cache-Control: no-cache` and `X-Accel-Buffering: no`, keeping the ping, the background summary and the problem responses for errors raised before streaming starts, while the old `pharma_agent.api.sse` module goes away.
+`ui_message_stream(events)` is an async generator that sends every chunk of one encoder as an sse-starlette `JSONServerSentEvent` (a single `data:` line of compact JSON, non-ASCII characters unescaped, no event name) and then `ServerSentEvent(data="[DONE]")`, and the stream route returns it in its `EventSourceResponse` with the headers `x-vercel-ai-ui-message-stream: v1`, `Cache-Control: no-cache` and `X-Accel-Buffering: no`, keeping the ping, the background summary and the problem responses for errors raised before streaming starts, while the old `pharma_agent.api.sse` module goes away.
 Add `MessageCitationTable` (table `message_citations`) to `pharma_agent.infrastructure.persistence.postgres.tables`, with the primary key `message_id` (foreign key to `messages.id`, on delete cascade) and `index`, `chunk_version_id` and `release_id` (foreign keys to `corpus.chunk_versions.id` and `corpus.releases.id`, on delete restrict, indexed as `ix_message_citations_chunk_version_id` and `ix_message_citations_release_id`), `strategy` (16 characters, check constraint named `strategy` allowing `search_only`, `chunk_window` and `full_section`) and `block_chunk_version_ids` (a Postgres array of UUIDs), remove the `citations` column of `MessageTable`, and add the Alembic migration `0008` (down revision `0007`) that brings the database to these models.
 `PostgresConversationRepository.append_turn` stores one `message_citations` row per citation of the assistant message in the same transaction as the turn, and `messages` and `get_message` rebuild each message's citations ordered by `index` in one query joining the chunk version, section revision, section and document, with `source` from the document's `source_title`, `title` from the document title, `section` from the section heading, the pages from the chunk version and `snippet` equal to `make_snippet(chunk_text, SNIPPET_CHARS)`, while `recent_turns` returns messages without citations.
 
@@ -338,7 +338,7 @@ Residual ambiguities:
 3. `createdAt` is serialized by the existing `MessageMetadata` (`...Z`); building the metadata any
    other way could change the format. The prompt says to build a `MessageMetadata`. Minor.
 
-An's verdict: ___
+An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fable.md)
 
 ---
 
@@ -365,11 +365,11 @@ An's verdict: ___
   `prepare_workspace` strips `superpowers` directories, so the old `original_patch_errors` failed at
   `git apply` before grading; it was graded with the diff limited to
   `':(exclude,glob)**/superpowers/**'`. Harness commit `6b5bbf9` (drop stripped-contaminant hunks
-  when applying the original range patch) addresses this; `tasks validate --original-patch` was not
-  re-run here.
+  when applying the original range patch) addresses this; `tasks validate --original-patch` re-run on
+  2026-11-15 with the task directory and the unmodified diff: clean.
 - Unchanged from the old draft's m02 (draft prompt and audit).
 
-Draft prompt:
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
 
 ```text
 Expose the chat and conversation use cases over HTTP with a FastAPI application under `/api/v1`, stream chat turns as server-sent events, report service health, and add `serve` and `migrate` commands to the `pharma-agent` CLI.
@@ -377,7 +377,7 @@ Add `create_app(settings=None, *, container_factory=open_container)` in `pharma_
 Every chat and conversation route needs an active user (`auth.current_active_user`) and works on that user's id as 32 lowercase hex characters, a route called before the container is open answers 503, and the chat routes raise `AgentUnavailable` when the container has no chat service.
 `POST /api/v1/chat` takes `{"message", "conversation_id"}` (the message 1 to 4000 characters, the optional conversation id 32 lowercase hex characters, anything else 422), returns the `ChatTurnResult` of `ChatService.ask`, and afterwards runs the container's summarizer (`run_if_needed`) for that conversation as a background task whose errors are only logged.
 `POST /api/v1/chat/stream` takes the same body, opens the turn before it starts the response (so an unknown conversation is a 404 and a missing agent a 503), sends every event of the session as a server-sent event whose event name is the event type and whose data is the event data as JSON, and then runs the same background summary.
-`GET /api/v1/conversations` (query `limit` 1 to 100, default 20, and an optional `before` time), `GET /api/v1/conversations/{conversation_id}`, `GET /api/v1/conversations/{conversation_id}/messages` (`limit` 1 to 200, default 50, optional `before`), `PATCH /api/v1/conversations/{conversation_id}` with `{"title"}` (1 to 80 characters) and `DELETE /api/v1/conversations/{conversation_id}` (status 204) call the matching `ConversationQueries` methods and return their views as JSON, and every route with a conversation id that is not 32 lowercase hex characters answers 422.
+`GET /api/v1/conversations` (query `limit` 1 to 100, default 20, and an optional `before` time), `GET /api/v1/conversations/{conversation_id}`, `GET /api/v1/conversations/{conversation_id}/messages` (`limit` 1 to 200, default 50, optional `before`), `PATCH /api/v1/conversations/{conversation_id}` with `{"title"}` (1 to 80 characters) and `DELETE /api/v1/conversations/{conversation_id}` (status 204) call the matching `ConversationQueries` methods and return their results as JSON (a bare array of views for the two list routes), and every route with a conversation id that is not 32 lowercase hex characters answers 422.
 `GET /api/v1/health` needs no user, runs every check in `container.health_checks`, and answers `{"status": "ok" or "degraded", "agent": <whether the container has a chat service>, "checks": {<check name>: <result>}}` with status 200 when every check passes and 503 otherwise.
 `pharma-agent serve` with the options `--host`, `--port` and `--reload` calls `uvicorn.run("pharma_agent.api.app:create_app", factory=True, host=..., port=..., reload=...)` with the host and port defaulting to the `api` settings, and `pharma-agent migrate [REVISION]` (default `head`) runs `alembic.command.upgrade` with the existing `alembic_config()`.
 
@@ -421,7 +421,7 @@ Residual ambiguities:
 2. The error body also has `message`, but only `code` is checked. Minor.
 3. The background summary after a streamed turn is not checked. Minor.
 
-An's verdict: ___
+An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fable.md)
 
 ---
 
@@ -447,17 +447,17 @@ An's verdict: ___
   restored fakes). The ports those fakes implement are all in `domain/corpus/ports.py` at base,
   with docstrings, so they add no name the prompt has to give.
 
-Draft prompt:
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
 
 ```text
 Add the application services that import a knowledge bundle into a new corpus release and manage releases (list, publish, rollback, garbage collection, reindex), built only on the existing corpus ports `CorpusRepository`, `EmbeddingCache`, `Embedder` and `VectorIndex` and the existing corpus domain models.
-In `pharma_agent.application.corpus.indexing`, `EmbeddingResolver(cache, embedder, *, batch_size, max_concurrent)` raises `ValueError` mentioning `batch_size` when either value is below 1, and `ensure(texts, bundled)` (embedding-text hash to text, and hash to a precomputed vector) asks the cache which hashes are missing for the embedder's model, stores the missing ones found in `bundled` with `put_many(model, dimension, ...)`, embeds the rest in batches of at most `batch_size` texts with at most `max_concurrent` `embed` calls in flight, and returns `EmbeddingCounts(cached, from_bundle, computed)`.
-Each embedded batch is stored in the cache as soon as it returns, an embedder error is re-raised with the earlier batches kept and no further batch started, and a result with another number of vectors or another vector length raises `CorpusImportError`.
+In `pharma_agent.application.corpus.indexing`, `EmbeddingResolver(cache, embedder, *, batch_size, max_concurrent)` raises `ValueError` mentioning `batch_size` when either value is below 1, and `ensure(texts, bundled)` (embedding-text hash to text, and hash to a precomputed vector) asks the cache which hashes are missing for the embedder's model, stores the missing ones found in `bundled` with `put_many(model, dimension, ...)`, embeds the rest in batches of at most `batch_size` texts keeping `max_concurrent` `embed` calls in flight whenever that many batches are left, and never more, and returns `EmbeddingCounts(cached, from_bundle, computed)`.
+Each embedded batch is stored in the cache as soon as it returns, an embedder error propagates as the same exception with the earlier batches kept and no further batch started, and a result with another number of vectors or another vector length raises `CorpusImportError`.
 `ImportKnowledgeBundle(repository, cache, index, embedder, clock, *, embed_batch_size, embed_max_concurrent)` in `pharma_agent.application.corpus.import_bundle` is awaited as `importer(bundle, *, publish)` and returns an `ImportReport` with `outcome` (an `ImportOutcome`: `IMPORTED` "imported", `REUSED` "reused" or `NO_CHANGE` "no_change"), `collection_key`, `release` and `published`.
 It builds the snapshot with `build_snapshot` and, before calling any port, takes the bundle's vectors for the embedder's model only when the manifest declares that model with the embedder's dimension, raising `CorpusImportError` mentioning `dims` when one of those vectors has another length.
-If the collection's current release has the snapshot's bundle digest and chunker version and the embedder's model, the import returns `NO_CHANGE` with that release and `published` true without any other port call; otherwise it ensures the index collection, looks up `find_release` for the same digest, chunker version and model, returns `REUSED` with that release when it is `READY`, and otherwise calls `stage_release` (with the found release's id or a new `uuid4`, the embedder's model and the clock's time) and builds the release as `IMPORTED`.
+If the collection's current release has the snapshot's bundle digest and chunker version and the embedder's model, the import returns `NO_CHANGE` with that release and `published` true without any other port call; otherwise it ensures the index collection, looks up `find_release` for the same digest, chunker version and model, takes that release as `REUSED` when it is `READY` (nothing is staged or built), and otherwise calls `stage_release` (with the found release's id or a new `uuid4`, the embedder's model and the clock's time) and builds the release as `IMPORTED`.
 Building resolves every embedding text of the snapshot (cache first, then the bundle vectors, then the embedder), takes the release's `index_items`, upserts in batches the items whose `chunk_version_id` the index does not have yet (vectors read from the cache by `embedding_text_sha256`, `CorpusImportError` if one is not cached) and rewrites the release ids of the others with `set_release_ids`, then requires `count_release` to equal the number of the snapshot's `release_chunks` (otherwise it raises `CorpusImportError` containing `expected` and the release stays `BUILDING`) and calls `mark_ready` with the snapshot's `stats()` plus `embeddings_cached`, `embeddings_from_bundle`, `embeddings_computed`, `points_upserted` and `points_updated`.
-With `publish` true the release is then published at the clock's time, and the report carries the release as the repository returns it afterwards.
+With `publish` true the reused or built release is then published at the clock's time, and the report carries the release as the repository returns it afterwards.
 `ReleaseService` in `pharma_agent.application.corpus.releases`, constructed like the importer, has `list_releases(collection_key=None)` returning the repository's summaries, `publish(release_id)`, which raises `ReleaseNotFound` for an unknown id and `ReleaseNotPublishable` naming the status (for example `building`) unless the release is `READY` and returns the published release, and `rollback(collection_key)`, which publishes again and returns the `READY` release with the latest `published_at` (then the highest number) before that of the current release, raising `CollectionNotFound` for an unknown collection and `NoEarlierRelease` when the current release is missing or unpublished or there is no such release.
 `gc(collection_key, keep)` retires the releases chosen by the existing `releases_to_retire(releases, current_release_id, keep)`, then for every retired release that still has chunks takes their `index_items` and, among the points present in the index, rewrites with `set_release_ids` those still in some release and deletes those in none, calls `purge_retired` for the collection and returns `GcReport(retired, points_updated, points_deleted, purge)`, where `retired` lists the ids retired by this call in the order `releases_to_retire` gave.
 `reindex(collection_key)` (raising `CollectionNotFound`) takes the collection's releases that are not `RETIRED`, skips those whose `embedding_model` is not the embedder's model, ensures the index collection, takes the `index_items` of the usable releases with their `release_ids` limited to usable releases, resolves their embeddings without bundle vectors, upserts all of them, and returns `ReindexReport(points_upserted, release_points, skipped)` with each usable release's `count_release` and the ids of the skipped releases.
@@ -500,4 +500,4 @@ Residual ambiguities:
    behaviour is fully stated, but it is the largest graded surface of the tier (515 lines, all
    graded).
 
-An's verdict: ___
+An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fable.md)

@@ -1,0 +1,11 @@
+id = "m04"
+commit = "4ba674d359882c639724ee413fd87044c66597b5"
+kind = "range"
+base = "44466f373da672594dbf8a4d419505f662c712f1"
+layer = "api"
+src_lines = 362
+hidden_tests = ["backend/tests/api/test_chat_api.py", "backend/tests/api/test_conversations_api.py", "backend/tests/api/test_e2e_postgres.py", "backend/tests/api/test_health_api.py", "backend/tests/test_cli.py"]
+pilot = false
+tier = "medium"
+baseline_radon_cc = 2.4583333333333335
+baseline_radon_mi = 74.482361407149

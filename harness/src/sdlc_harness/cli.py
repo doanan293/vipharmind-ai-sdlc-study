@@ -89,7 +89,8 @@ def _print_funnel(records: list[dict]) -> None:
 
 
 EXPECTED_TASKS = {f"t{i:02d}" for i in range(1, 16)} | {"p01", "p02"}
-FEATURE_TASKS = {"f08", "f14", "f15"}  # optional feature-tier range tasks
+# optional range tasks: medium tier m01-m05, large tier f08, f14, f15
+FEATURE_TASKS = {f"m{i:02d}" for i in range(1, 6)} | {"f08", "f14", "f15"}
 
 
 def validate_tasks(
@@ -104,7 +105,7 @@ def validate_tasks(
         missing = sorted(EXPECTED_TASKS - found)
         extra = sorted(found - EXPECTED_TASKS - FEATURE_TASKS)
         errors.append(
-            f"expected task dirs t01-t15, p01, p02 (and optionally f08, f14, f15); "
+            f"expected task dirs t01-t15, p01, p02 (and optionally m01-m05, f08, f14, f15); "
             f"missing {missing}, extra {extra}"
         )
     for d in dirs:
@@ -229,7 +230,7 @@ def main(argv: list[str] | None = None) -> int:
     tsub = t.add_subparsers(dest="tasks_command", required=True)
     v = tsub.add_parser(
         "validate",
-        help="check the 17 task dirs (plus the optional f08, f14, f15) (exit 0 when all are valid)",
+        help="check the 17 task dirs (plus the optional m01-m05, f08, f14, f15) (exit 0 when all are valid)",
     )
     v.add_argument("--dir", type=Path, default=Path("tasks"))
     v.add_argument(

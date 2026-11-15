@@ -1,12 +1,14 @@
 """Apply the amended medium-tier rule (prereg-v1.1 draft, 2026-11-15) to every window of
 medium_candidates.json: eligibility (criteria 1-9), layer, then the greedy two-pass selection.
 
-Inputs: <names.json> from medium_names.py and <analysis.json> from medium_coverage.py analyse.
+Inputs: <names.json> from medium_names.py and <analysis.json> from medium_coverage.py analyse. Without
+these two arguments the script reads the same data from medium_candidates.json (fields required_names
+and integration_coverage, written by an earlier --write), so it runs from a clean checkout.
 Without --write it prints one line per window; with --write it records commit_types, layer_lines,
 layer, required_names, integration_coverage, eligible, reason, selected, selection_pass and selected_as
 in medium_candidates.json (the first run moves the earlier curated verdict to previous_selection).
 
-Usage: python medium_select.py <names.json> <analysis.json> [--write]"""
+Usage: python medium_select.py [<names.json> <analysis.json>] [--write]"""
 import collections, json, os, re, subprocess, sys, tomllib
 from pathlib import Path
 
@@ -27,6 +29,8 @@ def task_commits():
     out = {}
     for f in sorted(TASKS.glob("*/task.toml")):
         t = tomllib.load(open(f, "rb"))
+        if t.get("tier") == "medium":  # the selection's own output (m01-m05), not another tier
+            continue
         if t.get("kind") == "range":
             out[t["id"]] = set(git("rev-list", "--first-parent", f"{t['base']}..{t['commit']}").split())
         else:
@@ -57,10 +61,17 @@ def layer_of(layer_lines):
 
 
 def main():
-    nm = json.load(open(sys.argv[1]))
-    cov = json.load(open(sys.argv[2]))
+    args = [a for a in sys.argv[1:] if a != "--write"]
     write = "--write" in sys.argv
     data = json.load(open(P))
+    if args:
+        nm = json.load(open(args[0]))
+        cov = json.load(open(args[1]))
+    else:  # the inputs as recorded in medium_candidates.json
+        nm = {c["id"]: c["required_names"] for c in data["candidates"]}
+        cov = {c["id"]: {"total": {k: v for k, v in c["integration_coverage"].items() if k != "files"},
+                         "files": c["integration_coverage"]["files"]}
+               for c in data["candidates"] if "integration_coverage" in c}
     taskc = task_commits()
     rows = []
     for c in data["candidates"]:

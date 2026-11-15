@@ -1,0 +1,11 @@
+id = "m01"
+commit = "507a4ae31ea47eef1a195ac074aca1f5515a9ba0"
+kind = "range"
+base = "af9d4173a9f4578ff2040a8cb73e6ce95372cf26"
+layer = "domain"
+src_lines = 478
+hidden_tests = ["backend/tests/domain/corpus/test_bundle_io.py", "backend/tests/domain/corpus/test_identity.py"]
+pilot = false
+tier = "medium"
+baseline_radon_cc = 3.3846153846153846
+baseline_radon_mi = 44.15922398449514
