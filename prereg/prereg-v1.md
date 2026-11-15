@@ -383,4 +383,28 @@ toàn bộ bảng này.
 
 Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa04b793366f1d191e943288e4e0897950900e8f87c199b62df` (tính lại nếu file còn đổi trước thẻ).
 
-(Chưa có thay đổi.)
+1. **2026-11-15; ràng buộc 3 (gạch đầu dòng "Tầng vừa") và ràng buộc 4 của mục "Phạm vi và bản bổ sung
+   `prereg-v1.1`".** Cũ: tầng vừa gồm ứng viên 2–3 commit, 300–700 dòng, đề nêu được mọi tên cần với tối
+   đa 20 tên (đếm trên đề); hơn 5 ứng viên thì giữ theo thứ tự "không chứa commit của t01–t15 trước, rồi
+   số tên trong đề, rồi `end`"; hai nhiệm vụ tầng vừa không chung commit. Mới (văn bản ràng buộc:
+   `prereg/prereg-v1.1.md`, mục "Quy tắc chọn tầng vừa" và "Nhiệm vụ không qua duyệt đề bài"):
+   (a) ứng viên chung commit với t01–t15, p01, p02 bị **loại** thay vì xếp sau, và điều này mở rộng sang
+   f08, f14, f15; (b) thêm tiêu chí 2 (không commit `test`, `refactor`, `chore`, `docs`), tiêu chí 7 (ít
+   nhất 5 test ẩn được chấm trượt ở `base`) và tiêu chí 8 (tối đa 50% dòng được thực thi chỉ do test
+   `integration` thực thi); (c) ngưỡng 20 tên giữ con số nhưng đổi đơn vị, từ số tên nêu trong đề sang số
+   tên đếm cơ học N1–N7 (`medium_names.py`); theo đơn vị cũ (mục nêu trong "Required interfaces"), năm đề
+   được chọn có m01 13, m02 25, m03 18, m04 21, m05 36; (d) thứ tự mới: số tên cơ học, rồi số dòng
+   `backend/src`, rồi `end`, với lượt 1 lấy một cửa sổ cho mỗi lớp domain, application, infrastructure,
+   api, lượt 2 điền chỗ còn lại; (e) quy tắc thay thế mới: chỉ trước thẻ `prereg-v1.1`, bỏ khi REJECT, GAP
+   không đóng được hoặc `--original-patch` lỗi, thay bằng cửa sổ hợp lệ kế tiếp không chung commit với
+   nhiệm vụ đang giữ hay đã bỏ. Lý do: độc lập giữa các tầng, đủ tín hiệu chấm, chỉ commit tính năng, đếm
+   tên được trước khi có đề (chi tiết ở `prereg/prereg-v1.1.md`). Đã xem trước khi đổi: số liệu dựng nhiệm
+   vụ của các ứng viên (số dòng, kết quả chấm bản vá gốc, số tên, độ phủ) và một danh sách m01–m05 chọn
+   tay đầu tiên; **chưa xem kết quả AI nào** (chưa lượt AI nào chạy trên ứng viên tầng vừa hay tầng lớn;
+   chưa mở kết quả nào của tầng nhỏ). Commit: commit mang thẻ `prereg-v1.1`.
+2. **2026-11-15; ràng buộc 1 (thời điểm).** Lượt chạy chính tầng nhỏ bắt đầu khoảng 19:16 ngày 2026-11-15,
+   trước thẻ `prereg-v1.1`, nên trường hợp dự phòng của ràng buộc 1 được áp dụng: không ai mở `grade.json`
+   hay tính tỉ lệ đạt tầng nhỏ trước thẻ đó; chỉ xem số lượt theo trạng thái. Ngày gắn thẻ `prereg-v1.1`:
+   ngày của commit mang thẻ. Ngày mở kết quả tầng nhỏ: chưa mở; được thêm thành một dòng ở mục này khi mở
+   (không sớm hơn thẻ `prereg-v1-analysis`). Đã xem trước khi ghi: nhiều nhất là số lượt theo trạng thái. Commit: commit
+   mang thẻ `prereg-v1.1`.
