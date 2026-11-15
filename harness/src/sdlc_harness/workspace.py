@@ -122,15 +122,16 @@ def prepare_workspace(
     timeout_s: int = 900,
     removed: list[str] | None = None,
 ) -> Path:
-    """Export the parent tree to run_dir/work, strip contaminants, sync deps, commit `baseline`.
+    """Export the start tree (parent, or base for a range task) to run_dir/work, strip contaminants, sync deps, commit `baseline`.
 
-    Hidden tests added by the task do not exist at the parent commit, so the export
-    already lacks them; hidden tests the task only modifies stay at their parent version.
+    Hidden tests and support files (conftest, fakes, fixtures) added by the task do not exist at
+    the start commit, so the export already lacks them; ones the task only modifies stay at
+    their start version.
     Paths stripped by strip_contaminants are appended to `removed` when given.
     """
     work = run_dir / "work"
     work.mkdir(parents=True)
-    export_tree(repo, task.parent, work)
+    export_tree(repo, task.start, work)
     stripped = strip_contaminants(work)
     if removed is not None:
         removed.extend(stripped)

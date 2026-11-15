@@ -33,6 +33,13 @@ class Task:
     missing_keys: tuple[str, ...] = ()
     baseline_radon_cc: float | None = None  # set by the grader's baseline step
     baseline_radon_mi: float | None = None
+    base: str = ""  # range tasks: the commit the agent starts from (commit tasks: the parent)
+    kind: str = "commit"  # "commit" (one commit) or "range" (base..commit, commit is the end)
+
+    @property
+    def start(self) -> str:
+        """The commit the agent's workspace is exported from."""
+        return self.base or self.parent
 
 
 def count_sentences(text: str) -> int:
@@ -54,6 +61,12 @@ def _opt_float(v: object) -> float | None:
     return None if v is None else float(v)  # type: ignore[arg-type]
 
 
+def _required(data: dict) -> tuple[str, ...]:
+    if data.get("kind") == "range":  # a range starts at `base`; no parent needed
+        return tuple("base" if k == "parent" else k for k in REQUIRED_KEYS)
+    return REQUIRED_KEYS
+
+
 def load_task(dir: Path, repo: Path | None = None) -> Task:
     """Read dir/task.toml and dir/prompt.md; with repo, also read hidden test names at the commit."""
     data = tomllib.loads((dir / "task.toml").read_text())
@@ -66,6 +79,9 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         for path in hidden:
             found.update(_test_functions(read_file(repo, data["commit"], path)))
         names = tuple(sorted(found))
+    kind = str(data.get("kind", "commit"))
+    if kind not in ("commit", "range"):
+        raise ValueError(f"{dir}: unknown task kind {kind!r}")
     return Task(
         id=str(data.get("id", dir.name)),
         commit=str(data.get("commit", "")),
@@ -76,9 +92,11 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         pilot=bool(data.get("pilot", False)),
         prompt=prompt,
         test_names=names,
-        missing_keys=tuple(k for k in REQUIRED_KEYS if k not in data),
+        missing_keys=tuple(k for k in _required(data) if k not in data),
         baseline_radon_cc=_opt_float(data.get("baseline_radon_cc")),
         baseline_radon_mi=_opt_float(data.get("baseline_radon_mi")),
+        base=str(data.get("base", "")),
+        kind=kind,
     )
 
 
@@ -88,8 +106,9 @@ def write_task(dir: Path, task: Task) -> None:
     (dir / "task.toml").write_text(
         f'id = "{task.id}"\n'
         f'commit = "{task.commit}"\n'
-        f'parent = "{task.parent}"\n'
-        f'layer = "{task.layer}"\n'
+        + (f'kind = "range"\nbase = "{task.base}"\n' if task.kind == "range" else "")
+        + (f'parent = "{task.parent}"\n' if task.kind == "commit" or task.parent else "")
+        + f'layer = "{task.layer}"\n'
         f"src_lines = {task.src_lines}\n"
         f"hidden_tests = [{hidden}]\n"
         f"pilot = {'true' if task.pilot else 'false'}\n"

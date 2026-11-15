@@ -31,6 +31,8 @@ PROCESS_FILES = {
     "plan": ("docs/plan.md", "backend/docs/plan.md"),
 }
 ARTIFACT_PATHS = {p for paths in PROCESS_FILES.values() for p in paths}
+# restored from the range end when grading a range task (dependencies the feature adds)
+MANIFEST_PATHS = ("pyproject.toml", "uv.lock", "backend/pyproject.toml", "backend/uv.lock")
 PYTEST_CONFIG_FILES = {"conftest.py", "pytest.ini", "setup.cfg", "tox.ini"}
 COPY_IGNORE = shutil.ignore_patterns(
     ".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"
@@ -309,6 +311,28 @@ def _restore(target: Path, content: bytes) -> None:
     target.write_bytes(content)
 
 
+def _range_support(repo: Path, task: Task) -> tuple[list[str], list[str]]:
+    """Support files changed in a range task's base..end: (present at end, deleted at end).
+
+    Support files are every file under backend/tests/ that is changed in the range and is not a
+    hidden test (conftest, fakes, factories, fixtures, helper modules).
+    """
+    if task.kind != "range":
+        return [], []
+    out = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--name-status", "-z", "--no-renames",
+         task.start, task.commit, "--", TESTS_PREFIX],
+        check=True, capture_output=True, text=True,
+    ).stdout.split("\0")  # fmt: skip
+    present: list[str] = []
+    deleted: list[str] = []
+    for status, path in zip(out[0::2], out[1::2], strict=False):
+        if path in task.hidden_tests:
+            continue
+        (deleted if status == "D" else present).append(path)
+    return present, deleted
+
+
 def _in_files(nodeid: str, rels: set[str]) -> bool:
     return nodeid.split("::", 1)[0] in rels
 
@@ -329,11 +353,13 @@ def grade(
     hidden = set(task.hidden_tests)
     hidden_rel = {p.removeprefix("backend/") for p in hidden}
 
-    baseline = _reference(repo, task.parent, cache_dir, timeout_s)
+    start = task.start
+    support, support_deleted = _range_support(repo, task)
+    baseline = _reference(repo, start, cache_dir, timeout_s)
     old = {n: o for n, o in baseline.items() if not _in_files(n, hidden_rel)}
     broken = sorted(n for n, o in old.items() if o in ("failed", "error"))
     if broken:
-        raise GradingError(f"old tests already fail at parent {task.parent}: {broken}")
+        raise GradingError(f"old tests already fail at start {start}: {broken}")
     reference = _reference(repo, task.commit, cache_dir, timeout_s)
     hidden_ids = sorted(n for n in reference if _in_files(n, hidden_rel))
     not_passing = [n for n in hidden_ids if reference[n] != "passed"]
@@ -393,11 +419,21 @@ def grade(
 
     # (4) old test files back at the parent version, the commit's hidden tests over the copy,
     # then the whole suite
-    for path in _ls_tree(repo, task.parent, TESTS_PREFIX):
-        if path not in hidden:
-            _restore(graded / path, _blob(repo, task.parent, path))
-    for path in task.hidden_tests:
+    # (range tasks: support files and the dependency manifests come from the end instead)
+    for path in _ls_tree(repo, start, TESTS_PREFIX):
+        if path not in hidden and path not in support and path not in support_deleted:
+            _restore(graded / path, _blob(repo, start, path))
+    for path in support_deleted:
+        (graded / path).unlink(missing_ok=True)
+    for path in [*task.hidden_tests, *support]:
         _restore(graded / path, _blob(repo, task.commit, path))
+    if task.kind == "range":
+        at_end = set(_ls_tree(repo, task.commit, "."))
+        for path in MANIFEST_PATHS:
+            if path in at_end:
+                _restore(graded / path, _blob(repo, task.commit, path))
+            else:
+                (graded / path).unlink(missing_ok=True)
     final: dict[str, Outcome] = {}
     try:
         report = run_backend_tests(graded, timeout_s)
@@ -453,7 +489,7 @@ def grade(
 def baseline_radon(repo: Path, task: Task) -> tuple[float, float]:
     """The same radon means for the original commit, over the src files it changed."""
     patch = subprocess.run(
-        ["git", "-C", str(repo), "diff", task.parent, task.commit],
+        ["git", "-C", str(repo), "diff", task.start, task.commit],
         check=True,
         capture_output=True,
         text=True,
