@@ -281,3 +281,35 @@ def test_range_old_test_failing_only_at_end_is_not_gradable(tmp_path):
     work = prepare_workspace(repo.path, task, tmp_path / "run")
     with pytest.raises(GradingError, match="old tests do not pass at end"):
         grade(repo.path, task, work, cache_dir=tmp_path / "cache")
+
+
+def test_original_patch_check_ignores_hunks_for_stripped_contaminants(tmp_path):
+    from sdlc_harness.grade import original_patch_errors
+
+    repo = ToyRepo(tmp_path / "toy")
+    repo.path.mkdir()
+    repo.git("init", "-q", "-b", "main")
+    repo.git("config", "user.email", "toy@example.com")
+    repo.git("config", "user.name", "Toy")
+    repo.git("config", "commit.gpgsign", "false")
+    repo.commit("chore: scaffold", BASE_FILES)
+    spec = "backend/docs/superpowers/plans/p.md"
+    base = repo.commit(
+        "chore: base", {**BASE, spec: "plan v1\n", "skills-lock.json": "{}\n", "CLAUDE.md": "a\n"}
+    )
+    end = repo.commit(
+        "feat: one", {**C1, spec: "plan v2\n", "skills-lock.json": "{ }\n", "CLAUDE.md": "b\n"}
+    )
+    task = Task("f09", end, "", "domain", 1, (HIDDEN_A,), False, "p", base=base, kind="range")
+    assert original_patch_errors(repo.path, task, tmp_path / "run", cache_dir=tmp_path / "c") == []
+
+
+def test_is_contaminant_path_matches_the_export_strip():
+    from sdlc_harness.workspace import drop_contaminant_hunks, is_contaminant_path
+
+    assert is_contaminant_path("backend/docs/superpowers/x.md")
+    assert is_contaminant_path("skills-lock.json") and is_contaminant_path("a/CLAUDE.md")
+    assert is_contaminant_path("AGENTS.md") and not is_contaminant_path("docs/AGENTS.md")
+    assert not is_contaminant_path("backend/src/superpowers_x.py")
+    diff = "diff --git a/x.py b/x.py\n+1\ndiff --git a/superpowers/a b/superpowers/a\n+2\n"
+    assert drop_contaminant_hunks(diff) == "diff --git a/x.py b/x.py\n+1\n"

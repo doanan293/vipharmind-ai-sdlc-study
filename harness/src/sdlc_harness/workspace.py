@@ -4,6 +4,7 @@ import functools
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import threading
@@ -74,6 +75,33 @@ def find_contaminants(root: Path) -> list[str]:
             ):
                 found.append((here / f).relative_to(root).as_posix())
     return sorted(found)
+
+
+def is_contaminant_path(rel: str) -> bool:
+    """Would strip_contaminants remove this repo-relative path (or a dir above it)?"""
+    parts = rel.split("/")
+    if any(d.lower() in CONTAMINANT_DIRS for d in parts[:-1]):
+        return True
+    low = parts[-1].lower()
+    parent = parts[-2].lower() if len(parts) > 1 else ""
+    return (
+        low in CONTAMINANT_FILES
+        or (low, parent) == COPILOT_FILE
+        or (low == "agents.md" and len(parts) == 1)
+    )
+
+
+def drop_contaminant_hunks(diff: str) -> str:
+    """The diff without the file entries the workspace export strips (either side of a rename),
+    so applying a repo diff to an exported workspace does not fail on them."""
+    blocks = re.split(r"(?m)^(?=diff --git )", diff)
+    kept = []
+    for block in blocks:
+        m = re.match(r"diff --git a/(.+?) b/(.+)\n", block)
+        if m and (is_contaminant_path(m.group(1)) or is_contaminant_path(m.group(2))):
+            continue
+        kept.append(block)
+    return "".join(kept)
 
 
 def tree_urls(root: Path) -> set[str]:

@@ -384,7 +384,7 @@ def original_patch_errors(
 ) -> list[str]:
     """Grade the original `git diff start end` on a fresh workspace; list everything that is not
     a clean pass (failing hidden tests, regressions, grading errors). Empty means gradable."""
-    from sdlc_harness.workspace import prepare_workspace
+    from sdlc_harness.workspace import drop_contaminant_hunks, prepare_workspace
 
     errors = range_hidden_errors(repo, task)
     if errors:
@@ -394,6 +394,8 @@ def original_patch_errors(
         ["git", "-C", str(repo), "diff", "--binary", task.start, task.commit],
         check=True, capture_output=True, text=True,
     ).stdout  # fmt: skip
+    # the export stripped those paths; their hunks would not apply
+    diff = drop_contaminant_hunks(diff)
     subprocess.run(["git", "-C", str(work), "apply"], input=diff, text=True, check=True)
     try:
         g = grade(repo, task, work, cache_dir=cache_dir, timeout_s=timeout_s)
