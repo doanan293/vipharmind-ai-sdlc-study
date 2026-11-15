@@ -1,0 +1,3 @@
+sha,subject,rule_plan,rule_plan_sha,an_verdict,ai_suggestion,ai_reason
+a1,feat: x,docs/superpowers/plans/x.md,s2,correct,correct,r
+a3,feat: y,,,wrong,correct,r

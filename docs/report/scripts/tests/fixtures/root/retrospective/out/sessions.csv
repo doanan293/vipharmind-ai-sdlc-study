@@ -1,0 +1,3 @@
+session_no,is_subagent,first_ts,user_messages,assistant_turns,tool_calls,user_interrupts
+1,False,2026-10-25,3,10,8,1
+2,True,2026-10-25,1,4,4,0

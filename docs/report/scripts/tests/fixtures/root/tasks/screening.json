@@ -1,0 +1,3 @@
+[{"sha":"a1","subject":"feat: x","layer":"domain","src_lines":100,"hidden_tests":["t.py"],"failed_criterion":null,"reason":""},
+ {"sha":"a3","subject":"feat: y","layer":null,"src_lines":5,"hidden_tests":["u.py"],"failed_criterion":4,"reason":"too small"},
+ {"sha":"a5","subject":"feat: z","layer":"api","src_lines":50,"hidden_tests":["v.py"],"failed_criterion":1,"reason":"shared"}]

@@ -1,0 +1,638 @@
+"""Từ dữ liệu đã đọc, sinh macro số liệu, bảng LaTeX và hình.
+
+Mỗi nhóm số liệu gắn với một nguồn. Thiếu nguồn thì mọi khóa của nhóm vẫn được sinh, giá trị None,
+và macro tương ứng thành \\pending{<Tên>}. Nhờ vậy văn bản luôn build được và tập khóa không đổi.
+"""
+
+import json
+import statistics
+from collections import Counter
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+from report_data import fmt
+
+Numbers = dict[str, str | None]
+
+# Khâu vòng đời: mã trong retrospective/out, tên macro, tên tiếng Việt (như summary.md).
+STAGES = [
+    ("research_eval", "ResearchEval", "nghiên cứu và đánh giá"),
+    ("data", "Data", "dữ liệu"),
+    ("backend", "Backend", "mã backend"),
+    ("frontend", "Frontend", "mã frontend"),
+    ("test", "Test", "kiểm thử"),
+    ("deploy", "Deploy", "triển khai"),
+    ("docs", "Docs", "tài liệu"),
+    ("other", "Other", "khác"),
+]
+COMMIT_TYPES = ["feat", "docs", "fix", "refactor", "chore", "test"]
+LAYERS = ["api", "application", "domain", "infrastructure"]
+# Thứ tự áp tiêu chí sàng lọc của bộ chạy (tasks/SCREENING.md): 1, 4, 5, rồi 2.
+CRITERIA = [(1, "One"), (4, "Four"), (5, "Five"), (2, "Two")]
+CRITERION_TEXT = {
+    1: "1. Không sửa file dùng chung của bộ test",
+    4: "4. Phần thay đổi ở \\texttt{backend/src} từ 30 đến 400 dòng",
+    5: "5. Không chỉ đổi tên hay di chuyển file",
+    2: "2. Test ẩn hỏng ở commit cha, đạt ở commit gốc",
+}
+LIT_STEPS = [
+    ("queries", "Queries"),
+    ("found", "Found"),
+    ("dropped_by_title", "DroppedByTitle"),
+    ("screened", "Screened"),
+    ("dropped_by_abstract", "DroppedByAbstract"),
+    ("kept_new", "KeptNew"),
+    ("prior", "Prior"),
+    ("total", "Total"),
+]
+LIT_GROUPS = [
+    ("benchmarks", "Benchmarks", "Bộ đo cho coding agent và hạn chế"),
+    ("productivity", "Productivity", "Năng suất và chất lượng khi dùng AI"),
+    ("spec", "Spec", "Đặc tả, lập kế hoạch, vibe coding"),
+    ("method", "Method", "Phương pháp nghiên cứu"),
+]
+# Con số chép từ abstract các nguồn (literature-log.md, cột phát hiện). Khai báo ở đây để tập khóa
+# không phụ thuộc file; literature.toml mục [findings] cho giá trị.
+LIT_FINDINGS = [
+    "JimenezTasks",
+    "AleithanLeakPct",
+    "AleithanWeakPct",
+    "WangDiffPct",
+    "LiangPathPct",
+    "LiangPathOtherPct",
+    "ChenTasks",
+    "ChenRepos",
+    "ChenBestPct",
+    "PengFasterPct",
+    "BeckerSlowerPct",
+    "WatanabePRs",
+    "WatanabeMergedPct",
+    "WatanabeReworkPct",
+    "HillPRs",
+    "HillRepos",
+    "JiangGainPct",
+    "TaghaviGain",
+    "TaghaviFeatures",
+    "AgarwalInterviews",
+    "AgarwalRepos",
+]
+ARMS = [("spec", "theo đặc tả"), ("vibe", "vibe coding")]
+
+
+def _group(keys: list[str], source: Any, compute: Callable[[Any], Numbers]) -> Numbers:
+    if source is None:
+        return dict.fromkeys(keys)
+    values = compute(source)
+    assert set(values) == set(keys), set(values) ^ set(keys)
+    return values
+
+
+def _commits(rows: list[dict[str, str]]) -> Numbers:
+    types = Counter(r["type"] for r in rows)
+    dates = sorted(r["date"] for r in rows)
+    out: Numbers = {"Commits": fmt.number(len(rows)), "FirstDate": dates[0], "LastDate": dates[-1]}
+    for t in COMMIT_TYPES:
+        out[f"Commits{t.capitalize()}"] = fmt.number(types.get(t, 0))
+    return out
+
+
+COMMITS_KEYS = ["Commits", "FirstDate", "LastDate"] + [
+    f"Commits{t.capitalize()}" for t in COMMIT_TYPES
+]
+
+
+def _lifecycle_rows(rows: list[dict[str, str]]) -> dict[str, tuple[int, int]]:
+    by_stage = {r["stage"]: (int(r["commits"]), int(r["lines_changed"])) for r in rows}
+    return {code: by_stage.get(code, (0, 0)) for code, _, _ in STAGES}
+
+
+def _lifecycle(rows: list[dict[str, str]]) -> Numbers:
+    stages = _lifecycle_rows(rows)
+    commits = sum(c for c, _ in stages.values())
+    lines = sum(n for _, n in stages.values())
+    out: Numbers = {"LinesChanged": fmt.number(lines)}
+    for code, name, _ in STAGES:
+        c, n = stages[code]
+        out[f"Stage{name}Commits"] = fmt.number(c)
+        out[f"Stage{name}CommitsPct"] = fmt.percent(c, commits)
+        out[f"Stage{name}LinesPct"] = fmt.percent(n, lines)
+    return out
+
+
+LIFECYCLE_KEYS = ["LinesChanged"] + [
+    f"Stage{name}{suffix}"
+    for _, name, _ in STAGES
+    for suffix in ("Commits", "CommitsPct", "LinesPct")
+]
+
+
+def _spec_trace(rows: list[dict[str, str]]) -> Numbers:
+    kinds = Counter(r["kind"] for r in rows)
+    return {
+        "SpecPlanFiles": fmt.number(len(rows)),
+        "SpecFiles": fmt.number(kinds.get("spec", 0)),
+        "PlanFiles": fmt.number(kinds.get("plan", 0)),
+    }
+
+
+def _rework(rows: list[dict[str, str]]) -> Numbers:
+    g = {r["group"]: r for r in rows}
+    w, wo = g["with_plan"], g["without_plan"]
+    n_w, n_wo = int(w["n_feat"]), int(wo["n_feat"])
+    out: Numbers = {
+        "FeatWithPlan": fmt.number(n_w),
+        "FeatWithoutPlan": fmt.number(n_wo),
+        "FeatWithPlanPct": fmt.percent(n_w, n_w + n_wo),
+    }
+    for key, r in (("WithPlan", w), ("WithoutPlan", wo)):
+        out[f"Rework{key}Mean"] = fmt.number(float(r["mean_rework"]), 2)
+        out[f"Rework{key}Median"] = fmt.number(float(r["median_rework"]), 0)
+        out[f"Rework{key}SharePct"] = fmt.number(float(r["share_with_rework"]) * 100, 1)
+    return out
+
+
+REWORK_KEYS = ["FeatWithPlan", "FeatWithoutPlan", "FeatWithPlanPct"] + [
+    f"Rework{g}{s}" for g in ("WithPlan", "WithoutPlan") for s in ("Mean", "Median", "SharePct")
+]
+
+
+def _link_check(rows: list[dict[str, str]]) -> Numbers:
+    correct = sum(r["an_verdict"] == "correct" for r in rows)
+    return {
+        "LinkChecked": fmt.number(len(rows)),
+        "LinkCorrect": fmt.number(correct),
+        "LinkCorrectPct": fmt.percent(correct, len(rows)),
+        "LinkAgreeAI": fmt.number(sum(r["an_verdict"] == r["ai_suggestion"] for r in rows)),
+    }
+
+
+def _sessions(rows: list[dict[str, str]]) -> Numbers:
+    main = [r for r in rows if r["is_subagent"] == "False"]
+
+    def total(field: str, of: list[dict[str, str]]) -> str:
+        return fmt.number(sum(int(r[field]) for r in of))
+
+    # Như retrospective/out/summary.md: tin nhắn người dùng chỉ tính phiên chính; lượt trả lời,
+    # lời gọi công cụ và số lần ngắt tính mọi nhật ký.
+    return {
+        "SessionsMain": fmt.number(len(main)),
+        "SessionsSub": fmt.number(len(rows) - len(main)),
+        "SessionUserMessages": total("user_messages", main),
+        "SessionAssistantTurns": total("assistant_turns", rows),
+        "SessionToolCalls": total("tool_calls", rows),
+        "SessionInterrupts": total("user_interrupts", rows),
+    }
+
+
+def _session_tools(rows: list[dict[str, str]]) -> Numbers:
+    calls = {r["tool"]: int(r["calls"]) for r in rows}
+    total = sum(calls.values())
+    return {
+        "ToolBashCalls": fmt.number(calls.get("Bash", 0)),
+        "ToolBashPct": fmt.percent(calls.get("Bash", 0), total),
+    }
+
+
+def _funnel_steps(rows: list[dict[str, Any]]) -> list[tuple[int, int, int]]:
+    """(tiêu chí, còn lại, bị loại) theo thứ tự áp."""
+    rejected = Counter(r["failed_criterion"] for r in rows)
+    left = len(rows)
+    steps = []
+    for crit, _ in CRITERIA:
+        left -= rejected.get(crit, 0)
+        steps.append((crit, left, rejected.get(crit, 0)))
+    return steps
+
+
+def _screening(rows: list[dict[str, Any]]) -> Numbers:
+    out: Numbers = {"Candidates": fmt.number(len(rows))}
+    for (_crit, left, rej), (_, word) in zip(_funnel_steps(rows), CRITERIA, strict=True):
+        out[f"AfterCrit{word}"] = fmt.number(left)
+        out[f"RejectedCrit{word}"] = fmt.number(rej)
+    eligible = [r for r in rows if r["failed_criterion"] is None]
+    layers = Counter(r["layer"] for r in eligible)
+    out["Eligible"] = fmt.number(len(eligible))
+    out["EligibleNoLayer"] = fmt.number(layers.get(None, 0))
+    out["EligibleStratifiable"] = fmt.number(len(eligible) - layers.get(None, 0))
+    for layer in LAYERS:
+        out[f"Eligible{layer.capitalize()}"] = fmt.number(layers.get(layer, 0))
+    return out
+
+
+SCREENING_KEYS = (
+    ["Candidates", "Eligible", "EligibleNoLayer", "EligibleStratifiable"]
+    + [f"{prefix}Crit{word}" for _, word in CRITERIA for prefix in ("After", "Rejected")]
+    + [f"Eligible{layer.capitalize()}" for layer in LAYERS]
+)
+
+
+def _tasks(rows: list[dict[str, Any]]) -> Numbers:
+    lines = [int(t["src_lines"]) for t in rows]
+    layers = Counter(t["layer"] for t in rows)
+    out: Numbers = {
+        "Tasks": fmt.number(len(rows)),
+        "TaskSrcLinesMin": fmt.number(min(lines)),
+        "TaskSrcLinesMax": fmt.number(max(lines)),
+        "TaskSrcLinesMedian": fmt.number(int(statistics.median_low(lines))),
+        # 2 cách làm × 3 lần lặp mỗi mô hình; 4 mô hình qua ba đợt (bản thiết kế mục 7.4).
+        "RunsPerModel": fmt.number(len(rows) * 2 * 3),
+        "RunsSmallTotal": fmt.number(len(rows) * 2 * 3 * 4),
+    }
+    for layer in LAYERS:
+        out[f"Tasks{layer.capitalize()}"] = fmt.number(layers.get(layer, 0))
+    return out
+
+
+TASKS_KEYS = [
+    "Tasks",
+    "TaskSrcLinesMin",
+    "TaskSrcLinesMax",
+    "TaskSrcLinesMedian",
+    "RunsPerModel",
+    "RunsSmallTotal",
+] + [f"Tasks{layer.capitalize()}" for layer in LAYERS]
+
+
+def _features(rows: list[dict[str, Any]]) -> Numbers:
+    commits = [int(r["n_commits"]) for r in rows]
+    lines = [int(r["src_lines"]) for r in rows]
+    return {
+        "FeatureTasks": fmt.number(len(rows)),
+        "FeatureCommitsMin": fmt.number(min(commits)),
+        "FeatureCommitsMax": fmt.number(max(commits)),
+        "FeatureSrcLinesMin": fmt.number(min(lines)),
+        "FeatureSrcLinesMax": fmt.number(max(lines)),
+        # 2 cách làm × 3 lần lặp × 2 mô hình Claude (bản thiết kế mục 7.2b).
+        "FeatureRuns": fmt.number(len(rows) * 2 * 3 * 2),
+    }
+
+
+FEATURES_KEYS = [
+    "FeatureTasks",
+    "FeatureCommitsMin",
+    "FeatureCommitsMax",
+    "FeatureSrcLinesMin",
+    "FeatureSrcLinesMax",
+    "FeatureRuns",
+]
+
+
+def _literature(lit: dict[str, Any]) -> Numbers:
+    out: Numbers = {f"Lit{name}": fmt.number(int(lit[key])) for key, name in LIT_STEPS}
+    for key, name, _ in LIT_GROUPS:
+        out[f"LitGroup{name}"] = fmt.number(int(lit["groups"][key]))
+    findings = lit.get("findings", {})
+    for name in LIT_FINDINGS:
+        out[f"Lit{name}"] = fmt.as_written(findings[name]) if name in findings else None
+    return out
+
+
+LIT_KEYS = (
+    [f"Lit{name}" for _, name in LIT_STEPS]
+    + [f"LitGroup{name}" for _, name, _ in LIT_GROUPS]
+    + [f"Lit{name}" for name in LIT_FINDINGS]
+)
+
+
+def _pilot(units: list[dict[str, Any]]) -> Numbers:
+    passed = sum(bool(u["task_pass"]) for u in units)
+    return {
+        "PilotUnits": fmt.number(len(units)),
+        "PilotPassed": fmt.number(passed),
+        "PilotPassPct": fmt.percent(passed, len(units)),
+    }
+
+
+PILOT_KEYS = ["PilotUnits", "PilotPassed", "PilotPassPct"]
+
+
+def numbers(data: dict[str, Any]) -> Numbers:
+    out: Numbers = {}
+    out |= _group(COMMITS_KEYS, data.get("commits"), _commits)
+    out |= _group(LIFECYCLE_KEYS, data.get("lifecycle"), _lifecycle)
+    out |= _group(["SpecPlanFiles", "SpecFiles", "PlanFiles"], data.get("spec_trace"), _spec_trace)
+    out |= _group(REWORK_KEYS, data.get("rework_summary"), _rework)
+    out |= _group(
+        ["LinkChecked", "LinkCorrect", "LinkCorrectPct", "LinkAgreeAI"],
+        data.get("link_check"),
+        _link_check,
+    )
+    out |= _group(
+        [
+            "SessionsMain",
+            "SessionsSub",
+            "SessionUserMessages",
+            "SessionAssistantTurns",
+            "SessionToolCalls",
+            "SessionInterrupts",
+        ],
+        data.get("sessions"),
+        _sessions,
+    )
+    out |= _group(["ToolBashCalls", "ToolBashPct"], data.get("session_tools"), _session_tools)
+    out |= _group(SCREENING_KEYS, data.get("screening"), _screening)
+    out |= _group(TASKS_KEYS, data.get("tasks"), _tasks)
+    out |= _group(["PilotTasks"], data.get("pilots"), lambda r: {"PilotTasks": fmt.number(len(r))})
+    out |= _group(FEATURES_KEYS, data.get("features"), _features)
+    out |= _group(LIT_KEYS, data.get("literature"), _literature)
+    out |= _group(PILOT_KEYS, data.get("pilot_results"), _pilot)
+    return out
+
+
+# ---------- bảng ----------
+
+
+def _tabular(
+    spec: str, header: list[str], rows: list[list[str]], total: list[str] | None = None
+) -> str:
+    lines = [
+        f"\\begin{{tabular}}{{{spec}}}",
+        "\\toprule",
+        " & ".join(header) + " \\\\",
+        "\\midrule",
+    ]
+    lines += [" & ".join(r) + " \\\\" for r in rows]
+    if total:
+        lines += ["\\midrule", " & ".join(total) + " \\\\"]
+    lines += ["\\bottomrule", "\\end{tabular}", ""]
+    return "\n".join(lines)
+
+
+def _pending_table(name: str, ncols: int) -> str:
+    cell = f"\\multicolumn{{{ncols}}}{{c}}{{\\pending{{{name}}}}}"
+    return _tabular("l" * ncols, [""] * ncols, [[cell]])
+
+
+def _lifecycle_table(rows: list[dict[str, str]]) -> str:
+    stages = _lifecycle_rows(rows)
+    commits = sum(c for c, _ in stages.values())
+    lines = sum(n for _, n in stages.values())
+    body = [
+        [label, fmt.number(c), fmt.percent(c, commits), fmt.number(n), fmt.percent(n, lines)]
+        for (code, _, label), (c, n) in zip(STAGES, stages.values(), strict=True)
+    ]
+    return _tabular(
+        "lrrrr",
+        ["Khâu", "Commit", "\\% commit", "Dòng thay đổi", "\\% dòng"],
+        body,
+        ["Tổng", fmt.number(commits), "", fmt.number(lines), ""],
+    )
+
+
+def _rework_table(rows: list[dict[str, str]]) -> str:
+    g = {r["group"]: r for r in rows}
+    labels = [("with_plan", "Có plan đi trước"), ("without_plan", "Không có plan")]
+    body = [
+        [
+            label,
+            fmt.number(int(g[k]["n_feat"])),
+            fmt.number(float(g[k]["mean_rework"]), 2),
+            fmt.number(float(g[k]["median_rework"]), 0),
+            fmt.number(float(g[k]["share_with_rework"]) * 100, 1),
+        ]
+        for k, label in labels
+    ]
+    return _tabular(
+        "lrrrr",
+        ["Nhóm", "Số \\texttt{feat}", "Trung bình", "Trung vị", "\\% có sửa lại"],
+        body,
+    )
+
+
+def _funnel_table(rows: list[dict[str, Any]]) -> str:
+    body = [
+        [
+            "Ứng viên: commit \\texttt{feat} chạm cả \\texttt{backend/src}"
+            " và \\texttt{backend/tests}",
+            fmt.number(len(rows)),
+            "",
+        ]
+    ]
+    for crit, left, rej in _funnel_steps(rows):
+        body.append([CRITERION_TEXT[crit], fmt.number(left), fmt.number(rej)])
+    return _tabular("p{0.62\\linewidth}rr", ["Bước", "Còn lại", "Bị loại"], body)
+
+
+def _short(sha: str) -> str:
+    return f"\\texttt{{{sha[:10]}}}"
+
+
+def _tasks_table(
+    tasks: list[dict] | None, pilots: list[dict] | None, features: list[dict] | None
+) -> str:
+    def task_rows(rows: list[dict] | None, name: str) -> list[list[str]]:
+        if rows is None:
+            return [[f"\\multicolumn{{5}}{{c}}{{\\pending{{{name}}}}}"]]
+        return [
+            [
+                f"\\texttt{{{t['id']}}}",
+                t["layer"] or "",
+                _short(t["commit"]),
+                fmt.number(int(t["src_lines"])),
+                fmt.number(len(t["hidden_tests"])),
+            ]
+            for t in rows
+        ]
+
+    body = task_rows(tasks, "tasks")
+    body += [["\\midrule\\multicolumn{5}{l}{\\textit{Nhiệm vụ thử}}"]]
+    body += task_rows(pilots, "pilots")
+    body += [
+        [
+            "\\midrule\\multicolumn{5}{l}{\\textit{Tầng tính năng"
+            " (cột hai: số commit; cột ba: commit đầu..cuối)}}"
+        ]
+    ]
+    if features is None:
+        body += [["\\multicolumn{5}{c}{\\pending{features}}"]]
+    else:
+        body += [
+            [
+                f"\\texttt{{{f['id']}}}",
+                f"{fmt.number(int(f['n_commits']))} commit",
+                f"{_short(f['base'])}..{_short(f['end'])}",
+                fmt.number(int(f["src_lines"])),
+                fmt.number(len(f["hidden_tests"])),
+            ]
+            for f in features
+        ]
+    return _tabular("llllr", ["Mã", "Lớp", "Commit gốc", "Dòng src", "File test ẩn"], body)
+
+
+def _literature_table(lit: dict[str, Any]) -> str:
+    labels = {
+        "queries": "Truy vấn đã chạy",
+        "found": "Mục riêng biệt tìm thấy (không kể nguồn đã có)",
+        "dropped_by_title": "Loại ở bước đọc tiêu đề (blog, trang nhà cung cấp, bài phổ thông)",
+        "screened": "Bài học thuật sàng lọc qua abstract",
+        "dropped_by_abstract": "Loại sau sàng lọc",
+        "kept_new": "Giữ lại, đã mở trang gốc và kiểm tra",
+        "prior": "Nguồn đã kiểm tra từ đề cương",
+        "total": "Tổng nguồn trong \\texttt{references.bib}",
+    }
+    body = [[labels[k], fmt.number(int(lit[k]))] for k, _ in LIT_STEPS]
+    body += [["\\midrule\\multicolumn{2}{l}{\\textit{Theo nhóm}}"]]
+    body += [[label, fmt.number(int(lit["groups"][k]))] for k, _, label in LIT_GROUPS]
+    return _tabular("p{0.75\\linewidth}r", ["Bước", "Số mục"], body)
+
+
+def _pilot_table(units: list[dict[str, Any]]) -> str:
+    by: dict[tuple[str, str], list[bool]] = {}
+    for u in units:
+        by.setdefault((u["cohort"], u["arm"]), []).append(bool(u["task_pass"]))
+    arm_label = dict(ARMS)
+    body = [
+        [
+            f"\\texttt{{{cohort}}}",
+            arm_label.get(arm, arm),
+            f"{fmt.number(sum(v))}/{fmt.number(len(v))}",
+        ]
+        for (cohort, arm), v in sorted(by.items())
+    ]
+    return _tabular("llr", ["Nhóm chạy", "Cách làm", "Đạt/tổng"], body)
+
+
+# ---------- hình ----------
+
+
+def _figure_setup():
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib import font_manager
+
+    names = {f.name for f in font_manager.fontManager.ttflist}
+    plt.rcParams.update(
+        {
+            "font.family": "Times New Roman" if "Times New Roman" in names else "serif",
+            "font.size": 9,
+            "pdf.fonttype": 42,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+        }
+    )
+    return plt
+
+
+def _pending_figure(path: Path) -> None:
+    plt = _figure_setup()
+    fig, ax = plt.subplots(figsize=(6, 1.5))
+    ax.axis("off")
+    ax.text(0.5, 0.5, "[chờ kết quả]", ha="center", va="center")
+    fig.savefig(path)
+    plt.close(fig)
+
+
+GREYS = ["#000000", "#404040", "#707070", "#a0a0a0", "#c8c8c8", "#ffffff", "#e0e0e0", "#585858"]
+HATCHES = ["", "", "", "", "", "///", "...", "xx"]
+
+
+def _lifecycle_figure(rows: list[dict[str, str]], path: Path) -> None:
+    plt = _figure_setup()
+    seen = sorted({r["week"] for r in rows})
+    year = seen[0].split("-W")[0]
+    lo, hi = int(seen[0].split("-W")[1]), int(seen[-1].split("-W")[1])
+    weeks = [f"{year}-W{w:02d}" for w in range(lo, hi + 1)]  # cả tuần không có commit
+    counts = {(r["week"], r["stage"]): int(r["commits"]) for r in rows}
+    fig, ax = plt.subplots(figsize=(6.3, 2.8))
+    bottom = [0] * len(weeks)
+    x = range(len(weeks))
+    for i, (code, _, label) in enumerate(STAGES):
+        h = [counts.get((w, code), 0) for w in weeks]
+        if not any(h):
+            continue
+        ax.bar(
+            x,
+            h,
+            bottom=bottom,
+            color=GREYS[i],
+            hatch=HATCHES[i],
+            edgecolor="black",
+            linewidth=0.4,
+            label=label,
+        )
+        bottom = [b + v for b, v in zip(bottom, h, strict=True)]
+    ax.set_xticks(list(x), [w.split("-W")[1] for w in weeks])
+    ax.set_xlabel(f"Tuần (ISO, năm {year})")
+    ax.set_ylabel("Số commit")
+    ax.legend(ncol=4, fontsize=7, frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
+def _rework_figure(rows: list[dict[str, str]], path: Path) -> None:
+    plt = _figure_setup()
+    groups = [
+        ("True", "Có plan đi trước", "#404040", ""),
+        ("False", "Không có plan", "#ffffff", "///"),
+    ]
+    counts = {g: Counter(int(r["rework"]) for r in rows if r["has_plan"] == g) for g, *_ in groups}
+    top = max(max(c, default=0) for c in counts.values())
+    xs = list(range(top + 1))
+    fig, ax = plt.subplots(figsize=(6.3, 2.4))
+    width = 0.4
+    for i, (g, label, color, hatch) in enumerate(groups):
+        total = sum(counts[g].values()) or 1
+        share = [100 * counts[g].get(x, 0) / total for x in xs]
+        ax.bar(
+            [x + (i - 0.5) * width for x in xs],
+            share,
+            width,
+            color=color,
+            hatch=hatch,
+            edgecolor="black",
+            linewidth=0.4,
+            label=label,
+        )
+    ax.set_xticks(xs)
+    ax.set_xlabel("Số commit fix hoặc refactor chạm cùng file trong 14 ngày sau commit feat")
+    ax.set_ylabel("% số commit feat của nhóm")
+    ax.legend(frameon=False, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
+# ---------- ghi ra ----------
+
+
+def write(data: dict[str, Any], out: Path) -> None:
+    out = Path(out)
+    (out / "tables").mkdir(parents=True, exist_ok=True)
+    (out / "figures").mkdir(parents=True, exist_ok=True)
+
+    nums = numbers(data)
+    tex = ["% Sinh bởi report-data build. Không sửa tay.", ""]
+    for key, value in nums.items():
+        shown = value if value is not None else f"\\pending{{{key}}}"
+        tex.append(f"\\newcommand{{\\Num{key}}}{{{shown}}}")
+    (out / "numbers.tex").write_text("\n".join(tex) + "\n", encoding="utf-8")
+    (out / "numbers.json").write_text(
+        json.dumps(nums, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+
+    def table(name: str, source: Any, render: Callable[[Any], str], ncols: int) -> None:
+        text = render(source) if source is not None else _pending_table(name, ncols)
+        (out / "tables" / f"{name}.tex").write_text(text, encoding="utf-8")
+
+    table("lifecycle", data.get("lifecycle"), _lifecycle_table, 5)
+    table("rework", data.get("rework_summary"), _rework_table, 5)
+    table("funnel", data.get("screening"), _funnel_table, 3)
+    table("literature", data.get("literature"), _literature_table, 2)
+    table("pilot", data.get("pilot_results"), _pilot_table, 3)
+    (out / "tables" / "tasks.tex").write_text(
+        _tasks_table(data.get("tasks"), data.get("pilots"), data.get("features")), encoding="utf-8"
+    )
+
+    for name, source, render in (
+        ("lifecycle_by_week", data.get("lifecycle_week"), _lifecycle_figure),
+        ("rework_by_group", data.get("rework"), _rework_figure),
+    ):
+        path = out / "figures" / f"{name}.pdf"
+        if source is None:
+            _pending_figure(path)
+        else:
+            render(source, path)

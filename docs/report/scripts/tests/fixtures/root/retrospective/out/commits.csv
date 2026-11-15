@@ -1,0 +1,5 @@
+sha,date,type,stage,files,lines_changed
+a1,2026-07-23,feat,backend,2,100
+a2,2026-07-30,fix,backend,1,10
+a3,2026-08-02,feat,test,1,40
+a4,2026-08-03,docs,docs,1,5

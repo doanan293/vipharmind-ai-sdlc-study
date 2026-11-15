@@ -1,0 +1,41 @@
+# Số liệu của quy trình tìm tài liệu, chép từ literature-log.md mục (a) "Số lượng" và bảng nguồn mục (b).
+# Sửa literature-log.md trước, rồi sửa file này cho khớp.
+queries = 15
+found = 47
+dropped_by_title = 16
+screened = 31
+dropped_by_abstract = 13
+kept_new = 18
+prior = 6
+total = 24
+
+# Số nguồn theo nhóm (cột "Nhóm" của bảng nguồn).
+[groups]
+benchmarks = 7     # nhóm 1
+productivity = 5   # nhóm 2
+spec = 10          # nhóm 3
+method = 2         # PP
+
+# Con số trong cột "Phát hiện chính" mà báo cáo trích. Ghi đúng số chữ số thập phân như nguồn.
+[findings]
+JimenezTasks = 2294
+AleithanLeakPct = 32.67
+AleithanWeakPct = 31.08
+WangDiffPct = 29.6
+LiangPathPct = 76
+LiangPathOtherPct = 53
+ChenTasks = 157
+ChenRepos = 27
+ChenBestPct = 29.94
+PengFasterPct = 55.8
+BeckerSlowerPct = 19
+WatanabePRs = 567
+WatanabeMergedPct = 83.8
+WatanabeReworkPct = 45.1
+HillPRs = 88052
+HillRepos = 119
+JiangGainPct = 25.4
+TaghaviGain = 0.15
+TaghaviFeatures = 32
+AgarwalInterviews = 21
+AgarwalRepos = 266

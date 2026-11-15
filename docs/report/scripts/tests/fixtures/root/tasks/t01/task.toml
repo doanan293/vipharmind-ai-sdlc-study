@@ -1,0 +1,7 @@
+id = "t01"
+commit = "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+parent = "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0"
+layer = "domain"
+src_lines = 100
+hidden_tests = ["backend/tests/domain/test_x.py"]
+pilot = false

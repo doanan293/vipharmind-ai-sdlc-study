@@ -1,0 +1,17 @@
+queries = 15
+found = 47
+dropped_by_title = 16
+screened = 31
+dropped_by_abstract = 13
+kept_new = 18
+prior = 6
+total = 24
+
+[groups]
+benchmarks = 7
+productivity = 5
+spec = 10
+method = 2
+
+[findings]
+PengFasterPct = 55.8

@@ -1,0 +1,3 @@
+{"pinned": "x", "whole_plan": [], "sub_ranges": [
+ {"id": "F08", "note": "web api", "base": "e0e0e0e0e0e0", "end": "f0f0f0f0f0f0", "n_commits": 6, "src_lines": 764, "hidden_tests": ["a.py", "b.py"]},
+ {"id": "F09", "note": "dropped", "base": "1", "end": "2", "n_commits": 9, "src_lines": 900, "hidden_tests": []}]}
