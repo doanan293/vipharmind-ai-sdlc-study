@@ -183,6 +183,12 @@ cách làm nhận **cùng một đề bài**.
 **Ai viết.** AI soạn nháp đề bài và đề xuất đánh giá tiêu chí 3 cho từng commit; An đọc, sửa và duyệt
 từng nhiệm vụ trước thẻ `prereg-v1`. Khai báo sử dụng AI ghi rõ việc này.
 
+**Thực tế (2026-11-15).** An duyệt gộp `tasks/REVIEW.md`: chấp nhận nguyên văn mọi đề xuất tiêu chí 3 và
+mọi nháp đề bài của AI, không sửa từng mục; ba mục có test hành vi chỉ thuộc loại `integration`
+(#12, #20, #30) bị loại theo khuyến nghị của trợ lý. Một tác tử duyệt độc lập đã đối chiếu mẫu vài đề bài
+với commit gốc. Báo cáo và khai báo sử dụng AI phải ghi đúng như vậy, và nêu ở phần hạn chế rằng đề bài
+do AI soạn, tác giả không sửa.
+
 **Chốt trước khi chạy.** Danh sách nhiệm vụ, đề bài, giả thuyết, chỉ số và kế hoạch phân tích được
 commit và gắn thẻ git `prereg-v1` trước lượt chạy chính đầu tiên. Lượt chạy trên 2 nhiệm vụ thử được
 phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong báo cáo kèm lý do.

@@ -26,6 +26,11 @@ are found.
 - Excluded, no layer: `4ba674d359` feat(backend): add serve/migrate commands, Postgres end-to-end test and API docs. It changes no
   file under `pharma_agent/<layer>/`, so it cannot be stratified.
 
+> **Review record (2026-11-15).** An approved this file in bulk: every AI proposal for criterion 3 and
+> every draft prompt was accepted as written, without item-by-item edits. The three proposed passes
+> whose behaviour checks are integration-only (#12, #20, #30) were excluded on the assistant's
+> recommendation. The report and the AI-use declaration must state this.
+
 ## 1. `c2935909a1` feat(organizations): create, rename, delete organizations and manage members
 
 - sha: `c2935909a101b7274c58ec0e678371c0a13b3d07`
@@ -48,7 +53,7 @@ Every successful change records exactly one audit event in the same transaction 
 A role change event carries the affected user as its subject and the details `{"from": <old role value>, "to": <new role value>}`, and the deletion event keeps the organization id with the details `{"name": <name>}`.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 2. `1b52f20309` feat(infra): add checkpoint retention cleanup
 
@@ -72,7 +77,7 @@ On success it prints `deleted <n> checkpoints older than <days> days` and exits 
 The service should also run this cleanup once in the background when it starts.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 3. `f8949eca39` feat(backend): add account settings use cases (contacts, password, Google, sessions)
 
@@ -97,7 +102,7 @@ Add `list_sessions(user_id, current_token)`, which never exposes raw tokens (ses
 Unknown users raise `AccountNotFound` everywhere.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 4. `c3a88b2659` feat(api): pin operation ids, document problem responses, export OpenAPI
 
@@ -121,7 +126,7 @@ Add `openapi_export_settings()` and `render_openapi(app)` to a new module `pharm
 Add a `pharma-agent export-openapi --output <file>` command that writes that rendering to the file, creating missing parent directories, and prints `wrote <file>`.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 5. `f2b898af97` feat(deploy): run the backend as a Vercel Function
 
@@ -145,7 +150,7 @@ Accept `inline` as a value of the `jobs.dispatcher` setting (environment variabl
 Also expose a module-level ASGI `app` in `pharma_agent.api.asgi` for hosts that import an application object instead of running the server command.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 6. `650abbd0eb` feat(domain): add fail-open guardrail with regex groups and LLM classifier
 
@@ -168,7 +173,7 @@ Otherwise the service asks the LLM port for an `LlmGuardVerdict` with the existi
 Any LLM error fails open, passing the question as in scope with source `skipped` and `llm_failed` set.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 7. `77cd48cd29` feat(domain): derive retrieval audit records from an agent run
 
@@ -191,7 +196,7 @@ Each hit is a `RetrievalHitRecord` with `rank` (starting at 1), `chunk_id`, `sec
 Both record types are frozen Pydantic models.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 8. `cd9ce5833b` feat(domain): add conversation context and SKILL.md skill model
 
@@ -216,7 +221,7 @@ In `pharma_agent.domain.skill.resolver`, add `resolve_selected(catalog, selected
 Also add a `SkillCatalog` protocol port for listing the catalog and fetching skills by id.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 9. `8dd6a9cdc9` feat(domain): add shared text normalization and snippet helpers
 
@@ -239,7 +244,7 @@ When a single word is longer than the limit, the word itself is cut so that the 
 A `max_chars` of zero or less raises `ValueError` with a message that mentions `max_chars`.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 10. `c04c67decc` feat(infra): add OpenAI Chat Completions adapter for structured output and streaming
 
@@ -262,7 +267,7 @@ Any `OpenAIError` must be raised as the port's `LlmError` with the original mess
 Also provide `default_client_factory` building a plain `AsyncOpenAI` client, and `langfuse_client_factory` building Langfuse's drop-in `AsyncOpenAI` wrapper.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 11. `44466f373d` feat(infra): wire fastapi-users JWT auth with optional Google OAuth
 
@@ -285,7 +290,7 @@ Provide `include_auth_routes(router, auth)` that mounts the login and logout rou
 The Google callback must redirect to `<frontend_url>/auth/google/callback`, link accounts by email and mark new Google users as verified.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 12. `0147ea532a` feat(api): author, upload and publish collection content
 
@@ -310,7 +315,7 @@ Other file types, text that is not UTF-8 and empty files are rejected as invalid
 The routes reuse the existing collection content use cases and the current-actor dependency.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: behaviour checks are integration-only, so grading would check little; excluded on the assistant's recommendation)
 
 ## 13. `3f87109556` feat(domain): add RetrievalService with dedupe, rerank fallback and hydration
 
@@ -334,7 +339,7 @@ Each kept hit is then hydrated with its own hydrate strategy, except that search
 A retriever failure must not raise: the result has no items and `error` holds the error message.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 14. `98a46b6fe7` feat(corpus): build a knowledge bundle from authored Markdown documents
 
@@ -358,7 +363,7 @@ Provide `build_bundle(collection, documents, glossary, colloquial)` returning a 
 The bundle must be deterministic, so the same content always gives the same bundle digest.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 15. `fa34e23d15` feat(backend): add account messages and email/SMS senders
 
@@ -383,7 +388,7 @@ Add `LogSmsSender` with an async `send(*, to, text)` in `pharma_agent.infrastruc
 In `pharma_agent.infrastructure.notifications.factory`, add `build_email_sender(settings)`, which picks the sender from `EmailSettings.provider` and raises `ValueError` naming `PHARMA_EMAIL__SMTP_USERNAME` or `PHARMA_EMAIL__RESEND_API_KEY` when the provider's credentials are missing, and `build_sms_sender(settings)`, which returns the log sender.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 16. `94a54f8696` feat(skills): ship five system SKILL.md playbooks with a filesystem catalog
 
@@ -406,7 +411,7 @@ An invalid file or a folder name that is not a valid skill id must raise an erro
 Provide `FileSystemSkillCatalog(root)`, implementing the existing skill catalog port: `list_catalog(user_id, limit)` returns the metadata of up to `limit` enabled skills, and `get_by_ids(skill_ids)` returns the known skills among the ids and ignores unknown ones.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 17. `69be18bc62` feat(infra): add Qdrant hybrid RRF retriever, embedder and hydrator
 
@@ -430,7 +435,7 @@ Its `verify_collection(expected_dimension)` raises `RetrievalError` mentioning t
 Provide `QdrantHydrator(client, collection, *, window=1)` whose `hydrate(hit, strategy)` returns the chunks of the hit's section sorted by chunk index for the full-section strategy, only the chunks within `window` of the hit's index for the chunk-window strategy, and nothing for search-only hits.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 18. `cc0f06a67b` feat(chat): pre-generate turn message ids and report persisted on done
 
@@ -460,7 +465,7 @@ A failed save must no longer emit a separate `error` event after `done`: remove 
 The CLI's event rendering must print `!! Không lưu được lượt hội thoại này.` to standard error when a `done` event reports `persisted` as false, and print nothing to standard error otherwise.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 19. `9965bdf1bf` feat(domain): add Vietnamese prompts for rephrase, skills, judge, refine and answer
 
@@ -483,7 +488,7 @@ Provide `fallback_text(status)` returning a short Vietnamese apology about the d
 Define a `DISCLAIMER_PHRASES` tuple of medical-disclaimer phrases in Vietnamese and English, and make sure none of these phrases appears in any prompt or fallback text.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 20. `8363fdd98c` feat(db): add organizations, members, invitations, audit events and quota columns
 
@@ -508,7 +513,7 @@ Add nullable `text_quota_bytes` and `collection_quota` override columns to the e
 Write Alembic migration `0017` on top of `0016` that creates exactly this schema, so the migrated database matches the metadata.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: behaviour checks are integration-only, so grading would check little; excluded on the assistant's recommendation)
 
 ## 21. `d14fd6c5a4` feat(cli): add pharma-agent corpus import and release commands
 
@@ -533,7 +538,7 @@ Add the commands `corpus import <dir> --collection <key> [--publish]`, `corpus r
 The other commands print one line per release (marking the current one), the rollback target, the published release, how many releases were retired and how many points were upserted, and they exit with code 1 and the error code (for example `RELEASE_NOT_FOUND` or `COLLECTION_NOT_FOUND`) on application errors.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 22. `ad31679e10` feat(audit): read organization, personal and global audit logs
 
@@ -556,7 +561,7 @@ The organization log follows the existing access policy: callers who cannot see 
 Move `ForbiddenRole` and `OrganizationNotFound` into `pharma_agent.application.errors` and keep importing them from `pharma_agent.application.organizations.errors` working.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 23. `a146825676` feat(api): create conversations before the first message
 
@@ -583,7 +588,7 @@ When the first chat turn is sent to a pre-created conversation, the chat service
 Empty conversations must not appear in the conversation list until they have a turn, but they can be fetched by id.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 24. `7106f74799` feat(application): add opaque keyset cursor helpers
 
@@ -606,7 +611,7 @@ Any malformed cursor must raise `InvalidCursor`: invalid base64 or characters, J
 Keep the error message generic so it does not echo the cursor back.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 25. `7757b6cc65` feat(observability): trace chat turns in Langfuse and store skills in Postgres
 
@@ -631,7 +636,7 @@ Add a `Tracing` protocol in `pharma_agent.application.tracing` that combines the
 The container should also sync the system skills into Postgres at startup and let the agent read its skill catalog from there.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 26. `bc3c787409` feat(corpus): port glossary, colloquial and embedding text enrichment
 
@@ -654,7 +659,7 @@ The colloquial block has a `Tên gọi khác: ` line listing aliases not already
 The term block is `Thuật ngữ: ` followed by `TERM = expansion; expansion` entries joined by ` | `, merging repeated terms, and it is omitted when the chunk already contains a term block.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 27. `1f00fc352f` feat(domain): add conversation repository port and summarizer prompt
 
@@ -676,7 +681,7 @@ No text may contain any phrase from the existing `DISCLAIMER_PHRASES`.
 In `pharma_agent.domain.conversation.ports`, add a `ConversationRepository` protocol with async methods to create, get, list, rename, update the summary of and delete a user's conversations, append a turn's messages, read recent turns and the turns since a given count, and page through messages.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 28. `2541825733` feat(application): add rolling conversation summary and conversation queries
 
@@ -701,7 +706,7 @@ Otherwise it reads the turns added since the last summary, leaves out turns whos
 If only excluded turns were added, the covered turn count advances without calling the LLM and it returns `False`, and if the LLM fails the previous summary and count are kept and it returns `False`.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 29. `86a0dae1a6` feat(retrieval): rerank through DeepInfra's inference endpoint
 
@@ -724,7 +729,7 @@ With no candidates it returns an empty list without sending any request.
 Accept `deepinfra` as a value of the rerank `protocol` setting (`PHARMA_RETRIEVAL__RERANK__PROTOCOL`), and make the existing `build_reranker(settings)` return a `DeepInfraReranker` for it, using the configured base URL, bearer API key and model.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 30. `7631b0a4b3` feat(skills): add Postgres skill repository, slug helper and skills table
 
@@ -749,7 +754,7 @@ Owned-skill operations ignore skills that belong to other users: `get_owned` and
 User skills are deleted together with their owner.
 ```
 
-An: 
+An: fail (bulk approval 2026-11-15: behaviour checks are integration-only, so grading would check little; excluded on the assistant's recommendation)
 
 ## 31. `36f7328ba2` feat(domain): add streaming citation sanitizer
 
@@ -772,7 +777,7 @@ While the end of a delta might be the start of a marker, `feed` holds that part 
 Also provide `citations_from(numbered, used) -> list[Citation]`, where `numbered` is the list of `(index, evidence)` pairs produced by the existing `EvidenceSet.context_view`, returning one `Citation` per used index in the order of `used` with the index and the hit's chunk id, section id, title, section, start and end pages and table id, and skipping indexes that are not numbered.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## 32. `0a6b1f0680` feat(email): send through the Gmail API, since Render Free blocks outbound SMTP
 
@@ -795,7 +800,7 @@ Accept `gmail` as an email `provider` and add the settings `gmail_client_id`, `g
 Make `build_email_sender` return this sender for the `gmail` provider, and raise `ValueError` naming `PHARMA_EMAIL__GMAIL_CLIENT_ID`, `PHARMA_EMAIL__GMAIL_CLIENT_SECRET` and `PHARMA_EMAIL__GMAIL_REFRESH_TOKEN` when any of them is missing.
 ```
 
-An: 
+An: pass (bulk approval 2026-11-15: accepted the AI proposal and draft prompt as written)
 
 ## Not drafted yet (rest of the review order)
 
