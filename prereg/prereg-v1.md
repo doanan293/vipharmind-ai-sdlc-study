@@ -150,8 +150,15 @@ Xử lý từng loại kết cục (bộ chạy tại thẻ cài đúng các quy
   là lượt **chưa chạy**, không phải lượt lỗi. Nó được chạy lại bằng cách gọi lại đúng lệnh ở mục 5 sau
   khi hạn mức hồi, và không bao giờ bị loại một cách lặng lẽ. Lượt còn `deferred` ở hạn chót được liệt kê
   trong báo cáo và làm (nhóm, tầng) đó thành chưa đủ (mục 10).
+- **Bộ chấm hết giờ.** Bản vá đã lưu được chấm lại một lần trên một cây mới dựng từ `patch.diff` (AI không
+  chạy lại). Hết giờ lần thứ hai thì lượt là lượt hợp lệ, không đạt, ghi chú "grader timeout on agent patch
+  (twice)": treo lặp lại là lỗi của bản vá.
+- **Bản vá làm hỏng môi trường test.** Nếu bước chạy test cuối không ra báo cáo hoặc `uv sync` hỏng, và bản
+  vá sửa `pyproject.toml`, `uv.lock`, `conftest.py` hay file cấu hình pytest còn nằm trong cây được chấm,
+  bước đó chạy lại một lần. Hỏng giống hệt lần thứ hai thì lượt hợp lệ, không đạt; khác đi hoặc là lỗi hệ
+  điều hành (`OSError`) thì là lỗi hệ thống.
 - **Lỗi hệ thống** là lượt bộ chạy ghi `status = error`: ngoại lệ trong bộ chạy (cây bẩn, lệch đề bài,
-  lỗi khác), hoặc bộ chấm hết giờ hay không ra báo cáo test. Gọi lại lệnh ở mục 5 thì lượt đó được chạy
+  lỗi khác), bộ chấm sập, hoặc bước chạy test cuối hỏng mà không do bản vá. Gọi lại lệnh ở mục 5 thì lượt đó được chạy
   lại từ đầu. Mỗi lượt được chạy lại tối đa 2 lần. Vẫn lỗi thì loại khỏi phân tích; báo cáo liệt kê từng
   lượt bị loại kèm lý do, và đếm số lượt bị loại theo cách làm.
 - Quyết định chạy lại chỉ dựa trên `status`, không dựa trên `task_pass`. Không lượt hợp lệ nào bị chạy
