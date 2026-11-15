@@ -48,18 +48,18 @@ Số commit `fix` hoặc `refactor` chạm cùng file mã trong 14 ngày sau m�
 
 | nhóm | số feat | trung bình | trung vị | tỉ lệ feat có sửa lại |
 | --- | --- | --- | --- | --- |
-| có plan đi trước | 196 | 2.37 | 2 | 82.1% |
-| không có plan | 25 | 2.24 | 3 | 80.0% |
+| có plan đi trước | 196 | 2.26 | 2 | 79.6% |
+| không có plan | 25 | 2.00 | 2 | 76.0% |
 
 Theo khâu:
 
 | khâu | số feat | trung bình | tỉ lệ feat có sửa lại |
 | --- | --- | --- | --- |
 | nghiên cứu và đánh giá | 4 | 1.50 | 50.0% |
-| dữ liệu | 24 | 3.17 | 83.3% |
-| mã backend | 65 | 2.89 | 86.2% |
-| mã frontend | 32 | 1.88 | 87.5% |
-| kiểm thử | 94 | 1.99 | 78.7% |
+| dữ liệu | 24 | 2.88 | 70.8% |
+| mã backend | 65 | 2.80 | 86.2% |
+| mã frontend | 32 | 1.84 | 87.5% |
+| kiểm thử | 94 | 1.84 | 75.5% |
 | khác | 2 | 2.00 | 50.0% |
 
 Đây là quan sát, không phải quan hệ nhân quả.
@@ -68,8 +68,8 @@ Theo khâu:
 
 - Phiên chính: 12; nhật ký tác tử con: 21.
 - Đã loại: 2 file có thời điểm đầu tiên sau 2026-11-10, 0 file không có thời điểm.
-- Tin nhắn người dùng (phiên chính): 220; lượt trả lời của mô hình: 1693; lời gọi công cụ: 1667.
-- Số lần người dùng ngắt ngang (`[Request interrupted by user`): 9. Đây là thước đo thay thế cho "số lần người sửa hướng" ở bản thiết kế mục 7.1.
+- Tin nhắn người dùng (phiên chính): 177; lượt trả lời của mô hình: 1693; lời gọi công cụ: 1667.
+- Số lần người dùng ngắt ngang (`[Request interrupted by user`): 8. Đây là thước đo thay thế cho "số lần người sửa hướng" ở bản thiết kế mục 7.1.
 - Công cụ được gọi nhiều nhất: Bash (1268), Read (253), mcp__claude-in-chrome__computer (37), Write (34), Agent (21), AskUserQuestion (10), Skill (10), mcp__claude-in-chrome__get_page_text (8).
 - Nhật ký không đầy đủ (An xóa lịch sử chat giữa các phiên); không suy rộng ra toàn dự án.
 

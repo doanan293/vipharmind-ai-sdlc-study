@@ -140,3 +140,26 @@ def test_tool_rows_sum_across_sessions(tmp_path):
 
 def test_collect_skips_missing_dirs(tmp_path):
     assert collect_sessions([tmp_path / "nope"]) == ([], {"after_cutoff": 0, "no_timestamp": 0})
+
+
+def test_injected_user_entries_are_not_human_messages(tmp_path):
+    f = tmp_path / "s.jsonl"
+    ts = "2026-09-01T01:00:00Z"
+    _write(
+        f,
+        [
+            {"type": "user", "timestamp": ts, "message": {"content": "real question"}},
+            {"type": "user", "isMeta": True, "message": {"content": "injected skill body"}},
+            {"type": "user", "isCompactSummary": True, "message": {"content": "summary"}},
+            {"type": "user", "message": {"content": "<command-name>/clear</command-name>"}},
+            {
+                "type": "user",
+                "message": {
+                    "content": [
+                        {"type": "text", "text": "<local-command-stdout>x</local-command-stdout>"}
+                    ]
+                },
+            },
+        ],
+    )
+    assert session_stats(f).user_messages == 1

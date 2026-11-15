@@ -15,7 +15,12 @@ _IGNORED_STAGES = ("docs", "other")
 
 
 def _code_files(commit: Commit) -> set[str]:
-    return {f.path for f in commit.files if classify_file(f.path) not in _IGNORED_STAGES}
+    """Files that count for rework: not docs/other stage and not Markdown anywhere."""
+    return {
+        f.path
+        for f in commit.files
+        if classify_file(f.path) not in _IGNORED_STAGES and not f.path.endswith(".md")
+    }
 
 
 def rework_count(feat: Commit, later: list[Commit], window_days: int = 14) -> int:

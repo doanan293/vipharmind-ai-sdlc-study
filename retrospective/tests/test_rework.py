@@ -99,3 +99,9 @@ def test_rework_rows(make_repo):
         ("frontend", 1, False, 0),
     ]
     assert rows[0]["date"] == "2026-09-02"
+
+
+def test_markdown_inside_subprojects_is_not_code():
+    feat = _c("feat", 1, "backend/docs/superpowers/plans/p.md", "backend/src/a.py")
+    later = [_c("fix", 3, "backend/docs/superpowers/plans/p.md")]
+    assert rework_count(feat, later) == 0

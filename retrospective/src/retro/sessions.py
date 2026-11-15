@@ -19,6 +19,8 @@ SESSION_DIRS = (
 )
 CUTOFF = date(2026, 11, 10)
 _INTERRUPT = "[Request interrupted by user"
+_INJECTED_FLAGS = ("isMeta", "isCompactSummary")
+_INJECTED_PREFIXES = ("<command-", "<local-command")
 
 
 @dataclass(frozen=True)
@@ -71,8 +73,10 @@ def session_stats(path: Path) -> SessionStats:
             message = entry.get("message")
             content = message.get("content") if isinstance(message, dict) else None
             if entry.get("type") == "user":
+                if any(entry.get(flag) for flag in _INJECTED_FLAGS):
+                    continue
                 text = _user_text(content)
-                if text is not None:
+                if text is not None and not text.lstrip().startswith(_INJECTED_PREFIXES):
                     user_messages += 1
                     interrupts += _INTERRUPT in text
             elif entry.get("type") == "assistant":
