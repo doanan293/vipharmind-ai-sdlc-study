@@ -1,8 +1,9 @@
 # Run cohorts: one agent CLI + model each; every cohort runs at medium effort.
 # accounts are indices into accounts.local.toml (never emails or tokens); a cohort switches
 # to its next account when the current one runs out of quota.
-# Pilot (Task 9): claude and agy run direct on one subscription login each; codex account 1 is
-# the local cli-proxy-api, which itself round-robins over its codex logins (docs/pilot-report.md).
+# Main runs (ruling R11, owner 2026-11-15): claude runs direct on one subscription login; agy
+# rotates over its direct logins (1 = ~/.gemini, 2-4 converted from the owner's proxy logins);
+# codex rotates over its direct logins (1 = ~/.codex, 2-4 converted). No proxy for any agent.
 
 [cohort.claude-sonnet]
 agent = "claude"
@@ -20,10 +21,10 @@ accounts = [1]
 agent = "agy"
 model = "gemini-3.8-flash-medium"
 effort = "medium"
-accounts = [1]
+accounts = [1, 2, 3, 4]
 
 [cohort.codex-luna]
 agent = "codex"
 model = "gpt-6-luna"
 effort = "medium"
-accounts = [1]
+accounts = [1, 2, 3, 4]

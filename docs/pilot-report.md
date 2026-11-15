@@ -5,26 +5,24 @@ Kết quả thô: `results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/` (bộ chạy
 `<out>/<cohort>/<task>/<arm>-r<rep>/`, với `--out results/raw/pilot`). Nhật ký các lần thử công cụ:
 `results/raw/probes/`.
 
-## 0. Việc cần An quyết (đọc trước)
+## 0. Quyết định của An sau chạy thử (2026-11-15, ruling R11)
 
-1. **Hạn mức tuần của agy hết sau 3 lượt.**
-   - Lượt thứ ba báo `Individual quota reached … Resets in 167h3m55s` (`RESOURCE_EXHAUSTED`, 429), tức khoảng
-     ngày 2026-11-22.
-   - Mỗi lượt agy tốn 6–8,5 triệu token vào. Nhóm `agy-gemini` mới xong **2/12 lượt** chạy thử.
-   - Đợt 2 (90 lượt) cần nhiều tài khoản agy đăng nhập trực tiếp, hoặc chờ nhiều tuần.
-   - Không dùng 4 tài khoản Antigravity trong proxy cho agy: điều khoản Antigravity coi việc dùng phần mềm bên
-     thứ ba với Antigravity OAuth là vi phạm (mục 3).
-2. **Codex qua proxy có thể trái điều khoản của OpenAI** (mục 3): proxy bên thứ ba giữ token OAuth của 8 tài
-   khoản Codex và xoay vòng để vượt hạn mức từng tài khoản. An chọn: giữ proxy, hay chạy trực tiếp bằng
-   `~/.codex/auth.json` (1 tài khoản; chỉ cần đổi `harness/accounts.local.toml`).
-3. **agy không tắt được web ở agent mặc định**, nên chạy bằng một agent riêng không có công cụ web (mục 1.2,
-   mục 2). System prompt vì thế khác bản phát hành. An chọn: chấp nhận và ghi là hạn chế, hay loại agy như
-   thiết kế quy định.
-4. **Mạng qua shell vẫn mở ở cả ba công cụ** (để ba công cụ ngang nhau). Trợ lý về lý thuyết có thể tải repo
-   ViPharmind công khai. Chạy thử không có lượt nào làm vậy (mục 5.4). An chọn chấp nhận và ghi là hạn chế,
-   hay tìm cách chặn mạng cho cả ba ở mức hệ điều hành (ví dụ network namespace có allowlist), một việc làm
-   thêm.
-5. Claude ở gói thuê bao chạy hàng loạt là **vùng xám** theo điều khoản ("ordinary, individual usage"), mục 3.
+Các điểm dưới đây từng được nêu để An quyết; An đã quyết như sau.
+
+1. **Không dùng proxy.** Cả ba công cụ gọi thẳng CLI của chính nó. Nhiều tài khoản chỉ để đổi khi hết
+   hạn mức: bộ chạy tự chuyển sang tài khoản kế tiếp. Token của các tài khoản phụ được chép từ kho đăng
+   nhập của proxy sang định dạng của từng CLI, rồi chạy thử từng tài khoản. Mọi tài khoản đều của An;
+   An chấp nhận việc đổi qua lại nhiều tài khoản.
+   - Claude Code: 1 tài khoản (token Claude trong proxy bị Claude Code từ chối).
+   - Antigravity: 4 tài khoản. Hạn mức tuần của tài khoản đầu hết sau 3 lượt chạy thử.
+   - Codex: các tài khoản đăng nhập trực tiếp (xem `harness/accounts.local.toml`, chỉ ghi số thứ tự).
+2. **Agent mặc định.** Mỗi công cụ chạy agent mặc định với bộ công cụ mặc định, kể cả công cụ web. Chỉ
+   bỏ phần cài thêm của người dùng: skill, plugin, MCP, bộ nhớ, file hướng dẫn riêng. Agent tùy chỉnh
+   không có web của agy (mục 1.2) và cờ tắt web của claude, codex không còn dùng.
+3. **Mạng mở là hạn chế được chấp nhận.** Bộ chạy ghi `upstream_urls` (đường dẫn tới repo ViPharmind
+   gốc trong nhật ký) cho từng lượt để phân tích độ nhạy.
+4. Lượt chạy thử bên dưới dùng cấu hình cũ (tắt web, Codex qua proxy). Kết quả chính chạy bằng cấu hình
+   mới.
 
 ## 1. Kiểm tra từng công cụ (bước 1)
 

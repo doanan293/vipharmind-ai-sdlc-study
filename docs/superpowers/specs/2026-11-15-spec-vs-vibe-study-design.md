@@ -263,9 +263,12 @@ Mỗi lượt chạy:
 1. Xuất mã ViPharmind tại commit cha vào một thư mục mới **không kèm lịch sử git**, để AI không đọc
    được các commit tương lai.
 2. Xóa các file test ẩn khỏi thư mục đó.
-3. Gọi trợ lý lập trình ở chế độ không tương tác với đề bài và lời dặn của cách làm. Tắt công cụ truy
-   cập web, vì repo ViPharmind công khai. Dùng thư mục cấu hình sạch: không plugin, không skill,
-   không bộ nhớ, không file hướng dẫn riêng.
+3. Gọi trợ lý lập trình ở chế độ không tương tác với đề bài và lời dặn của cách làm. Mỗi công cụ chạy
+   **agent mặc định với bộ công cụ mặc định**, kể cả công cụ web (quyết định của An sau chạy thử,
+   ruling R11). Chỉ bỏ phần cài thêm của người dùng: thư mục cấu hình sạch, không plugin, không skill,
+   không MCP, không bộ nhớ, không file hướng dẫn riêng. Vì repo ViPharmind công khai, bộ chạy ghi mọi
+   đường dẫn tới repo gốc xuất hiện trong nhật ký (`upstream_urls`); phần phân tích chạy lại một lần
+   bỏ các lượt có truy cập này, và báo cáo ghi việc mở mạng là một hạn chế.
 4. Khi AI dừng hoặc chạm giới hạn, chép test ẩn vào lại và chấm.
 5. Lưu kết quả thô: đề bài đã gửi, toàn bộ nhật ký lượt chạy, bản vá, kết quả từng test, số liệu chi
    phí.
@@ -313,11 +316,14 @@ Antigravity, 4 tài khoản Codex miễn phí, 1 tài khoản Claude; proxy chia
 khoản khi một tài khoản hết hạn mức. Proxy là cổng gọi mô hình kiểu API, không phải trợ lý lập trình,
 nên mỗi công cụ dùng nó theo cách riêng:
 
-- **Claude Code:** chỉ có 1 tài khoản, chạy thẳng bằng đăng nhập sẵn có, không qua proxy.
-- **Codex CLI:** trỏ nhà cung cấp mô hình của Codex tới proxy để xoay vòng 4 tài khoản.
-- **Antigravity CLI:** ưu tiên chạy thẳng `agy` vì mức Medium chỉ có ở đó (proxy chỉ có
-  `gemini-3.8-flash-high`). Khi hết hạn mức thì đổi tài khoản đăng nhập của `agy`; cách đổi tự động
-  do người thực hiện xác định khi chạy thử.
+- **Claude Code:** 1 tài khoản, chạy thẳng bằng đăng nhập sẵn có, không qua proxy (token Claude trong
+  proxy không dùng được cho Claude Code).
+- **Codex CLI:** chạy thẳng `codex exec`, xoay vòng các đăng nhập trực tiếp như Antigravity.
+- **Antigravity CLI:** chạy thẳng `agy` vì mức Medium chỉ có ở đó. Xoay vòng các đăng nhập trực tiếp:
+  tài khoản 1 là `~/.gemini`, các tài khoản khác lấy token đăng nhập trong proxy chuyển sang định dạng
+  của `agy` (đã chạy thử từng tài khoản). Bộ chạy tự đổi sang tài khoản kế tiếp khi hết hạn mức.
+
+Mọi tài khoản đều của An. An quyết định xoay vòng nhiều tài khoản là chấp nhận được (2026-11-15).
 
 Ràng buộc khi dùng proxy và nhiều tài khoản:
 
@@ -326,7 +332,6 @@ Ràng buộc khi dùng proxy và nhiều tài khoản:
   không ép mức suy luận, và ghi mô hình thực tế được phục vụ cho từng lượt.
 - Ghi lại tài khoản thứ mấy (số thứ tự, không ghi email) phục vụ từng lượt. Báo cáo nêu rõ thí nghiệm
   chạy trên nhiều tài khoản và qua proxy.
-- Kiểm tra điều khoản của từng dịch vụ về việc xoay nhiều tài khoản trước khi chạy đợt 2 và 3.
 
 Phải kiểm tra khi chạy 2 nhiệm vụ thử, trước thẻ `prereg-v1`: điều khoản của từng gói về chạy tự
 động; hạn mức thực tế; cách tắt truy cập web ở `agy` và `codex`; mỗi công cụ có trả lượng token hay

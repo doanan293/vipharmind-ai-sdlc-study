@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from sdlc_harness.agents import AGY_AGENT, AGY_TOOLS
 from sdlc_harness.tasks import Task
 from sdlc_harness.workspace import (
     PROXY_KEY_ENV,
@@ -112,7 +111,7 @@ def test_prepare_config_claude_copies_only_credentials(tmp_path, host_uv):
     assert _tree(tmp_path / "run" / "config") == ["home/.claude/.credentials.json"]
 
 
-def test_prepare_config_agy_copies_token_and_writes_no_web_agent(tmp_path, host_uv):
+def test_prepare_config_agy_copies_only_the_token(tmp_path, host_uv):
     src = tmp_path / "antigravity-cli"
     (src / "brain").mkdir(parents=True)
     (src / "antigravity-oauth-token").write_text("tok")
@@ -124,13 +123,7 @@ def test_prepare_config_agy_copies_token_and_writes_no_web_agent(tmp_path, host_
     assert env["HOME"] == str(config / "home")
     assert _tree(config) == [
         "home/.gemini/antigravity-cli/antigravity-oauth-token",
-        f"home/.gemini/config/agents/{AGY_AGENT}.md",
     ]
-    agent = (config / f"home/.gemini/config/agents/{AGY_AGENT}.md").read_text()
-    assert f"name: {AGY_AGENT}" in agent
-    assert f"tools: [{', '.join(AGY_TOOLS)}]" in agent
-    assert "search_web" not in agent and "browser" not in agent
-    assert "mainAgent: true" in agent and "subagent: false" in agent
 
 
 def test_prepare_config_codex_proxy_reads_key_at_runtime(tmp_path, host_uv):
@@ -151,7 +144,7 @@ def test_prepare_config_codex_proxy_reads_key_at_runtime(tmp_path, host_uv):
     provider = config["model_providers"]["sdlc-proxy"]
     assert provider["base_url"] == "http://localhost:8317/v1"
     assert provider["env_key"] == PROXY_KEY_ENV
-    assert config["web_search"] == "disabled"
+    assert "web_search" not in config  # stock tools (ruling R11)
     assert config["project_doc_max_bytes"] == 0
     assert config["skills"] == {"bundled": {"enabled": False}, "include_instructions": False}
     assert config["features"]["memories"] is False and config["features"]["plugins"] is False
@@ -172,7 +165,7 @@ def test_prepare_config_codex_direct_copies_only_auth_json(tmp_path, host_uv):
         "home/.codex/config.toml",
     ]
     config = tomllib.loads((tmp_path / "run/config/home/.codex/config.toml").read_text())
-    assert "model_provider" not in config and config["web_search"] == "disabled"
+    assert "model_provider" not in config and "web_search" not in config
 
 
 def test_prepare_config_is_identical_for_two_attempts(tmp_path, host_uv):

@@ -26,7 +26,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import IO, Literal, cast
 
-from sdlc_harness.agents import build_command, is_quota_error, parse_usage
+from sdlc_harness.agents import build_command, is_quota_error, parse_usage, upstream_urls
 from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
@@ -447,6 +447,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
             wall_s=wall,
             usage=asdict(usage),
             model_served=usage.model_served,
+            upstream_urls=upstream_urls(transcript),
         )
         if not timed_out and is_quota_error(cohort.agent, rc, f"{transcript}\n{stderr}"):
             meta["status"] = "quota"

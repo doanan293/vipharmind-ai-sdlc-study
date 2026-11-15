@@ -6,19 +6,17 @@ from pathlib import Path
 import pytest
 
 from sdlc_harness.agents import (
-    AGY_AGENT,
-    AGY_DENY,
-    CODEX_WEB_OFF_FLAGS,
     Usage,
     build_command,
     is_quota_error,
     parse_usage,
+    upstream_urls,
 )
 
 PROMPT = Path("/runs/x/prompt.txt")
 
 
-def test_build_command_claude_disables_web_and_sets_medium():
+def test_build_command_claude_stock_agent_at_medium():
     cmd = build_command("claude", "claude-sonnet-5-5", "medium", PROMPT)
     assert cmd == [
         "claude",
@@ -32,9 +30,6 @@ def test_build_command_claude_disables_web_and_sets_medium():
         "--verbose",
         "--permission-mode",
         "bypassPermissions",
-        "--disallowedTools",
-        "WebFetch",
-        "WebSearch",
         "--strict-mcp-config",
         "--setting-sources",
         "",
@@ -57,12 +52,11 @@ def test_build_command_codex_sets_reasoning_medium():
     assert "--sandbox" not in cmd
     assert "--json" in cmd
     assert "--strict-config" in cmd
-    assert CODEX_WEB_OFF_FLAGS == ("-c", 'web_search="disabled"')
-    assert cmd[cmd.index("-c", cmd.index("-c") + 1) + 1] == 'web_search="disabled"'
+    assert not any("web_search" in a for a in cmd)  # stock tools (ruling R11)
     assert cmd[-1] == "-"  # prompt on stdin
 
 
-def test_build_command_agy_passes_prompt_as_print_value_and_uses_no_web_agent(tmp_path):
+def test_build_command_agy_passes_prompt_as_print_value_and_uses_stock_agent(tmp_path):
     prompt = tmp_path / "prompt.txt"
     prompt.write_text("Add mul.\n-p is not a flag here\n")
     cmd = build_command("agy", "gemini-3.8-flash-medium", "medium", prompt)
@@ -70,9 +64,7 @@ def test_build_command_agy_passes_prompt_as_print_value_and_uses_no_web_agent(tm
     assert cmd[cmd.index("--model") + 1] == "gemini-3.8-flash-medium"
     assert cmd[cmd.index("--effort") + 1] == "medium"
     assert cmd[cmd.index("--output-format") + 1] == "stream-json"
-    assert cmd[cmd.index("--agent") + 1] == AGY_AGENT
-    assert json.loads(cmd[cmd.index("--settings") + 1]) == {"permissions": {"deny": list(AGY_DENY)}}
-    assert "read_url(*)" in AGY_DENY
+    assert "--agent" not in cmd and "--settings" not in cmd  # stock agent (ruling R11)
     assert "--dangerously-skip-permissions" in cmd
     assert "--disable-slash-commands" in cmd
     # agy -p takes the prompt as its value (stdin is ignored): it must be the last argument
@@ -221,3 +213,17 @@ def test_is_quota_error_known_messages(agent, message):
 def test_is_quota_error_ignores_unrelated_limits():
     assert not is_quota_error("claude", 1, "Subagent nesting limit reached (depth 3 of 3)")
     assert not is_quota_error("agy", 1, 'AGY_ERROR: {"short_error":"tool \\"swarm\\" not found"}')
+
+
+def test_upstream_urls_finds_repo_links_only():
+    transcript = (
+        '{"cmd": "git clone https://github.com/doanan293/ViPharmind.git"}\n'
+        '{"text": "from vipharmind.domain import X; see https://docs.python.org/3/"}\n'
+        '{"url": "https://raw.githubusercontent.com/x/vipharmind/main/a.py"}\n'
+        '{"cmd": "git clone https://github.com/doanan293/ViPharmind.git"}\n'
+    )
+    assert upstream_urls(transcript) == [
+        "https://github.com/doanan293/ViPharmind.git",
+        "https://raw.githubusercontent.com/x/vipharmind/main/a.py",
+    ]
+    assert upstream_urls('{"text": "import vipharmind"}') == []

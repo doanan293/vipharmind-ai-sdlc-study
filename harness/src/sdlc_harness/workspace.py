@@ -138,7 +138,6 @@ CREDENTIALS = {
 # where each CLI keeps its state under HOME; HOME is the per-attempt config/home for every agent
 TOOL_DIR = {"claude": ".claude", "codex": ".codex", "agy": ".gemini/antigravity-cli"}
 CODEX_CONFIG = """# written by sdlc-harness: clean, equal conditions (see docs/pilot-report.md)
-web_search = "disabled"
 project_doc_max_bytes = 0
 
 [skills]
@@ -198,17 +197,6 @@ def _proxy_key(proxy_config: Path) -> str:
     raise KeyError(f"no api-keys entry in {proxy_config}")
 
 
-def _agy_agent() -> str:
-    from sdlc_harness.agents import AGY_AGENT, AGY_TOOLS
-
-    return (
-        f"---\nname: {AGY_AGENT}\n"
-        "description: Coding agent.\n"
-        f"tools: [{', '.join(AGY_TOOLS)}]\n"
-        "mainAgent: true\nsubagent: false\n---\n"
-    )
-
-
 def prepare_config(
     agent: Agent, run_dir: Path, account: int, accounts_file: Path | None = None
 ) -> dict[str, str]:
@@ -238,11 +226,6 @@ def prepare_config(
     if agent == "codex":
         (tool / "config.toml").write_text(CODEX_CONFIG.format(provider=""))
         return {**env, "CODEX_HOME": str(tool)}
-    agents_dir = home / ".gemini" / "config" / "agents"
-    agents_dir.mkdir(parents=True)
-    from sdlc_harness.agents import AGY_AGENT
-
-    (agents_dir / f"{AGY_AGENT}.md").write_text(_agy_agent())
     return env
 
 
