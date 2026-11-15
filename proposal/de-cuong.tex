@@ -29,26 +29,92 @@ Nhóm: TODO
 \end{center}
 
 \section{Bối cảnh và vấn đề}
-TODO
+Trợ lý lập trình AI dạng tác tử (coding agent) như Claude Code, Codex hay Antigravity đã có thể tự đọc
+mã, sửa file và chạy test. Hai cách giao việc đang phổ biến: \emph{vibe coding}, tức giao yêu cầu ngắn
+và để AI viết mã ngay, và \emph{phát triển theo đặc tả}, tức yêu cầu AI viết thiết kế và kế hoạch trước
+rồi mới cài đặt. Bằng chứng so sánh hai cách còn mỏng: nghiên cứu về vibe coding chủ yếu định tính
+\cite{chou_2025}, nghiên cứu về phát triển theo đặc tả dựa trên phỏng vấn và khai thác kho mã \cite{agarwal_2026} hoặc
+chấm bằng mô hình ngôn ngữ \cite{taghavi_2026}, còn bộ đo phổ biến như SWE-bench \cite{jimenez_2024}
+có lời giải rò rỉ và test yếu \cite{aleithan_2024}. Thí nghiệm có đối chứng trên lập trình viên thật
+còn cho thấy cảm nhận về năng suất có thể ngược với số đo \cite{becker_2025}.
+
+Đề tài dùng một dự án thật làm đối tượng: ViPharmind, phần mềm AI cho ngành dược Việt Nam do An xây
+dựng và đã triển khai. Kho mã có 505 commit từ 2026-07-23 đến 2026-11-10, và trợ lý AI tham gia mọi
+khâu từ nghiên cứu, dữ liệu, mã, kiểm thử đến triển khai. Thứ được đo là \emph{quá trình phát triển có
+AI tham gia}, không phải chất lượng trả lời của sản phẩm. Đề tài thuộc hướng B3, mở rộng sang B4, B1
+và F2.
 
 \section{Câu hỏi nghiên cứu}
-TODO
+\begin{itemize}
+\item \textbf{RQ1.} AI đã tham gia từng khâu của vòng đời ViPharmind ở mức nào, và để lại dấu vết gì
+trong kho mã?
+\item \textbf{RQ2.} Mã do AI viết phải sửa lại ở đâu và bao nhiêu?
+\item \textbf{RQ3.} Trên cùng một nhiệm vụ, làm theo đặc tả có cho kết quả tốt hơn vibe coding không,
+và tốn thêm bao nhiêu chi phí?
+\item \textbf{RQ4.} Kết luận của RQ3 có giữ nguyên khi đổi sang trợ lý lập trình và mô hình của hãng
+khác không?
+\end{itemize}
 
 \section{Phương pháp}
-\subsection{Phân tích hồi cứu}
-TODO
-\subsection{Thực nghiệm đối chứng}
-TODO
+\subsection{Phân tích hồi cứu (RQ1, RQ2)}
+Nguồn dữ liệu gồm 505 commit, 43 file spec và plan lấy lại từ lịch sử git, và phần nhật ký phiên
+Claude Code còn giữ được (không đầy đủ). Mỗi commit được gán vào một khâu của vòng đời theo đường dẫn
+file và loại commit. Mức phải sửa lại được đo bằng số commit \texttt{fix}, \texttt{refactor} chạm cùng
+file trong 14 ngày sau mỗi commit \texttt{feat}. Đây là phân tích quan sát, làm bối cảnh cho thực nghiệm.
+
+\subsection{Thực nghiệm đối chứng (RQ3, RQ4)}
+Từ 110 commit \texttt{feat} chạm cả mã và test của backend, sàng lọc theo tiêu chí ghi trước rồi lấy
+mẫu ngẫu nhiên phân tầng 15 nhiệm vụ. Mỗi nhiệm vụ quay mã về commit cha, giấu các test mà commit gốc
+thêm hoặc sửa (test ẩn), và giao cho AI một đề bài. Hai cách làm nhận cùng đề bài, cùng mô hình, cùng giới
+hạn; chỉ khác lời dặn về quy trình: vibe coding cài đặt ngay, còn quy trình đặc tả tự động viết thiết
+kế, kế hoạch rồi mới cài đặt, theo các bước của Spec Kit \cite{taghavi_2026}. Nhiệm vụ, đề bài, giả thuyết và kế hoạch phân
+tích được chốt bằng thẻ git trước lượt chạy chính đầu tiên. Quy mô: 15 nhiệm vụ $\times$ 2 cách làm
+$\times$ 3 lần lặp = 90 lượt mỗi công cụ, 270 lượt tổng. Nghiên cứu không so sánh công cụ với công cụ;
+phép so sánh luôn là hai cách làm trong cùng một công cụ.
+
+\begin{center}\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Đợt & Công cụ & Mô hình & Vai trò \\
+\midrule
+1 & Claude Code & Claude Sonnet 5.5 & Kết quả chính (RQ3) \\
+2 & Antigravity & Gemini 3.8 Flash Medium & Kiểm chứng (RQ4) \\
+3 & Codex CLI & \texttt{gpt-6-luna} & Kiểm chứng (RQ4) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
 \subsection{Chỉ số và phân tích}
-TODO
+Chỉ số chính là \emph{đạt nhiệm vụ}: mọi test ẩn đạt và không test cũ nào hỏng. Chỉ số phụ: tỉ lệ test
+ẩn đạt, hồi quy, lỗi phân tích tĩnh (\texttt{ruff}, \texttt{pyrefly}), chỉ số bảo trì (\texttt{radon}),
+độ phủ test do AI viết, token, thời gian. Ba giả thuyết ghi trước: theo đặc tả đạt nhiều nhiệm vụ hơn
+(H1), tốn token và thời gian hơn (H2), ít lỗi tĩnh và hồi quy hơn (H3). So sánh theo cặp trên từng
+nhiệm vụ, báo cáo hiệu số kèm khoảng tin cậy bootstrap và độ dao động giữa các lần lặp. Hai thành viên
+gán nhãn nguyên nhân thất bại độc lập, không biết lượt đó thuộc cách làm nào; báo cáo hệ số kappa.
 
 \section{Kết quả dự kiến và hạn chế}
-TODO
+Kết quả là hiệu số giữa hai cách làm về chất lượng và chi phí, kèm phân loại lỗi, dù kết quả nghiêng về
+phía nào. Hạn chế chính: một dự án Python với 15 nhiệm vụ; test ẩn viết cho bản cài đặt gốc vốn làm
+theo đặc tả, nên có thể thiên vị nhánh theo đặc tả; nhánh theo đặc tả không có người duyệt; tác giả
+nghiên cứu cũng là tác giả dự án.
 
 \section{Phân công}
-TODO
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Thành viên & Nhiệm vụ \\
+\midrule
+TODO (An) & Nghiên cứu, thiết kế và chạy thực nghiệm, phân tích, viết báo cáo, làm slide \\
+TODO & Thuyết trình, trả lời câu hỏi, gán nhãn nguyên nhân thất bại \\
+TODO & Thuyết trình, trả lời câu hỏi, gán nhãn nguyên nhân thất bại \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-\section*{Tài liệu tham khảo}
-TODO
+{\small
+\renewcommand{\refname}{Tài liệu tham khảo}
+\bibliographystyle{plain}
+\bibliography{references}
+}
 
 \end{document}
