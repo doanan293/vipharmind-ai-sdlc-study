@@ -27,7 +27,7 @@ QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
         r"out of extra usage",
         r"rate_limit_error",
         # "5-hour limit reached", "weekly limit reached"; not e.g. "Subagent nesting limit reached"
-        r"\b(?:\d+-?(?:hour|day)|weekly|daily|monthly|session|opus|sonnet|extra usage)\s+limit reached",
+        r"\b(?:\d+[- ]?(?:hour|day)|weekly|daily|monthly|session|opus|sonnet|extra usage)\s+limit reached",
     ),
     "agy": (
         r"RESOURCE_EXHAUSTED",  # observed: "RESOURCE_EXHAUSTED (code 429): Individual quota reached"
@@ -98,8 +98,7 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
             f"-p={prompt_file.read_text()}",
         ]
     if agent == "codex":
-        # the proxy is selected by config.toml in CODEX_HOME (prepare_config); like claude's
-        # bypassPermissions and agy's --dangerously-skip-permissions: no approvals, no sandbox
+        # like claude's bypassPermissions and agy's --dangerously-skip-permissions: no approvals, no sandbox
         return [
             "codex",
             "exec",
@@ -243,7 +242,9 @@ def _agy_own_errors(transcript: str) -> str:
     parts = [ln for ln in transcript.splitlines() if ln.startswith("AGY_ERROR:")]
     for e in _events(transcript):
         if e.get("event") in ("result", "error"):
-            parts.append(json.dumps(e.get("result") if e.get("event") == "result" else e))
+            r = e.get("result") if e.get("event") == "result" else e
+            if isinstance(r, dict):  # error/status fields only, not the agent's final message
+                parts.extend(str(r[k]) for k in ("error", "status") if r.get(k))
     return "\n".join(parts)
 
 
@@ -260,3 +261,40 @@ def is_quota_error(agent: str, returncode: int, transcript: str, stderr: str = "
     else:
         tail = f"{transcript}\n{stderr}"[-QUOTA_TAIL_CHARS:]
     return any(re.search(p, tail, re.IGNORECASE) for p in QUOTA_PATTERNS[agent])
+
+
+AUTH_PATTERNS = (
+    r"\b401\b",
+    r"invalid_grant",
+    r"refresh[ _]token[^\n]{0,60}(?:already|expired|revoked|invalid|reused|used)",
+    r"failed to authenticate",
+    r"authentication[_ ](?:error|failed)",
+    r"not logged in",
+    r"please (?:log ?in|run /login|sign in)",
+    r"invalid (?:api key|credentials|authentication)",
+    r"unauthenticated",
+)
+
+
+def _own_error_text(agent: str, transcript: str, stderr: str) -> str:
+    """stderr plus the agent's own error/result fields; never tool output or the final message
+    of a successful-looking turn."""
+    if agent == "agy":
+        return stderr + "\n" + _agy_own_errors(transcript)
+    parts = [stderr]
+    for e in _events(transcript):
+        kind = e.get("type")
+        if agent == "claude" and kind == "result" and e.get("is_error"):
+            parts.append(str(e.get("result", "")))
+        if kind in ("error", "turn.failed"):
+            parts.append(json.dumps(e.get("error") or e.get("message") or ""))
+    return "\n".join(parts)
+
+
+def is_auth_error(agent: str, returncode: int, transcript: str, stderr: str = "") -> bool:
+    """A failed run whose own error output says the login was rejected (expired, revoked or
+    already-rotated token); matched like agy's quota errors, never on tool output."""
+    if returncode == 0:
+        return False
+    text = _own_error_text(agent, transcript, stderr)[-QUOTA_TAIL_CHARS:]
+    return any(re.search(p, text, re.IGNORECASE) for p in AUTH_PATTERNS)

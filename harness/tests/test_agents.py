@@ -8,6 +8,7 @@ import pytest
 from sdlc_harness.agents import (
     Usage,
     build_command,
+    is_auth_error,
     is_quota_error,
     parse_usage,
     upstream_urls,
@@ -190,6 +191,7 @@ def test_is_quota_error_needs_failure_and_limit_message():
         ("claude", "Usage limit reached"),
         ("claude", "5-hour limit reached - resets 3pm"),
         ("claude", "Weekly limit reached"),
+        ("claude", "5 hour limit reached"),
         ("claude", "You've hit your session limit · resets 3pm"),
         ("claude", '{"type":"error","error":{"type":"rate_limit_error"}}'),
         ("codex", "You've reached your usage limit. Increase your limits to continue using codex."),
@@ -260,3 +262,51 @@ def test_agy_quota_from_pilot_result_event_and_agy_error_line():
 
 def test_agy_generic_429_in_stderr_still_counts():
     assert is_quota_error("agy", 1, "", "request failed: 429 Too Many Requests")
+
+
+def test_agy_quota_ignores_the_final_message_text():
+    final = _jsonl(
+        {"event": "result", "result": {"status": "DONE", "response": "fixed the 429 rate limit"}}
+    )
+    assert not is_quota_error("agy", 1, final, "")
+
+
+@pytest.mark.parametrize(
+    ("agent", "transcript", "stderr"),
+    [
+        (
+            "claude",
+            _jsonl(
+                {
+                    "type": "result",
+                    "is_error": True,
+                    "result": "Failed to authenticate. API Error: 401",
+                }
+            ),
+            "",
+        ),
+        ("claude", "", "Please run /login"),
+        ("codex", _jsonl({"type": "error", "message": "refresh token was already used"}), ""),
+        ("codex", "", "ERROR: unexpected status 401 Unauthorized"),
+        ("agy", "", 'AGY_ERROR: {"short_error":"invalid_grant"}'),
+        (
+            "agy",
+            _jsonl({"event": "result", "result": {"status": "ERROR", "error": "not logged in"}}),
+            "",
+        ),
+    ],
+)
+def test_is_auth_error_known_messages(agent, transcript, stderr):
+    assert is_auth_error(agent, 1, transcript, stderr)
+    assert not is_auth_error(agent, 0, transcript, stderr)
+
+
+def test_is_auth_error_ignores_tool_output_and_final_text():
+    tool = _jsonl(
+        {"type": "user", "message": {"content": "grep: 401 Unauthorized, invalid_grant"}},
+        {"type": "result", "is_error": False, "result": "handled the 401 case"},
+    )
+    assert not is_auth_error("claude", 1, tool, "")
+    agy = _jsonl({"event": "step_update", "step_update": {"output": "invalid_grant 401"}})
+    assert not is_auth_error("agy", 1, agy, "")
+    assert not is_auth_error("codex", 1, _jsonl({"type": "item.completed", "text": "401"}), "")

@@ -1,6 +1,8 @@
 """Per-run isolation: a history-free workspace and a clean agent config dir."""
 
 import functools
+import json
+import logging
 import os
 import shutil
 import subprocess
@@ -13,6 +15,8 @@ from sdlc_harness.agents import urls_in
 from sdlc_harness.pytest_run import find_lock_dir
 from sdlc_harness.tasks import Task
 from sdlc_harness.vcs import export_tree
+
+log = logging.getLogger(__name__)
 
 Agent = Literal["claude", "agy", "codex"]
 
@@ -35,7 +39,6 @@ CONTAMINANT_DIRS = frozenset(
 )
 CONTAMINANT_FILES = frozenset(
     {
-        "agents.md",
         "claude.md",
         "gemini.md",
         "skills-lock.json",
@@ -64,7 +67,11 @@ def find_contaminants(root: Path) -> list[str]:
         )
         for f in filenames:
             low = f.lower()
-            if low in CONTAMINANT_FILES or (low, here.name.lower()) == COPILOT_FILE:
+            if (
+                low in CONTAMINANT_FILES
+                or (low, here.name.lower()) == COPILOT_FILE
+                or (low == "agents.md" and here == root)  # elsewhere it may be project docs
+            ):
                 found.append((here / f).relative_to(root).as_posix())
     return sorted(found)
 
@@ -241,6 +248,14 @@ _cred_locks: dict[tuple[str, int], threading.Lock] = {}
 _cred_locks_guard = threading.Lock()
 
 
+def _is_json(data: bytes) -> bool:
+    try:
+        json.loads(data)
+    except ValueError:
+        return False
+    return True
+
+
 def write_back_credentials(
     agent: str, run_dir: Path, account: int, accounts_file: Path | None = None
 ) -> bool:
@@ -254,12 +269,18 @@ def write_back_credentials(
     if original is None or not dest.is_file():
         return False
     new = dest.read_bytes()
-    if new == original:
+    if new == original or not new.strip() or not _is_json(new):
         return False
-    source = _credential_source(agent, account, accounts_file or ACCOUNTS_FILE)
+    source = _credential_source(agent, account, accounts_file or ACCOUNTS_FILE).resolve()
     with _cred_locks_guard:
         lock = _cred_locks.setdefault((agent, account), threading.Lock())
     with lock:
+        # compare-and-swap: only replace the token this unit started from
+        if not source.is_file() or source.read_bytes() != original:
+            log.warning(
+                "%s account %d: source changed during the run, not written back", agent, account
+            )
+            return False
         tmp = source.with_name(f".{source.name}.{os.getpid()}.{threading.get_ident()}.tmp")
         fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
         try:

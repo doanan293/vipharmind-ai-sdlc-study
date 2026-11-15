@@ -325,9 +325,9 @@ def test_write_back_copies_a_rotated_token(tmp_path, host_uv, agent):
     prepare_config(agent, tmp_path / "run", 1, accounts)
     (tmp_path / "run").glob("config/home/**/*")
     cred = next(p for p in (tmp_path / "run/config/home").rglob(source.name))
-    cred.write_text("new")
+    cred.write_text('{"t": "new"}')
     assert write_back_credentials(agent, tmp_path / "run", 1, accounts) is True
-    assert source.read_text() == "new"
+    assert source.read_text() == '{"t": "new"}'
     assert source.stat().st_mode & 0o777 == 0o600
     assert [p.name for p in source.parent.iterdir()] == [source.name]  # no temp file left
 
@@ -340,3 +340,48 @@ def test_write_back_skips_unchanged_and_missing(tmp_path, host_uv):
     assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
     assert source.read_text() == "someone else rotated"
     assert write_back_credentials("claude", tmp_path / "never", 1, accounts) is False
+
+
+def _run_cred(tmp_path):
+    return next((tmp_path / "run/config/home").rglob(".credentials.json"))
+
+
+def test_write_back_is_compare_and_swap(tmp_path, host_uv, caplog):
+    source, accounts = _creds_world(tmp_path)
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text('{"t": "mine"}')
+    source.write_text('{"t": "theirs"}')  # another unit already wrote back a newer token
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    assert source.read_text() == '{"t": "theirs"}'
+    assert "mine" not in caplog.text and "theirs" not in caplog.text
+
+
+@pytest.mark.parametrize("bad", ["", "  \n", "not json"])
+def test_write_back_needs_non_empty_json(tmp_path, host_uv, bad):
+    source, accounts = _creds_world(tmp_path)
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text(bad)
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    assert source.read_text() == "old"
+
+
+def test_write_back_follows_a_symlinked_source(tmp_path, host_uv):
+    real = tmp_path / "real.json"
+    real.write_text("old")
+    real.chmod(0o600)
+    link = tmp_path / "link.json"
+    link.symlink_to(real)
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text(f'[claude]\n1 = "{link}"\n')
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text('{"t": 1}')
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is True
+    assert link.is_symlink() and real.read_text() == '{"t": 1}'
+
+
+def test_agents_md_is_stripped_only_at_root(tmp_path):
+    for rel in ("agents.md", "docs/agents.md", "docs/AGENTS.md", "CLAUDE.md", "docs/Claude.md"):
+        f = tmp_path / rel
+        f.parent.mkdir(exist_ok=True)
+        f.write_text("x")
+    assert find_contaminants(tmp_path) == ["CLAUDE.md", "agents.md", "docs/Claude.md"]

@@ -1,7 +1,7 @@
 """Stand-in for an agent CLI in tests; the runner uses it when SDLC_FAKE_AGENT points here.
 
 It ignores the real CLI flags it receives and acts on environment variables:
-  FAKE_AGENT_MODE    ok (default) | quota_once | sleep
+  FAKE_AGENT_MODE    ok (default) | quota_once | auth_once | auth_always | sleep
   FAKE_AGENT_STATE   marker file: quota_once fails while it is absent, then creates it
   FAKE_AGENT_WRITE   JSON {relative path: content} written into the work tree (cwd)
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
@@ -41,6 +41,13 @@ def main() -> int:
         )
     if os.environ.get("FAKE_AGENT_SAY"):
         emit({"type": "assistant", "text": os.environ["FAKE_AGENT_SAY"]})
+    if mode == "auth_always" or (
+        mode == "auth_once" and not Path(os.environ["FAKE_AGENT_STATE"]).exists()
+    ):
+        if mode == "auth_once":
+            Path(os.environ["FAKE_AGENT_STATE"]).write_text("failed once\n")
+        print("Failed to authenticate. API Error: 401", file=sys.stderr)
+        return 1
     if mode == "quota_once":
         state = Path(os.environ["FAKE_AGENT_STATE"])
         if not state.exists():

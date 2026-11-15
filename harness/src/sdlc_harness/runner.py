@@ -26,7 +26,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import IO, Literal, cast
 
-from sdlc_harness.agents import build_command, is_quota_error, parse_usage, upstream_urls
+from sdlc_harness.agents import (
+    build_command,
+    is_auth_error,
+    is_quota_error,
+    parse_usage,
+    upstream_urls,
+)
 from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
@@ -44,7 +50,7 @@ from sdlc_harness.workspace import (
 
 log = logging.getLogger(__name__)
 
-Status = Literal["done", "quota", "error"]
+Status = Literal["done", "quota", "auth", "error"]
 COHORTS_FILE = Path(__file__).resolve().parents[2] / "cohorts.toml"
 FAKE_AGENT_ENV = "SDLC_FAKE_AGENT"  # tests: path of a script that stands in for the agent CLI
 SEED = 20261115
@@ -52,6 +58,8 @@ GRADE = "grade.json"
 META = "meta.json"
 QUOTA_LOG = "quota.log"
 QUOTA_EXHAUSTED = "quota retries exhausted"
+AUTH_LOG = "auth.log"
+AUTH_FAILED = "auth retries exhausted"
 STUDY_ROOT = Path(__file__).resolve().parents[3]
 # Agents run with permission checks off, so their work dirs live outside the study repo (results,
 # task files, other reps) and outside any tree whose ancestors hold agent instructions or config.
@@ -441,9 +449,12 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
             rc, timed_out, wall = _invoke(cmd, work, out, env, cfg.timeout_s)
         finally:
             if launched:  # a refreshed token must outlive the throwaway config dir
-                write_back_credentials(
-                    cast(Agent, cohort.agent), scratch, account, cfg.accounts_file
-                )
+                try:
+                    write_back_credentials(
+                        cast(Agent, cohort.agent), scratch, account, cfg.accounts_file
+                    )
+                except Exception as e:  # noqa: BLE001 - never turn a finished run into an error
+                    log.warning("credential write-back failed: %s", type(e).__name__)
             shutil.rmtree(scratch / "config", ignore_errors=True)  # credentials copy
         transcript = (out / "transcript.jsonl").read_text(errors="replace")
         stderr = (out / "stderr.log").read_text(errors="replace")
@@ -463,6 +474,13 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
                 f.write(f"{meta['started_at']} {unit.cohort} {unit.task_id} ")
                 f.write(f"{unit.arm}-r{unit.rep} account={account}\n")
             return "quota"
+        if not timed_out and is_auth_error(cohort.agent, rc, transcript, stderr):
+            meta["status"] = "auth"  # login rejected: retry later, the account is not exhausted
+            _write_json(out / META, meta)
+            with cfg._lock, (out_root / AUTH_LOG).open("a") as f:
+                f.write(f"{meta['started_at']} {unit.cohort} {unit.task_id} ")
+                f.write(f"{unit.arm}-r{unit.rep} account={account}\n")
+            return "auth"
         (out / "patch.diff").write_text(collect_patch(work))
         result = _grade(cfg, task, work)
         if _stop.is_set():  # Ctrl-C reaches the grader's test runs too: do not trust this grade
@@ -537,7 +555,7 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
 
 
 def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) -> dict[str, int]:
-    summary = {"done": 0, "skipped": 0, "error": 0, "quota": 0}
+    summary = {"done": 0, "skipped": 0, "error": 0, "quota": 0, "auth": 0}
     queue: deque[RunUnit] = deque()
     for u in units:
         if is_done(out_root, u):
@@ -588,6 +606,14 @@ def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) 
                         summary["error"] += 1
                     else:
                         queue.append(u)
+                elif status == "auth":
+                    summary["auth"] += 1
+                    quota_hits[u] += 1  # same cap as quota; the account stays in rotation
+                    if quota_hits[u] > cfg.max_quota_retries:
+                        _give_up(out_root, u, AUTH_FAILED)
+                        summary["error"] += 1
+                    else:
+                        queue.append(u)
                 else:
                     summary[status] += 1
     except KeyboardInterrupt:
@@ -599,10 +625,10 @@ def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) 
     return summary
 
 
-def _give_up(out_root: Path, unit: RunUnit) -> None:
+def _give_up(out_root: Path, unit: RunUnit, reason: str = "") -> None:
     path = unit_dir(out_root, unit) / META
     meta = json.loads(path.read_text()) if path.is_file() else {}
-    meta.update(status="error", error=QUOTA_EXHAUSTED)
+    meta.update(status="error", error=reason or QUOTA_EXHAUSTED)
     _write_json(path, meta)
 
 

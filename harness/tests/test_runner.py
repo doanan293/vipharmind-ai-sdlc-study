@@ -144,7 +144,7 @@ def test_runner_requeues_quota_without_counting(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path), out, jobs=2)
-    assert summary == {"done": 1, "skipped": 0, "error": 0, "quota": 1}
+    assert summary == {"done": 1, "skipped": 0, "error": 0, "quota": 1, "auth": 0}
     assert len(list(out.rglob("grade.json"))) == 1
     d = unit_dir(out, UNIT)
     for name in ("prompt.txt", "transcript.jsonl", "patch.diff", "grade.json", "meta.json"):
@@ -210,7 +210,13 @@ def test_runner_skips_done_units(world, fake, tmp_path):
     before = grade_file.stat().st_mtime_ns
     fake.setenv("FAKE_AGENT_MODE", "sleep")  # would hang if it ran again
     fake.setenv("FAKE_AGENT_PIDFILE", str(tmp_path / "child.pid"))
-    assert run_all([UNIT], cfg, out, jobs=1) == {"done": 0, "skipped": 1, "error": 0, "quota": 0}
+    assert run_all([UNIT], cfg, out, jobs=1) == {
+        "done": 0,
+        "skipped": 1,
+        "error": 0,
+        "quota": 0,
+        "auth": 0,
+    }
     assert grade_file.stat().st_mtime_ns == before
 
 
@@ -370,7 +376,7 @@ def test_quota_retries_are_capped(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path, max_quota_retries=0), out, jobs=1)
-    assert summary == {"done": 0, "skipped": 0, "error": 1, "quota": 1}
+    assert summary == {"done": 0, "skipped": 0, "error": 1, "quota": 1, "auth": 0}
     meta = _meta(out)
     assert meta["status"] == "error"
     assert meta["error"] == "quota retries exhausted"
@@ -613,7 +619,7 @@ def test_no_write_back_when_the_unit_fails_before_launch(world, fake, tmp_path):
 
     src = _creds_file(world)
     src.write_text("{}")
-    fake.setenv("FAKE_AGENT_ROTATE", "rotated")
+    fake.setenv("FAKE_AGENT_ROTATE", '{"t": "rotated"}')
     fake.setattr(runner, "config_manifest", lambda *a: (_ for _ in ()).throw(OSError("boom")))
     assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "error"
     assert src.read_text() == "{}"
@@ -637,3 +643,32 @@ def test_upstream_urls_exclude_urls_already_in_the_tree(world, fake, tmp_path):
     out = tmp_path / "out"
     assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
     assert _meta(out)["upstream_urls"] == ["https://github.com/doanan293/other"]
+
+
+def test_failed_write_back_does_not_fail_the_unit(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    def boom(*a, **k):
+        raise PermissionError("secret-path")
+
+    fake.setattr(runner, "write_back_credentials", boom)
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "done"
+
+
+def test_auth_failure_is_requeued_without_exhausting_the_account(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "auth_once")
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    summary = run_all([UNIT], cfg, out, jobs=1)
+    assert summary["auth"] == 1 and summary["done"] == 1 and summary["quota"] == 0
+    assert _meta(out)["account"] == 1  # same account retried: it was not marked exhausted
+    assert "vibe-r1" in (out / "auth.log").read_text()
+
+
+def test_auth_failure_gives_up_after_the_retry_cap(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "auth_always")
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path, max_quota_retries=2)
+    summary = run_all([UNIT], cfg, out, jobs=1)
+    assert summary["auth"] == 3 and summary["error"] == 1
+    assert _meta(out)["status"] == "error"
