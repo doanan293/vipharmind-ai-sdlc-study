@@ -11,3 +11,7 @@
 *.blg
 *.out
 *.synctex.gz
+
+# Skill cài cục bộ (ppt-master, latex-document-skill); cài lại theo skills-lock.json
+.agents/
+.claude/skills/

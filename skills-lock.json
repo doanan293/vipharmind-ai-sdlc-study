@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "skills": {
+    "latex-document-skill": {
+      "source": "ndpvt-web/latex-document-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "b577f832825b2be80ba5b9d11ae98ea5a1348467c8ce6b747f438078922e9dca"
+    },
+    "ppt-master": {
+      "source": "hugohe3/ppt-master",
+      "sourceType": "github",
+      "skillPath": "skills/ppt-master/SKILL.md",
+      "computedHash": "aca91a512edcfde9367536db7b48e89cbf84f08e463960ce464bdcb31e512466"
+    }
+  }
+}
