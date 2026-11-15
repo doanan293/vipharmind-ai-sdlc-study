@@ -1,0 +1,1320 @@
+[
+  {
+    "sha": "1c67209bda066d7b199ceef6aaf3055a042bbf25",
+    "subject": "feat(backend): scaffold pharma-agent project with uv, ruff, pyrefly and layering test",
+    "layer": null,
+    "src_lines": 1,
+    "hidden_tests": [
+      "backend/tests/architecture/test_layering.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/__init__.py, backend/tests/architecture/__init__.py"
+  },
+  {
+    "sha": "0fdc9859e9bdce53e1f1de60c873a1c2df14c480",
+    "subject": "feat(domain): add shared kernel and LLM port",
+    "layer": "domain",
+    "src_lines": 120,
+    "hidden_tests": [
+      "backend/tests/domain/test_llm_models.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/__init__.py"
+  },
+  {
+    "sha": "650abbd0ebecab538c6ba71a9c0118f5add6ede8",
+    "subject": "feat(domain): add fail-open guardrail with regex groups and LLM classifier",
+    "layer": "domain",
+    "src_lines": 186,
+    "hidden_tests": [
+      "backend/tests/domain/test_guardrail.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "0898d85ed36fa5fa77ed7f7a166c0e044b31ba5b",
+    "subject": "feat(domain): add retrieval models, ports and EvidenceSet packing",
+    "layer": "domain",
+    "src_lines": 304,
+    "hidden_tests": [
+      "backend/tests/domain/test_evidence.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "3f87109556c371c2da9e9f7bdc9fe7e3ec87087e",
+    "subject": "feat(domain): add RetrievalService with dedupe, rerank fallback and hydration",
+    "layer": "domain",
+    "src_lines": 102,
+    "hidden_tests": [
+      "backend/tests/domain/test_retrieval_service.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "fd8862a95879a4b4ed8bd23ee32a272a0e88d193",
+    "subject": "feat(domain): add AgentRun aggregate with budget, action log and loop rules",
+    "layer": "domain",
+    "src_lines": 563,
+    "hidden_tests": [
+      "backend/tests/domain/test_agent_run.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/factories.py"
+  },
+  {
+    "sha": "cd9ce5833b47e8e8ff0fc2933802f5281dbe57a3",
+    "subject": "feat(domain): add conversation context and SKILL.md skill model",
+    "layer": "domain",
+    "src_lines": 232,
+    "hidden_tests": [
+      "backend/tests/domain/test_conversation_context.py",
+      "backend/tests/domain/test_skill.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "9965bdf1bf8c0051df1fa7da070c22eb7c63b22b",
+    "subject": "feat(domain): add Vietnamese prompts for rephrase, skills, judge, refine and answer",
+    "layer": "domain",
+    "src_lines": 220,
+    "hidden_tests": [
+      "backend/tests/domain/test_prompts.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "36f7328ba26e5bfc934716a8912026921cfdba82",
+    "subject": "feat(domain): add streaming citation sanitizer",
+    "layer": "domain",
+    "src_lines": 74,
+    "hidden_tests": [
+      "backend/tests/domain/test_citations.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "44e423aeda2a81a44e783a0572cf191a41475b3f",
+    "subject": "feat(application): add LangGraph agentic RAG loop with progress events and runner",
+    "layer": "application",
+    "src_lines": 673,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_graph.py",
+      "backend/tests/application/test_checkpoint.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/application/__init__.py, backend/tests/fakes.py"
+  },
+  {
+    "sha": "f9d0fcabe09f988c79be518201ba5ad09aa81258",
+    "subject": "feat(infra): add pydantic settings with per-role LLM endpoints",
+    "layer": "infrastructure",
+    "src_lines": 121,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/infrastructure/__init__.py"
+  },
+  {
+    "sha": "c04c67decc634e5e3c3b09dc0b4c60da723d32d9",
+    "subject": "feat(infra): add OpenAI Chat Completions adapter for structured output and streaming",
+    "layer": "infrastructure",
+    "src_lines": 120,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_openai_adapter.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "69be18bc62e4069a3c9bcc6499cf0d6377b0e61d",
+    "subject": "feat(infra): add Qdrant hybrid RRF retriever, embedder and hydrator",
+    "layer": "infrastructure",
+    "src_lines": 231,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_qdrant_adapter.py",
+      "backend/tests/infrastructure/test_qdrant_integration.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "82a51e2e1433aca4f04e555d838e4762cd75eebf",
+    "subject": "feat(infra): add llama.cpp rerankers with pipeline-identical qwen3 prompt",
+    "layer": "infrastructure",
+    "src_lines": 226,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_llama_cpp_reranker.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "94a54f86965e4a7277dc9219a392a29f50c4c274",
+    "subject": "feat(skills): ship five system SKILL.md playbooks with a filesystem catalog",
+    "layer": "infrastructure",
+    "src_lines": 45,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_filesystem_catalog.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "e967c0c6f89bedeed8327953a07a171127758bd4",
+    "subject": "feat(backend): add composition root and pharma-agent CLI",
+    "layer": "infrastructure",
+    "src_lines": 302,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_composition.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "d4a4f8b5ac090380c3e17f9c598cae775124203b",
+    "subject": "feat(infra): add platform settings, dependencies and Postgres test fixture",
+    "layer": "infrastructure",
+    "src_lines": 54,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_postgres_fixture.py",
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/conftest.py, backend/tests/postgres.py"
+  },
+  {
+    "sha": "6443cf55bb0d9b58617803f48d43f48a82837fee",
+    "subject": "feat(domain): add Conversation aggregate, Message and turn builder",
+    "layer": "domain",
+    "src_lines": 148,
+    "hidden_tests": [
+      "backend/tests/domain/test_conversation.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "77cd48cd29330296a16774bb1d86f0b5601e4cbf",
+    "subject": "feat(domain): derive retrieval audit records from an agent run",
+    "layer": "domain",
+    "src_lines": 67,
+    "hidden_tests": [
+      "backend/tests/domain/test_audit.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "1f00fc352f28011340cd70f633743a443111c675",
+    "subject": "feat(domain): add conversation repository port and summarizer prompt",
+    "layer": "domain",
+    "src_lines": 80,
+    "hidden_tests": [
+      "backend/tests/domain/test_summary_prompt.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "c7c710edf290e4b23a66d8d9b3ddc7d34fbce4b4",
+    "subject": "feat(infra): add Postgres tables, database session factory and Alembic migrations",
+    "layer": "infrastructure",
+    "src_lines": 484,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/postgres.py"
+  },
+  {
+    "sha": "fa1be07fc80e8827ad3a979afcb992e6e60fe145",
+    "subject": "feat(infra): add Postgres conversation repository with retrieval audit",
+    "layer": "infrastructure",
+    "src_lines": 247,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_conversation_repository.py"
+    ],
+    "failed_criterion": 2,
+    "reason": "no hidden tests collected at the original commit"
+  },
+  {
+    "sha": "a133d4cd1cbaf8926aeb90d7e2d0eed5f7c6668e",
+    "subject": "feat(application): add ChatService that persists each conversation turn",
+    "layer": "application",
+    "src_lines": 213,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "2541825733ff82c2388a826b4afdebeccf89c872",
+    "subject": "feat(application): add rolling conversation summary and conversation queries",
+    "layer": "application",
+    "src_lines": 173,
+    "hidden_tests": [
+      "backend/tests/application/test_queries.py",
+      "backend/tests/application/test_summarize.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "68edeac53e8e8fe94c8d8952130448397ad9c40b",
+    "subject": "feat(infra): add Postgres checkpointer and service container",
+    "layer": "infrastructure",
+    "src_lines": 162,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_checkpointer.py",
+      "backend/tests/infrastructure/test_container.py",
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": 2,
+    "reason": "no hidden tests collected at the original commit"
+  },
+  {
+    "sha": "44466f373da672594dbf8a4d419505f662c712f1",
+    "subject": "feat(infra): wire fastapi-users JWT auth with optional Google OAuth",
+    "layer": "infrastructure",
+    "src_lines": 141,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_auth_wiring.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "3af531a479621a70994734bbee154e567fae46c9",
+    "subject": "feat(api): add FastAPI app with SSE chat, conversations and health endpoints",
+    "layer": "api",
+    "src_lines": 331,
+    "hidden_tests": [
+      "backend/tests/api/test_chat_api.py",
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/api/test_health_api.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/__init__.py, backend/tests/api/harness.py"
+  },
+  {
+    "sha": "4ba674d359882c639724ee413fd87044c66597b5",
+    "subject": "feat(backend): add serve/migrate commands, Postgres end-to-end test and API docs",
+    "layer": null,
+    "src_lines": 31,
+    "hidden_tests": [
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "7631b0a4b3b837980f76c8d4f3875f45e8e56988",
+    "subject": "feat(skills): add Postgres skill repository, slug helper and skills table",
+    "layer": "infrastructure",
+    "src_lines": 294,
+    "hidden_tests": [
+      "backend/tests/domain/test_slug.py",
+      "backend/tests/infrastructure/test_skill_repository.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "4bb0049ee2e6023e9413932072a5b6097e8f6e1b",
+    "subject": "feat(skills): add SkillService for system sync and user uploads",
+    "layer": "application",
+    "src_lines": 143,
+    "hidden_tests": [
+      "backend/tests/application/test_skill_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "0854bce646a0d9980b6d52f1a684003e9f49443f",
+    "subject": "feat(feedback): add feedback domain, repository and service with score sink",
+    "layer": "infrastructure",
+    "src_lines": 329,
+    "hidden_tests": [
+      "backend/tests/application/test_feedback_service.py",
+      "backend/tests/domain/test_feedback.py",
+      "backend/tests/infrastructure/test_feedback_repository.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "733a193c758fdc00558fca3760009c4cfb9f4d07",
+    "subject": "feat(application): add TurnTracer port and wire it through the chat runner",
+    "layer": "application",
+    "src_lines": 29,
+    "hidden_tests": [
+      "backend/tests/application/test_tracing.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "29 src lines outside 30-400"
+  },
+  {
+    "sha": "7757b6cc65a57e566b2e3bba4b021000dbbe3c99",
+    "subject": "feat(observability): trace chat turns in Langfuse and store skills in Postgres",
+    "layer": "infrastructure",
+    "src_lines": 148,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_container.py",
+      "backend/tests/infrastructure/test_langfuse_tracing.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "1b52f20309a50832272cbf1a8172506da15a8aad",
+    "subject": "feat(infra): add checkpoint retention cleanup",
+    "layer": "infrastructure",
+    "src_lines": 100,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_checkpoint_cleanup.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "5445f66dbb39faf7f2cf99cd2166641452f1dd7b",
+    "subject": "feat(api): add skill upload and message feedback endpoints",
+    "layer": "api",
+    "src_lines": 148,
+    "hidden_tests": [
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/api/test_feedback_api.py",
+      "backend/tests/api/test_skills_api.py",
+      "backend/tests/application/test_skill_service.py",
+      "backend/tests/infrastructure/test_skill_repository.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/harness.py, backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "8dd6a9cdc9c43f37280a039d6a24f4e957d3c435",
+    "subject": "feat(domain): add shared text normalization and snippet helpers",
+    "layer": "domain",
+    "src_lines": 43,
+    "hidden_tests": [
+      "backend/tests/domain/test_text.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "af9d4173a9f4578ff2040a8cb73e6ce95372cf26",
+    "subject": "feat(corpus): add knowledge bundle models and vector encoding",
+    "layer": "domain",
+    "src_lines": 200,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_bundle_models.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/corpus/__init__.py"
+  },
+  {
+    "sha": "28f791b9cdbadc5536071af9e7190df047bb01d0",
+    "subject": "feat(corpus): read and write knowledge bundles with full validation",
+    "layer": "domain",
+    "src_lines": 412,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_bundle_io.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "412 src lines outside 30-400"
+  },
+  {
+    "sha": "507a4ae31ea47eef1a195ac074aca1f5515a9ba0",
+    "subject": "feat(corpus): add deterministic section revision and chunk version ids",
+    "layer": "domain",
+    "src_lines": 66,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_identity.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "7b343d07cca9674f8e021ac48ac7caa1394ac3d4",
+    "subject": "feat(corpus): add hydrate policy for section revisions",
+    "layer": "domain",
+    "src_lines": 21,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_hydrate.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "21 src lines outside 30-400"
+  },
+  {
+    "sha": "bc3c787409971fa98aed52839e426c2150da4281",
+    "subject": "feat(corpus): port glossary, colloquial and embedding text enrichment",
+    "layer": "domain",
+    "src_lines": 161,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_enrichment.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "5e96fe064b2f9005537d421b4331c4030541265d",
+    "subject": "feat(corpus): port prose, table and entry-list splitters",
+    "layer": "domain",
+    "src_lines": 123,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_splitters.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "77a983dbb5604c431e34f4d44cad8291fe35e8d2",
+    "subject": "feat(corpus): add chunk_section with golden parity fixture",
+    "layer": "domain",
+    "src_lines": 115,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_chunking.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/corpus/golden/chunking_v1.json"
+  },
+  {
+    "sha": "982cd5720656273c42c366a1139ea752c1295f6d",
+    "subject": "feat(corpus): add corpus schema tables and migration 0005",
+    "layer": "infrastructure",
+    "src_lines": 620,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_migrations.py",
+      "backend/tests/infrastructure/test_persistence_metadata.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "620 src lines outside 30-400"
+  },
+  {
+    "sha": "1e453ac0e391dcdb5243ea0fd67b78b287d2e8d1",
+    "subject": "feat(corpus): add corpus snapshot, release models and storage ports",
+    "layer": "domain",
+    "src_lines": 512,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_corpus_models.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "512 src lines outside 30-400"
+  },
+  {
+    "sha": "97e4b12575301662b427352a65d12daebfbc1c3d",
+    "subject": "feat(corpus): add Postgres corpus repository and embedding cache",
+    "layer": "infrastructure",
+    "src_lines": 664,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_corpus_repository.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "664 src lines outside 30-400"
+  },
+  {
+    "sha": "067e562740912786b77a7ee3d22de65e536f0a65",
+    "subject": "feat(corpus): add Qdrant vector index with tenant payload and release ids",
+    "layer": "infrastructure",
+    "src_lines": 225,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_qdrant_index.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/conftest.py, backend/tests/qdrant.py"
+  },
+  {
+    "sha": "fce6d9da3cd869c910a143d34900e2dd58088f60",
+    "subject": "feat(corpus): import knowledge bundles into resumable releases",
+    "layer": "application",
+    "src_lines": 305,
+    "hidden_tests": [
+      "backend/tests/application/test_import_bundle.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_memory.py"
+  },
+  {
+    "sha": "adf89a7b629a06a5d864c7b3f78d8f4f5c149b01",
+    "subject": "feat(corpus): add release publish, rollback, gc and reindex service",
+    "layer": "application",
+    "src_lines": 210,
+    "hidden_tests": [
+      "backend/tests/application/test_release_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_memory.py"
+  },
+  {
+    "sha": "d14fd6c5a43df888ed5f20562c145ef5536501fc",
+    "subject": "feat(cli): add pharma-agent corpus import and release commands",
+    "layer": "infrastructure",
+    "src_lines": 306,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_corpus_factory.py",
+      "backend/tests/infrastructure/test_settings.py",
+      "backend/tests/test_cli_corpus.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "d04441d61efc6691de2c1ab882ac9e6d3273e7f4",
+    "subject": "feat(retrieval): read current releases and chunk records from the corpus schema",
+    "layer": "infrastructure",
+    "src_lines": 167,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_postgres_corpus.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_rows.py"
+  },
+  {
+    "sha": "afaac9e8bd7dc5851d27acd31488711f06b5a8c5",
+    "subject": "feat(audit): record release ids and chunk version ids for retrieval runs",
+    "layer": "infrastructure",
+    "src_lines": 108,
+    "hidden_tests": [
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/domain/test_audit.py",
+      "backend/tests/infrastructure/test_conversation_repository.py",
+      "backend/tests/infrastructure/test_feedback_repository.py",
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "764dd0b8fec48b0045d9aa88607b1fe2bf36e006",
+    "subject": "feat(health): report corpus readiness with CORPUS_NOT_READY",
+    "layer": "infrastructure",
+    "src_lines": 46,
+    "hidden_tests": [
+      "backend/tests/api/test_health_api.py",
+      "backend/tests/infrastructure/test_container.py",
+      "backend/tests/infrastructure/test_qdrant_adapter.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/harness.py"
+  },
+  {
+    "sha": "8865ee944f7362c9ab695458f765cc7ef4549127",
+    "subject": "feat(api): return RFC 9457 problem details for every error",
+    "layer": "api",
+    "src_lines": 190,
+    "hidden_tests": [
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/api/test_problem_details.py",
+      "backend/tests/api/test_skills_api.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "7106f74799b645fcce5361c9dd434fdbd13ae783",
+    "subject": "feat(application): add opaque keyset cursor helpers",
+    "layer": "application",
+    "src_lines": 52,
+    "hidden_tests": [
+      "backend/tests/application/test_pagination.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "62350a9db2f056e150de361634d7eae514fc5abf",
+    "subject": "feat(api): page conversations and messages with keyset cursors",
+    "layer": "infrastructure",
+    "src_lines": 223,
+    "hidden_tests": [
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/application/test_queries.py",
+      "backend/tests/infrastructure/test_container.py",
+      "backend/tests/infrastructure/test_conversation_repository.py",
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "a1468256769c3db82ae7a4ec69cf27190b1b416c",
+    "subject": "feat(api): create conversations before the first message",
+    "layer": "domain",
+    "src_lines": 55,
+    "hidden_tests": [
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/application/test_chat_service.py",
+      "backend/tests/application/test_queries.py",
+      "backend/tests/domain/test_conversation.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "c3a88b2659d708cb6e23c09cdb5d00bb99be2626",
+    "subject": "feat(api): pin operation ids, document problem responses, export OpenAPI",
+    "layer": "api",
+    "src_lines": 198,
+    "hidden_tests": [
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "cc0f06a67bfa888ef5d7e1ebd1715a517079bbc9",
+    "subject": "feat(chat): pre-generate turn message ids and report persisted on done",
+    "layer": "application",
+    "src_lines": 46,
+    "hidden_tests": [
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/application/test_chat_service.py",
+      "backend/tests/application/test_feedback_service.py",
+      "backend/tests/application/test_queries.py",
+      "backend/tests/application/test_summarize.py",
+      "backend/tests/domain/test_conversation.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "a24bd490804c90b6c5d007d534606ef9527ec973",
+    "subject": "feat(chat): add AI SDK UIMessage models shared by stream and history",
+    "layer": "application",
+    "src_lines": 183,
+    "hidden_tests": [
+      "backend/tests/application/test_ui_message.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/citations.py"
+  },
+  {
+    "sha": "3c9cdb1f7331902b872fd873c98dada7148219cd",
+    "subject": "feat(api): encode chat progress as AI SDK UI message stream chunks",
+    "layer": "api",
+    "src_lines": 140,
+    "hidden_tests": [
+      "backend/tests/api/test_ui_stream.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/contract/__init__.py, backend/tests/contract/invariants.py, backend/tests/contract/ui_chunks.py"
+  },
+  {
+    "sha": "fb7e6938b74029664573023f1914c9d85f07e37e",
+    "subject": "feat(api): stream chat turns as AI SDK UI message stream v1",
+    "layer": "api",
+    "src_lines": 26,
+    "hidden_tests": [
+      "backend/tests/api/test_chat_api.py",
+      "backend/tests/api/test_e2e_postgres.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/harness.py"
+  },
+  {
+    "sha": "95d69130cd22b4a08738a5ab49e19c61dfe2ae49",
+    "subject": "feat(persistence): store citations in message_citations referencing corpus chunk versions",
+    "layer": "infrastructure",
+    "src_lines": 247,
+    "hidden_tests": [
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/infrastructure/test_conversation_repository.py",
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_rows.py"
+  },
+  {
+    "sha": "2dbb7849f88bca35b5266a3c245b1d9aae100717",
+    "subject": "feat(conversations): return message history as AI SDK UIMessage pages",
+    "layer": "application",
+    "src_lines": 279,
+    "hidden_tests": [
+      "backend/tests/api/test_chat_api.py",
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/application/test_message_history.py",
+      "backend/tests/application/test_queries.py",
+      "backend/tests/infrastructure/test_citation_reader.py",
+      "backend/tests/infrastructure/test_feedback_repository.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/harness.py, backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "db2b7d8f3b0bca133341bbf3bd1ab0e1ec0e328e",
+    "subject": "feat(api): add citation detail endpoint with the full cited block",
+    "layer": "infrastructure",
+    "src_lines": 227,
+    "hidden_tests": [
+      "backend/tests/api/test_citations_api.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/application/test_citation_queries.py",
+      "backend/tests/infrastructure/test_citation_reader.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "31d797107540b87e8bb1cd0216e5e9b3fe401dc4",
+    "subject": "feat(settings): add session cookie, CSRF secret and CORS defaults",
+    "layer": "infrastructure",
+    "src_lines": 29,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "29 src lines outside 30-400"
+  },
+  {
+    "sha": "37e3112fde8f37876c8501c23378c7566612fcaf",
+    "subject": "feat(api): protect cookie sessions with starlette-csrf problem responses",
+    "layer": "api",
+    "src_lines": 69,
+    "hidden_tests": [
+      "backend/tests/api/test_csrf_api.py",
+      "backend/tests/api/test_e2e_postgres.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/asgi.py, backend/tests/api/harness.py"
+  },
+  {
+    "sha": "b4c10d1cbc276d48e27f3776632d3e9bf449f633",
+    "subject": "feat(auth): add Postgres cookie sessions next to bearer JWT",
+    "layer": "infrastructure",
+    "src_lines": 107,
+    "hidden_tests": [
+      "backend/tests/api/test_cookie_auth_postgres.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/infrastructure/test_auth_wiring.py",
+      "backend/tests/infrastructure/test_migrations.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py"
+  },
+  {
+    "sha": "ffa99f7ec8b5eaa08c26967d7c51e80b59cbdbe4",
+    "subject": "feat(auth): run Google OAuth through the cookie session backend",
+    "layer": "infrastructure",
+    "src_lines": 3,
+    "hidden_tests": [
+      "backend/tests/api/test_google_oauth_postgres.py",
+      "backend/tests/infrastructure/test_auth_wiring.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "3 src lines outside 30-400"
+  },
+  {
+    "sha": "32ffcf95d0224dbca385bfbec9b0c3441360e4c8",
+    "subject": "feat(cli): add cleanup-sessions for expired cookie sessions",
+    "layer": "infrastructure",
+    "src_lines": 38,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_session_cleanup.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "69e534cd9cf5ace6cd48862e1a95cd285f84ed9a",
+    "subject": "feat(corpus): let gc delete documents and sections no release uses",
+    "layer": "infrastructure",
+    "src_lines": 48,
+    "hidden_tests": [
+      "backend/tests/application/test_release_service.py",
+      "backend/tests/infrastructure/test_corpus_integration.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_fixtures.py, backend/tests/corpus_memory.py"
+  },
+  {
+    "sha": "9d5d377d37f3e9249910d369c9a021caf8ce8740",
+    "subject": "feat(seed): refresh corpus pipeline and native reranking",
+    "layer": "infrastructure",
+    "src_lines": 4,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_composition.py",
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "4 src lines outside 30-400"
+  },
+  {
+    "sha": "c8d62730baac7370cba3a1a51685bf85a1c0fff8",
+    "subject": "feat(agent): let a run answer without judging",
+    "layer": "domain",
+    "src_lines": 5,
+    "hidden_tests": [
+      "backend/tests/domain/test_agent_run.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "5 src lines outside 30-400"
+  },
+  {
+    "sha": "e9da8134d4151fbef02cf252297311a444c373a4",
+    "subject": "feat(chat): add pipeline options for evaluation ablations",
+    "layer": "application",
+    "src_lines": 52,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_graph.py",
+      "backend/tests/infrastructure/test_composition.py"
+    ],
+    "failed_criterion": 2,
+    "reason": "existing tests break: tests/application/test_tracing.py, tests/infrastructure/test_checkpoint_cleanup.py, tests/infrastructure/test_checkpointer.py"
+  },
+  {
+    "sha": "30e56b9b348220ad2ae660f9487bfe1e84f38e12",
+    "subject": "feat: pass provider-specific request fields per LLM role",
+    "layer": "infrastructure",
+    "src_lines": 16,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_openai_adapter.py",
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "16 src lines outside 30-400"
+  },
+  {
+    "sha": "7b9a88da7d0879c1a6cbcfce6818a32767451f95",
+    "subject": "feat(backend): add email, SMS and OTP settings for account flows",
+    "layer": "infrastructure",
+    "src_lines": 31,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/harness.py, backend/tests/api/postgres_app.py, backend/tests/e2e/server.py"
+  },
+  {
+    "sha": "4fc203f48ac411c9f5017ba45d2df31784960908",
+    "subject": "feat(backend): add the account domain (codes, phone numbers, ports)",
+    "layer": "domain",
+    "src_lines": 284,
+    "hidden_tests": [
+      "backend/tests/domain/account/test_codes.py",
+      "backend/tests/domain/account/test_models.py",
+      "backend/tests/domain/account/test_passwords.py",
+      "backend/tests/domain/account/test_phone.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/account/__init__.py"
+  },
+  {
+    "sha": "acb48cc1da13594d3f8c11bcbc33b9cb3dab52c6",
+    "subject": "feat(backend): add account tables and migration 0013",
+    "layer": "infrastructure",
+    "src_lines": 218,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_migrations.py",
+      "backend/tests/infrastructure/test_persistence_metadata.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "d8cc08ee803e0b786771dd82869ff4c8fb955f3c",
+    "subject": "feat(backend): add Postgres adapters for accounts, codes, rate limits and sessions",
+    "layer": "infrastructure",
+    "src_lines": 367,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_account_postgres.py"
+    ],
+    "failed_criterion": 2,
+    "reason": "no hidden tests collected at the original commit"
+  },
+  {
+    "sha": "fa34e23d15f810f5c1fb2d873791a6ba03a1d869",
+    "subject": "feat(backend): add account messages and email/SMS senders",
+    "layer": "infrastructure",
+    "src_lines": 245,
+    "hidden_tests": [
+      "backend/tests/application/test_account_messages.py",
+      "backend/tests/infrastructure/test_notifications.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "f86ada3c2688d3ea3c787de8b86ee2c624dece69",
+    "subject": "feat(backend): add account use cases for codes, verification, reset and phone sign-in",
+    "layer": "application",
+    "src_lines": 340,
+    "hidden_tests": [
+      "backend/tests/application/test_account_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/account_fakes.py"
+  },
+  {
+    "sha": "f8949eca395e8425c885899d887810e1100a0c64",
+    "subject": "feat(backend): add account settings use cases (contacts, password, Google, sessions)",
+    "layer": "application",
+    "src_lines": 197,
+    "hidden_tests": [
+      "backend/tests/application/test_account_settings_service.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "3dcd0aa6f1e2820118702192d8bc39dbae2f8cdc",
+    "subject": "feat(backend): wire accounts into fastapi-users and add the account routes",
+    "layer": "api",
+    "src_lines": 753,
+    "hidden_tests": [
+      "backend/tests/api/test_account_api_postgres.py",
+      "backend/tests/api/test_cookie_auth_postgres.py",
+      "backend/tests/api/test_e2e_postgres.py",
+      "backend/tests/api/test_google_oauth_postgres.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/e2e/test_server_smoke.py",
+      "backend/tests/infrastructure/test_auth_wiring.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py, backend/tests/e2e/server.py"
+  },
+  {
+    "sha": "828c631823fcb7409c17719ae7ce73a3cc65e1bd",
+    "subject": "feat(backend): clean up stale codes and document account settings",
+    "layer": "infrastructure",
+    "src_lines": 27,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_session_cleanup.py",
+      "backend/tests/test_cli.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "27 src lines outside 30-400"
+  },
+  {
+    "sha": "a9cd753fcddbcd8128e361c283aaed63838a9425",
+    "subject": "feat(domain): add the access policy for organizations and collections",
+    "layer": "domain",
+    "src_lines": 166,
+    "hidden_tests": [
+      "backend/tests/domain/access/test_policy.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/access/__init__.py"
+  },
+  {
+    "sha": "6be88bc8e4fb77f197ef385fa5b451f9177bcf3b",
+    "subject": "feat(domain): add organizations, invitations, audit events and a transaction port",
+    "layer": "domain",
+    "src_lines": 329,
+    "hidden_tests": [
+      "backend/tests/domain/organizations/test_models.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/domain/organizations/__init__.py"
+  },
+  {
+    "sha": "8363fdd98ce3f4d2ff7afea5f03da16a0b07e3b1",
+    "subject": "feat(db): add organizations, members, invitations, audit events and quota columns",
+    "layer": "infrastructure",
+    "src_lines": 276,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_migrations.py",
+      "backend/tests/infrastructure/test_persistence_metadata.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "966b882f5deb5ba759f25609678a1529d139631a",
+    "subject": "feat(infra): persist organizations, invitations and audit events in one transaction",
+    "layer": "infrastructure",
+    "src_lines": 515,
+    "hidden_tests": [
+      "backend/tests/application/test_actor_resolver.py",
+      "backend/tests/infrastructure/test_organizations_postgres.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/organization_fakes.py"
+  },
+  {
+    "sha": "c2935909a101b7274c58ec0e678371c0a13b3d07",
+    "subject": "feat(organizations): create, rename, delete organizations and manage members",
+    "layer": "application",
+    "src_lines": 311,
+    "hidden_tests": [
+      "backend/tests/application/test_organization_service.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "a7cb058a7d370e33238d3a2cad63152a6f11554c",
+    "subject": "feat(organizations): invite by email with approval for member invites",
+    "layer": "application",
+    "src_lines": 691,
+    "hidden_tests": [
+      "backend/tests/application/test_invitation_messages.py",
+      "backend/tests/application/test_invitation_service.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "691 src lines outside 30-400"
+  },
+  {
+    "sha": "ad31679e10df0da3b2c8587e37ebaa1303ca6b9c",
+    "subject": "feat(audit): read organization, personal and global audit logs",
+    "layer": "application",
+    "src_lines": 149,
+    "hidden_tests": [
+      "backend/tests/application/test_audit_service.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "239e502a604c3be05ec2d2a0c132c416e4946844",
+    "subject": "feat(api): organizations, invitations and audit endpoints",
+    "layer": "api",
+    "src_lines": 490,
+    "hidden_tests": [
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/api/test_organizations_api_postgres.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py"
+  },
+  {
+    "sha": "11079ab21c7fa8299bd59f73b7e6a901ba98ffc4",
+    "subject": "feat(account): expose memberships and the SMS switch, grant superadmin from the CLI",
+    "layer": "application",
+    "src_lines": 140,
+    "hidden_tests": [
+      "backend/tests/application/test_account_settings_service.py",
+      "backend/tests/infrastructure/test_superadmin_cli.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/account_fakes.py"
+  },
+  {
+    "sha": "88f0c179d5618c127ac79f53dab1fa3cb572a55e",
+    "subject": "feat(db): collections belong to a user, an organization or the system; conversations keep a source scope",
+    "layer": "infrastructure",
+    "src_lines": 150,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_corpus_models.py",
+      "backend/tests/infrastructure/test_migrations.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/corpus_rows.py"
+  },
+  {
+    "sha": "17f4f6ba05f486fea3e84711a95a895859411944",
+    "subject": "feat(corpus): collections owned by users or organizations with visibility rules",
+    "layer": "application",
+    "src_lines": 824,
+    "hidden_tests": [
+      "backend/tests/application/test_collection_service.py",
+      "backend/tests/infrastructure/test_collection_repository.py",
+      "backend/tests/test_cli_corpus.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/collection_fakes.py"
+  },
+  {
+    "sha": "997dd69c53e78227ad817ded6558774e66a8b838",
+    "subject": "feat(chat): search only the collections the user may see, narrowed per conversation",
+    "layer": "infrastructure",
+    "src_lines": 152,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_service.py",
+      "backend/tests/domain/test_retrieval_service.py",
+      "backend/tests/infrastructure/test_qdrant_adapter.py",
+      "backend/tests/infrastructure/test_scope_resolver.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/fakes.py"
+  },
+  {
+    "sha": "dc3b6023e4630c5b7ef49e941dc424e6574a5dfb",
+    "subject": "feat(api): collection management and per-conversation source scope",
+    "layer": "api",
+    "src_lines": 245,
+    "hidden_tests": [
+      "backend/tests/api/test_collections_api_postgres.py",
+      "backend/tests/api/test_conversations_api.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/application/test_conversation_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py, backend/tests/memory_repository.py"
+  },
+  {
+    "sha": "aa70947ebcf71ed4484cf9d699c8ac7076e3f791",
+    "subject": "feat(db): authored documents, glossary, colloquial names and ingest jobs",
+    "layer": "infrastructure",
+    "src_lines": 529,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_source.py",
+      "backend/tests/infrastructure/test_migrations.py",
+      "backend/tests/infrastructure/test_persistence_metadata.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "529 src lines outside 30-400"
+  },
+  {
+    "sha": "98a46b6fe75bb89e0b44fe715a7c4ea394f8263f",
+    "subject": "feat(corpus): build a knowledge bundle from authored Markdown documents",
+    "layer": "domain",
+    "src_lines": 201,
+    "hidden_tests": [
+      "backend/tests/domain/corpus/test_authoring.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "c905c60a7d7c8baff58caeb24aaab3175d3260d1",
+    "subject": "feat(corpus): author documents, glossary and colloquial names under quotas",
+    "layer": "application",
+    "src_lines": 785,
+    "hidden_tests": [
+      "backend/tests/application/test_content_service.py",
+      "backend/tests/infrastructure/test_source_repository.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py, backend/tests/collection_fakes.py"
+  },
+  {
+    "sha": "eb5fce7fb19eb026a9e6aeaa8bc9daff8271f333",
+    "subject": "feat(corpus): publish authored collections through a background job",
+    "layer": "application",
+    "src_lines": 678,
+    "hidden_tests": [
+      "backend/tests/api/test_internal_api_postgres.py",
+      "backend/tests/application/test_publish_service.py",
+      "backend/tests/infrastructure/test_jobs.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/api/postgres_app.py, backend/tests/collection_fakes.py"
+  },
+  {
+    "sha": "0147ea532ab4066245f37c0573b0a4d633794b4e",
+    "subject": "feat(api): author, upload and publish collection content",
+    "layer": "api",
+    "src_lines": 244,
+    "hidden_tests": [
+      "backend/tests/api/test_documents_api_postgres.py",
+      "backend/tests/api/test_openapi.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "6956c2924c9597c5b1e30313cf21427ec8f7fe6e",
+    "subject": "feat(admin): superadmin reads and manages users, organizations, collections and jobs",
+    "layer": "application",
+    "src_lines": 605,
+    "hidden_tests": [
+      "backend/tests/api/test_admin_api_postgres.py",
+      "backend/tests/api/test_openapi.py",
+      "backend/tests/application/test_admin_service.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/organization_fakes.py"
+  },
+  {
+    "sha": "86a0dae1a6e14253c2bf4e1b730c112fdcfd01c6",
+    "subject": "feat(retrieval): rerank through DeepInfra's inference endpoint",
+    "layer": "infrastructure",
+    "src_lines": 68,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_deepinfra_reranker.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "57e3f288e9f187b003221c76824a4e22f77b3af2",
+    "subject": "feat(api): report whether phone sign-in is on in /health",
+    "layer": "api",
+    "src_lines": 8,
+    "hidden_tests": [
+      "backend/tests/api/test_health_api.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "8 src lines outside 30-400"
+  },
+  {
+    "sha": "1024cbc9365a237ea45316da7b21bb6997bc8fae",
+    "subject": "feat(auth): show Google sign-in only when a Google client is configured",
+    "layer": "application",
+    "src_lines": 12,
+    "hidden_tests": [
+      "backend/tests/api/test_health_api.py",
+      "backend/tests/application/test_account_settings_service.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "12 src lines outside 30-400"
+  },
+  {
+    "sha": "0a6b1f0680aa824d1f5621a6bcb6716748242f61",
+    "subject": "feat(email): send through the Gmail API, since Render Free blocks outbound SMTP",
+    "layer": "infrastructure",
+    "src_lines": 121,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_notifications.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "f2b898af9761002477c139fe876e50be3eb50ef5",
+    "subject": "feat(deploy): run the backend as a Vercel Function",
+    "layer": "infrastructure",
+    "src_lines": 73,
+    "hidden_tests": [
+      "backend/tests/infrastructure/test_inline_dispatcher.py",
+      "backend/tests/infrastructure/test_settings.py"
+    ],
+    "failed_criterion": null,
+    "reason": "fail-to-pass confirmed"
+  },
+  {
+    "sha": "edaf8fa98d4a74943e59d8df6d4caa6ce7779165",
+    "subject": "feat(backend): a pipeline flag that searches the earlier questions with the turn",
+    "layer": "application",
+    "src_lines": 17,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_graph.py",
+      "backend/tests/domain/test_conversation_context.py"
+    ],
+    "failed_criterion": 1,
+    "reason": "touches shared test files: backend/tests/fakes.py"
+  },
+  {
+    "sha": "80de8ef33e34944a906d06b0f0438a363b4e3765",
+    "subject": "feat(evaluation): standardize e2e evaluation pipeline, harness, and camera-ready runs",
+    "layer": "application",
+    "src_lines": 13,
+    "hidden_tests": [
+      "backend/tests/application/test_chat_graph.py"
+    ],
+    "failed_criterion": 4,
+    "reason": "13 src lines outside 30-400"
+  }
+]
