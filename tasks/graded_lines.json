@@ -1,0 +1,1320 @@
+{
+ "f08": {
+  "graded_src_lines": 150,
+  "totals": {
+   "changed_stmts": 309,
+   "graded": 150,
+   "import_only": 120,
+   "not_run_by_hidden": 39
+  },
+  "files": {
+   "api/app.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/deps.py": {
+    "changed_stmts": 6,
+    "graded": 4,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "api/errors.py": {
+    "changed_stmts": 54,
+    "graded": 28,
+    "import_only": 20,
+    "not_run_by_hidden": 6
+   },
+   "api/openapi.py": {
+    "changed_stmts": 66,
+    "graded": 42,
+    "import_only": 22,
+    "not_run_by_hidden": 2
+   },
+   "api/problems.py": {
+    "changed_stmts": 19,
+    "graded": 5,
+    "import_only": 14,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/chat.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/conversations.py": {
+    "changed_stmts": 11,
+    "graded": 6,
+    "import_only": 5,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/feedback.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/health.py": {
+    "changed_stmts": 4,
+    "graded": 1,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/skills.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/schemas.py": {
+    "changed_stmts": 10,
+    "graded": 0,
+    "import_only": 10,
+    "not_run_by_hidden": 0
+   },
+   "application/chat/service.py": {
+    "changed_stmts": 13,
+    "graded": 6,
+    "import_only": 7,
+    "not_run_by_hidden": 0
+   },
+   "application/conversation/queries.py": {
+    "changed_stmts": 20,
+    "graded": 12,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   },
+   "application/errors.py": {
+    "changed_stmts": 7,
+    "graded": 0,
+    "import_only": 7,
+    "not_run_by_hidden": 0
+   },
+   "application/pagination.py": {
+    "changed_stmts": 33,
+    "graded": 23,
+    "import_only": 10,
+    "not_run_by_hidden": 0
+   },
+   "cli.py": {
+    "changed_stmts": 10,
+    "graded": 8,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "domain/conversation/models.py": {
+    "changed_stmts": 15,
+    "graded": 11,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/persistence/postgres/conversation_repository.py": {
+    "changed_stmts": 16,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 15
+   },
+   "infrastructure/persistence/postgres/migrations/versions/0007_keyset_indexes.py": {
+    "changed_stmts": 16,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 16
+   },
+   "infrastructure/persistence/postgres/tables.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_conversations_api.py",
+   "tests/api/test_e2e_postgres.py",
+   "tests/api/test_openapi.py",
+   "tests/api/test_problem_details.py",
+   "tests/api/test_skills_api.py",
+   "tests/application/test_chat_service.py",
+   "tests/application/test_feedback_service.py",
+   "tests/application/test_pagination.py",
+   "tests/application/test_queries.py",
+   "tests/application/test_summarize.py",
+   "tests/domain/test_conversation.py",
+   "tests/infrastructure/test_container.py",
+   "tests/infrastructure/test_conversation_repository.py",
+   "tests/infrastructure/test_migrations.py",
+   "tests/test_cli.py"
+  ],
+  "base": "45271fddc0236bc3f3336b30d99771abf626f14c",
+  "end": "cc0f06a67bfa888ef5d7e1ebd1715a517079bbc9"
+ },
+ "f14": {
+  "graded_src_lines": 243,
+  "totals": {
+   "changed_stmts": 547,
+   "graded": 243,
+   "import_only": 240,
+   "not_run_by_hidden": 64
+  },
+  "files": {
+   "api/app.py": {
+    "changed_stmts": 8,
+    "graded": 4,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   },
+   "api/deps.py": {
+    "changed_stmts": 12,
+    "graded": 2,
+    "import_only": 6,
+    "not_run_by_hidden": 4
+   },
+   "api/errors.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/audit.py": {
+    "changed_stmts": 13,
+    "graded": 5,
+    "import_only": 7,
+    "not_run_by_hidden": 1
+   },
+   "api/routers/invitations.py": {
+    "changed_stmts": 22,
+    "graded": 9,
+    "import_only": 9,
+    "not_run_by_hidden": 4
+   },
+   "api/routers/organizations.py": {
+    "changed_stmts": 80,
+    "graded": 35,
+    "import_only": 24,
+    "not_run_by_hidden": 21
+   },
+   "application/account/errors.py": {
+    "changed_stmts": 3,
+    "graded": 0,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "application/account/messages.py": {
+    "changed_stmts": 5,
+    "graded": 2,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "application/account/service.py": {
+    "changed_stmts": 22,
+    "graded": 8,
+    "import_only": 14,
+    "not_run_by_hidden": 0
+   },
+   "application/audit/service.py": {
+    "changed_stmts": 60,
+    "graded": 25,
+    "import_only": 35,
+    "not_run_by_hidden": 0
+   },
+   "application/errors.py": {
+    "changed_stmts": 12,
+    "graded": 2,
+    "import_only": 10,
+    "not_run_by_hidden": 0
+   },
+   "application/mail.py": {
+    "changed_stmts": 21,
+    "graded": 8,
+    "import_only": 11,
+    "not_run_by_hidden": 2
+   },
+   "application/organizations/errors.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "application/organizations/invitations.py": {
+    "changed_stmts": 213,
+    "graded": 138,
+    "import_only": 63,
+    "not_run_by_hidden": 12
+   },
+   "application/organizations/messages.py": {
+    "changed_stmts": 10,
+    "graded": 5,
+    "import_only": 5,
+    "not_run_by_hidden": 0
+   },
+   "cli.py": {
+    "changed_stmts": 19,
+    "graded": 0,
+    "import_only": 10,
+    "not_run_by_hidden": 9
+   },
+   "domain/organizations/ports.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/account_factory.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/auth/superadmin.py": {
+    "changed_stmts": 11,
+    "graded": 0,
+    "import_only": 5,
+    "not_run_by_hidden": 6
+   },
+   "infrastructure/container.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/organizations_factory.py": {
+    "changed_stmts": 28,
+    "graded": 0,
+    "import_only": 23,
+    "not_run_by_hidden": 5
+   },
+   "infrastructure/settings.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_openapi.py",
+   "tests/api/test_organizations_api_postgres.py",
+   "tests/application/test_account_settings_service.py",
+   "tests/application/test_audit_service.py",
+   "tests/application/test_invitation_messages.py",
+   "tests/application/test_invitation_service.py",
+   "tests/infrastructure/test_superadmin_cli.py"
+  ],
+  "base": "c2935909a101b7274c58ec0e678371c0a13b3d07",
+  "end": "11079ab21c7fa8299bd59f73b7e6a901ba98ffc4"
+ },
+ "f15": {
+  "graded_src_lines": 163,
+  "totals": {
+   "changed_stmts": 514,
+   "graded": 163,
+   "import_only": 224,
+   "not_run_by_hidden": 127
+  },
+  "files": {
+   "api/app.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/deps.py": {
+    "changed_stmts": 5,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 3
+   },
+   "api/errors.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/collections.py": {
+    "changed_stmts": 43,
+    "graded": 15,
+    "import_only": 15,
+    "not_run_by_hidden": 13
+   },
+   "api/routers/conversations.py": {
+    "changed_stmts": 4,
+    "graded": 3,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/schemas.py": {
+    "changed_stmts": 5,
+    "graded": 0,
+    "import_only": 5,
+    "not_run_by_hidden": 0
+   },
+   "application/chat/context.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "application/chat/runner.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "application/chat/service.py": {
+    "changed_stmts": 7,
+    "graded": 4,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "application/conversation/service.py": {
+    "changed_stmts": 19,
+    "graded": 12,
+    "import_only": 7,
+    "not_run_by_hidden": 0
+   },
+   "application/corpus/collections.py": {
+    "changed_stmts": 193,
+    "graded": 107,
+    "import_only": 74,
+    "not_run_by_hidden": 12
+   },
+   "application/corpus/errors.py": {
+    "changed_stmts": 14,
+    "graded": 4,
+    "import_only": 10,
+    "not_run_by_hidden": 0
+   },
+   "cli.py": {
+    "changed_stmts": 6,
+    "graded": 4,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "domain/account/models.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "domain/conversation/models.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "domain/conversation/ports.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "domain/corpus/models.py": {
+    "changed_stmts": 11,
+    "graded": 3,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   },
+   "domain/corpus/ports.py": {
+    "changed_stmts": 8,
+    "graded": 0,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   },
+   "domain/retrieval/models.py": {
+    "changed_stmts": 3,
+    "graded": 0,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "domain/retrieval/ports.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "domain/retrieval/service.py": {
+    "changed_stmts": 2,
+    "graded": 2,
+    "import_only": 0,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/collections_factory.py": {
+    "changed_stmts": 16,
+    "graded": 0,
+    "import_only": 13,
+    "not_run_by_hidden": 3
+   },
+   "infrastructure/container.py": {
+    "changed_stmts": 11,
+    "graded": 0,
+    "import_only": 7,
+    "not_run_by_hidden": 4
+   },
+   "infrastructure/corpus_factory.py": {
+    "changed_stmts": 3,
+    "graded": 0,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/persistence/postgres/collection_repository.py": {
+    "changed_stmts": 64,
+    "graded": 0,
+    "import_only": 28,
+    "not_run_by_hidden": 36
+   },
+   "infrastructure/persistence/postgres/conversation_repository.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/persistence/postgres/corpus_tables.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/persistence/postgres/migrations/versions/0018_collection_owners_and_scope.py": {
+    "changed_stmts": 30,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 30
+   },
+   "infrastructure/persistence/postgres/migrations/versions/0019_collection_soft_delete.py": {
+    "changed_stmts": 14,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 14
+   },
+   "infrastructure/persistence/postgres/organization_repository.py": {
+    "changed_stmts": 5,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 3
+   },
+   "infrastructure/persistence/postgres/tables.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/retrieval/qdrant_adapter.py": {
+    "changed_stmts": 9,
+    "graded": 7,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/retrieval/scope_resolver.py": {
+    "changed_stmts": 16,
+    "graded": 0,
+    "import_only": 8,
+    "not_run_by_hidden": 8
+   },
+   "infrastructure/settings.py": {
+    "changed_stmts": 8,
+    "graded": 0,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_collections_api_postgres.py",
+   "tests/api/test_conversations_api.py",
+   "tests/api/test_openapi.py",
+   "tests/application/test_chat_service.py",
+   "tests/application/test_collection_service.py",
+   "tests/application/test_conversation_service.py",
+   "tests/domain/corpus/test_corpus_models.py",
+   "tests/domain/test_retrieval_service.py",
+   "tests/infrastructure/test_collection_repository.py",
+   "tests/infrastructure/test_migrations.py",
+   "tests/infrastructure/test_qdrant_adapter.py",
+   "tests/infrastructure/test_scope_resolver.py",
+   "tests/infrastructure/test_scope_retrieval_integration.py",
+   "tests/test_cli_corpus.py"
+  ],
+  "base": "11079ab21c7fa8299bd59f73b7e6a901ba98ffc4",
+  "end": "ef23fe8cb40354573c362e570f8a399ad4328c42"
+ },
+ "m01": {
+  "graded_src_lines": 197,
+  "totals": {
+   "changed_stmts": 252,
+   "graded": 197,
+   "import_only": 45,
+   "not_run_by_hidden": 10
+  },
+  "files": {
+   "domain/corpus/bundle.py": {
+    "changed_stmts": 226,
+    "graded": 184,
+    "import_only": 32,
+    "not_run_by_hidden": 10
+   },
+   "domain/corpus/identity.py": {
+    "changed_stmts": 26,
+    "graded": 13,
+    "import_only": 13,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/corpus/test_bundle_io.py",
+   "tests/domain/corpus/test_identity.py"
+  ],
+  "base": "af9d4173a9f4578ff2040a8cb73e6ce95372cf26",
+  "end": "507a4ae31ea47eef1a195ac074aca1f5515a9ba0"
+ },
+ "m02": {
+  "graded_src_lines": 46,
+  "totals": {
+   "changed_stmts": 160,
+   "graded": 46,
+   "import_only": 84,
+   "not_run_by_hidden": 30
+  },
+  "files": {
+   "application/conversation/queries.py": {
+    "changed_stmts": 55,
+    "graded": 23,
+    "import_only": 32,
+    "not_run_by_hidden": 0
+   },
+   "application/memory/summarize.py": {
+    "changed_stmts": 35,
+    "graded": 23,
+    "import_only": 12,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/composition.py": {
+    "changed_stmts": 3,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/container.py": {
+    "changed_stmts": 49,
+    "graded": 0,
+    "import_only": 27,
+    "not_run_by_hidden": 22
+   },
+   "infrastructure/langgraph/checkpointer.py": {
+    "changed_stmts": 14,
+    "graded": 0,
+    "import_only": 9,
+    "not_run_by_hidden": 5
+   },
+   "infrastructure/persistence/postgres/migrations/env.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/persistence/postgres/tables.py": {
+    "changed_stmts": 3,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 1
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/application/test_queries.py",
+   "tests/application/test_summarize.py",
+   "tests/infrastructure/test_checkpointer.py",
+   "tests/infrastructure/test_container.py",
+   "tests/infrastructure/test_migrations.py"
+  ],
+  "base": "a133d4cd1cbaf8926aeb90d7e2d0eed5f7c6668e",
+  "end": "68edeac53e8e8fe94c8d8952130448397ad9c40b"
+ },
+ "m03": {
+  "graded_src_lines": 46,
+  "totals": {
+   "changed_stmts": 134,
+   "graded": 46,
+   "import_only": 48,
+   "not_run_by_hidden": 40
+  },
+  "files": {
+   "api/routers/chat.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "api/ui_stream.py": {
+    "changed_stmts": 69,
+    "graded": 46,
+    "import_only": 21,
+    "not_run_by_hidden": 2
+   },
+   "infrastructure/persistence/postgres/citation_rows.py": {
+    "changed_stmts": 24,
+    "graded": 0,
+    "import_only": 13,
+    "not_run_by_hidden": 11
+   },
+   "infrastructure/persistence/postgres/conversation_repository.py": {
+    "changed_stmts": 11,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 9
+   },
+   "infrastructure/persistence/postgres/migrations/versions/0008_message_citations.py": {
+    "changed_stmts": 18,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 18
+   },
+   "infrastructure/persistence/postgres/tables.py": {
+    "changed_stmts": 10,
+    "graded": 0,
+    "import_only": 10,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_chat_api.py",
+   "tests/api/test_e2e_postgres.py",
+   "tests/api/test_ui_stream.py",
+   "tests/infrastructure/test_conversation_repository.py",
+   "tests/infrastructure/test_migrations.py"
+  ],
+  "base": "a24bd490804c90b6c5d007d534606ef9527ec973",
+  "end": "95d69130cd22b4a08738a5ab49e19c61dfe2ae49"
+ },
+ "m04": {
+  "graded_src_lines": 88,
+  "totals": {
+   "changed_stmts": 182,
+   "graded": 88,
+   "import_only": 85,
+   "not_run_by_hidden": 9
+  },
+  "files": {
+   "api/app.py": {
+    "changed_stmts": 32,
+    "graded": 19,
+    "import_only": 13,
+    "not_run_by_hidden": 0
+   },
+   "api/deps.py": {
+    "changed_stmts": 29,
+    "graded": 9,
+    "import_only": 15,
+    "not_run_by_hidden": 5
+   },
+   "api/errors.py": {
+    "changed_stmts": 11,
+    "graded": 4,
+    "import_only": 6,
+    "not_run_by_hidden": 1
+   },
+   "api/routers/chat.py": {
+    "changed_stmts": 37,
+    "graded": 20,
+    "import_only": 14,
+    "not_run_by_hidden": 3
+   },
+   "api/routers/conversations.py": {
+    "changed_stmts": 27,
+    "graded": 19,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/health.py": {
+    "changed_stmts": 16,
+    "graded": 10,
+    "import_only": 6,
+    "not_run_by_hidden": 0
+   },
+   "api/schemas.py": {
+    "changed_stmts": 15,
+    "graded": 0,
+    "import_only": 15,
+    "not_run_by_hidden": 0
+   },
+   "api/sse.py": {
+    "changed_stmts": 5,
+    "graded": 1,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   },
+   "cli.py": {
+    "changed_stmts": 10,
+    "graded": 6,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_chat_api.py",
+   "tests/api/test_conversations_api.py",
+   "tests/api/test_e2e_postgres.py",
+   "tests/api/test_health_api.py",
+   "tests/test_cli.py"
+  ],
+  "base": "44466f373da672594dbf8a4d419505f662c712f1",
+  "end": "4ba674d359882c639724ee413fd87044c66597b5"
+ },
+ "m05": {
+  "graded_src_lines": 153,
+  "totals": {
+   "changed_stmts": 234,
+   "graded": 153,
+   "import_only": 75,
+   "not_run_by_hidden": 6
+  },
+  "files": {
+   "application/corpus/import_bundle.py": {
+    "changed_stmts": 72,
+    "graded": 46,
+    "import_only": 25,
+    "not_run_by_hidden": 1
+   },
+   "application/corpus/indexing.py": {
+    "changed_stmts": 68,
+    "graded": 43,
+    "import_only": 23,
+    "not_run_by_hidden": 2
+   },
+   "application/corpus/releases.py": {
+    "changed_stmts": 94,
+    "graded": 64,
+    "import_only": 27,
+    "not_run_by_hidden": 3
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/application/test_import_bundle.py",
+   "tests/application/test_release_service.py"
+  ],
+  "base": "067e562740912786b77a7ee3d22de65e536f0a65",
+  "end": "adf89a7b629a06a5d864c7b3f78d8f4f5c149b01"
+ },
+ "t01": {
+  "graded_src_lines": 68,
+  "totals": {
+   "changed_stmts": 141,
+   "graded": 68,
+   "import_only": 66,
+   "not_run_by_hidden": 7
+  },
+  "files": {
+   "application/organizations/errors.py": {
+    "changed_stmts": 23,
+    "graded": 0,
+    "import_only": 23,
+    "not_run_by_hidden": 0
+   },
+   "application/organizations/service.py": {
+    "changed_stmts": 118,
+    "graded": 68,
+    "import_only": 43,
+    "not_run_by_hidden": 7
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/application/test_organization_service.py"
+  ],
+  "base": "966b882f5deb5ba759f25609678a1529d139631a",
+  "end": "c2935909a101b7274c58ec0e678371c0a13b3d07"
+ },
+ "t02": {
+  "graded_src_lines": 61,
+  "totals": {
+   "changed_stmts": 108,
+   "graded": 61,
+   "import_only": 38,
+   "not_run_by_hidden": 9
+  },
+  "files": {
+   "application/account/service.py": {
+    "changed_stmts": 108,
+    "graded": 61,
+    "import_only": 38,
+    "not_run_by_hidden": 9
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/application/test_account_settings_service.py"
+  ],
+  "base": "f86ada3c2688d3ea3c787de8b86ee2c624dece69",
+  "end": "f8949eca395e8425c885899d887810e1100a0c64"
+ },
+ "t03": {
+  "graded_src_lines": 55,
+  "totals": {
+   "changed_stmts": 93,
+   "graded": 55,
+   "import_only": 36,
+   "not_run_by_hidden": 2
+  },
+  "files": {
+   "api/app.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/openapi.py": {
+    "changed_stmts": 66,
+    "graded": 42,
+    "import_only": 22,
+    "not_run_by_hidden": 2
+   },
+   "api/problems.py": {
+    "changed_stmts": 5,
+    "graded": 1,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/chat.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/conversations.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/feedback.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/health.py": {
+    "changed_stmts": 4,
+    "graded": 1,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "api/routers/skills.py": {
+    "changed_stmts": 2,
+    "graded": 1,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "cli.py": {
+    "changed_stmts": 8,
+    "graded": 6,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/api/test_openapi.py",
+   "tests/test_cli.py"
+  ],
+  "base": "a1468256769c3db82ae7a4ec69cf27190b1b416c",
+  "end": "c3a88b2659d708cb6e23c09cdb5d00bb99be2626"
+ },
+ "t04": {
+  "graded_src_lines": 11,
+  "totals": {
+   "changed_stmts": 29,
+   "graded": 11,
+   "import_only": 9,
+   "not_run_by_hidden": 9
+  },
+  "files": {
+   "api/asgi.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 2
+   },
+   "infrastructure/jobs/inline.py": {
+    "changed_stmts": 19,
+    "graded": 11,
+    "import_only": 8,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/jobs/internal_auth.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/publishing_factory.py": {
+    "changed_stmts": 6,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 6
+   },
+   "infrastructure/settings.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_inline_dispatcher.py",
+   "tests/infrastructure/test_settings.py"
+  ],
+  "base": "870fcbb444e2c35d665f7bb2f44b8ca552510932",
+  "end": "f2b898af9761002477c139fe876e50be3eb50ef5"
+ },
+ "t05": {
+  "graded_src_lines": 21,
+  "totals": {
+   "changed_stmts": 75,
+   "graded": 21,
+   "import_only": 53,
+   "not_run_by_hidden": 1
+  },
+  "files": {
+   "domain/guardrail/groups.py": {
+    "changed_stmts": 24,
+    "graded": 8,
+    "import_only": 16,
+    "not_run_by_hidden": 0
+   },
+   "domain/guardrail/models.py": {
+    "changed_stmts": 21,
+    "graded": 0,
+    "import_only": 20,
+    "not_run_by_hidden": 1
+   },
+   "domain/guardrail/prompts.py": {
+    "changed_stmts": 4,
+    "graded": 1,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   },
+   "domain/guardrail/service.py": {
+    "changed_stmts": 26,
+    "graded": 12,
+    "import_only": 14,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/test_guardrail.py"
+  ],
+  "base": "0fdc9859e9bdce53e1f1de60c873a1c2df14c480",
+  "end": "650abbd0ebecab538c6ba71a9c0118f5add6ede8"
+ },
+ "t06": {
+  "graded_src_lines": 10,
+  "totals": {
+   "changed_stmts": 32,
+   "graded": 10,
+   "import_only": 22,
+   "not_run_by_hidden": 0
+  },
+  "files": {
+   "domain/retrieval/audit.py": {
+    "changed_stmts": 32,
+    "graded": 10,
+    "import_only": 22,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/test_audit.py"
+  ],
+  "base": "6443cf55bb0d9b58617803f48d43f48a82837fee",
+  "end": "77cd48cd29330296a16774bb1d86f0b5601e4cbf"
+ },
+ "t07": {
+  "graded_src_lines": 51,
+  "totals": {
+   "changed_stmts": 142,
+   "graded": 51,
+   "import_only": 79,
+   "not_run_by_hidden": 12
+  },
+  "files": {
+   "domain/conversation/context.py": {
+    "changed_stmts": 10,
+    "graded": 6,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   },
+   "domain/conversation/models.py": {
+    "changed_stmts": 32,
+    "graded": 2,
+    "import_only": 30,
+    "not_run_by_hidden": 0
+   },
+   "domain/skill/models.py": {
+    "changed_stmts": 26,
+    "graded": 2,
+    "import_only": 23,
+    "not_run_by_hidden": 1
+   },
+   "domain/skill/parser.py": {
+    "changed_stmts": 58,
+    "graded": 33,
+    "import_only": 19,
+    "not_run_by_hidden": 6
+   },
+   "domain/skill/ports.py": {
+    "changed_stmts": 5,
+    "graded": 0,
+    "import_only": 0,
+    "not_run_by_hidden": 5
+   },
+   "domain/skill/resolver.py": {
+    "changed_stmts": 11,
+    "graded": 8,
+    "import_only": 3,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/test_conversation_context.py",
+   "tests/domain/test_skill.py"
+  ],
+  "base": "fd8862a95879a4b4ed8bd23ee32a272a0e88d193",
+  "end": "cd9ce5833b47e8e8ff0fc2933802f5281dbe57a3"
+ },
+ "t08": {
+  "graded_src_lines": 23,
+  "totals": {
+   "changed_stmts": 30,
+   "graded": 23,
+   "import_only": 7,
+   "not_run_by_hidden": 0
+  },
+  "files": {
+   "domain/shared/text.py": {
+    "changed_stmts": 30,
+    "graded": 23,
+    "import_only": 7,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/test_text.py"
+  ],
+  "base": "b9ac044c23ef0d8ce784a4c68d229f50d96c31bc",
+  "end": "8dd6a9cdc9c43f37280a039d6a24f4e957d3c435"
+ },
+ "t09": {
+  "graded_src_lines": 34,
+  "totals": {
+   "changed_stmts": 59,
+   "graded": 34,
+   "import_only": 18,
+   "not_run_by_hidden": 7
+  },
+  "files": {
+   "infrastructure/llm/openai_adapter.py": {
+    "changed_stmts": 59,
+    "graded": 34,
+    "import_only": 18,
+    "not_run_by_hidden": 7
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_openai_adapter.py"
+  ],
+  "base": "f9d0fcabe09f988c79be518201ba5ad09aa81258",
+  "end": "c04c67decc634e5e3c3b09dc0b4c60da723d32d9"
+ },
+ "t10": {
+  "graded_src_lines": 15,
+  "totals": {
+   "changed_stmts": 57,
+   "graded": 15,
+   "import_only": 33,
+   "not_run_by_hidden": 9
+  },
+  "files": {
+   "infrastructure/auth/users.py": {
+    "changed_stmts": 57,
+    "graded": 15,
+    "import_only": 33,
+    "not_run_by_hidden": 9
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_auth_wiring.py"
+  ],
+  "base": "68edeac53e8e8fe94c8d8952130448397ad9c40b",
+  "end": "44466f373da672594dbf8a4d419505f662c712f1"
+ },
+ "t11": {
+  "graded_src_lines": 34,
+  "totals": {
+   "changed_stmts": 56,
+   "graded": 34,
+   "import_only": 19,
+   "not_run_by_hidden": 3
+  },
+  "files": {
+   "domain/retrieval/service.py": {
+    "changed_stmts": 56,
+    "graded": 34,
+    "import_only": 19,
+    "not_run_by_hidden": 3
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/domain/test_retrieval_service.py"
+  ],
+  "base": "0898d85ed36fa5fa77ed7f7a166c0e044b31ba5b",
+  "end": "3f87109556c371c2da9e9f7bdc9fe7e3ec87087e"
+ },
+ "t12": {
+  "graded_src_lines": 12,
+  "totals": {
+   "changed_stmts": 23,
+   "graded": 12,
+   "import_only": 9,
+   "not_run_by_hidden": 2
+  },
+  "files": {
+   "infrastructure/skills/filesystem_catalog.py": {
+    "changed_stmts": 23,
+    "graded": 12,
+    "import_only": 9,
+    "not_run_by_hidden": 2
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_filesystem_catalog.py"
+  ],
+  "base": "82a51e2e1433aca4f04e555d838e4762cd75eebf",
+  "end": "94a54f86965e4a7277dc9219a392a29f50c4c274"
+ },
+ "t13": {
+  "graded_src_lines": 13,
+  "totals": {
+   "changed_stmts": 66,
+   "graded": 13,
+   "import_only": 41,
+   "not_run_by_hidden": 12
+  },
+  "files": {
+   "application/tracing.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/composition.py": {
+    "changed_stmts": 2,
+    "graded": 0,
+    "import_only": 2,
+    "not_run_by_hidden": 0
+   },
+   "infrastructure/container.py": {
+    "changed_stmts": 16,
+    "graded": 0,
+    "import_only": 9,
+    "not_run_by_hidden": 7
+   },
+   "infrastructure/observability/langfuse_tracing.py": {
+    "changed_stmts": 47,
+    "graded": 13,
+    "import_only": 29,
+    "not_run_by_hidden": 5
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_container.py",
+   "tests/infrastructure/test_langfuse_tracing.py"
+  ],
+  "base": "733a193c758fdc00558fca3760009c4cfb9f4d07",
+  "end": "7757b6cc65a57e566b2e3bba4b021000dbbe3c99"
+ },
+ "t14": {
+  "graded_src_lines": 20,
+  "totals": {
+   "changed_stmts": 35,
+   "graded": 20,
+   "import_only": 13,
+   "not_run_by_hidden": 2
+  },
+  "files": {
+   "infrastructure/retrieval/deepinfra_reranker.py": {
+    "changed_stmts": 28,
+    "graded": 17,
+    "import_only": 10,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/retrieval/llama_cpp_reranker.py": {
+    "changed_stmts": 6,
+    "graded": 3,
+    "import_only": 2,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/settings.py": {
+    "changed_stmts": 1,
+    "graded": 0,
+    "import_only": 1,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_deepinfra_reranker.py"
+  ],
+  "base": "6956c2924c9597c5b1e30313cf21427ec8f7fe6e",
+  "end": "86a0dae1a6e14253c2bf4e1b730c112fdcfd01c6"
+ },
+ "t15": {
+  "graded_src_lines": 36,
+  "totals": {
+   "changed_stmts": 52,
+   "graded": 36,
+   "import_only": 14,
+   "not_run_by_hidden": 2
+  },
+  "files": {
+   "infrastructure/notifications/email.py": {
+    "changed_stmts": 44,
+    "graded": 33,
+    "import_only": 10,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/notifications/factory.py": {
+    "changed_stmts": 4,
+    "graded": 3,
+    "import_only": 0,
+    "not_run_by_hidden": 1
+   },
+   "infrastructure/settings.py": {
+    "changed_stmts": 4,
+    "graded": 0,
+    "import_only": 4,
+    "not_run_by_hidden": 0
+   }
+  },
+  "pytest_rc": 0,
+  "test_files": [
+   "tests/infrastructure/test_notifications.py"
+  ],
+  "base": "1024cbc9365a237ea45316da7b21bb6997bc8fae",
+  "end": "0a6b1f0680aa824d1f5621a6bcb6716748242f61"
+ }
+}
