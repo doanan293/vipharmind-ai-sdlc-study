@@ -411,3 +411,8 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
 
 - **2026-11-15, F09.** F09 giữ nguyên quyết định loại của đợt chọn đầu (trước chạy thử), không xét lại theo
   ngưỡng 35 tên; lý do ở `prereg-v1.1.md`. Tầng lớn giữ F08, F14, F15; m03 giữ nguyên.
+- **2026-11-15 19:58, vận hành.** Tầng vừa và tầng lớn bắt đầu lúc 19:58 (sau thẻ `prereg-v1.1`), chạy cùng lúc
+  với tầng nhỏ còn đang chạy: tổng tối đa 24 phiên thay vì 8. Mỗi lệnh dùng `--work-root` riêng
+  (`/tmp/sdlc-runs-medium`, `/tmp/sdlc-runs-large`) vì bộ chạy khóa thư mục làm việc theo từng lệnh; cờ này
+  chỉ đổi nơi đặt thư mục tạm, không đổi điều kiện chạy. Khoảng chạy chồng có thể làm tăng `wall_s`; báo cáo
+  so số lượt hết giờ trong và ngoài khoảng này.
