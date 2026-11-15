@@ -1,0 +1,3 @@
+out/plan-corpus/files/
+.venv/
+__pycache__/
