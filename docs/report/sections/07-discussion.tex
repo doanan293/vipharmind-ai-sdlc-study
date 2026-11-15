@@ -1,2 +1,54 @@
 \section{Thảo luận và hạn chế}\label{sec:discussion}
-\pending{07-discussion}
+
+\subsection{Trả lời câu hỏi nghiên cứu}
+
+\pending{Trả lời RQ3 đến RQ6 theo đúng kết cục đọc ở mục~6 (được ủng hộ, trái với giả thuyết, chưa kết
+luận được), không mạnh hơn số liệu; nêu rõ tầng vừa và tầng lớn chỉ là bằng chứng sơ bộ.}
+
+\subsection{Đối chiếu với tài liệu}
+
+\pending{Đặt kết quả cạnh Hill (không thấy đặc tả giảm lỗi), Agarwal (đánh đổi tin cậy và chi phí), Mock
+và Russo (tác tử thêm độ phức tạp), Jiang (lập kế hoạch ở mức hàm) và kết quả hồi cứu RQ2.}
+
+\subsection{Mối đe dọa đến tính hợp lệ}\label{sec:threats}
+
+\textit{Tính hợp lệ nội.} Đề bài do AI soạn sau khi đã biết lời giải và được An duyệt gộp; ở tầng vừa và
+tầng lớn, mục giao diện bắt buộc nêu nhiều tên, nên đề càng gần một bản đặc tả (rõ nhất ở
+\texttt{m01}) thì nhánh theo đặc tả càng ít điều để thêm. Test ẩn được viết cho bản cài đặt gốc, vốn được
+làm theo đặc tả, nên có thể thiên vị nhánh này. Can thiệp là một gói (thiết kế, kế hoạch, viết test
+trước, chạy cả bộ test), nên không tách được phần của tài liệu đặc tả. Tác tử có công cụ web và mạng mở;
+\texttt{upstream\_urls} chỉ bắt đường dẫn hiện ra trong nhật ký, nên là cận dưới của việc đọc mã gốc, và
+phân tích độ nhạy chỉ bỏ được những lượt bị bắt. Từ khi tầng vừa và tầng lớn bắt đầu, ba lệnh chạy cùng lúc
+với tổng tối đa 24 phiên thay vì tám, nên thời gian chạy và số lượt hết giờ trong khoảng đó có thể cao
+hơn; mục~\ref{sec:results} so số lượt hết giờ trong và ngoài khoảng chạy chồng. Việc làm mù khi gán nhãn
+chỉ là một phần, và nhãn sau phân xử của An không mù.
+
+\textit{Tính hợp lệ cấu trúc.} ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
+Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
+\NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của bản vá gốc, nên
+theo \texttt{task\_pass} hai nhiệm vụ này gần tầng nhỏ hơn số dòng gợi ý; phân tích độ nhạy với
+\texttt{graded\_src\_lines} kiểm điều này. Các tầng khác nhau không chỉ ở số dòng mà còn ở số test, giới
+hạn thời gian và độ chi tiết của đề, nên H5 là bằng chứng về ``nhiệm vụ cỡ tính năng'', không về riêng số
+dòng. Ngưỡng 35 tên của tầng lớn không có đơn vị đếm cố định và được áp bằng phán đoán; F09 bị loại theo
+quyết định có trước chạy thử, không theo ngưỡng này. Chi phí bằng tiền là số quy đổi theo giá API, không
+phải số tiền đã trả; với \texttt{codex-luna} chỉ có cận dưới và cận trên.
+
+Lượng token khác nhau rất xa giữa các công cụ. Ở chạy thử, trung vị token vào mỗi lượt của
+\texttt{agy-gemini} là \NumPilotAgyInputMedianM{} triệu với \NumPilotAgyTurnsMedian{} lượt gọi mô hình
+(\NumPilotAgyRuns{} lượt có nhật ký, gồm cả lượt bị ngắt vì hạn mức), gấp khoảng \NumPilotAgyInputRatio{}
+lần mức \NumPilotSonnetInputMedianM{} triệu với \NumPilotSonnetTurnsMedian{} lượt gọi của
+\texttt{claude-sonnet}; \NumPilotAgyCacheReadPct{}\% token vào của \texttt{agy-gemini} là token đọc cache.
+Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào hạn mức thuê bao; điều này phù hợp với
+việc cả bốn tài khoản Antigravity hết hạn mức tuần trước khi nhóm này chạy xong. Chạy thử dùng cấu hình cũ trên hai nhiệm
+vụ, nên đây chỉ là số mô tả, không phải kết quả.
+
+\textit{Tính hợp lệ ngoại.} Một dự án, một ngôn ngữ (Python), \NumTasksMain{} nhiệm vụ backend, và tác
+giả nghiên cứu cũng là tác giả dự án. Ba công cụ dùng mô hình khác hãng và khác hạng. Nhánh theo đặc tả
+là bản tự động, không có bước người duyệt đặc tả như khi người làm nghề dùng quy trình này. Một số nhiệm
+vụ ở các tầng khác nhau chung commit hoặc chung file test ẩn.
+
+\textit{Tính hợp lệ kết luận.} Tầng vừa có \NumMediumTasks{} và tầng lớn có \NumFeatureTasks{} nhiệm vụ,
+nên khoảng tin cậy ở hai tầng này chỉ có giá trị tham khảo. Các phép thử phụ không được hiệu chỉnh so sánh
+nhiều lần. Tại thời điểm viết, độ phủ thật của khoảng bootstrap cụm cho mô hình hỗn hợp chưa được đo bằng mô
+phỏng. Nếu \texttt{agy-gemini} chưa đủ ở hạn chót, RQ4 chỉ còn hai công cụ cho phép thử có khoảng tin cậy.
+\pending{số liệu cụ thể của các mục trên sau khi mở kết quả}

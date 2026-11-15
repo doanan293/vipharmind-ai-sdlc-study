@@ -1,2 +1,94 @@
 \section{Kết quả thí nghiệm}\label{sec:results}
-\pending{06-results}
+% Khung mục 6. Mỗi \pending{...} ghi khóa của results/analysis/summary.json (analysis/README.md) sẽ
+% điền vào chỗ đó. Văn bản viết sau khi thẻ prereg-v1-analysis đã gắn và kết quả chính được mở.
+
+\subsection{Dữ liệu thu được}\label{sec:data-collected}
+
+Số lượt theo trạng thái, số lượt hết giờ, thoát lỗi và bị loại, theo nhóm, tầng và cách làm:
+\pending{descriptives.status\_counts, timeouts, nonzero\_exit, excluded\_runs}. Các (nhóm, tầng) đủ và
+chưa đủ theo mục~\ref{sec:prereg}: \pending{completeness, not\_run\_units}. Kiểm tra mỗi (nhiệm vụ, cách
+làm) có đúng một mã băm đề bài: \pending{descriptives.prompt\_hash\_check}. Phiên bản công cụ đã gặp và
+số lượt mỗi phiên bản: \pending{descriptives.tool\_versions}. Tỉ lệ lượt theo đặc tả tuân thủ quy trình và
+số lượt vibe tự viết file thiết kế hay kế hoạch: \pending{descriptives.compliance\_spec,
+vibe\_wrote\_design\_or\_plan}. Nhóm \texttt{agy-gemini}: \pending{descriptive\_incomplete.agy-gemini.*
+hoặc pass\_diff.agy-gemini.*, tùy trạng thái đủ ở hạn chót}.
+
+\subsection{Làm theo đặc tả có đạt nhiều hơn không (RQ3, H1)}
+
+\begin{table}[H]
+\centering\small
+\caption{Tỉ lệ đạt theo nhóm, tầng và cách làm, hiệu số (đặc tả trừ vibe) và khoảng tin cậy 95\%}
+\label{tab:main}
+\pending{bảng sinh từ pass\_diff.<cohort>.<tier> (mean\_spec, mean\_vibe, estimate, ci\_low,
+ci\_high, n\_tasks) và descriptive\_incomplete.<cohort>.<tier>}
+\end{table}
+
+Phép thử xác nhận H1 (\texttt{claude-sonnet}, tầng nhỏ): \pending{h1.primary; verdicts.H1}. Độ dao động
+giữa ba lần lặp: \pending{variability.claude-sonnet.small, variability.all\_complete}.
+
+\subsection{Ba công cụ (RQ4)}
+
+Hiệu số của từng nhóm, so hướng và độ lớn: \pending{pass\_diff.<cohort>.small; verdicts.pass\_diff.*}
+(Hình~\ref{fig:by-cohort}). Số phép so phụ đã làm: \pending{meta.n\_secondary\_comparisons}.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][3cm][c]{0.8\linewidth}{\centering\pending{figures/pass\_diff\_by\_cohort.pdf}}}
+\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo nhóm và tầng, kèm khoảng tin cậy 95\%}
+\label{fig:by-cohort}
+\end{figure}
+
+\subsection{Sonnet và Opus (RQ5, H4)}
+
+Bốn tỉ lệ đạt, hiệu số ở từng mô hình và hiệu của hai hiệu số: \pending{h4.small.rate.*, h4.small.diff.*,
+h4.small.diff\_of\_diffs; verdicts.H4.small}. Sonnet theo đặc tả so với Opus vibe về tỉ lệ đạt và chi phí:
+\pending{h4.small.sonnet\_spec\_minus\_opus\_vibe.\{pass, cost\_usd\},
+h4.small.sonnet\_spec\_over\_opus\_vibe.cost\_ratio}. Tầng vừa và tầng lớn, nếu cả hai nhóm Claude đủ:
+\pending{h4.medium.*, h4.large.*}.
+
+\subsection{Hiệu số theo kích thước nhiệm vụ (RQ6, H5)}
+
+Phép thử chính của H5 (tầng lớn trừ tầng nhỏ, các nhóm được gộp): \pending{h5.primary; verdicts.H5}. Hệ số
+tương tác của mô hình logistic hỗn hợp, mức mô hình đã dùng và lý do: \pending{h5.mixed\_model}. Cùng
+phép thử trên tỉ lệ test ẩn đạt: \pending{h5.hidden\_pass\_rate}. Hiệu số của từng nhiệm vụ tầng vừa và
+tầng lớn (tầng dưới sáu nhiệm vụ, khoảng tin cậy chỉ để tham khảo): \pending{task\_diffs.csv,
+pooled\_task\_diffs.csv}. Nhóm kích thước trong tầng nhỏ, khám phá: \pending{exploratory.size\_group.*}.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][4cm][c]{0.8\linewidth}{\centering\pending{figures/effect\_vs\_size.pdf}}}
+\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo số dòng của bản vá gốc; mỗi điểm là một nhiệm vụ,
+đường xu hướng kèm dải tin cậy}
+\label{fig:effect-size}
+\end{figure}
+
+\subsection{Chi phí, chất lượng và hiệu quả chi phí (H2, H3)}
+
+Token và thời gian: \pending{secondary.tokens\_total.*, secondary.wall\_s.*; verdicts.H2.*}. Lỗi tĩnh, hồi
+quy, chỉ số bảo trì: \pending{secondary.static\_errors.*, secondary.regression\_any.*,
+secondary.radon\_mi\_delta.*; verdicts.H3a.*, H3b.*, H3c.*}. Test do tác tử viết và lượt có chạy
+\texttt{pytest}: \pending{secondary.ai\_tests\_added.*, descriptives}. Hiệu quả chi phí theo nhóm, tầng và
+cách làm, kèm cận trên của \texttt{codex-luna}: \pending{cost\_eff.<cohort>.<tier>.<arm>.\{passes\_per\_usd,
+cost\_per\_pass\}, cost\_eff\_upper.codex-luna.*} (Hình~\ref{fig:cost}).
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][3cm][c]{0.8\linewidth}{\centering\pending{figures/cost\_per\_pass.pdf}}}
+\caption{Chi phí quy đổi cho một lượt đạt theo nhóm, tầng và cách làm}
+\label{fig:cost}
+\end{figure}
+
+\subsection{Phân tích độ nhạy}
+
+Phép thử chính của H1 và H5 khi bỏ lượt có \texttt{upstream\_urls}, lượt sửa cấu hình \texttt{pytest} và
+lượt theo đặc tả không tuân thủ: \pending{sensitivity.\{upstream\_urls, pytest\_config\_touched,
+spec\_noncompliant\}.\{h1, h5\}}. H5 khi bỏ nhiệm vụ chồng lấn và khi dùng số dòng được chấm:
+\pending{sensitivity.overlap.h5, h5.mixed\_model\_graded}. Lượt hết giờ trong và ngoài khoảng các tầng
+chạy chồng nhau: \pending{descriptives.concurrent\_tiers\_window, shared\_cpu\_window}.
+
+\subsection{Nguyên nhân thất bại và ca nghiên cứu}
+
+Phân bố nhãn theo cách làm, kappa của Cohen, bảng chéo hai người và tỉ lệ lượt bị ghi ``lộ cách làm'':
+\pending{labels}. Lượt đạt test nhưng sai trong mẫu 20 lượt: \pending{passing\_sample.csv, kết luận của An}.
+Ca nghiên cứu: \pending{case\_study: nhiệm vụ, hai lượt, thiết kế và kế hoạch AI viết, chỗ sai, test ẩn
+trượt, chi phí}.
