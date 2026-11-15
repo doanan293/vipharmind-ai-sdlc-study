@@ -109,7 +109,7 @@ text = "\n".join(pages)
 text = re.sub(r"\d{4}-\d{2}-\d{2}", " ", text)                  # ngày ISO
 text = re.sub(r"\b(?=[0-9a-f]*[a-f])(?=[0-9a-f]*\d)[0-9a-f]{7,40}\b", " ", text)  # mã commit
 text = re.sub(r"\[\d+(?:[,–-]\s*\d+)*\]", " ", text)            # số trích dẫn
-text = re.sub(r"\b(?:RQ|H|Q|F|t|p)\d+\b", " ", text)            # mã RQ, giả thuyết, truy vấn, đề
+text = re.sub(r"\b(?:RQ|H|Q|F|t|m|f|p)\d+\b", " ", text)        # mã RQ, giả thuyết, truy vấn, đề
 bad = sorted({t for t in tokens(text) if t not in allowed})
 print(" ".join(bad))
 PY

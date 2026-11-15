@@ -10,3 +10,23 @@
 20261115    # hạt giống ngẫu nhiên của bộ chạy (bản thiết kế, harness)
 9           # tháng 9 (mô tả thời gian ở mục 5.1)
 10          # tháng 10; cũng là "mười câu"
+1.1         # thẻ prereg-v1.1
+5.2         # tên mô hình phản biện Fable 5.2
+2.1.325     # phiên bản Claude Code lúc chốt (prereg-v1 mục 3)
+1.5.9       # phiên bản Antigravity CLI lúc chốt
+0.162.1     # phiên bản Codex CLI lúc chốt
+16          # số đoạn commit của khảo sát khả thi tầng tính năng (ranges.json)
+20          # ngưỡng 20 tên của tầng vừa; mẫu 20 lượt đạt (prereg-v1 mục 9.10)
+24          # tổng phiên chạy song song khi ba tầng chạy chồng (prereg-v1 mục 11)
+35          # ngưỡng 35 tên của tầng lớn (prereg-v1, ràng buộc 3)
+50          # ngưỡng 50% dòng chỉ do test integration kiểm (prereg-v1.1 tiêu chí 8)
+60          # số tên ước lượng của F04 (prereg-v1.1)
+70          # số tên ước lượng của F07 (prereg-v1.1)
+95          # mức tin cậy 95%
+300         # cận dưới số dòng tầng vừa (prereg-v1.1 tiêu chí 4)
+700         # cận trên số dòng tầng vừa
+999         # số lần bootstrap cụm của mô hình hỗn hợp (prereg-v1 mục 11)
+3600        # giới hạn thời gian tầng nhỏ, giây (prereg-v1 mục 4)
+10.000      # số lần bootstrap theo nhiệm vụ (prereg-v1 mục 9)
+0,30        # ngưỡng suy biến của mô hình hỗn hợp (prereg-v1 mục 11)
+272.000     # ngưỡng token theo lời gọi của bảng giá gpt-6-luna (prereg-v1 mục 7)

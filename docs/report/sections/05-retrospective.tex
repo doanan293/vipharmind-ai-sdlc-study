@@ -7,18 +7,6 @@ Hình~\ref{fig:lifecycle} cho số commit theo tuần. Công việc dồn vào h
 frontend, kho dữ liệu và phần đánh giá được dựng, và đầu tháng 10, khi các tính năng tài khoản và tổ chức được
 thêm.
 
-\begin{table}[H]
-\centering\small
-\caption{Commit và dòng thay đổi theo khâu của vòng đời}\label{tab:lifecycle}
-\input{generated/tables/lifecycle}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{generated/figures/lifecycle_by_week.pdf}
-\caption{Số commit theo tuần và theo khâu}\label{fig:lifecycle}
-\end{figure}
-
 Khâu kiểm thử chiếm tỉ lệ commit lớn nhất (\NumStageTestCommitsPct{}\%) nhưng chỉ
 \NumStageTestLinesPct{}\% số dòng. Lý do nằm ở cách gán khâu: một commit thuộc khâu có nhiều dòng thay
 đổi nhất. Các plan của ViPharmind thường yêu cầu viết test trước cho từng phần việc, nên nhiều commit
@@ -27,10 +15,21 @@ Khâu kiểm thử chiếm tỉ lệ commit lớn nhất (\NumStageTestCommitsPc
 kiểm thử tốn nhiều công nhất. Theo số dòng, dữ liệu (\NumStageDataLinesPct{}\%) và mã backend
 (\NumStageBackendLinesPct{}\%) lớn nhất.
 
-Không commit nào mang dòng ghi công AI, nên lịch sử git không cho biết dòng nào do AI viết. Kết luận
-``AI tham gia mọi khâu'' dựa trên lời khai của tác giả dự án và phần nhật ký phiên còn lại
-(mục~\ref{sec:sessions}). Lịch sử git chỉ cho thấy mọi khâu đều có commit, và quy trình spec, plan để
-lại dấu vết rõ.
+\begin{table}[H]
+\centering\small
+\caption{Commit và dòng thay đổi theo khâu của vòng đời}\label{tab:lifecycle}
+\input{generated/tables/lifecycle}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.74\linewidth]{generated/figures/lifecycle_by_week.pdf}
+\caption{Số commit theo tuần và theo khâu}\label{fig:lifecycle}
+\end{figure}
+
+Lịch sử git không cho biết dòng nào do AI viết. Kết luận ``AI tham gia mọi khâu'' dựa trên lời khai
+của tác giả và phần nhật ký phiên còn lại (mục~\ref{sec:sessions}); git chỉ cho thấy mọi khâu đều có
+commit và quy trình spec, plan để lại dấu vết rõ.
 
 \subsection{Dấu vết quy trình theo đặc tả (RQ1)}
 
@@ -40,14 +39,12 @@ trước. Quy tắc đúng ở \NumLinkCorrect{} trên \NumLinkChecked{} commit 
 (\NumLinkCorrectPct{}\%). Trong các lần sai, \NumLinkFalsePositive{} lần quy tắc nối commit với một
 plan không thực sự bao gồm việc đó: plan khác cùng thời gian mới đúng, hoặc việc là phần làm thêm không
 có trong plan nào. \NumLinkFalseNegative{} lần quy tắc bỏ sót một plan có nêu file. Vì sai lệch nghiêng
-về phía nối thừa, tỉ lệ \NumFeatWithPlanPct{}\% nhiều khả năng cao hơn tỉ lệ thật. Mẫu kiểm tra nhỏ, và
-như đã nêu ở mục~\ref{sec:method}, An đồng ý với gợi ý của AI ở mọi commit trong mẫu, nên đây không
-phải hai đánh giá độc lập.
+về phía nối thừa, tỉ lệ \NumFeatWithPlanPct{}\% nhiều khả năng cao hơn tỉ lệ thật. Mẫu kiểm tra nhỏ, và An
+đồng ý với gợi ý của AI ở cả \NumLinkAgreeAI{} commit trong mẫu, nên đây không phải hai đánh giá độc lập.
 
 Dù có sai số đó, phần lớn commit \texttt{feat} của ViPharmind đi sau một plan có nêu file mà chúng
-chạm. Quy tắc không nối commit với spec, nên dữ liệu này không cho biết spec có luôn đi trước plan hay
-không. Quy trình spec, plan rồi cài đặt mà tác giả mô tả là quy trình nhánh theo đặc tả của thực nghiệm
-tái hiện, với một khác biệt: trong thực nghiệm không có người duyệt spec và plan.
+chạm. Quy trình spec, plan rồi cài đặt này là quy trình mà nhánh theo đặc tả của thực nghiệm tái hiện,
+trừ bước người duyệt.
 
 \subsection{Mức phải sửa lại (RQ2)}
 
@@ -65,14 +62,13 @@ Trung vị của cả hai nhóm là \NumReworkWithPlanMedian{}. Hai nhóm gần 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{generated/figures/rework_by_group.pdf}
+\includegraphics[width=0.68\linewidth]{generated/figures/rework_by_group.pdf}
 \caption{Phân bố số commit sửa lại theo nhóm}\label{fig:rework}
 \end{figure}
 
-Nhóm không có plan chỉ có \NumFeatWithoutPlan{} commit. Hai nhóm khác
-nhau về thời điểm và loại việc, và quy tắc nối có sai số như trên. Commit sửa lại chạm cùng file chưa
-chắc sửa chính tính năng đó. Đây là quan sát, không phải quan hệ nhân quả. Câu hỏi nhân quả (viết thiết
-kế và kế hoạch trước có làm mã tốt hơn không) do thực nghiệm trả lời. Kết quả quan sát này phù hợp với
+Nhóm không có plan chỉ có \NumFeatWithoutPlan{} commit, hai nhóm khác nhau về thời điểm và loại việc,
+quy tắc nối có sai số, và commit sửa lại chạm cùng file chưa chắc sửa chính tính năng đó. Đây là quan
+sát, không phải quan hệ nhân quả; câu hỏi nhân quả do thực nghiệm trả lời. Kết quả quan sát này phù hợp với
 \cite{hill_2026}: ở đó pull request có đặc tả không ít lỗi hơn, và chất lượng đặc tả không dự báo việc
 phải sửa lại.
 
@@ -82,10 +78,8 @@ Nhật ký còn lại gồm \NumSessionsMain{} phiên chính và \NumSessionsSub
 \mbox{\NumSessionFirstDate{}} đến \mbox{\NumSessionLastDate{}}, tức chỉ phủ vài tuần cuối của dự án. Trong các phiên
 chính, người dùng gửi \NumSessionUserMessages{} tin nhắn. Tính cả tác tử con, mô hình trả lời
 \NumSessionAssistantTurns{} lượt và gọi công cụ \NumSessionToolCalls{} lần, trong đó lệnh shell
-(\texttt{Bash}) chiếm \NumToolBashPct{}\%. Như vậy mỗi tin nhắn của người kéo theo nhiều bước làm việc
-tự động của tác tử.
+(\texttt{Bash}) chiếm \NumToolBashPct{}\%.
 
-Bản thiết kế nghiên cứu dự định đếm số lần người sửa hướng tác tử. Nhật ký không ghi trực tiếp điều
-này, nên đề tài dùng số lần người dùng ngắt ngang tác tử làm số đo thay thế: \NumSessionInterrupts{}
-lần. Số này chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Do nhật ký không đầy đủ,
-các con số ở mục này chỉ mô tả phần nhật ký còn lại và không suy rộng ra toàn dự án.
+Số lần người dùng ngắt ngang tác tử, số đo thay thế cho việc người sửa hướng, là
+\NumSessionInterrupts{}; đây chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Các con
+số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộng ra toàn dự án.

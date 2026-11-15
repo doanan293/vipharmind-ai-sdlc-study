@@ -10,15 +10,79 @@ Lời dặn đặt trước đề bài của mỗi nhiệm vụ, chép nguyên v
 
 \section{Danh sách nhiệm vụ}\label{app:tasks}
 
-Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của bản vá gốc. Cột cuối là số file test ẩn.
-Mã commit đầy đủ nằm trong \texttt{tasks/*/task.toml} và
-\texttt{tasks/feature-\allowbreak feasibility/\allowbreak ranges.json}.
+Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của bản vá gốc (\texttt{src\_lines}). Cột
+``Dòng chấm'' là \texttt{graded\_src\_lines}: số dòng mã mà bản vá gốc thêm hoặc sửa và có test ẩn được
+chấm chạy tới (mục~\ref{sec:tasks}). Nhiệm vụ nhiều commit ghi \texttt{base..end}. Mã commit đầy đủ nằm
+trong \texttt{tasks/*/task.toml}.
 
 \begin{table}[H]
 \centering\small
-\caption{Nhiệm vụ chính, nhiệm vụ thử và tầng tính năng}\label{tab:tasks}
+\caption{Nhiệm vụ của ba tầng và nhiệm vụ thử}\label{tab:tasks}
 \input{generated/tables/tasks}
 \end{table}
+
+\section{Điều kiện chạy của từng công cụ}\label{app:conditions}
+
+Cấu hình của lượt chạy chính, do An chốt sau chạy thử. Chung cho cả ba công cụ: agent và bộ công cụ mặc
+định, kể cả công cụ web; gọi thẳng CLI, không proxy; mỗi lần chạy một thư mục \texttt{HOME} mới chỉ có
+thông tin đăng nhập của một tài khoản; biến môi trường lọc theo cùng một danh sách cho phép; không
+sandbox, mạng mở; cây mã không lịch sử git, đã bỏ \texttt{superpowers/}, \texttt{skills-lock.json} và file
+hướng dẫn cho AI.
+
+\begin{table}[H]
+\centering\small
+\caption{Lệnh gọi và phần cài thêm bị tắt ở từng công cụ}\label{tab:conditions}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lXXX@{}}
+\toprule
+& Claude Code & Antigravity CLI & Codex CLI \\
+\midrule
+Gọi & \texttt{claude -p}, đề qua stdin & \texttt{agy -p=}\textit{đề} (agy bỏ qua stdin) & \texttt{codex exec -}, đề
+qua stdin \\
+Quyền & \texttt{bypassPermissions} & \texttt{--dangerously-\allowbreak skip-\allowbreak permissions} &
+\texttt{--dangerously-\allowbreak bypass-\allowbreak approvals-\allowbreak and-\allowbreak sandbox} \\
+Phần cài thêm bị tắt & \texttt{--setting-\allowbreak sources ""}, \texttt{--strict-\allowbreak mcp-\allowbreak config},
+\texttt{--disable-\allowbreak slash-\allowbreak commands}, \texttt{--safe-mode}, \texttt{--no-\allowbreak session-\allowbreak persistence}, tắt bộ nhớ tự
+động & \texttt{HOME} mới (không plugin, skill, bộ nhớ), \texttt{--disable-\allowbreak slash-\allowbreak commands} &
+\texttt{CODEX\_HOME} mới; tắt skill gắn sẵn, plugin, app, bộ nhớ, hook; không đọc \texttt{AGENTS.md};
+\texttt{--strict-config} \\
+Tài khoản & một & bốn, đổi khi hết hạn mức & bốn, đổi khi hết hạn mức \\
+Còn lại không tắt được & plugin gắn sẵn của Claude Code; lời nhắc hệ thống có thông tin tài khoản & tự
+cập nhật phiên bản & mô hình được phục vụ không ghi được cho từng lượt \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Thay đổi sau khi chốt}\label{app:deviations}
+
+Chép lại mục 11 của bản đăng ký trước \texttt{prereg-v1}. Mọi thay đổi ghi ngày \mbox{2026-11-15}, trước khi
+mở bất kỳ kết quả chính nào.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Quy tắc chọn tầng vừa.} Thay bằng quy tắc của \texttt{prereg-v1.1}: loại ứng viên chung commit
+với nhiệm vụ tầng khác; thêm tiêu chí chỉ commit tính năng, tối thiểu năm test ẩn trượt ở mã nền, tối đa
+50\% dòng chỉ do test \texttt{integration} kiểm; ngưỡng 20 tên đổi đơn vị sang số đếm bằng script; thứ tự
+chọn mới; quy tắc thay thế nhiệm vụ chỉ dùng trước thẻ (không phải dùng). \textit{Đã xem:} số liệu dựng
+nhiệm vụ của ứng viên và một danh sách chọn tay đầu tiên; chưa kết quả AI nào.
+\item \textbf{Thời điểm thẻ \texttt{prereg-v1.1}.} Lượt chạy chính tầng nhỏ bắt đầu trước thẻ; theo trường
+hợp dự phòng, kết quả tầng nhỏ bị che tới khi có thẻ phân tích. \textit{Đã xem:} nhiều nhất là số lượt theo
+trạng thái.
+\item \textbf{F09.} Giữ quyết định loại của đợt chọn đầu, không xét lại theo ngưỡng 35 tên. \textit{Đã xem:}
+như mục đầu.
+\item \textbf{Vận hành.} Tầng vừa và tầng lớn chạy cùng lúc với tầng nhỏ (tổng tối đa 24 phiên thay vì
+tám), mỗi lệnh một thư mục làm việc riêng; báo cáo so số lượt hết giờ trong và ngoài khoảng này.
+\textit{Đã xem:} số lượt theo trạng thái.
+\item \textbf{Mô hình hỗn hợp của H5.} \texttt{glmer} (R) đổi sang \texttt{BinomialBayesMixedGLM}
+(statsmodels); thứ tự lùi bắt đầu từ mô hình không tương quan; khoảng tin cậy là bootstrap cụm theo nhiệm
+vụ (999 lần); ngưỡng suy biến 0,30 hiệu chỉnh bằng mô phỏng. Dữ liệu của mô hình chỉ gồm các nhóm đủ ở cả
+ba tầng, như phép thử chính của H5. \textit{Đã xem:} chỉ dữ liệu chạy thử và mô phỏng.
+\item \textbf{Giá \texttt{gpt-6-luna}.} Codex chỉ ghi lượng dùng cho cả lượt, nên ngưỡng 272.000 token không
+xét được theo lời gọi: báo cáo chi phí cận dưới và cận trên. \textit{Đã xem:} chưa kết quả chính nào.
+\item \textbf{Ghi cache của Claude.} Token ghi cache không tách thời gian giữ được tính theo giá giữ một giờ
+(cận trên). \textit{Đã xem:} chưa kết quả chính nào.
+\item \textbf{Chồng lấn (làm rõ).} Hai nhiệm vụ chồng lấn khi tập commit \texttt{base..end} giao nhau; chỉ
+có cặp \texttt{f08}--\texttt{t03}. \textit{Đã xem:} chưa kết quả chính nào.
+\end{itemize}
 
 \section{Khai báo sử dụng AI và bản kê đóng góp}\label{app:ai}
 \pending{khai báo sử dụng AI và bản kê đóng góp, dạng cuối}

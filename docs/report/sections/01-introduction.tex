@@ -8,12 +8,10 @@ tả: yêu cầu tác tử viết tài liệu thiết kế và kế hoạch trư
 \cite{agarwal_2026,diaz_2026}. Taghavi và cộng sự đánh giá một quy trình tác tử
 theo đặc tả như vậy bằng mô hình chấm điểm \cite{taghavi_2026}.
 
-Bằng chứng định lượng so sánh hai cách này còn ít. Nghiên cứu về
-vibe coding chủ yếu là định tính hoặc tổng quan tài liệu xám \cite{chou_2025,fawzy_2026}. Nghiên cứu
-về phát triển theo đặc tả dựa trên phỏng vấn và khai thác kho mã \cite{agarwal_2026}, chấm bằng mô
-hình ngôn ngữ \cite{taghavi_2026}, hoặc quan sát pull request mã nguồn mở \cite{hill_2026}. Nghiên cứu
-quan sát lớn nhất trong số đó không thấy pull request có tài liệu đặc tả ít lỗi hơn, và nói rõ chưa
-kiểm chứng được việc dùng công cụ phát triển theo đặc tả \cite{hill_2026}. Các bộ đo cho tác tử như
+Bằng chứng định lượng so sánh hai cách này còn ít. Nghiên cứu về vibe coding chủ yếu là định tính
+\cite{chou_2025,fawzy_2026}; nghiên cứu về đặc tả dựa trên phỏng vấn \cite{agarwal_2026}, chấm bằng mô
+hình ngôn ngữ \cite{taghavi_2026}, hoặc quan sát pull request mã nguồn mở, và nghiên cứu quan sát lớn nhất
+không thấy pull request có đặc tả ít lỗi hơn \cite{hill_2026}. Các bộ đo cho tác tử như
 SWE-bench và FeatBench so sánh mô hình hoặc tác tử với nhau trên cùng nhiệm vụ
 \cite{jimenez_2024,chen_2025}; chúng không so sánh hai quy trình làm việc. Trong các nguồn nhóm đã tìm
 (mục~\ref{sec:related-work}), chưa có thí nghiệm nào giữ nguyên đề bài, công cụ và mô hình, chỉ đổi
@@ -30,24 +28,24 @@ dung của một bài báo khác (SoICT 2026) và không được đánh giá l�
 Đề tài có hai phần. Phần hồi cứu phân tích lịch sử git của ViPharmind: AI tham gia từng khâu ở mức
 nào, quy trình đặc tả để lại dấu vết gì, và mã phải sửa lại bao nhiêu. Phần thực nghiệm lấy nhiệm vụ
 từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi giao cùng một đề bài cho tác tử
-theo hai cách làm. Hai cách chỉ khác nhau ở lời dặn về quy trình.
+theo hai cách làm chỉ khác nhau ở lời dặn về quy trình.
 
 Đóng góp của đề tài gồm:
 \begin{itemize}
 \item Bản đồ vòng đời của một dự án phần mềm AI làm với trợ lý lập trình, kèm dấu vết của
 \NumSpecPlanFiles{} file spec và plan nối với các commit cài đặt (RQ1, RQ2).
-\item Một bộ \NumTasks{} nhiệm vụ lấy từ commit thật, có test ẩn và quy trình sàng lọc ghi lại từng
-bước, cộng \NumFeatureTasks{} nhiệm vụ cỡ một tính năng.
-\item Thực nghiệm đối chứng giữa làm theo đặc tả và vibe coding trên ba công cụ của ba hãng, và giữa
-hai mô hình Claude trong cùng một công cụ (RQ3 đến RQ6). Danh sách nhiệm vụ, đề bài, giả thuyết và
-kế hoạch phân tích được chốt bằng thẻ git trước lượt chạy chính.
-\item Bộ chạy, bộ chấm, đề bài, lời dặn và kết quả thô được công bố để người khác chạy lại.
+\item Một bộ \NumTasksMain{} nhiệm vụ lấy từ commit thật, chia ba tầng kích thước (\NumTasks{} nhiệm vụ
+một commit, \NumMediumTasks{} nhiệm vụ hai đến ba commit, \NumFeatureTasks{} nhiệm vụ cỡ một tính năng), có
+test ẩn và quy tắc chọn ghi lại từng bước.
+\item Thực nghiệm đối chứng giữa làm theo đặc tả và vibe coding trên bốn nhóm chạy: ba công cụ của ba
+hãng, và hai mô hình Claude trong cùng một công cụ (RQ3 đến RQ6), tổng \NumRunsTotal{} lượt. Nhiệm vụ,
+đề bài, giả thuyết, kế hoạch phân tích và mã phân tích được chốt bằng thẻ git trước khi mở kết quả.
+\item Bộ chạy, bộ chấm, gói phân tích, đề bài, lời dặn và kết quả thô được công bố để người khác chạy lại.
 \end{itemize}
 
-AI cũng tham gia vào chính nghiên cứu này: tìm và kiểm tra tài liệu, soạn nháp đề bài, gợi ý kiểm tra
-quy tắc nối commit với plan, dựng bộ chạy và viết nháp báo cáo. Mục~\ref{sec:method} ghi rõ từng việc và phần người đã kiểm.
-
-Phần còn lại của báo cáo như sau. Mục~\ref{sec:related-work} tổng quan tài liệu.
-Mục~\ref{sec:questions} nêu câu hỏi nghiên cứu và giả thuyết. Mục~\ref{sec:method} trình bày phương
-pháp. Mục~\ref{sec:retrospective} báo cáo kết quả hồi cứu, mục~\ref{sec:results} kết quả thí nghiệm.
-Mục~\ref{sec:discussion} thảo luận và nêu hạn chế, mục~\ref{sec:conclusion} kết luận.
+AI cũng tham gia vào chính nghiên cứu này: tìm tài liệu, soạn nháp đề bài, phản biện độc lập đề bài,
+bản đăng ký trước và mã phân tích, dựng bộ chạy và viết nháp báo cáo. Mục~\ref{sec:ai-role} ghi rõ
+từng việc và phần người đã kiểm. Mục~\ref{sec:related-work} tổng quan tài liệu, mục~\ref{sec:questions}
+nêu câu hỏi và giả thuyết, mục~\ref{sec:method} trình bày phương pháp, mục~\ref{sec:retrospective} và
+mục~\ref{sec:results} báo cáo kết quả, mục~\ref{sec:discussion} và mục~\ref{sec:conclusion} thảo luận
+và kết luận.
