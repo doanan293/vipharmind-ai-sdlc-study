@@ -9,11 +9,13 @@ from pathlib import Path
 
 from sdlc_harness.runner import (
     COHORTS_FILE,
+    DEFAULT_WORK_ROOT,
     RunConfig,
     load_cohorts,
     plan_units,
     run_all,
     select_tasks,
+    validate_work_root,
 )
 from sdlc_harness.screen import hidden_tests, layer_of, screen_static, src_lines
 from sdlc_harness.tasks import load_task, validate_task
@@ -104,6 +106,11 @@ def validate_tasks(root: Path, repo: Path | None) -> list[str]:
 
 
 def run(args: argparse.Namespace) -> int:
+    try:
+        validate_work_root(args.work_root)
+    except ValueError as e:
+        print(e)
+        return 2
     cohorts = load_cohorts(args.cohorts_file)
     names = [c.strip() for c in args.cohorts.split(",") if c.strip()]
     unknown = [n for n in names if n not in cohorts]
@@ -129,12 +136,17 @@ def run(args: argparse.Namespace) -> int:
         accounts_file=args.accounts_file,
         quota_backoff_s=args.quota_backoff_s,
         keep_work=args.keep_work,
+        max_quota_retries=args.max_quota_retries,
     )
     units = plan_units(names, task_ids, args.reps, args.seed)
     print(
         f"{len(units)} units: {len(names)} cohort(s) x {len(task_ids)} task(s) x 2 arms x {args.reps}"
     )
-    summary = run_all(units, cfg, args.out, args.jobs)
+    try:
+        summary = run_all(units, cfg, args.out, args.jobs)
+    except KeyboardInterrupt:
+        print("interrupted; running agents killed; rerun the same command to resume")
+        return 130
     print(
         f"done {summary['done']}, already done {summary['skipped']}, "
         f"errors {summary['error']}, quota requeues {summary['quota']}"
@@ -167,11 +179,18 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--timeout-s", type=int, default=3600, help="agent wall-clock limit")
     r.add_argument("--grade-timeout-s", type=int, default=900)
     r.add_argument("--quota-backoff-s", type=float, default=600.0)
+    r.add_argument("--max-quota-retries", type=int, default=20, help="per unit")
     r.add_argument("--seed", type=int, default=20261115)
     r.add_argument("--tasks-dir", type=Path, default=Path("tasks"))
     r.add_argument("--cohorts-file", type=Path, default=COHORTS_FILE)
     r.add_argument("--out", type=Path, default=Path("results/raw"))
-    r.add_argument("--work-root", type=Path, default=Path(".work/runs"))
+    r.add_argument(
+        "--work-root",
+        type=Path,
+        default=DEFAULT_WORK_ROOT,
+        help="agent work dirs; outside the study repo and any CLAUDE.md/AGENTS.md/.claude tree "
+        "(default $SDLC_WORK_ROOT or /tmp/sdlc-runs)",
+    )
     r.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     r.add_argument("--accounts-file", type=Path, default=None)
     r.add_argument("--keep-work", action="store_true", help="keep workspaces after grading")

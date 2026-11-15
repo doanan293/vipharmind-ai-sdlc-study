@@ -5,6 +5,7 @@ It ignores the real CLI flags it receives and acts on environment variables:
   FAKE_AGENT_STATE   marker file: quota_once fails while it is absent, then creates it
   FAKE_AGENT_WRITE   JSON {relative path: content} written into the work tree (cwd)
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
+  FAKE_AGENT_CWDLOG  file to append the agent's working directory to
 """
 
 import json
@@ -24,6 +25,9 @@ def main() -> int:
         print("fake-agent 0.0.1")
         return 0
     sys.stdin.read()
+    if os.environ.get("FAKE_AGENT_CWDLOG"):
+        with open(os.environ["FAKE_AGENT_CWDLOG"], "a") as f:
+            f.write(os.getcwd() + "\n")
     mode = os.environ.get("FAKE_AGENT_MODE", "ok")
     emit({"type": "system", "subtype": "init", "model": "fake-model-served"})
     if mode == "quota_once":

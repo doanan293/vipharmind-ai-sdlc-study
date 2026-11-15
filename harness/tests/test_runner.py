@@ -2,6 +2,10 @@
 
 import json
 import os
+import signal
+import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -9,6 +13,7 @@ from conftest import BASE_FILES, ToyRepo
 
 from sdlc_harness.cli import main
 from sdlc_harness.runner import (
+    STUDY_ROOT,
     Cohort,
     RunConfig,
     RunUnit,
@@ -16,8 +21,10 @@ from sdlc_harness.runner import (
     plan_units,
     run_all,
     run_unit,
+    scrub_env,
     select_tasks,
     unit_dir,
+    validate_work_root,
 )
 
 FAKE = Path(__file__).parent / "fakes" / "fake_agent.py"
@@ -91,7 +98,7 @@ def fake(monkeypatch, tmp_path):
     return monkeypatch
 
 
-def _cfg(world, tmp_path, accounts=(1, 2), timeout_s=60) -> RunConfig:
+def _cfg(world, tmp_path, accounts=(1, 2), timeout_s=60, **kw) -> RunConfig:
     repo, tasks, accounts_file, cache = world
     cohort = Cohort("claude-sonnet", "claude", "claude-sonnet-5-5", "medium", tuple(accounts))
     return RunConfig(
@@ -104,6 +111,7 @@ def _cfg(world, tmp_path, accounts=(1, 2), timeout_s=60) -> RunConfig:
         work_root=tmp_path / "work",
         accounts_file=accounts_file,
         quota_backoff_s=0.0,
+        **kw,
     )
 
 
@@ -244,3 +252,122 @@ def test_cli_run_pilot(world, fake, tmp_path):
     assert main(argv) == 0
     assert sorted(p.parent.name for p in out.rglob("grade.json")) == ["spec-r1", "vibe-r1"]
     assert {p.parts[-3] for p in out.rglob("grade.json")} == {"p01"}
+
+
+# --- fix round 1 -----------------------------------------------------------------------------
+
+
+def test_default_work_root_is_outside_the_study_repo():
+    cfg = RunConfig(repo=Path("r"), tasks_dir=Path("t"), cohorts={})
+    assert not cfg.work_root.resolve().is_relative_to(STUDY_ROOT)
+    validate_work_root(cfg.work_root)
+
+
+@pytest.mark.parametrize("marker", ["CLAUDE.md", "AGENTS.md", "GEMINI.md", ".claude", ".codex"])
+def test_work_root_under_agent_instructions_is_refused(tmp_path, marker):
+    (tmp_path / marker).mkdir() if marker.startswith(".") else (tmp_path / marker).write_text("x")
+    with pytest.raises(ValueError, match=marker):
+        validate_work_root(tmp_path / "deep" / "runs")
+
+
+def test_work_root_inside_study_repo_is_refused():
+    with pytest.raises(ValueError, match="study repo"):
+        validate_work_root(STUDY_ROOT / ".work" / "runs")
+    validate_work_root(Path("/tmp/sdlc-runs-check"))
+
+
+def test_run_all_refuses_bad_work_root(world, tmp_path):
+    cfg = _cfg(world, tmp_path)
+    cfg.work_root = STUDY_ROOT / ".work" / "runs"
+    with pytest.raises(ValueError):
+        run_all([UNIT], cfg, tmp_path / "raw", jobs=1)
+
+
+def test_agent_cwd_does_not_name_arm_task_cohort_or_rep(world, fake, tmp_path):
+    cwdlog = tmp_path / "cwd.log"
+    fake.setenv("FAKE_AGENT_CWDLOG", str(cwdlog))
+    out = tmp_path / "raw"
+    cfg = _cfg(world, tmp_path)
+    spec_unit = RunUnit("claude-sonnet", "t01", "spec", 1)
+    vibe_unit = RunUnit("claude-sonnet", "t01", "vibe", 1)
+    assert run_all([spec_unit, vibe_unit], cfg, out, jobs=2)["done"] == 2
+    cwds = [Path(line) for line in cwdlog.read_text().splitlines()]
+    work_dirs = [Path(_meta(out, u)["work_dir"]) for u in (spec_unit, vibe_unit)]
+    assert sorted(cwds) == sorted(work_dirs)
+    assert cwds[0] != cwds[1]
+    for cwd in cwds:
+        rel = str(cwd.relative_to(cfg.work_root))
+        for word in ("spec", "vibe", "t01", "claude", "sonnet", "r1"):
+            assert word not in rel, (word, rel)
+
+
+def test_scrub_env_drops_provider_vars_and_harness_venv():
+    venv_bin = str(Path(sys.prefix) / "bin")
+    environ = {
+        "PATH": f"{venv_bin}:/usr/bin",
+        "HOME": "/home/x",
+        "VIRTUAL_ENV": sys.prefix,
+        "ANTHROPIC_BASE_URL": "http://proxy",
+        "ANTHROPIC_MODEL": "m",
+        "CLAUDECODE": "1",
+        "CLAUDE_CODE_OAUTH_TOKEN": "t",
+        "OPENAI_API_KEY": "k",
+        "OPENAI_BASE_URL": "u",
+        "CODEX_HOME": "/elsewhere",
+        "GEMINI_API_KEY": "g",
+        "GOOGLE_API_KEY": "g",
+        "GOOGLE_CLOUD_PROJECT": "p",
+    }
+    claude = scrub_env("claude", environ, {"CLAUDE_CONFIG_DIR": "/cfg"})
+    assert claude["CLAUDE_CONFIG_DIR"] == "/cfg"
+    assert not [k for k in claude if k.startswith(("ANTHROPIC_", "CLAUDE_CODE_", "CLAUDECODE"))]
+    assert "VIRTUAL_ENV" not in claude
+    assert venv_bin not in claude["PATH"].split(":") and "/usr/bin" in claude["PATH"]
+    assert claude["HOME"] == "/home/x"
+    codex = scrub_env("codex", environ, {"CODEX_HOME": "/cfg"})
+    assert codex["CODEX_HOME"] == "/cfg"
+    assert not [k for k in codex if k.startswith("OPENAI_")]
+    agy = scrub_env("agy", environ, {})
+    assert not [k for k in agy if k.startswith(("GEMINI_", "GOOGLE_"))]
+
+
+def test_quota_retries_are_capped(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "quota_once")
+    out = tmp_path / "raw"
+    summary = run_all([UNIT], _cfg(world, tmp_path, max_quota_retries=0), out, jobs=1)
+    assert summary == {"done": 0, "skipped": 0, "error": 1, "quota": 1}
+    meta = _meta(out)
+    assert meta["status"] == "error"
+    assert meta["error"] == "quota retries exhausted"
+    assert not (unit_dir(out, UNIT) / "grade.json").exists()
+
+
+def test_ctrl_c_kills_live_agents_and_leaves_units_undone(world, fake, tmp_path):
+    pidfile = tmp_path / "child.pid"
+    fake.setenv("FAKE_AGENT_MODE", "sleep")
+    fake.setenv("FAKE_AGENT_PIDFILE", str(pidfile))
+    out = tmp_path / "raw"
+
+    def interrupt() -> None:
+        deadline = time.monotonic() + 30
+        while not pidfile.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        time.sleep(0.2)
+        os.kill(os.getpid(), signal.SIGINT)
+
+    threading.Thread(target=interrupt, daemon=True).start()
+    t0 = time.monotonic()
+    with pytest.raises(KeyboardInterrupt):
+        run_all([UNIT], _cfg(world, tmp_path, timeout_s=120), out, jobs=1)
+    assert time.monotonic() - t0 < 60
+    assert not _alive(int(pidfile.read_text()))
+    assert not (unit_dir(out, UNIT) / "grade.json").exists()
+
+
+def test_cli_run_refuses_work_root_in_repo(world, tmp_path):
+    repo, tasks, _, _ = world
+    argv = ["run", "--repo", str(repo), "--tasks-dir", str(tasks), "--cohorts", "claude-sonnet"]
+    argv += ["--tasks", "t01", "--work-root", str(STUDY_ROOT / ".work" / "runs")]
+    argv += ["--out", str(tmp_path / "raw")]
+    assert main(argv) == 2
+    assert not (tmp_path / "raw").exists()

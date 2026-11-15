@@ -16,7 +16,8 @@ import sys
 import threading
 import time
 import tomllib
-from collections import deque
+import uuid
+from collections import Counter, deque
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
@@ -38,13 +39,19 @@ SEED = 20261115
 GRADE = "grade.json"
 META = "meta.json"
 QUOTA_LOG = "quota.log"
-# parent-session and API-key variables that would override the account's own login
-ENV_DROP = {
-    "claude": ("CLAUDECODE", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"),
-    "agy": (),
-    "codex": (),
+QUOTA_EXHAUSTED = "quota retries exhausted"
+STUDY_ROOT = Path(__file__).resolve().parents[3]
+# Agents run with permission checks off, so their work dirs live outside the study repo (results,
+# task files, other reps) and outside any tree whose ancestors hold agent instructions or config.
+DEFAULT_WORK_ROOT = Path(os.environ.get("SDLC_WORK_ROOT") or "/tmp/sdlc-runs")
+AGENT_MARKERS = ("CLAUDE.md", "AGENTS.md", "GEMINI.md", ".claude", ".codex")
+# provider and parent-session variables that could override the account's login, endpoint or
+# model; prepare_config's own variables are added back after the scrub
+ENV_DROP_PREFIXES = {
+    "claude": ("ANTHROPIC_", "CLAUDE_CODE_", "CLAUDECODE"),
+    "agy": ("GEMINI_", "GOOGLE_"),
+    "codex": ("OPENAI_", "CODEX_"),
 }
-ENV_DROP_PREFIXES = {"claude": ("CLAUDE_CODE_",), "agy": (), "codex": ()}
 
 
 @dataclass(frozen=True)
@@ -72,10 +79,11 @@ class RunConfig:
     timeout_s: int = 3600  # agent wall-clock limit
     grade_timeout_s: int = 900
     cache_dir: Path | None = None  # reference test runs, shared by every unit of a task
-    work_root: Path = Path(".work/runs")  # workspaces and config dirs, outside results/
+    work_root: Path = DEFAULT_WORK_ROOT  # agent work dirs and config dirs; see validate_work_root
     accounts_file: Path | None = None  # None: workspace.ACCOUNTS_FILE
     prompts_dir: Path = PROMPTS_DIR
     quota_backoff_s: float = 600.0
+    max_quota_retries: int = 20  # per unit; then the unit is an error
     keep_work: bool = False
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
     _task_locks: dict[str, threading.Lock] = field(default_factory=dict, init=False, repr=False)
@@ -124,6 +132,17 @@ def plan_units(
     return units
 
 
+def validate_work_root(work_root: Path) -> None:
+    """Refuse a work root inside the study repo or below agent instructions or config."""
+    root = work_root.expanduser().resolve()
+    if root.is_relative_to(STUDY_ROOT):
+        raise ValueError(f"work root {root} is inside the study repo {STUDY_ROOT}")
+    for d in (root, *root.parents):
+        for marker in AGENT_MARKERS:
+            if (d / marker).exists():
+                raise ValueError(f"work root {root} is below {d / marker}, which agents would read")
+
+
 def unit_dir(out_root: Path, unit: RunUnit) -> Path:
     return out_root / unit.cohort / unit.task_id / f"{unit.arm}-r{unit.rep}"
 
@@ -158,17 +177,28 @@ def tool_version(agent: str) -> str | None:
         return _versions[cmd]
 
 
-def _agent_env(cohort: Cohort, scratch: Path, account: int, accounts_file: Path | None) -> dict:
+def scrub_env(agent: str, environ: dict[str, str], extra: dict[str, str]) -> dict[str, str]:
+    """The agent's env: no provider/session overrides, no harness venv; then `extra` on top."""
+    venv_bins = {Path(environ["VIRTUAL_ENV"]) / "bin"} if environ.get("VIRTUAL_ENV") else set()
+    if sys.prefix != sys.base_prefix:
+        venv_bins.add(Path(sys.prefix) / "bin")
     env = {
         k: v
-        for k, v in os.environ.items()
-        if k != "VIRTUAL_ENV"
-        and k not in ENV_DROP[cohort.agent]
-        and not k.startswith(ENV_DROP_PREFIXES[cohort.agent])
+        for k, v in environ.items()
+        if k != "VIRTUAL_ENV" and not k.startswith(ENV_DROP_PREFIXES[agent])
     }
-    agent = cast(Agent, cohort.agent)
-    env.update(prepare_config(agent, scratch, account, accounts_file))
+    if "PATH" in env:
+        env["PATH"] = os.pathsep.join(
+            p for p in env["PATH"].split(os.pathsep) if p and Path(p) not in venv_bins
+        )
+    env.update(extra)
     return env
+
+
+def _agent_env(cohort: Cohort, scratch: Path, account: int, accounts_file: Path | None) -> dict:
+    agent = cast(Agent, cohort.agent)
+    config_env = prepare_config(agent, scratch, account, accounts_file)
+    return scrub_env(cohort.agent, dict(os.environ), config_env)
 
 
 def _kill_group(pid: int) -> None:
@@ -176,6 +206,23 @@ def _kill_group(pid: int) -> None:
         os.killpg(pid, signal.SIGKILL)
     except (ProcessLookupError, PermissionError):
         pass
+
+
+class RunCancelled(BaseException):
+    """Ctrl-C: the unit stops without writing grade.json, so a rerun redoes it."""
+
+
+_stop = threading.Event()
+_live: set[subprocess.Popen] = set()
+_live_lock = threading.Lock()
+
+
+def kill_live_agents() -> None:
+    """Stop new agent starts and kill the process group of every agent still running."""
+    with _live_lock:
+        _stop.set()
+        for proc in _live:
+            _kill_group(proc.pid)
 
 
 def _invoke(
@@ -188,22 +235,31 @@ def _invoke(
         (out / "stderr.log").open("wb") as stderr,
     ):
         t0 = time.monotonic()
-        proc = subprocess.Popen(
-            cmd,
-            cwd=work,
-            stdin=stdin,
-            stdout=stdout,
-            stderr=stderr,
-            env=env,
-            start_new_session=True,
-        )
+        with _live_lock:
+            if _stop.is_set():
+                raise RunCancelled
+            proc = subprocess.Popen(
+                cmd,
+                cwd=work,
+                stdin=stdin,
+                stdout=stdout,
+                stderr=stderr,
+                env=env,
+                start_new_session=True,
+            )
+            _live.add(proc)
         timed_out = False
         try:
             proc.wait(timeout=timeout_s)
         except subprocess.TimeoutExpired:
             timed_out = True
-        _kill_group(proc.pid)  # also any background process the agent left behind
-        returncode = proc.wait()
+        finally:
+            _kill_group(proc.pid)  # also any background process the agent left behind
+            returncode = proc.wait()
+            with _live_lock:
+                _live.discard(proc)
+        if _stop.is_set():
+            raise RunCancelled
         return returncode, timed_out, round(time.monotonic() - t0, 3)
 
 
@@ -231,10 +287,10 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         return "done"
     cohort = cfg.cohorts[unit.cohort]
     account = cohort.accounts[0] if account is None else account
-    scratch = cfg.work_root / unit.cohort / unit.task_id / f"{unit.arm}-r{unit.rep}"
-    for d in (out, scratch):
-        if d.exists():
-            shutil.rmtree(d)  # a partial or quota-stopped attempt
+    # opaque: the agent's cwd must not reveal arm, task, cohort or rep
+    scratch = cfg.work_root / uuid.uuid4().hex
+    if out.exists():
+        shutil.rmtree(out)  # a partial or quota-stopped attempt
     out.mkdir(parents=True)
     meta: dict = {
         "cohort": unit.cohort,
@@ -253,6 +309,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "returncode": None,
         "usage": None,
         "status": None,
+        "work_dir": str(scratch / "work"),
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
@@ -288,12 +345,17 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
             return "quota"
         (out / "patch.diff").write_text(collect_patch(work))
         result = _grade(cfg, task, work)
+        if _stop.is_set():  # Ctrl-C reaches the grader's test runs too: do not trust this grade
+            raise RunCancelled
         meta["status"] = "done"
         _write_json(out / META, meta)
         _write_json(out / GRADE, grade_to_dict(result))  # last: marks the unit done
         if not cfg.keep_work:
             shutil.rmtree(scratch, ignore_errors=True)
         return "done"
+    except RunCancelled:
+        shutil.rmtree(scratch / "config", ignore_errors=True)
+        raise
     except GradingError as e:
         meta.update(status="error", error=f"grading: {e}")
     except Exception as e:  # one broken unit must not stop the whole run
@@ -339,8 +401,11 @@ def _ids(u: RunUnit) -> tuple[str, str, str, int]:
 def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1) -> dict[str, int]:
     """Run every unit not yet done with `jobs` agent sessions at a time.
 
-    Returns counts: done, skipped (already done), error, quota (attempts requeued).
+    Returns counts: done, skipped (already done), error, quota (attempts stopped by quota).
+    On Ctrl-C, kills every running agent's process group and re-raises KeyboardInterrupt.
     """
+    validate_work_root(cfg.work_root)
+    _stop.clear()
     summary = {"done": 0, "skipped": 0, "error": 0, "quota": 0}
     queue: deque[RunUnit] = deque()
     for u in units:
@@ -350,7 +415,9 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
             queue.append(u)
     pools = {name: _Accounts(c.accounts) for name, c in cfg.cohorts.items()}
     running: dict[Future, tuple[RunUnit, int, int]] = {}
-    with ThreadPoolExecutor(max_workers=jobs) as pool:
+    quota_hits: Counter[RunUnit] = Counter()
+    pool = ThreadPoolExecutor(max_workers=jobs)
+    try:
         while queue or running:
             now = time.monotonic()
             held: list[RunUnit] = []
@@ -381,8 +448,26 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
                 log.info("%s %s %s %s-r%d account=%d", status, *_ids(u), account)
                 if status == "quota":
                     summary["quota"] += 1
+                    quota_hits[u] += 1
                     pools[u.cohort].hit_quota(account, generation, cfg.quota_backoff_s)
-                    queue.append(u)
+                    if quota_hits[u] > cfg.max_quota_retries:
+                        _give_up(out_root, u)
+                        summary["error"] += 1
+                    else:
+                        queue.append(u)
                 else:
                     summary[status] += 1
+    except KeyboardInterrupt:
+        log.warning("interrupted: killing running agents; rerun to resume")
+        kill_live_agents()
+        raise
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
     return summary
+
+
+def _give_up(out_root: Path, unit: RunUnit) -> None:
+    path = unit_dir(out_root, unit) / META
+    meta = json.loads(path.read_text()) if path.is_file() else {}
+    meta.update(status="error", error=QUOTA_EXHAUSTED)
+    _write_json(path, meta)
