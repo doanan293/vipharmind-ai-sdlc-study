@@ -21,3 +21,10 @@ harness/accounts.local.toml
 
 # Harness workspaces and reference-run cache (sdlc-harness run from the repo root)
 /.work/
+
+# Báo cáo: file trung gian của check.sh và LaTeX
+docs/report/build.out
+docs/report/body.txt
+*.toc
+*.lot
+*.lof

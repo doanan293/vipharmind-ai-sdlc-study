@@ -1,0 +1,67 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{xcolor}
+\usepackage{zref-user,zref-abspage}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\urlstyle{same}
+
+% Chỗ chờ kết quả. check.sh --draft cho phép, check.sh (bản nộp) báo lỗi.
+\newcommand{\pending}[1]{\textcolor{gray}{[chờ kết quả]}}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\figurename}{Hình}
+
+% Số liệu sinh bằng máy: docs/report/scripts (report-data build). Không gõ số kết quả bằng tay.
+\input{generated/numbers}
+
+\begin{document}
+
+\input{sections/00-frontmatter}
+
+\clearpage
+\pagenumbering{arabic}
+\zlabel{sec:first}
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-questions}
+\input{sections/04-method}
+\input{sections/05-retrospective}
+\input{sections/06-results}
+\input{sections/07-discussion}
+\input{sections/08-conclusion}
+\zlabel{sec:last}
+
+\clearpage
+{\small
+\renewcommand{\refname}{Tài liệu tham khảo}
+\nocite{*} % danh mục gồm cả 24 nguồn đã kiểm tra trong references.bib
+\bibliographystyle{plain}
+\bibliography{references}
+}
+
+\clearpage
+\appendix
+\input{sections/appendix}
+
+\end{document}

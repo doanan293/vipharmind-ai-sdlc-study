@@ -1,0 +1,4 @@
+# Con số được phép xuất hiện trong mục 1–8 mà không cần lấy từ numbers.json.
+# Mỗi dòng một số, hoặc một dải số nguyên "a..b". Ghi lý do.
+1..8        # số mục, đếm nhỏ cố định trong câu chữ ("ba nhóm", "hai cách làm" viết bằng chữ khi có thể)
+2023..2026  # năm
