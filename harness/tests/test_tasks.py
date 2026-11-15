@@ -119,6 +119,13 @@ def test_cli_tasks_validate_requires_17_tasks(tmp_path: Path):
     assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
 
 
+def test_range_prompt_may_have_twelve_sentences():
+    long = " ".join(f"Sentence number {i} says something." for i in range(12))
+    assert validate_task(_task(long, kind="range", base="c" * 40)) == []
+    assert validate_task(_task(long)) != []
+    assert validate_task(_task(long + " One more here.", kind="range", base="c" * 40)) != []
+
+
 def test_cli_tasks_validate_accepts_feature_tasks(tmp_path: Path):
     _write_set(tmp_path)
     for tid in ("f08", "f14", "f15"):

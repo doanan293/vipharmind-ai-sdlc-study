@@ -14,6 +14,7 @@ from sdlc_harness.vcs import read_file
 REQUIRED_KEYS = ("id", "commit", "parent", "layer", "src_lines", "hidden_tests", "pilot")
 MIN_SENTENCES = 5
 MAX_SENTENCES = 10
+MAX_RANGE_SENTENCES = 12  # feature-tier (range) prompts describe a whole feature
 
 _CODE_SPAN = re.compile(r"```.*?```|`[^`]*`", re.DOTALL)
 _SENTENCE_END = re.compile(r"[.!?]+(?=\s|$)")
@@ -129,8 +130,9 @@ def _mentions(text: str, name: str) -> bool:
 def validate_task(task: Task) -> list[str]:
     errors = [f"{task.id}: task.toml missing key '{k}'" for k in task.missing_keys]
     n = count_sentences(task.prompt)
-    if not MIN_SENTENCES <= n <= MAX_SENTENCES:
-        errors.append(f"{task.id}: prompt has {n} sentences, needs {MIN_SENTENCES}-{MAX_SENTENCES}")
+    top = MAX_RANGE_SENTENCES if task.kind == "range" else MAX_SENTENCES
+    if not MIN_SENTENCES <= n <= top:
+        errors.append(f"{task.id}: prompt has {n} sentences, needs {MIN_SENTENCES}-{top}")
     if "TODO" in task.prompt:
         errors.append(f"{task.id}: prompt contains TODO")
     for path in task.hidden_tests:
