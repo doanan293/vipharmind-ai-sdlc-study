@@ -255,3 +255,29 @@ def test_range_old_test_broken_at_end_is_not_gradable(tmp_path):
     work = prepare_workspace(repo.path, task, tmp_path / "run")
     with pytest.raises(GradingError):
         grade(repo.path, task, work, cache_dir=tmp_path / "cache")
+
+
+def test_original_patch_check_passes_with_deleted_and_renamed_tests(deleting, tmp_path):
+    from sdlc_harness.grade import original_patch_errors
+
+    repo, task, cache = deleting
+    assert original_patch_errors(repo.path, task, tmp_path / "run", cache_dir=cache) == []
+
+
+def test_range_old_test_failing_only_at_end_is_not_gradable(tmp_path):
+    from sdlc_harness.grade import GradingError
+
+    repo = ToyRepo(tmp_path / "toy")
+    repo.path.mkdir()
+    repo.git("init", "-q", "-b", "main")
+    repo.git("config", "user.email", "toy@example.com")
+    repo.git("config", "user.name", "Toy")
+    repo.git("config", "commit.gpgsign", "false")
+    repo.commit("chore: scaffold", BASE_FILES)
+    base = repo.commit("chore: base", BASE)
+    # the end tree imports fine and the hidden test passes, but old test_add fails there
+    end = repo.commit("feat: one", {**C1, CALC: C1[CALC].replace("a + b", "a + b + 1")})
+    task = Task("f04", end, "", "domain", 1, (HIDDEN_A,), False, "p", base=base, kind="range")
+    work = prepare_workspace(repo.path, task, tmp_path / "run")
+    with pytest.raises(GradingError, match="old tests do not pass at end"):
+        grade(repo.path, task, work, cache_dir=tmp_path / "cache")

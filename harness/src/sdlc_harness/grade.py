@@ -386,7 +386,11 @@ def original_patch_errors(
         return [f"{task.id}: {e}"]
     errors = [f"{task.id}: hidden test {n} -> {o}" for n, o in sorted(g.hidden_failed.items())]
     errors += [f"{task.id}: base test fails under the original patch: {n}" for n in g.regressions]
-    errors += [f"{task.id}: {n}" for n in g.grading_notes if "ruff" not in n and "pyrefly" not in n]
+    errors += [
+        f"{task.id}: {n}"
+        for n in g.grading_notes
+        if not n.startswith(("ruff", "pyrefly", "old tests excluded"))
+    ]
     return errors
 
 
