@@ -18,6 +18,7 @@ class F2PResult:
     reason: str
     hidden_failing_at_parent: list[str] = field(default_factory=list)
     old_failing: list[str] = field(default_factory=list)
+    infra_error: bool = False
 
 
 def _file_of(nodeid: str) -> str:
@@ -47,24 +48,33 @@ def check_fail_to_pass(repo: Path, c: Candidate, workroot: Path) -> F2PResult:
         return F2PResult(c.sha, False, "no hidden test files")
     workroot.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix=f"f2p-{c.sha[:8]}-", dir=workroot))
+
+    def infra(reason: str) -> F2PResult:
+        return F2PResult(c.sha, False, f"infrastructure: {reason}", infra_error=True)
+
     try:
         parent_tree, orig_tree = work / "parent", work / "orig"
         parent_tree.mkdir()
         orig_tree.mkdir()
-        export_tree(repo, c.parent, parent_tree)
-        export_tree(repo, c.sha, orig_tree)
-        # New hidden files are absent at the parent; modified ones keep their old content
-        # until overwritten. Either way the original commit's version is what runs.
-        _overlay(repo, c.sha, parent_tree, files)
         try:
+            export_tree(repo, c.parent, parent_tree)
+            export_tree(repo, c.sha, orig_tree)
+            # New hidden files are absent at the parent; modified ones keep their old content
+            # until overwritten. Either way the original commit's version is what runs.
+            _overlay(repo, c.sha, parent_tree, files)
             parent = run_backend_tests(parent_tree)
             orig = run_backend_tests(orig_tree)
         except subprocess.TimeoutExpired:
-            return F2PResult(c.sha, False, "test run timed out")
+            return infra("test run timed out")
         except subprocess.CalledProcessError as exc:
-            return F2PResult(c.sha, False, f"{' '.join(map(str, exc.cmd))} failed")
+            err = exc.stderr if isinstance(exc.stderr, str) else (exc.stderr or b"").decode()
+            return infra(f"{' '.join(map(str, exc.cmd))} failed: {err[-300:]}")
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+    for label, report in (("parent", parent), ("original", orig)):
+        if not report.outcomes:
+            return infra(f"no test results at {label}: {report.stderr_tail}")
 
     fileset = {f.removeprefix("backend/") for f in files}
     p_hidden, p_other = _split(parent, fileset)

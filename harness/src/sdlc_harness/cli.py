@@ -11,17 +11,17 @@ from sdlc_harness.vcs import Candidate, list_candidates
 from sdlc_harness.verify import check_fail_to_pass
 
 
-def _f2p(args: tuple[Path, Candidate, Path]) -> tuple[bool, str]:
+def _f2p(args: tuple[Path, Candidate, Path]) -> tuple[bool, bool, str]:
     repo, c, workroot = args
     result = check_fail_to_pass(repo, c, workroot)
-    return result.passed, result.reason
+    return result.passed, result.infra_error, result.reason
 
 
 def screen(repo: Path, ref: str, out: Path, jobs: int, workroot: Path) -> list[dict]:
     candidates = list_candidates(repo, ref)
     verdicts = {c.sha: screen_static(c) for c in candidates}
     survivors = [c for c in candidates if verdicts[c.sha].passed]
-    f2p: dict[str, tuple[bool, str]] = {}
+    f2p: dict[str, tuple[bool, bool, str]] = {}
     with ProcessPoolExecutor(max_workers=jobs) as pool:
         for c, res in zip(
             survivors, pool.map(_f2p, [(repo, c, workroot) for c in survivors]), strict=True
@@ -33,8 +33,9 @@ def screen(repo: Path, ref: str, out: Path, jobs: int, workroot: Path) -> list[d
         v = verdicts[c.sha]
         criterion, reason = v.failed_criterion, v.reason
         if v.passed:
-            ok, why = f2p[c.sha]
-            criterion, reason = (None, why) if ok else (2, why)
+            ok, infra, why = f2p[c.sha]
+            criterion = None if ok else ("infra" if infra else 2)
+            reason = why
         try:
             layer = layer_of(c)
         except ValueError:
@@ -59,9 +60,14 @@ def _print_funnel(records: list[dict]) -> None:
     remaining = len(records)
     print(f"candidates: {remaining}")
     rejected = Counter(r["failed_criterion"] for r in records if r["failed_criterion"])
-    for crit in (1, 4, 5, 2):
+    for crit in (1, 4, 5, 2, "infra"):
         remaining -= rejected[crit]
+        if crit == "infra":
+            continue
         print(f"after criterion {crit}: {remaining} (rejected {rejected[crit]})")
+    print(
+        f"infrastructure failures (not criterion rejections): {rejected['infra']}; usable: {remaining}"
+    )
     kept = [r for r in records if r["failed_criterion"] is None]
     print(f"no layer: {sum(1 for r in kept if r['layer'] is None)} of {len(kept)} kept")
 

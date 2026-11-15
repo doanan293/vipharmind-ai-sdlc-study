@@ -19,6 +19,7 @@ class TestReport:
     outcomes: dict[str, Outcome]
     duration_s: float
     collection_error: bool
+    stderr_tail: str = ""
 
 
 def _nodeid(backend: Path, classname: str, name: str) -> str:
@@ -90,7 +91,8 @@ def run_backend_tests(tree: Path, timeout_s: int = 900) -> TestReport:
             timeout=timeout_s,
         )
         if not xml_path.is_file():
-            return TestReport({}, 0.0, True)
+            tail = (proc.stdout + proc.stderr)[-500:]
+            return TestReport({}, 0.0, True, tail)
         outcomes, duration = _parse_junit(backend, xml_path)
     # exit code 2 = interrupted, 3 = internal error, 4 = usage error
     file_level_error = any(v == "error" and "::" not in k for k, v in outcomes.items())

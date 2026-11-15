@@ -35,5 +35,10 @@ No commit was rejected because a hidden test already passed at the parent.
 
 - Each commit is exported twice (parent, original). The original commit's hidden test files are
   copied over the parent tree. Tests run as `uv sync --frozen` then `uv run --frozen pytest` in `backend/`.
-- At this ref `uv.lock` lives in `backend/`, not the repo root, so the runner looks in the tree root
-  first and then `backend/`. Trees without any `uv.lock` fall back to the harness interpreter.
+- The lockfile moved: at `3baae61d` `uv.lock` is at the repo root (uv workspace, members backend and
+  pharma-lab). `backend/uv.lock` existed only from `1c67209` until `73720d1` (2026-09-14), which
+  renamed it to the root `uv.lock`. 34 of the 47 parents that reached criterion 2 predate `73720d1`,
+  so the runner looks for `uv.lock` in the tree root first and then `backend/`. Trees with neither
+  fall back to the harness interpreter.
+- Infrastructure failures (uv sync error, timeout, export error, pytest producing no results) are
+  recorded as `failed_criterion: "infra"`, separate from criterion 2 rejections. The run had 0.

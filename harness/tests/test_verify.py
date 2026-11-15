@@ -62,3 +62,20 @@ def test_rejects_when_old_test_breaks(toy_repo, tmp_path):
     res = check_fail_to_pass(toy_repo.path, _last(toy_repo), tmp_path / "work")
     assert not res.passed
     assert "tests/test_old.py::test_old" in res.old_failing
+
+
+def test_infra_failure_is_not_a_criterion_rejection(toy_repo, tmp_path):
+    toy_repo.commit(
+        "feat: broken runner",
+        {SRC: "x = 1\n", NEW_TEST: "def test_a():\n    assert True\n"},
+    )
+    # a conftest-free tree whose pytest cannot start: unknown option via pyproject addopts
+    bad_pyproject = '[tool.pytest.ini_options]\naddopts = ["--no-such-option"]\n'
+    toy_repo.commit("chore: bad cfg", {"backend/pyproject.toml": bad_pyproject})
+    toy_repo.commit(
+        "feat: more", {SRC: "x = 2\n", "backend/tests/test_more.py": "def test_b():\n    pass\n"}
+    )
+    res = check_fail_to_pass(toy_repo.path, _last(toy_repo), tmp_path / "work")
+    assert not res.passed
+    assert res.infra_error
+    assert res.reason.startswith("infrastructure:")
