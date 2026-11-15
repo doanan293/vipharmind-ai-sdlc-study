@@ -1,2 +1,30 @@
 \section{Câu hỏi nghiên cứu và giả thuyết}\label{sec:questions}
-\pending{03-questions}
+
+Phần hồi cứu trả lời RQ1 và RQ2. Phần thực nghiệm trả lời RQ3 đến RQ6.
+
+\begin{itemize}
+\item \textbf{RQ1.} AI đã tham gia từng khâu của vòng đời ViPharmind ở mức nào, và để lại dấu vết gì
+trong kho mã?
+\item \textbf{RQ2.} Mã do AI viết phải sửa lại ở đâu và bao nhiêu?
+\item \textbf{RQ3.} Trên cùng một nhiệm vụ, làm theo đặc tả (viết thiết kế và kế hoạch trước) có cho kết
+quả tốt hơn giao việc trực tiếp (vibe coding) không, và tốn thêm bao nhiêu chi phí?
+\item \textbf{RQ4.} Kết luận của RQ3 có giữ nguyên khi đổi sang trợ lý lập trình và mô hình của hãng
+khác không?
+\item \textbf{RQ5.} Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn (Claude Opus
+5.5 so với Claude Sonnet 5.5, cùng trong Claude Code)?
+\item \textbf{RQ6 (khám phá).} Khoảng cách giữa hai cách làm thay đổi thế nào khi nhiệm vụ lớn cỡ một
+tính năng (nhiều commit, khoảng 750 đến 1.500 dòng) thay vì một commit?
+\end{itemize}
+
+Bốn giả thuyết được ghi trước khi chạy (mục~\ref{sec:method}, phần chốt trước khi chạy):
+\begin{itemize}
+\item \textbf{H1.} Làm theo đặc tả có tỉ lệ đạt nhiệm vụ cao hơn vibe coding.
+\item \textbf{H2.} Làm theo đặc tả tốn nhiều token và thời gian hơn.
+\item \textbf{H3.} Làm theo đặc tả có ít lỗi chất lượng tĩnh và ít hồi quy hơn, và chỉ số bảo trì không
+kém hơn.
+\item \textbf{H4.} Khoảng cách về tỉ lệ đạt giữa hai cách làm ở Sonnet lớn hơn ở Opus, tức làm theo đặc
+tả giúp mô hình yếu hơn nhiều hơn.
+\end{itemize}
+
+RQ6 là câu hỏi khám phá. Tầng tính năng chỉ có \NumFeatureTasks{} nhiệm vụ, nên phần trả lời chỉ mô tả
+kèm khoảng tin cậy, không kiểm định giả thuyết.

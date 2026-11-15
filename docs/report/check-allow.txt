@@ -2,3 +2,8 @@
 # Mỗi dòng một số, hoặc một dải số nguyên "a..b". Ghi lý do.
 1..8        # số mục, đếm nhỏ cố định trong câu chữ ("ba nhóm", "hai cách làm" viết bằng chữ khi có thể)
 2023..2026  # năm
+5.5         # tên mô hình Claude Opus 5.5, Claude Sonnet 5.5
+3.8         # tên mô hình Gemini 3.8 Flash
+14          # cửa sổ 14 ngày của quy tắc nối commit và đo sửa lại (bản thiết kế mục 7.1)
+750         # cỡ tầng tính năng trong RQ6 (bản thiết kế mục 3)
+1.500       # cỡ tầng tính năng trong RQ6
