@@ -14,6 +14,7 @@ from sdlc_harness.grade import (
     ensure_baseline_radon,
     grade,
     grade_to_dict,
+    parse_patch,
 )
 from sdlc_harness.tasks import Task, load_task, write_task
 from sdlc_harness.workspace import collect_patch, prepare_workspace
@@ -187,29 +188,135 @@ def test_ai_deleting_hidden_test_is_restored(ws):
     assert g.task_pass is True
 
 
-def test_deleting_an_old_test_is_a_regression(ws):
+def test_deleted_old_test_file_is_restored(ws):
     repo, task, work, _ = ws
     _apply_original(repo, task, work)
     _write(work, {OLD_TEST: None})
     g = _grade(ws)
+    assert g.task_pass is True
+    assert g.regressions == []
+    assert (work.parent / "graded" / OLD_TEST).read_text() == PARENT_FILES[OLD_TEST]
+
+
+def test_deleting_old_test_and_breaking_code_is_a_regression(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _write(work, {OLD_TEST: None, CALC: CALC_COMMIT.replace("a + b", "a - b")})
+    g = _grade(ws)
     assert g.task_pass is False
-    assert g.regressions == ["tests/test_calc.py::test_add", "tests/test_calc.py::test_add_zero"]
+    assert g.regressions == ["tests/test_calc.py::test_add"]
 
 
-def test_skipped_old_test_is_not_a_regression(ws):
+def test_skip_marker_in_old_test_file_is_reverted(ws):
     repo, task, work, _ = ws
     _apply_original(repo, task, work)
     old = (work / OLD_TEST).read_text()
     _write(
         work,
         {
+            CALC: CALC_COMMIT.replace("a + b", "a - b"),
             OLD_TEST: "import pytest\n"
-            + old.replace("def test_add():", "@pytest.mark.skip\ndef test_add():")
+            + old.replace("def test_add():", "@pytest.mark.skip\ndef test_add():"),
         },
     )
     g = _grade(ws)
+    assert g.regressions == ["tests/test_calc.py::test_add"]
+    assert g.task_pass is False
+
+
+def test_edited_old_test_assertion_is_reverted(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    old = (work / OLD_TEST).read_text()
+    _write(
+        work,
+        {
+            CALC: CALC_COMMIT.replace("a + b", "a - b"),
+            OLD_TEST: old.replace("add(2, 3) == 5", "add(2, 3) == -1"),
+        },
+    )
+    g = _grade(ws)
+    assert g.regressions == ["tests/test_calc.py::test_add"]
+    assert g.task_pass is False
+
+
+SKIP_HOOK = (
+    "import pytest\n\n\n"
+    "def pytest_collection_modifyitems(items):\n"
+    "    for item in items:\n"
+    "        if item.name == 'test_add':\n"
+    "            item.add_marker(pytest.mark.skip)\n"
+)
+DESELECT_HOOK = (
+    "def pytest_collection_modifyitems(items):\n"
+    "    items[:] = [i for i in items if i.name != 'test_add']\n"
+)
+
+
+@pytest.mark.parametrize("where", ["backend/conftest.py", "backend/tests/conftest.py"])
+def test_old_test_skipped_by_new_conftest_is_a_regression(ws, where):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _write(work, {CALC: CALC_COMMIT.replace("a + b", "a - b"), where: SKIP_HOOK})
+    g = _grade(ws)
+    assert g.regressions == ["tests/test_calc.py::test_add"]
+    assert g.task_pass is False
+    assert g.pytest_config_touched is True
+
+
+def test_old_test_deselected_by_conftest_is_a_regression(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _write(work, {"backend/conftest.py": DESELECT_HOOK})
+    g = _grade(ws)
+    assert g.regressions == ["tests/test_calc.py::test_add"]
+    assert g.task_pass is False
+
+
+def test_old_test_skipped_at_parent_and_still_skipped_is_fine(tmp_path):
+    repo = _make_repo(tmp_path / "toy")
+    files = dict(PARENT_FILES)
+    files[OLD_TEST] = "import pytest\n\n\n@pytest.mark.skip\ndef test_add():\n    assert False\n"
+    parent = repo.commit("chore: base", files)
+    commit = repo.commit("feat: mul", COMMIT_FILES)
+    task = Task("t04", commit, parent, "domain", 3, (HIDDEN_NEW, HIDDEN_MOD), False, "p")
+    work = prepare_workspace(repo.path, task, tmp_path / "run")
+    _apply_original(repo, task, work)
+    g = grade(repo.path, task, work)
     assert g.regressions == []
     assert g.task_pass is True
+
+
+def test_pytest_config_untouched_by_original_patch(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    assert _grade(ws).pytest_config_touched is False
+
+
+@pytest.mark.parametrize(
+    ("path", "change"),
+    [
+        ("backend/pytest.ini", "[pytest]\naddopts = -q\n"),
+        ("backend/setup.cfg", "[tool:pytest]\naddopts = -q\n"),
+        ("backend/tox.ini", "[pytest]\naddopts = -q\n"),
+        ("backend/pyproject.toml", 'addopts = ["-m", "not integration", "-k", "not test_add"]'),
+    ],
+)
+def test_pytest_config_touched(ws, path, change):
+    _, _, work, _ = ws
+    if path.endswith("pyproject.toml"):
+        text = (work / path).read_text()
+        change = text.replace('addopts = ["-m", "not integration"]', change)
+        assert change != text
+    _write(work, {path: change})
+    assert _grade(ws).pytest_config_touched is True
+
+
+def test_pyproject_change_outside_pytest_section_is_not_config_touch(ws):
+    _, _, work, _ = ws
+    p = work / "backend/pyproject.toml"
+    _write(work, {"backend/pyproject.toml": p.read_text().replace('"0.0.0"', '"0.0.1"')})
+    assert _grade(ws).pytest_config_touched is False
 
 
 def test_failing_ai_test_is_not_a_regression(ws):
@@ -377,16 +484,40 @@ def test_ai_tests_and_changed_line_coverage(ws):
     assert g.ai_changed_line_coverage == pytest.approx(0.75)
 
 
-def test_modified_existing_test_file_counts_all_its_tests(ws):
+def test_modified_existing_test_file_counts_only_new_tests(ws):
     _, _, work, _ = ws
     old = (work / OLD_TEST).read_text()
-    _write(
-        work, {CALC: AI_CALC, OLD_TEST: old + "\n\ndef test_more():\n    assert add(1, 1) == 2\n"}
+    calc = AI_CALC.replace("a + b", "b + a")  # changed line only the old tests exercise
+    more = (
+        "\n\ndef test_more():\n    from pharma_agent.domain.calc import mul\n\n"
+        "    assert mul(2, 2) == 4\n"
     )
+    _write(work, {CALC: calc, OLD_TEST: old + more})
     g = _grade(ws)
-    assert g.ai_tests_added == 3
-    # test_calc.py imports calc (defs executed) but never calls mul or unused
-    assert g.ai_changed_line_coverage == pytest.approx(0.5)
+    assert g.ai_tests_added == 1
+    # changed executable lines: return b + a, def mul, return a*b, def unused, return x;
+    # only test_more runs, so `return b + a` and `return x` are missed -> 3 of 5
+    assert g.ai_changed_line_coverage == pytest.approx(0.6)
+
+
+def test_new_methods_in_existing_class_count(ws):
+    _, _, work, _ = ws
+    base = "class TestK:\n    def test_a(self):\n        assert True\n"
+    path = "backend/tests/test_k.py"
+    _write(work, {path: base})
+    subprocess.run(["git", "-C", str(work), "add", "-A"], check=True)
+    subprocess.run(["git", "-C", str(work), "commit", "-qm", "pre"], check=True)
+    subprocess.run(
+        ["git", "-C", str(work), "tag", "-f", "baseline"], check=True, capture_output=True
+    )
+    _write(
+        work,
+        {
+            path: base + "\n    def test_b(self):\n        assert True\n\n\n"
+            "def test_a():\n    assert True\n"
+        },
+    )
+    assert _grade(ws).ai_tests_added == 2  # TestK::test_b and the top-level test_a
 
 
 def test_coverage_none_without_ai_tests(ws):
@@ -505,3 +636,122 @@ def test_failing_new_architecture_test_fails_architecture_only(ws):
     g = _grade(ws)
     assert g.architecture_pass is False
     assert g.regressions == []
+
+
+def test_broken_ai_test_file_next_to_correct_patch_passes(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _write(work, {"backend/tests/test_ai_broken.py": "def test_x(:\n    pass\n"})
+    g = _grade(ws)
+    assert g.task_pass is True
+    assert g.regressions == []
+
+
+# --- failures in the agent's tree are grades, not crashes --------------------------------
+
+
+def _fail_final(monkeypatch, exc):
+    import sdlc_harness.grade as grade_mod
+
+    real = grade_mod.run_backend_tests
+
+    def fake(tree, timeout_s=900):
+        if tree.name == "graded":
+            raise exc
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", fake)
+
+
+@pytest.mark.parametrize(
+    ("exc", "note"),
+    [
+        (subprocess.TimeoutExpired(["pytest"], 1), "final test run timed out"),
+        (subprocess.CalledProcessError(1, ["uv", "sync"]), "final test run failed"),
+    ],
+)
+def test_final_run_failure_is_graded_as_fail(ws, monkeypatch, exc, note):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _grade(ws)  # fill the reference cache with the real runner
+    _fail_final(monkeypatch, exc)
+    g = _grade(ws)
+    assert g.task_pass is False
+    assert g.hidden_passed == 0
+    assert g.regressions == [
+        "tests/architecture/test_layering.py::test_domain_does_not_import_api",
+        "tests/test_calc.py::test_add",
+        "tests/test_calc.py::test_add_zero",
+    ]
+    assert g.architecture_pass is False
+    assert any(note in n for n in g.grading_notes)
+
+
+def test_pyrefly_failure_is_none(ws, monkeypatch):
+    import sdlc_harness.grade as grade_mod
+
+    real = grade_mod._tool
+    monkeypatch.setattr(grade_mod, "_tool", lambda n: "false" if n == "pyrefly" else real(n))
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    g = _grade(ws)
+    assert g.pyrefly_errors is None
+    assert g.task_pass is True
+    assert any("pyrefly" in n for n in g.grading_notes)
+
+
+def test_coverage_timeout_is_none(ws, monkeypatch):
+    real = subprocess.run
+
+    def fake(cmd, *a, **k):
+        if "coverage" in cmd and "run" in cmd:
+            raise subprocess.TimeoutExpired(cmd, 1)
+        return real(cmd, *a, **k)
+
+    monkeypatch.setattr("sdlc_harness.grade.subprocess.run", fake)
+    _, _, work, _ = ws
+    _write(work, {CALC: AI_CALC, "backend/tests/test_ai_mul.py": AI_TEST})
+    g = _grade(ws)
+    assert g.ai_tests_added == 3
+    assert g.ai_changed_line_coverage is None
+    assert any("coverage" in n for n in g.grading_notes)
+
+
+def test_clean_grade_has_no_notes(ws):
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    assert _grade(ws).grading_notes == []
+
+
+def test_parse_patch_keeps_odd_line_separators():
+    patch = (
+        "diff --git a/x.py b/x.py\n"
+        "new file mode 100644\n"
+        "--- /dev/null\n"
+        "+++ b/x.py\n"
+        "@@ -0,0 +1,3 @@\n"
+        "+a = 1  #\x0c - form feed\n"
+        "+s = 'x\u2028 y'\n"
+        "+b = 2\n"
+    )
+    [f] = parse_patch(patch)
+    assert f.path == "x.py"
+    assert f.added_lines == [1, 2, 3]
+    assert f.removed == 0
+
+
+def test_coverage_none_when_run_never_starts(ws, monkeypatch):
+    # e.g. `uv run --with coverage` fails before coverage starts: no data file at all
+    real = subprocess.run
+
+    def fake(cmd, *a, **k):
+        if "coverage" in cmd and "run" in cmd:
+            return subprocess.CompletedProcess(cmd, 2, b"", b"uv: lock mismatch")
+        return real(cmd, *a, **k)
+
+    monkeypatch.setattr("sdlc_harness.grade.subprocess.run", fake)
+    _, _, work, _ = ws
+    _write(work, {CALC: AI_CALC, "backend/tests/test_ai_mul.py": AI_TEST})
+    g = _grade(ws)
+    assert g.ai_changed_line_coverage is None
+    assert any("no data" in n for n in g.grading_notes)

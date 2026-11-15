@@ -13,6 +13,7 @@ from importlib.metadata import version
 from pathlib import Path
 
 from coverage import Coverage
+from coverage.exceptions import CoverageException
 from radon.complexity import cc_visit
 from radon.metrics import mi_visit
 
@@ -30,6 +31,7 @@ PROCESS_FILES = {
     "plan": ("docs/plan.md", "backend/docs/plan.md"),
 }
 ARTIFACT_PATHS = {p for paths in PROCESS_FILES.values() for p in paths}
+PYTEST_CONFIG_FILES = {"conftest.py", "pytest.ini", "setup.cfg", "tox.ini"}
 COPY_IGNORE = shutil.ignore_patterns(
     ".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"
 )
@@ -45,16 +47,18 @@ class Grade:
     hidden_passed: int
     hidden_total: int
     regressions: list[str]  # nodeids of old tests not passing
-    ruff_errors: int  # ruff check on changed .py files
-    pyrefly_errors: int  # pyrefly check in backend/
+    ruff_errors: int | None  # ruff check on changed .py files; None if ruff could not run
+    pyrefly_errors: int | None  # pyrefly check in backend/; None if pyrefly could not run
     architecture_pass: bool  # tests/architecture passes
     radon_cc_mean: float  # mean radon cc over blocks of changed src files
     radon_mi_mean: float  # mean radon mi over changed src files
-    ai_tests_added: int  # test functions in test files the AI added or modified
+    ai_tests_added: int  # test functions the AI added (new names vs the parent version)
     ai_changed_line_coverage: float | None  # AI tests' line coverage of src lines the AI changed
     lines_added: int
     lines_deleted: int
     process_artifacts: bool  # docs/design.md and docs/plan.md both written
+    pytest_config_touched: bool = False  # patch changes conftest.py or pytest settings
+    grading_notes: list[str] = field(default_factory=list)  # tools that failed or timed out
 
 
 def grade_to_dict(g: Grade) -> dict:
@@ -78,7 +82,7 @@ def parse_patch(patch: str) -> list[FilePatch]:
     cur: FilePatch | None = None
     in_hunk = False
     new_line = 0
-    for line in patch.splitlines():
+    for line in patch.split("\n"):
         if line.startswith("diff --git "):
             # fallback path (binary files have no ---/+++ lines): "diff --git a/X b/X"
             cur = FilePatch(path=line.split(" b/", 1)[-1], deleted=False)
@@ -171,28 +175,68 @@ def _is_test_file(path: str) -> bool:
     return name.endswith(".py") and (name.startswith("test_") or name.endswith("_test.py"))
 
 
-def _count_tests(source: str) -> int:
+def _test_ids(source: str | None) -> set[str]:
+    """Pytest-style ids (`test_x`, `TestC::test_y`) of test functions in a module's source."""
+    if source is None:
+        return set()
     try:
         tree = ast.parse(source)
     except SyntaxError:
-        return 0
-    return sum(
-        1
-        for node in ast.walk(tree)
-        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name.startswith("test")
+        return set()
+
+    def walk(body: list[ast.stmt], prefix: str) -> set[str]:
+        ids: set[str] = set()
+        for node in body:
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                if node.name.startswith("test"):
+                    ids.add(prefix + node.name)
+            elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+                ids |= walk(node.body, f"{prefix}{node.name}::")
+        return ids
+
+    return walk(tree.body, "")
+
+
+def _show(work: Path, rev: str, path: str) -> str | None:
+    proc = subprocess.run(
+        ["git", "-C", str(work), "show", f"{rev}:{path}"],
+        check=False,
+        capture_output=True,
+        text=True,
     )
+    return proc.stdout if proc.returncode == 0 else None
+
+
+def _pytest_table(source: str | None) -> object:
+    if source is None:
+        return None
+    return tomllib.loads(source).get("tool", {}).get("pytest")
+
+
+def _pytest_config_touched(work: Path, files: list["FilePatch"]) -> bool:
+    for f in files:
+        name = f.path.rsplit("/", 1)[-1]
+        if name in PYTEST_CONFIG_FILES:
+            return True
+        if name == "pyproject.toml":
+            current = None if f.deleted else _show(work, ":0", f.path)  # staged by collect_patch
+            try:
+                if _pytest_table(_show(work, "baseline", f.path)) != _pytest_table(current):
+                    return True
+            except tomllib.TOMLDecodeError:
+                return True
+    return False
 
 
 def _changed_line_coverage(
-    work: Path, test_files: list[str], changed: dict[str, list[int]], timeout_s: int
+    work: Path, nodeids: list[str], changed: dict[str, list[int]], timeout_s: int
 ) -> float | None:
-    """Run only the AI's test files under coverage; share of changed executable src lines hit."""
+    """Run only the AI's tests under coverage; share of changed executable src lines hit."""
     backend = work / "backend"
     with tempfile.TemporaryDirectory() as tmp:
         data = Path(tmp) / ".coverage"
         run = ["run", f"--data-file={data}", f"--include={backend / 'src'}/*"]
         pytest_args = ["-m", "pytest", "-p", "no:cacheprovider", "-q"]
-        rel_tests = [p.removeprefix("backend/") for p in test_files]
         env = _env()
         if find_lock_dir(work) is not None:
             cov = f"coverage=={version('coverage')}"
@@ -201,9 +245,11 @@ def _changed_line_coverage(
             env["PYTHONPATH"] = str(backend / "src")
             cmd = [sys.executable, "-m", "coverage", *run]
         subprocess.run(
-            [*cmd, *pytest_args, *rel_tests],
+            [*cmd, *pytest_args, *nodeids],
             cwd=backend, env=env, capture_output=True, check=False, timeout=timeout_s,
         )  # fmt: skip
+        if not data.is_file():
+            raise CoverageException("coverage run produced no data")
         cov_api = Coverage(data_file=str(data))
         cov_api.load()
         executable = covered = 0
@@ -234,6 +280,31 @@ def _reference(repo: Path, sha: str, cache_dir: Path | None, timeout_s: int) -> 
         cached.parent.mkdir(parents=True, exist_ok=True)
         cached.write_text(json.dumps(report.outcomes, indent=1, sort_keys=True))
     return report.outcomes
+
+
+def _ls_tree(repo: Path, sha: str, prefix: str) -> list[str]:
+    out = subprocess.run(
+        ["git", "-C", str(repo), "ls-tree", "-r", "-z", "--name-only", sha, "--", prefix],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return [p for p in out.split("\0") if p]
+
+
+def _blob(repo: Path, sha: str, path: str) -> bytes:
+    return subprocess.run(
+        ["git", "-C", str(repo), "show", f"{sha}:{path}"], check=True, capture_output=True
+    ).stdout
+
+
+def _restore(target: Path, content: bytes) -> None:
+    if target.is_dir() and not target.is_symlink():
+        shutil.rmtree(target)
+    elif target.is_symlink():
+        target.unlink()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
 
 
 def _in_files(nodeid: str, rels: set[str]) -> bool:
@@ -275,19 +346,40 @@ def grade(
     changed_py = [f.path for f in present if f.path.endswith(".py")]
     changed_src = [p for p in changed_py if p.startswith(SRC_PREFIX)]
     cc_mean, mi_mean = _radon([(work / p).read_text() for p in changed_src])
-    ruff_errors = _ruff_errors(work, changed_py)
-    pyrefly_errors = _pyrefly_errors(work, timeout_s)
+    notes: list[str] = []
+    ruff_errors: int | None = None
+    try:
+        ruff_errors = _ruff_errors(work, changed_py)
+    except (RuntimeError, ValueError, subprocess.SubprocessError, OSError) as e:
+        notes.append(f"ruff failed: {e}")
+    pyrefly_errors: int | None = None
+    try:
+        pyrefly_errors = _pyrefly_errors(work, timeout_s)
+    except subprocess.TimeoutExpired:
+        notes.append("pyrefly timed out")
+    except (RuntimeError, subprocess.SubprocessError, OSError) as e:
+        notes.append(f"pyrefly failed: {e}")
 
     # (2) AI-written tests under coverage, over the src lines the AI changed
     ai_tests = [
         p for p in changed_py if p.startswith(TESTS_PREFIX) and p not in hidden and _is_test_file(p)
     ]
-    ai_tests_added = sum(_count_tests((work / p).read_text()) for p in ai_tests)
+    ai_nodeids = sorted(
+        f"{p.removeprefix('backend/')}::{tid}"
+        for p in ai_tests
+        for tid in _test_ids((work / p).read_text()) - _test_ids(_show(work, "baseline", p))
+    )
+    ai_tests_added = len(ai_nodeids)
     changed_lines = {f.path: f.added_lines for f in present if f.path in changed_src}
     changed_lines = {p: lines for p, lines in changed_lines.items() if lines}
     coverage = None
-    if ai_tests and changed_lines:
-        coverage = _changed_line_coverage(work, ai_tests, changed_lines, timeout_s)
+    if ai_nodeids and changed_lines:
+        try:
+            coverage = _changed_line_coverage(work, ai_nodeids, changed_lines, timeout_s)
+        except subprocess.TimeoutExpired:
+            notes.append("coverage run timed out")
+        except (subprocess.SubprocessError, OSError, CoverageException) as e:
+            notes.append(f"coverage failed: {e}")
 
     # (3) the labeling copy, without the process artifacts
     graded = work.parent / "graded"
@@ -297,15 +389,33 @@ def grade(
     for rel in ARTIFACT_PATHS:
         (graded / rel).unlink(missing_ok=True)
 
-    # (4) the commit's hidden tests over the copy, then the whole suite
+    # (4) old test files back at the parent version, the commit's hidden tests over the copy,
+    # then the whole suite
+    for path in _ls_tree(repo, task.parent, TESTS_PREFIX):
+        if path not in hidden:
+            _restore(graded / path, _blob(repo, task.parent, path))
     for path in task.hidden_tests:
-        target = graded / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(read_file(repo, task.commit, path))
-    final = run_backend_tests(graded, timeout_s).outcomes
+        _restore(graded / path, _blob(repo, task.commit, path))
+    final: dict[str, Outcome] = {}
+    try:
+        report = run_backend_tests(graded, timeout_s)
+        final = report.outcomes
+        if not final:
+            notes.append(f"final test run produced no report: {report.stderr_tail}")
+        elif report.collection_error:
+            notes.append("final test run had collection errors")
+    except subprocess.TimeoutExpired:
+        notes.append("final test run timed out")
+    except (subprocess.SubprocessError, OSError) as e:
+        notes.append(f"final test run failed: {e}")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
-    regressions = sorted(n for n in old if final.get(n, "missing") not in ("passed", "skipped"))
+    # skipped only counts as fine when the parent run skipped that test too
+    regressions = sorted(
+        n
+        for n, before in old.items()
+        if final.get(n) != "passed" and not (before == "skipped" and final.get(n) == "skipped")
+    )
     arch = [n for n in old if n.startswith(ARCH_PREFIX)]
     arch += [n for n in final if n.startswith(ARCH_PREFIX) and n not in old]
     architecture_pass = all(final.get(n) == "passed" for n in arch)
@@ -328,6 +438,8 @@ def grade(
             any(p in patch_paths and (work / p).is_file() for p in paths)
             for paths in PROCESS_FILES.values()
         ),
+        pytest_config_touched=_pytest_config_touched(work, all_files),
+        grading_notes=notes,
     )
 
 
