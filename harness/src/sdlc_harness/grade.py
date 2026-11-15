@@ -311,6 +311,42 @@ def _restore(target: Path, content: bytes) -> None:
     target.write_bytes(content)
 
 
+def _range_changes(repo: Path, task: Task) -> list[tuple[str, str]]:
+    """(status, path) for every file under backend/tests/ changed in a range task's base..end."""
+    out = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--name-status", "-z", "--no-renames",
+         task.start, task.commit, "--", TESTS_PREFIX],
+        check=True, capture_output=True, text=True,
+    ).stdout.split("\0")  # fmt: skip
+    return list(zip(out[0::2], out[1::2], strict=False))
+
+
+def range_hidden_tests(repo: Path, task: Task) -> set[str]:
+    """Every test_*.py under backend/tests/ added or modified in base..end."""
+    return {
+        p
+        for s, p in _range_changes(repo, task)
+        if s != "D" and p.rsplit("/", 1)[-1].startswith("test_") and p.endswith(".py")
+    }
+
+
+def range_hidden_errors(repo: Path, task: Task) -> list[str]:
+    """Problems with a range task's hidden_tests list versus the git-computed set."""
+    if task.kind != "range":
+        return []
+    expected = range_hidden_tests(repo, task)
+    listed = set(task.hidden_tests)
+    errors = [
+        f"{task.id}: hidden_tests lacks {p} (added or modified in the range)"
+        for p in sorted(expected - listed)
+    ]
+    errors += [
+        f"{task.id}: hidden_tests lists {p}, not an added or modified test in the range"
+        for p in sorted(listed - expected)
+    ]
+    return errors
+
+
 def _range_support(repo: Path, task: Task) -> tuple[list[str], list[str]]:
     """Support files changed in a range task's base..end: (present at end, deleted at end).
 
@@ -319,18 +355,39 @@ def _range_support(repo: Path, task: Task) -> tuple[list[str], list[str]]:
     """
     if task.kind != "range":
         return [], []
-    out = subprocess.run(
-        ["git", "-C", str(repo), "diff", "--name-status", "-z", "--no-renames",
-         task.start, task.commit, "--", TESTS_PREFIX],
-        check=True, capture_output=True, text=True,
-    ).stdout.split("\0")  # fmt: skip
     present: list[str] = []
     deleted: list[str] = []
-    for status, path in zip(out[0::2], out[1::2], strict=False):
+    for status, path in _range_changes(repo, task):
         if path in task.hidden_tests:
             continue
         (deleted if status == "D" else present).append(path)
     return present, deleted
+
+
+def original_patch_errors(
+    repo: Path, task: Task, run_dir: Path, cache_dir: Path | None = None, timeout_s: int = 900
+) -> list[str]:
+    """Grade the original `git diff start end` on a fresh workspace; list everything that is not
+    a clean pass (failing hidden tests, regressions, grading errors). Empty means gradable."""
+    from sdlc_harness.workspace import prepare_workspace
+
+    errors = range_hidden_errors(repo, task)
+    if errors:
+        return errors
+    work = prepare_workspace(repo, task, run_dir, timeout_s)
+    diff = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--binary", task.start, task.commit],
+        check=True, capture_output=True, text=True,
+    ).stdout  # fmt: skip
+    subprocess.run(["git", "-C", str(work), "apply"], input=diff, text=True, check=True)
+    try:
+        g = grade(repo, task, work, cache_dir=cache_dir, timeout_s=timeout_s)
+    except GradingError as e:
+        return [f"{task.id}: {e}"]
+    errors = [f"{task.id}: hidden test {n} -> {o}" for n, o in sorted(g.hidden_failed.items())]
+    errors += [f"{task.id}: base test fails under the original patch: {n}" for n in g.regressions]
+    errors += [f"{task.id}: {n}" for n in g.grading_notes if "ruff" not in n and "pyrefly" not in n]
+    return errors
 
 
 def _in_files(nodeid: str, rels: set[str]) -> bool:
@@ -346,7 +403,7 @@ def grade(
     """Grade the agent's workspace. The workspace is left as is; a copy at
     work.parent/"graded" (no docs, the commit's hidden tests) is the one tested and labeled.
 
-    Old tests are the parent's tests outside the hidden files; hidden tests are the commit's
+    Old tests are the start (parent, or range base) tests outside the hidden files; hidden tests are the commit's
     tests in the hidden files. Both sets come from reference runs of the original trees, so a
     deleted old test still counts as a regression and the hidden total is exact.
     """
@@ -354,9 +411,19 @@ def grade(
     hidden_rel = {p.removeprefix("backend/") for p in hidden}
 
     start = task.start
+    mismatch = range_hidden_errors(repo, task)
+    if mismatch:
+        raise GradingError("; ".join(mismatch))
     support, support_deleted = _range_support(repo, task)
     baseline = _reference(repo, start, cache_dir, timeout_s)
     old = {n: o for n, o in baseline.items() if not _in_files(n, hidden_rel)}
+    notes: list[str] = []
+    if task.kind == "range":
+        # base test files that no longer exist at the end were deleted or moved by the range
+        at_end = set(_ls_tree(repo, task.commit, TESTS_PREFIX))
+        gone = {n.split("::", 1)[0] for n in old if "backend/" + n.split("::", 1)[0] not in at_end}
+        old = {n: o for n, o in old.items() if n.split("::", 1)[0] not in gone}
+        notes += [f"old tests excluded, file gone at end: backend/{p}" for p in sorted(gone)]
     broken = sorted(n for n, o in old.items() if o in ("failed", "error"))
     if broken:
         raise GradingError(f"old tests already fail at start {start}: {broken}")
@@ -365,6 +432,11 @@ def grade(
     not_passing = [n for n in hidden_ids if reference[n] != "passed"]
     if not hidden_ids or not_passing:
         raise GradingError(f"hidden tests do not pass at commit {task.commit}: {not_passing}")
+    if task.kind == "range":
+        # the end tree (with its support files) must itself pass every old test that survives
+        broken_end = sorted(n for n in old if reference.get(n) not in ("passed", "skipped"))
+        if broken_end:
+            raise GradingError(f"old tests do not pass at end {task.commit}: {broken_end}")
 
     # (1) patch, size, process artifacts, radon, ruff, pyrefly
     all_files = parse_patch(collect_patch(work))
@@ -374,7 +446,6 @@ def grade(
     changed_py = [f.path for f in present if f.path.endswith(".py")]
     changed_src = [p for p in changed_py if p.startswith(SRC_PREFIX)]
     cc_mean, mi_mean = _radon([(work / p).read_text() for p in changed_src])
-    notes: list[str] = []
     ruff_errors: int | None = None
     try:
         ruff_errors = _ruff_errors(work, changed_py)

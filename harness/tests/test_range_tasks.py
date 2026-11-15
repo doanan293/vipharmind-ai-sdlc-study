@@ -144,3 +144,114 @@ def test_range_task_toml_roundtrip(rng, tmp_path):
     assert loaded.missing_keys == ()
     assert "test_mul" in loaded.test_names
     assert not any("missing key" in e for e in validate_task(loaded))
+
+
+# --- round 1: hidden-set check, deleted files, original-patch report ----------------------
+
+
+def test_range_hidden_tests_must_match_git(rng):
+    from dataclasses import replace
+
+    from sdlc_harness.grade import range_hidden_errors
+
+    repo, task, _ = rng
+    assert range_hidden_errors(repo.path, task) == []
+    short = replace(task, hidden_tests=(HIDDEN_A,))
+    extra = replace(task, hidden_tests=(*task.hidden_tests, OLD_TEST))
+    assert any(HIDDEN_B in e for e in range_hidden_errors(repo.path, short))
+    assert any(OLD_TEST in e for e in range_hidden_errors(repo.path, extra))
+    assert range_hidden_errors(repo.path, replace(task, kind="commit")) == []
+
+
+def test_grade_refuses_mismatched_hidden_list(rng, tmp_path):
+    from dataclasses import replace
+
+    from sdlc_harness.grade import GradingError
+
+    repo, task, cache = rng
+    bad = replace(task, hidden_tests=(HIDDEN_A,))
+    work = prepare_workspace(repo.path, bad, tmp_path / "run")
+    with pytest.raises(GradingError, match="hidden_tests"):
+        grade(repo.path, bad, work, cache_dir=cache)
+
+
+def test_validate_tasks_checks_range_hidden_set(rng, tmp_path):
+    from dataclasses import replace
+
+    from sdlc_harness.cli import validate_tasks
+
+    repo, task, _ = rng
+    write_task(tmp_path / "f01", replace(task, hidden_tests=(HIDDEN_A,)))
+    errors = validate_tasks(tmp_path, repo.path)
+    assert any("hidden_tests" in e and HIDDEN_B in e for e in errors)
+
+
+def test_original_patch_errors_clean_and_broken(rng, tmp_path):
+    from sdlc_harness.grade import original_patch_errors
+
+    repo, task, cache = rng
+    assert original_patch_errors(repo.path, task, tmp_path / "ok", cache_dir=cache) == []
+
+
+@pytest.fixture(scope="module")
+def deleting(tmp_path_factory):
+    """A range that deletes an old test file (and its tests) and renames another."""
+    root = tmp_path_factory.mktemp("range-del")
+    repo = ToyRepo(root / "toy")
+    repo.path.mkdir()
+    repo.git("init", "-q", "-b", "main")
+    repo.git("config", "user.email", "toy@example.com")
+    repo.git("config", "user.name", "Toy")
+    repo.git("config", "commit.gpgsign", "false")
+    repo.commit("chore: scaffold", BASE_FILES)
+    old2 = "backend/tests/test_old2.py"
+    moved = "backend/tests/test_moved.py"
+    body = "def test_old2():\n    assert True\n"
+    base = repo.commit("chore: base", {**BASE, old2: body, "backend/tests/test_ren.py": body})
+    repo.commit("feat: one", {**C1, old2: None, "backend/tests/test_ren.py": None, moved: body})
+    end = repo.commit("feat: two", C2)
+    task = Task(
+        "f02",
+        end,
+        "",
+        "domain",
+        5,
+        (HIDDEN_A, HIDDEN_B, moved),
+        False,
+        "p",
+        base=base,
+        kind="range",
+    )
+    return repo, task, root / "cache"
+
+
+def test_range_deleted_or_renamed_old_tests_are_not_regressions(deleting, tmp_path):
+    repo, task, cache = deleting
+    work = prepare_workspace(repo.path, task, tmp_path / "run")
+    _apply_original(repo, task, work)
+    g = grade(repo.path, task, work, cache_dir=cache)
+    assert g.task_pass is True, (g.hidden_failed, g.regressions, g.grading_notes)
+    assert g.regressions == []
+    assert any("test_old2.py" in n for n in g.grading_notes)
+
+
+def test_range_old_test_broken_at_end_is_not_gradable(tmp_path):
+    from sdlc_harness.grade import GradingError
+
+    repo = ToyRepo(tmp_path / "toy")
+    repo.path.mkdir()
+    repo.git("init", "-q", "-b", "main")
+    repo.git("config", "user.email", "toy@example.com")
+    repo.git("config", "user.name", "Toy")
+    repo.git("config", "commit.gpgsign", "false")
+    repo.commit("chore: scaffold", BASE_FILES)
+    base = repo.commit("chore: base", {**BASE, CONFTEST: "FIVE = 5\n"})
+    # the end support file breaks the old test (fakes shadow calc via conftest)
+    end = repo.commit(
+        "feat: one",
+        {**C1, CONFTEST: "raise RuntimeError('boom')\n"},
+    )
+    task = Task("f03", end, "", "domain", 1, (HIDDEN_A,), False, "p", base=base, kind="range")
+    work = prepare_workspace(repo.path, task, tmp_path / "run")
+    with pytest.raises(GradingError):
+        grade(repo.path, task, work, cache_dir=tmp_path / "cache")

@@ -3,10 +3,12 @@
 import argparse
 import json
 import logging
+import tempfile
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
+from sdlc_harness.grade import original_patch_errors, range_hidden_errors
 from sdlc_harness.runner import (
     COHORTS_FILE,
     DEFAULT_WORK_ROOT,
@@ -88,7 +90,9 @@ def _print_funnel(records: list[dict]) -> None:
 EXPECTED_TASKS = {f"t{i:02d}" for i in range(1, 16)} | {"p01", "p02"}
 
 
-def validate_tasks(root: Path, repo: Path | None) -> list[str]:
+def validate_tasks(
+    root: Path, repo: Path | None, original_patch: bool = False, cache_dir: Path | None = None
+) -> list[str]:
     if not root.is_dir():
         return [f"{root} is not a directory"]
     dirs = sorted(d for d in root.iterdir() if (d / "task.toml").exists())
@@ -103,6 +107,13 @@ def validate_tasks(root: Path, repo: Path | None) -> list[str]:
         if task.id != d.name:
             errors.append(f"{d.name}: id is '{task.id}'")
         errors.extend(validate_task(task))
+        if repo is not None:
+            errors.extend(range_hidden_errors(repo, task))
+            if original_patch and task.kind == "range":
+                with tempfile.TemporaryDirectory() as tmp:
+                    errors.extend(
+                        original_patch_errors(repo, task, Path(tmp) / "run", cache_dir=cache_dir)
+                    )
     return errors
 
 
@@ -195,6 +206,12 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument(
         "--repo", type=Path, default=None, help="ViPharmind repo, to check hidden test names"
     )
+    v.add_argument(
+        "--original-patch",
+        action="store_true",
+        help="range tasks: grade the original base..end patch; any failure is a problem",
+    )
+    v.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     g = tsub.add_parser("generate", help="write task dirs from the reviewed REVIEW.md")
     g.add_argument("--review", type=Path, required=True)
     g.add_argument("--screening", type=Path, default=Path("tasks/screening.json"))
@@ -259,7 +276,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "tasks":
         if args.repo is None:
             print("note: no --repo, hidden test function names not checked")
-        errors = validate_tasks(args.dir, args.repo)
+        errors = validate_tasks(args.dir, args.repo, args.original_patch, args.cache_dir)
         for e in errors:
             print(e)
         print("tasks valid" if not errors else f"{len(errors)} problem(s)")
