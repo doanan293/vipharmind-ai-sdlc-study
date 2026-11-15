@@ -204,6 +204,14 @@ def test_is_quota_error_needs_failure_and_limit_message():
         ("agy", 'AGY_ERROR: {"short_error":"x","status":"RESOURCE_EXHAUSTED"}'),
         ("agy", "model gemini-3.8-flash-medium is out of quota until 18:00"),
         ("agy", "You have exhausted your capacity on this model"),
+        # observed in the pilot (agy 1.5.9, 2026-11-15), stderr of a run that exited 3
+        (
+            "agy",
+            (
+                "error: Individual quota reached. Please upgrade your subscription to increase "
+                "your limits. Resets in 167h3m55s."
+            ),
+        ),
     ],
 )
 def test_is_quota_error_known_messages(agent, message):

@@ -19,8 +19,8 @@ CODEX_WEB_OFF_FLAGS: tuple[str, ...] = ("-c", 'web_search="disabled"')
 CLAUDE_SETTINGS = '{"autoMemoryEnabled": false}'
 # Messages that mean "out of quota / usage limit / rate limited", matched case-insensitively
 # against the tail of the transcript and stderr of a run that exited non-zero. Taken from the
-# CLIs' own strings (claude 2.1.325, agy 1.5.9 incl. its QUOTA_RE, codex 0.162.1); none was seen
-# in a real run yet, so they stay provisional.
+# CLIs' own strings (claude 2.1.325, agy 1.5.9 incl. its QUOTA_RE, codex 0.162.1). Only agy's
+# was seen in a real run (pilot, marked below); the others stay provisional.
 QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
     "claude": (
         r"usage limit reached",
@@ -30,7 +30,8 @@ QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
         r"rate_limit_error",
     ),
     "agy": (
-        r"RESOURCE_EXHAUSTED",
+        r"RESOURCE_EXHAUSTED",  # observed: "RESOURCE_EXHAUSTED (code 429): Individual quota reached"
+        r"quota reached",
         r"out of quota",
         r"quota (?:exceeded|exhausted)",
         r"exhausted your capacity",
