@@ -1,0 +1,9 @@
+id = "t03"
+commit = "c3a88b2659d708cb6e23c09cdb5d00bb99be2626"
+parent = "a1468256769c3db82ae7a4ec69cf27190b1b416c"
+layer = "api"
+src_lines = 198
+hidden_tests = ["backend/tests/api/test_openapi.py", "backend/tests/test_cli.py"]
+pilot = false
+baseline_radon_cc = 2.5365853658536586
+baseline_radon_mi = 65.53527023521707

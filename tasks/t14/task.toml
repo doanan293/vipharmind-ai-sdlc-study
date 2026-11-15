@@ -1,0 +1,9 @@
+id = "t14"
+commit = "86a0dae1a6e14253c2bf4e1b730c112fdcfd01c6"
+parent = "6956c2924c9597c5b1e30313cf21427ec8f7fe6e"
+layer = "infrastructure"
+src_lines = 68
+hidden_tests = ["backend/tests/infrastructure/test_deepinfra_reranker.py"]
+pilot = false
+baseline_radon_cc = 2.5
+baseline_radon_mi = 56.493779400581154

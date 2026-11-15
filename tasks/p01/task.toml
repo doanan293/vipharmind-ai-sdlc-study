@@ -1,0 +1,9 @@
+id = "p01"
+commit = "98a46b6fe75bb89e0b44fe715a7c4ea394f8263f"
+parent = "aa70947ebcf71ed4484cf9d699c8ac7076e3f791"
+layer = "domain"
+src_lines = 201
+hidden_tests = ["backend/tests/domain/corpus/test_authoring.py"]
+pilot = true
+baseline_radon_cc = 4.25
+baseline_radon_mi = 49.633726413242194

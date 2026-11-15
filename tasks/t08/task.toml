@@ -1,0 +1,9 @@
+id = "t08"
+commit = "8dd6a9cdc9c43f37280a039d6a24f4e957d3c435"
+parent = "b9ac044c23ef0d8ce784a4c68d229f50d96c31bc"
+layer = "domain"
+src_lines = 43
+hidden_tests = ["backend/tests/domain/test_text.py"]
+pilot = false
+baseline_radon_cc = 5.333333333333333
+baseline_radon_mi = 46.926242409856535

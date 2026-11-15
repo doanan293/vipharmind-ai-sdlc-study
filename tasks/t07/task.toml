@@ -1,0 +1,9 @@
+id = "t07"
+commit = "cd9ce5833b47e8e8ff0fc2933802f5281dbe57a3"
+parent = "fd8862a95879a4b4ed8bd23ee32a272a0e88d193"
+layer = "domain"
+src_lines = 232
+hidden_tests = ["backend/tests/domain/test_conversation_context.py", "backend/tests/domain/test_skill.py"]
+pilot = false
+baseline_radon_cc = 2.6666666666666665
+baseline_radon_mi = 71.93113365722918

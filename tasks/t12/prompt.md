@@ -1,0 +1,7 @@
+Ship the assistant's system skills as SKILL.md playbooks in the repository and serve them through a filesystem catalog.
+Add five skills under `backend/skills/<skill-id>/SKILL.md` with the ids `brand-to-generic`, `dosing-by-population`, `drug-interaction`, `drug-monograph` and `plain-language`, written in Vietnamese in the existing SKILL.md format.
+Each playbook must have a name, a description that tells the skill selector when to use it, and both a search section and an answer section with concrete guidance for that kind of drug question.
+The playbooks must not add a disclaimer that the assistant does not replace a doctor or pharmacist (in Vietnamese, the phrase "không thay thế").
+In a new module `pharma_agent.infrastructure.skills.filesystem_catalog`, provide `load_system_skills(root: Path) -> list[Skill]`, which reads every `<folder>/SKILL.md` under `root` in folder name order with the existing SKILL.md parser and builds an enabled system skill (no owner) whose id is the folder name.
+An invalid file or a folder name that is not a valid skill id must raise an error instead of being skipped, and a missing root gives an empty list.
+Provide `FileSystemSkillCatalog(root)`, implementing the existing skill catalog port: `list_catalog(user_id, limit)` returns the metadata of up to `limit` enabled skills, and `get_by_ids(skill_ids)` returns the known skills among the ids and ignores unknown ones.

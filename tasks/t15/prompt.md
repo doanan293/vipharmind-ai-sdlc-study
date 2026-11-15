@@ -1,0 +1,7 @@
+Add a Gmail API email provider, because the hosting platform blocks outbound SMTP.
+Add a class `GmailApiEmailSender(client_id, client_secret, refresh_token, sender, timeout)` to `pharma_agent.infrastructure.notifications.email`, with the same async `send(*, to, subject, text, html)` as the other email senders.
+It obtains an access token by posting a `refresh_token` grant with the client id, secret and refresh token to `https://oauth2.googleapis.com/token`, and reuses that token for later messages until shortly before it expires.
+It sends each message by posting JSON `{"raw": ...}` to `https://gmail.googleapis.com/gmail/v1/users/me/messages/send` with a bearer authorization header, where `raw` is the URL-safe base64 encoding of a `multipart/alternative` MIME message (plain text and HTML) with the `From` and `To` headers set.
+A failed token request or send request must raise the existing `DeliveryError`, with a message that includes Google's error code (for example `invalid_grant`) or the HTTP status.
+Accept `gmail` as an email `provider` and add the settings `gmail_client_id`, `gmail_client_secret` and `gmail_refresh_token` (the last two secret).
+Make `build_email_sender` return this sender for the `gmail` provider, and raise `ValueError` naming `PHARMA_EMAIL__GMAIL_CLIENT_ID`, `PHARMA_EMAIL__GMAIL_CLIENT_SECRET` and `PHARMA_EMAIL__GMAIL_REFRESH_TOKEN` when any of them is missing.

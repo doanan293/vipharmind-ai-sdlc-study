@@ -18,8 +18,8 @@ from sdlc_harness.runner import (
     validate_work_root,
 )
 from sdlc_harness.screen import hidden_tests, layer_of, screen_static, src_lines
-from sdlc_harness.tasks import load_task, validate_task
-from sdlc_harness.vcs import Candidate, list_candidates
+from sdlc_harness.tasks import generate_tasks, load_task, validate_task
+from sdlc_harness.vcs import Candidate, _git, list_candidates
 from sdlc_harness.verify import check_fail_to_pass
 
 
@@ -170,6 +170,11 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument(
         "--repo", type=Path, default=None, help="ViPharmind repo, to check hidden test names"
     )
+    g = tsub.add_parser("generate", help="write task dirs from the reviewed REVIEW.md")
+    g.add_argument("--review", type=Path, required=True)
+    g.add_argument("--screening", type=Path, default=Path("tasks/screening.json"))
+    g.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
+    g.add_argument("--out", type=Path, default=Path("tasks"))
     r = sub.add_parser("run", help="run agents on tasks and grade them (resumable)")
     r.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
     r.add_argument("--cohorts", required=True, help="comma-separated cohort names")
@@ -200,6 +205,19 @@ def main(argv: list[str] | None = None) -> int:
         return run(args)
     if args.command == "screen":
         _print_funnel(screen(args.repo, args.ref, args.out, args.jobs, args.workroot))
+    elif args.command == "tasks" and args.tasks_command == "generate":
+        try:
+            chosen = generate_tasks(
+                args.review.read_text(),
+                json.loads(args.screening.read_text()),
+                lambda sha: _git(args.repo, "rev-parse", sha + "^").strip(),
+                args.out,
+            )
+        except ValueError as e:
+            print(f"error: {e}")
+            return 1
+        for t in chosen:
+            print(f"{t.id} {t.commit[:10]} {t.layer} {t.src_lines}")
     elif args.command == "tasks":
         if args.repo is None:
             print("note: no --repo, hidden test function names not checked")

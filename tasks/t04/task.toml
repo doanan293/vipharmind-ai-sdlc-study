@@ -1,0 +1,9 @@
+id = "t04"
+commit = "f2b898af9761002477c139fe876e50be3eb50ef5"
+parent = "870fcbb444e2c35d665f7bb2f44b8ca552510932"
+layer = "infrastructure"
+src_lines = 73
+hidden_tests = ["backend/tests/infrastructure/test_inline_dispatcher.py", "backend/tests/infrastructure/test_settings.py"]
+pilot = false
+baseline_radon_cc = 2.525
+baseline_radon_mi = 70.67549747560976

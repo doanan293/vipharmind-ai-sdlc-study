@@ -1,0 +1,9 @@
+id = "t09"
+commit = "c04c67decc634e5e3c3b09dc0b4c60da723d32d9"
+parent = "f9d0fcabe09f988c79be518201ba5ad09aa81258"
+layer = "infrastructure"
+src_lines = 120
+hidden_tests = ["backend/tests/infrastructure/test_openai_adapter.py"]
+pilot = false
+baseline_radon_cc = 2.888888888888889
+baseline_radon_mi = 71.68751995814374

@@ -1,0 +1,8 @@
+Trace every chat turn in Langfuse and record user feedback as a score on the same trace.
+Add a class `LangfuseTracing(client: Langfuse)` in a new module `pharma_agent.infrastructure.observability.langfuse_tracing`, implementing the existing turn tracer protocol, with a `from_settings(settings)` class method, `trace_id_for(run_id)`, `trace_turn(run)`, `record_feedback(*, run_id, rating, note)`, `flush()` and `shutdown()`.
+Define the constants `TURN_OBSERVATION_NAME = "chat_turn"` and `FEEDBACK_SCORE_NAME = "user_feedback"`.
+`trace_id_for` must derive a deterministic Langfuse trace id from the run id, so the turn and its later feedback share one trace.
+`trace_turn` opens one observation named `chat_turn` on that trace, carrying the run's user id and conversation id as the Langfuse user and session, the original query as input and the final answer text as output, and its handle provides LangChain callbacks so the LangGraph node spans (for example `guard` and `answer`) are nested in the same trace.
+`record_feedback` creates a numeric `user_feedback` score on the run's trace with the value 1.0 for an `up` rating and 0.0 otherwise, using the note as the comment.
+Add a `Tracing` protocol in `pharma_agent.application.tracing` that combines the turn tracer and score sink, and use `LangfuseTracing` in the container when Langfuse is configured.
+The container should also sync the system skills into Postgres at startup and let the agent read its skill catalog from there.

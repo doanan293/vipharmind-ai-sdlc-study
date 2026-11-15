@@ -1,0 +1,7 @@
+Add an input guardrail to the domain layer that screens user questions before the drug-information assistant answers them.
+Create a package `pharma_agent.domain.guardrail` with a `VerdictSource` string enum (`regex`, `llm`, `skipped`), a frozen `Verdict` model (`passed`, `in_scope`, `source`, `label`, `reason`) and an `LlmGuardVerdict` model (`is_attack`, `in_scope`, `reason`) that the LLM fills as structured output.
+Provide `regex_screen(query) -> Verdict | None` in `pharma_agent.domain.guardrail.groups`, which returns a blocking regex verdict when the question matches high-risk pattern groups for prompt injection, jailbreak, data leak or bypass attempts in Vietnamese or English, and `None` for ordinary drug questions.
+Provide a class `GuardrailService(llm)` in `pharma_agent.domain.guardrail.service` with an async `check(query)` that returns a `GuardrailOutcome` holding the `verdict`, the LLM `usage` and an `llm_failed` flag.
+A regex hit decides alone, without calling the LLM, and reports empty usage.
+Otherwise the service asks the LLM port for an `LlmGuardVerdict` with the existing `GUARDRAIL` role and a Vietnamese system prompt: an attack is blocked and marked out of scope, an off-topic question passes but is marked out of scope, and the LLM usage is reported.
+Any LLM error fails open, passing the question as in scope with source `skipped` and `llm_failed` set.

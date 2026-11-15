@@ -1,0 +1,9 @@
+id = "t15"
+commit = "0a6b1f0680aa824d1f5621a6bcb6716748242f61"
+parent = "1024cbc9365a237ea45316da7b21bb6997bc8fae"
+layer = "infrastructure"
+src_lines = 121
+hidden_tests = ["backend/tests/infrastructure/test_notifications.py"]
+pilot = false
+baseline_radon_cc = 2.4651162790697674
+baseline_radon_mi = 48.90894321750918

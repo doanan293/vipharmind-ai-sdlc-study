@@ -1,0 +1,9 @@
+id = "t02"
+commit = "f8949eca395e8425c885899d887810e1100a0c64"
+parent = "f86ada3c2688d3ea3c787de8b86ee2c624dece69"
+layer = "application"
+src_lines = 197
+hidden_tests = ["backend/tests/application/test_account_settings_service.py"]
+pilot = false
+baseline_radon_cc = 2.90625
+baseline_radon_mi = 22.703468521380003

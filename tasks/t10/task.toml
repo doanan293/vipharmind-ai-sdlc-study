@@ -1,0 +1,9 @@
+id = "t10"
+commit = "44466f373da672594dbf8a4d419505f662c712f1"
+parent = "68edeac53e8e8fe94c8d8952130448397ad9c40b"
+layer = "infrastructure"
+src_lines = 141
+hidden_tests = ["backend/tests/infrastructure/test_auth_wiring.py"]
+pilot = false
+baseline_radon_cc = 1.625
+baseline_radon_mi = 79.44881940429661

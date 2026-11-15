@@ -1,0 +1,9 @@
+id = "t01"
+commit = "c2935909a101b7274c58ec0e678371c0a13b3d07"
+parent = "966b882f5deb5ba759f25609678a1529d139631a"
+layer = "application"
+src_lines = 311
+hidden_tests = ["backend/tests/application/test_organization_service.py"]
+pilot = false
+baseline_radon_cc = 1.6333333333333333
+baseline_radon_mi = 78.70212000706915

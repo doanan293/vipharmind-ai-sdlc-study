@@ -1,0 +1,9 @@
+id = "t06"
+commit = "77cd48cd29330296a16774bb1d86f0b5601e4cbf"
+parent = "6443cf55bb0d9b58617803f48d43f48a82837fee"
+layer = "domain"
+src_lines = 67
+hidden_tests = ["backend/tests/domain/test_audit.py"]
+pilot = false
+baseline_radon_cc = 4.0
+baseline_radon_mi = 50.649875243372364

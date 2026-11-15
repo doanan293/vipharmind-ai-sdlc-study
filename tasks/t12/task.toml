@@ -1,0 +1,9 @@
+id = "t12"
+commit = "94a54f86965e4a7277dc9219a392a29f50c4c274"
+parent = "82a51e2e1433aca4f04e555d838e4762cd75eebf"
+layer = "infrastructure"
+src_lines = 45
+hidden_tests = ["backend/tests/infrastructure/test_filesystem_catalog.py"]
+pilot = false
+baseline_radon_cc = 3.2
+baseline_radon_mi = 78.43745975758472

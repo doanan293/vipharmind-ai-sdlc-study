@@ -1,0 +1,9 @@
+id = "t05"
+commit = "650abbd0ebecab538c6ba71a9c0118f5add6ede8"
+parent = "0fdc9859e9bdce53e1f1de60c873a1c2df14c480"
+layer = "domain"
+src_lines = 186
+hidden_tests = ["backend/tests/domain/test_guardrail.py"]
+pilot = false
+baseline_radon_cc = 2.5384615384615383
+baseline_radon_mi = 77.47069033936893
