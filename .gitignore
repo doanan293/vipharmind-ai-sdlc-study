@@ -21,3 +21,6 @@ harness/accounts.local.toml
 
 # Harness workspaces and reference-run cache (sdlc-harness run from the repo root)
 /.work/
+
+# Run logs are results (the *.log rule above is for LaTeX)
+!results/**/*.log

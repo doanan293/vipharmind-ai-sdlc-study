@@ -1,0 +1,21 @@
+{
+  "task_pass": false,
+  "hidden_passed": 5,
+  "hidden_total": 6,
+  "regressions": [],
+  "ruff_errors": 0,
+  "pyrefly_errors": 0,
+  "architecture_pass": true,
+  "radon_cc_mean": 5.111111111111111,
+  "radon_mi_mean": 27.984229244026277,
+  "ai_tests_added": 0,
+  "ai_changed_line_coverage": null,
+  "lines_added": 375,
+  "lines_deleted": 0,
+  "process_artifacts": true,
+  "pytest_config_touched": false,
+  "grading_notes": [],
+  "hidden_failed": {
+    "tests/domain/corpus/test_authoring.py::test_build_bundle_is_stable_and_imports": "failed"
+  }
+}

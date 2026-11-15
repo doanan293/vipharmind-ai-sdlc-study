@@ -1,0 +1,732 @@
+diff --git a/backend/src/pharma_agent/domain/corpus/authoring.py b/backend/src/pharma_agent/domain/corpus/authoring.py
+new file mode 100644
+index 0000000..c8706bb
+--- /dev/null
++++ b/backend/src/pharma_agent/domain/corpus/authoring.py
+@@ -0,0 +1,261 @@
++"""Knowledge bundles from authored Markdown (spec §4.7).
++
++Authored documents are split into sections at their ATX headings; each section's
++tables and prose become ``BlockRecord`` values, and ``build_bundle`` assembles a
++deterministic ``KnowledgeBundle`` that goes through the existing bundle import.
++"""
++
++import re
++import unicodedata
++from collections.abc import Sequence
++from dataclasses import dataclass
++
++from pharma_agent.domain.corpus.bundle import (
++    BUNDLE_SCHEMA_VERSION,
++    BlockKind,
++    BlockRecord,
++    BundleCollection,
++    BundleGenerator,
++    BundleManifest,
++    ColloquialMappingRecord,
++    DocumentRecord,
++    GlossaryEntry,
++    KnowledgeBundle,
++    SectionRecord,
++    SourceInfo,
++)
++from pharma_agent.domain.corpus.models import Collection
++from pharma_agent.domain.corpus.source import SourceDocument
++
++_HEADING_RE = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+(.*?))?[ \t]*$")
++_CLOSING_HASHES_RE = re.compile(r"(?:^|[ \t]+)#+$")
++_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
++_NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
++BODY_SECTION_SLUG = "body"
++LABEL_SEPARATOR = " › "
++GENERATOR = BundleGenerator(
++    name="pharma-agent-authoring", version="1", build_id="authoring"
++)
++
++
++@dataclass(frozen=True)
++class MarkdownSection:
++    heading: str
++    path: tuple[str, ...]
++    ordinal: int
++    blocks: tuple[BlockRecord, ...]
++
++
++@dataclass
++class _RawSection:
++    heading: str
++    path: tuple[str, ...]
++    lines: list[tuple[str, bool]]  # (line, inside a fenced code block)
++
++
++def slugify(text: str, *, max_length: int = 80) -> str:
++    """Lowercase ASCII words joined by hyphens; Vietnamese marks are removed.
++
++    The result is cut at a hyphen when it is longer than `max_length`; it may be empty
++    when `text` has no Latin letters or digits.
++    """
++    decomposed = unicodedata.normalize("NFKD", text.replace("Đ", "D").replace("đ", "d"))
++    ascii_text = decomposed.encode("ascii", "ignore").decode("ascii").lower()
++    slug = _NON_ALNUM_RE.sub("-", ascii_text).strip("-")
++    if len(slug) <= max_length:
++        return slug
++    cut = slug[: max_length + 1]
++    boundary = cut.rfind("-")
++    return (cut[:boundary] if boundary > 0 else slug[:max_length]).strip("-")
++
++
++def section_key(document_key: str, path: Sequence[str]) -> str:
++    """``<document_key>#<slug>/<slug>…``, or ``<document_key>#body`` for an empty path."""
++    if not path:
++        return f"{document_key}#{BODY_SECTION_SLUG}"
++    return f"{document_key}#" + "/".join(slugify(part) for part in path)
++
++
++def bundle_document_key(collection_key: str, document_key: str) -> str:
++    """Unique across collections, so chunk ids never collide."""
++    return f"{collection_key}:{document_key}"
++
++
++def split_markdown(markdown: str, *, fallback_heading: str) -> list[MarkdownSection]:
++    """Sections in reading order; empty ones are dropped and ordinals start at 1.
++
++    `path` holds the enclosing headings ending with the section's own heading; text
++    before the first heading forms a section titled `fallback_heading` with an empty
++    path. Headings and table rows inside fenced code do not count.
++    """
++    raw_sections = [_RawSection(fallback_heading, (), [])]
++    stack: list[tuple[int, str]] = []
++    fence: str | None = None
++    for line in markdown.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
++        fence_match = _FENCE_RE.match(line)
++        if fence is not None:
++            raw_sections[-1].lines.append((line, True))
++            if fence_match and fence_match.group(1).startswith(fence):
++                fence = None
++            continue
++        if fence_match:
++            fence = fence_match.group(1)[0] * 3
++            raw_sections[-1].lines.append((line, True))
++            continue
++        heading_match = _HEADING_RE.match(line)
++        if heading_match:
++            level = len(heading_match.group(1))
++            heading = _CLOSING_HASHES_RE.sub("", heading_match.group(2) or "").strip()
++            while stack and stack[-1][0] >= level:
++                stack.pop()
++            stack.append((level, heading))
++            raw_sections.append(
++                _RawSection(heading, tuple(text for _, text in stack), [])
++            )
++            continue
++        raw_sections[-1].lines.append((line, False))
++
++    sections: list[MarkdownSection] = []
++    table_count = 0
++    for raw in raw_sections:
++        blocks, table_count = _blocks(raw.lines, table_count)
++        if blocks:
++            sections.append(
++                MarkdownSection(raw.heading, raw.path, len(sections) + 1, blocks)
++            )
++    return sections
++
++
++def _blocks(
++    lines: list[tuple[str, bool]], table_count: int
++) -> tuple[tuple[BlockRecord, ...], int]:
++    blocks: list[BlockRecord] = []
++    prose: list[str] = []
++    rows: list[str] = []
++
++    def flush_prose() -> None:
++        text = "\n".join(line.rstrip() for line in prose).strip()
++        if text:
++            blocks.append(BlockRecord(kind=BlockKind.PROSE, markdown=text))
++        prose.clear()
++
++    def flush_table() -> None:
++        nonlocal table_count
++        if rows:
++            table_count += 1
++            blocks.append(
++                BlockRecord(
++                    kind=BlockKind.TABLE,
++                    markdown="\n".join(row.strip() for row in rows),
++                    table_key=f"t{table_count}",
++                )
++            )
++        rows.clear()
++
++    for line, fenced in lines:
++        if not fenced and line.lstrip().startswith("|"):
++            if not rows:
++                flush_prose()
++            rows.append(line)
++        else:
++            flush_table()
++            prose.append(line)
++    flush_table()
++    flush_prose()
++    return tuple(blocks), table_count
++
++
++def section_choices(
++    collection: Collection, documents: Sequence[SourceDocument]
++) -> list[tuple[str, str]]:
++    """(section key, label) pairs in reading order, documents in the given order.
++
++    The label is the document title followed by the heading path, joined by " › ".
++    """
++    return [
++        (key, LABEL_SEPARATOR.join((document.title, *section.path)))
++        for document in documents
++        for key, section in _keyed_sections(collection, document)
++    ]
++
++
++def build_bundle(
++    collection: Collection,
++    documents: Sequence[SourceDocument],
++    glossary: Sequence[GlossaryEntry],
++    colloquial: Sequence[ColloquialMappingRecord],
++) -> KnowledgeBundle:
++    """A deterministic bundle of the collection's authored content.
++
++    Documents are sorted by bundle key and their sections follow in reading order; the
++    glossary is kept as given and colloquial mappings lose unknown section keys.
++    """
++    ordered = sorted(
++        documents,
++        key=lambda document: bundle_document_key(collection.key, document.key),
++    )
++    document_records: list[DocumentRecord] = []
++    section_records: list[SectionRecord] = []
++    for document in ordered:
++        document_key = bundle_document_key(collection.key, document.key)
++        document_records.append(
++            DocumentRecord(
++                key=document_key,
++                kind=document.kind,
++                title=document.title,
++                source=SourceInfo(title=document.source_title, url=document.source_url),
++            )
++        )
++        section_records.extend(
++            SectionRecord(
++                key=key,
++                document_key=document_key,
++                heading=section.heading,
++                context_path=list(section.path) or [section.heading],
++                ordinal=section.ordinal,
++                blocks=list(section.blocks),
++            )
++            for key, section in _keyed_sections(collection, document)
++        )
++    known = {section.key for section in section_records}
++    mappings = [
++        mapping.model_copy(
++            update={"section_keys": [k for k in mapping.section_keys if k in known]}
++        )
++        for mapping in colloquial
++    ]
++    manifest = BundleManifest(
++        schema_version=BUNDLE_SCHEMA_VERSION,
++        collection=BundleCollection(key=collection.key, title=collection.title),
++        generator=GENERATOR,
++        source_digests={},
++        document_count=len(document_records),
++        section_count=len(section_records),
++        files={},
++    )
++    return KnowledgeBundle(
++        manifest=manifest,
++        documents=document_records,
++        sections=section_records,
++        glossary=list(glossary),
++        colloquial_mappings=mappings,
++    )
++
++
++def _keyed_sections(
++    collection: Collection, document: SourceDocument
++) -> list[tuple[str, MarkdownSection]]:
++    """Sections with their keys; a repeated key gets "-2", "-3", … appended."""
++    document_key = bundle_document_key(collection.key, document.key)
++    taken: set[str] = set()
++    keyed: list[tuple[str, MarkdownSection]] = []
++    for section in split_markdown(document.markdown, fallback_heading=document.title):
++        base = section_key(document_key, section.path)
++        key = base
++        suffix = 1
++        while key in taken:
++            suffix += 1
++            key = f"{base}-{suffix}"
++        taken.add(key)
++        keyed.append((key, section))
++    return keyed
+diff --git a/backend/tests/domain/corpus/test_authoring.py b/backend/tests/domain/corpus/test_authoring.py
+new file mode 100644
+index 0000000..d75852f
+--- /dev/null
++++ b/backend/tests/domain/corpus/test_authoring.py
+@@ -0,0 +1,307 @@
++import uuid
++from datetime import UTC, datetime
++from pathlib import Path
++
++from pharma_agent.domain.corpus.authoring import (
++    MarkdownSection,
++    build_bundle,
++    bundle_document_key,
++    section_choices,
++    section_key,
++    slugify,
++    split_markdown,
++)
++from pharma_agent.domain.corpus.bundle import (
++    BUNDLE_SCHEMA_VERSION,
++    BlockKind,
++    BlockRecord,
++    BundleCollection,
++    ColloquialMappingRecord,
++    DocumentKind,
++    DocumentRecord,
++    GlossaryEntry,
++    SectionRecord,
++    SourceInfo,
++    read_bundle,
++    write_bundle,
++)
++from pharma_agent.domain.corpus.models import Collection, bundle_digest
++from pharma_agent.domain.corpus.source import SourceDocument
++
++NOW = datetime(2026, 1, 1, tzinfo=UTC)
++COLLECTION = Collection(id=uuid.UUID(int=1), key="notes", title="Ghi chú")
++
++
++def prose(text: str) -> BlockRecord:
++    return BlockRecord(kind=BlockKind.PROSE, markdown=text)
++
++
++def table(text: str, key: str) -> BlockRecord:
++    return BlockRecord(kind=BlockKind.TABLE, markdown=text, table_key=key)
++
++
++# --- split_markdown -------------------------------------------------------------
++
++
++def test_split_builds_heading_paths() -> None:
++    markdown = (
++        "Intro text.\n\n"
++        "# Dosage\n\nAdults: 500 mg.\n\n"
++        "## Children\nHalf dose.\n\n"
++        "### Infants\nAsk a doctor.\n\n"
++        "## Elderly\nNo change.\n\n"
++        "# Warnings\nDo not exceed.\n"
++    )
++
++    sections = split_markdown(markdown, fallback_heading="Paracetamol")
++
++    assert sections == [
++        MarkdownSection("Paracetamol", (), 1, (prose("Intro text."),)),
++        MarkdownSection("Dosage", ("Dosage",), 2, (prose("Adults: 500 mg."),)),
++        MarkdownSection("Children", ("Dosage", "Children"), 3, (prose("Half dose."),)),
++        MarkdownSection(
++            "Infants",
++            ("Dosage", "Children", "Infants"),
++            4,
++            (prose("Ask a doctor."),),
++        ),
++        MarkdownSection("Elderly", ("Dosage", "Elderly"), 5, (prose("No change."),)),
++        MarkdownSection("Warnings", ("Warnings",), 6, (prose("Do not exceed."),)),
++    ]
++
++
++def test_split_without_headings_gives_one_fallback_section() -> None:
++    sections = split_markdown("  Just text.\nMore.  \n", fallback_heading="Doc")
++
++    assert sections == [MarkdownSection("Doc", (), 1, (prose("Just text.\nMore."),))]
++
++
++def test_split_ignores_headings_in_fenced_code() -> None:
++    markdown = "# Real\n```\n# not a heading\n| not | table |\n```\n~~~\n## nope\n~~~\n"
++
++    sections = split_markdown(markdown, fallback_heading="Doc")
++
++    assert [section.heading for section in sections] == ["Real"]
++    assert sections[0].blocks == (
++        prose("```\n# not a heading\n| not | table |\n```\n~~~\n## nope\n~~~"),
++    )
++
++
++def test_split_drops_empty_sections_but_keeps_their_path() -> None:
++    markdown = "\n\n# Parent\n\n## Child\nBody.\n# Empty\n   \n"
++
++    sections = split_markdown(markdown, fallback_heading="Doc")
++
++    assert sections == [
++        MarkdownSection("Child", ("Parent", "Child"), 1, (prose("Body."),))
++    ]
++
++
++def test_split_strips_closing_hashes_from_headings() -> None:
++    sections = split_markdown("## Liều dùng ##\ntext", fallback_heading="Doc")
++
++    assert sections[0].heading == "Liều dùng"
++
++
++def test_split_turns_table_runs_into_numbered_table_blocks() -> None:
++    markdown = (
++        "# A\n"
++        "Before.\n"
++        "| x | y |\n|---|---|\n| 1 | 2 |\n"
++        "\nBetween.\n\n"
++        "| p |\n|---|\n"
++        "# B\n"
++        "| q |\n|---|\n"
++        "After.\n"
++    )
++
++    sections = split_markdown(markdown, fallback_heading="Doc")
++
++    assert sections[0].blocks == (
++        prose("Before."),
++        table("| x | y |\n|---|---|\n| 1 | 2 |", "t1"),
++        prose("Between."),
++        table("| p |\n|---|", "t2"),
++    )
++    assert sections[1].blocks == (table("| q |\n|---|", "t3"), prose("After."))
++
++
++def test_split_empty_document_has_no_sections() -> None:
++    assert split_markdown("   \n", fallback_heading="Doc") == []
++
++
++# --- slugify and keys -----------------------------------------------------------
++
++
++def test_slugify_removes_vietnamese_marks() -> None:
++    assert slugify("Đường uống") == "duong-uong"
++    assert slugify("  Liều lượng & cách dùng (người lớn)!  ") == (
++        "lieu-luong-cach-dung-nguoi-lon"
++    )
++    assert slugify("Tương tác thuốc – ĐƯỜNG Tĩnh mạch") == (
++        "tuong-tac-thuoc-duong-tinh-mach"
++    )
++    assert slugify("日本語 ???") == ""
++
++
++def test_slugify_limits_length_without_trailing_hyphen() -> None:
++    assert slugify("abc def ghi", max_length=7) == "abc-def"
++    assert slugify("abc def ghi", max_length=8) == "abc-def"
++    assert slugify("abcdefghij", max_length=4) == "abcd"
++    assert len(slugify("word " * 40)) <= 80
++
++
++def test_section_key_joins_slugified_path() -> None:
++    assert section_key("c:doc", ()) == "c:doc#body"
++    assert section_key("c:doc", ["Liều dùng", "Trẻ em"]) == "c:doc#lieu-dung/tre-em"
++
++
++def test_bundle_document_key_prefixes_collection() -> None:
++    assert bundle_document_key("formulary", "paracetamol") == "formulary:paracetamol"
++
++
++# --- section_choices and build_bundle -------------------------------------------
++
++
++def make_document(
++    key: str, title: str, markdown: str, *, url: str | None = None
++) -> SourceDocument:
++    return SourceDocument(
++        id=uuid.uuid5(uuid.NAMESPACE_URL, key),
++        collection_id=COLLECTION.id,
++        key=key,
++        title=title,
++        kind=DocumentKind.LEAFLET,
++        source_title="Tờ hướng dẫn",
++        source_url=url,
++        markdown=markdown,
++        char_count=len(markdown),
++        created_by=None,
++        created_at=NOW,
++        updated_by=None,
++        updated_at=NOW,
++    )
++
++
++PANADOL = make_document(
++    "panadol",
++    "Panadol",
++    "Giảm đau.\n# Liều dùng\n## Đường uống\n| a |\n|---|\nUống sau ăn.\n",
++    url="https://example.test/panadol",
++)
++ASPIRIN = make_document("aspirin", "Aspirin", "# Chống chỉ định\nLoét dạ dày.\n")
++GLOSSARY = [
++    GlossaryEntry(term="NSAID", english_expansions=["non-steroidal"]),
++    GlossaryEntry(term="ADR"),
++]
++
++
++def test_section_choices_lists_sections_in_reading_order() -> None:
++    assert section_choices(COLLECTION, [PANADOL, ASPIRIN]) == [
++        ("notes:panadol#body", "Panadol"),
++        ("notes:panadol#lieu-dung/duong-uong", "Panadol › Liều dùng › Đường uống"),
++        ("notes:aspirin#chong-chi-dinh", "Aspirin › Chống chỉ định"),
++    ]
++
++
++def test_section_choices_keep_repeated_headings_apart() -> None:
++    document = make_document("faq", "FAQ", "# Q\none\n# Q\ntwo\n# Q\nthree\n")
++
++    keys = [key for key, _ in section_choices(COLLECTION, [document])]
++
++    assert keys == ["notes:faq#q", "notes:faq#q-2", "notes:faq#q-3"]
++    bundle = build_bundle(COLLECTION, [document], [], [])
++    assert [section.key for section in bundle.sections] == keys
++
++
++def test_build_bundle_records() -> None:
++    colloquial = [
++        ColloquialMappingRecord(
++            key="panadol",
++            aliases=["thuốc đỏ"],
++            section_keys=["notes:panadol#lieu-dung/duong-uong", "notes:gone#body"],
++        ),
++        ColloquialMappingRecord(key="old", section_keys=["notes:old#body"]),
++    ]
++
++    bundle = build_bundle(COLLECTION, [PANADOL, ASPIRIN], GLOSSARY, colloquial)
++
++    assert bundle.documents == [
++        DocumentRecord(
++            key="notes:aspirin",
++            kind=DocumentKind.LEAFLET,
++            title="Aspirin",
++            source=SourceInfo(title="Tờ hướng dẫn"),
++        ),
++        DocumentRecord(
++            key="notes:panadol",
++            kind=DocumentKind.LEAFLET,
++            title="Panadol",
++            source=SourceInfo(title="Tờ hướng dẫn", url="https://example.test/panadol"),
++        ),
++    ]
++    assert bundle.sections == [
++        SectionRecord(
++            key="notes:aspirin#chong-chi-dinh",
++            document_key="notes:aspirin",
++            heading="Chống chỉ định",
++            context_path=["Chống chỉ định"],
++            ordinal=1,
++            blocks=[prose("Loét dạ dày.")],
++        ),
++        SectionRecord(
++            key="notes:panadol#body",
++            document_key="notes:panadol",
++            heading="Panadol",
++            context_path=["Panadol"],
++            ordinal=1,
++            blocks=[prose("Giảm đau.")],
++        ),
++        SectionRecord(
++            key="notes:panadol#lieu-dung/duong-uong",
++            document_key="notes:panadol",
++            heading="Đường uống",
++            context_path=["Liều dùng", "Đường uống"],
++            ordinal=2,
++            blocks=[table("| a |\n|---|", "t1"), prose("Uống sau ăn.")],
++        ),
++    ]
++    assert bundle.glossary == GLOSSARY
++    assert bundle.colloquial_mappings == [
++        ColloquialMappingRecord(
++            key="panadol",
++            aliases=["thuốc đỏ"],
++            section_keys=["notes:panadol#lieu-dung/duong-uong"],
++        ),
++        ColloquialMappingRecord(key="old", section_keys=[]),
++    ]
++    assert colloquial[0].section_keys[1] == "notes:gone#body"  # input untouched
++
++
++def test_build_bundle_manifest() -> None:
++    manifest = build_bundle(COLLECTION, [PANADOL, ASPIRIN], GLOSSARY, []).manifest
++
++    assert manifest.schema_version == BUNDLE_SCHEMA_VERSION
++    assert manifest.collection == BundleCollection(key="notes", title="Ghi chú")
++    assert manifest.document_count == 2
++    assert manifest.section_count == 3
++
++
++def test_build_bundle_passes_bundle_validation(tmp_path: Path) -> None:
++    bundle = build_bundle(COLLECTION, [PANADOL, ASPIRIN], GLOSSARY, [])
++
++    write_bundle(bundle, tmp_path)
++
++    assert bundle_digest(read_bundle(tmp_path)) == bundle_digest(bundle)
++
++
++def test_build_bundle_is_deterministic() -> None:
++    first = build_bundle(COLLECTION, [PANADOL, ASPIRIN], GLOSSARY, [])
++    second = build_bundle(COLLECTION, [ASPIRIN, PANADOL], list(GLOSSARY), [])
++
++    assert first == second
++    assert bundle_digest(first) == bundle_digest(second)
++
++    edited = make_document("aspirin", "Aspirin", "# Chống chỉ định\nLoét.\n")
++    changed = build_bundle(COLLECTION, [PANADOL, edited], GLOSSARY, [])
++    assert bundle_digest(changed) != bundle_digest(first)
+diff --git a/docs/design.md b/docs/design.md
+new file mode 100644
+index 0000000..6cc5499
+--- /dev/null
++++ b/docs/design.md
+@@ -0,0 +1,94 @@
++# Design: knowledge bundles from authored Markdown
++
++## Goal
++
++Content people write in the app (`SourceDocument` Markdown, glossary entries and
++colloquial names, see `pharma_agent.domain.corpus.source`) must become a
++`KnowledgeBundle` (`knowledge-bundle/v1`) so that publishing can run the existing bundle
++import unchanged. The conversion must be pure and deterministic: the same content
++always gives the same `bundle_digest`.
++
++## Scope
++
++Included:
++
++- A new domain module `pharma_agent.domain.corpus.authoring` that splits Markdown into
++  sections and blocks, derives stable section keys, lists sections for pickers, and
++  builds the bundle.
++- Unit tests in `backend/tests/domain/corpus/test_authoring.py`.
++
++Unchanged:
++
++- The bundle format, `bundle.py` models and validation, `bundle_digest`, the import
++  service, chunking, persistence, API and frontend. No I/O is added; the module only
++  depends on `domain.corpus.bundle`, `domain.corpus.models` and `domain.corpus.source`.
++
++## Interfaces
++
++```python
++@dataclass(frozen=True)
++class MarkdownSection:
++    heading: str
++    path: tuple[str, ...]      # enclosing headings incl. its own; () for the fallback section
++    ordinal: int               # 1-based, consecutive after empty sections are dropped
++    blocks: tuple[BlockRecord, ...]
++
++def split_markdown(markdown: str, *, fallback_heading: str) -> list[MarkdownSection]
++def slugify(text: str, *, max_length: int = 80) -> str
++def section_key(document_key: str, path: Sequence[str]) -> str
++def bundle_document_key(collection_key: str, document_key: str) -> str   # "<c>:<d>"
++def section_choices(collection: Collection, documents: Sequence[SourceDocument]
++                    ) -> list[tuple[str, str]]
++def build_bundle(collection: Collection, documents: Sequence[SourceDocument],
++                 glossary: Sequence[GlossaryEntry],
++                 colloquial: Sequence[ColloquialMappingRecord]) -> KnowledgeBundle
++```
++
++`Collection` is `pharma_agent.domain.corpus.models.Collection` (only `key` and `title`
++are read).
++
++## Approach
++
++**Splitting.** Lines are scanned once. A fence opens on a line starting with
++```` ``` ```` or `~~~` and closes on a line starting with the same marker; inside a fence
++nothing is a heading or a table row. ATX headings (`#` to `######`, a space, text,
++optional closing `#`s) start a new section. A heading stack keeps the path: a heading of
++level *n* pops every entry of level ≥ *n*, then pushes itself, so `path` is the chain of
++enclosing headings ending with the section's own heading. Lines before the first heading
++form a section titled `fallback_heading` with an empty path. A section whose body is only
++whitespace is dropped (its heading still encloses its children); ordinals are assigned
++afterwards, starting at 1.
++
++**Blocks.** Inside a section, consecutive lines whose left-stripped text starts with `|`
++(outside fences) form one table block; its `table_key` is `t1`, `t2`, … counted across the
++whole document. The text between tables is stripped and, when non-empty, becomes a prose
++block. Block markdown keeps the original lines (trailing whitespace trimmed).
++
++**Keys.** `slugify` NFKD-decomposes, maps `đ`/`Đ` to `d`, drops combining marks and
++non-ASCII, lowercases, joins alphanumeric runs with `-` and cuts to `max_length` at a
++hyphen boundary when possible (never leaving a trailing hyphen). `section_key` joins
++the slugified path parts with `/` after `#`; an empty path gives `#body`. Document keys
++are `"<collection key>:<document key>"` so chunk ids never collide across collections.
++If two sections of a document produce the same key (e.g. repeated headings), later ones
++get `-2`, `-3`, … appended; the same helper feeds `section_choices` and `build_bundle`
++so their keys always agree.
++
++**Bundle.** Documents become `DocumentRecord`s (kind, title, `SourceInfo(source_title,
++source_url)`, no attributes), sorted by bundle key; sections follow in that document
++order and reading order with `context_path = list(path) or [heading]` (as pharma-lab
++does). The glossary is copied as given. Colloquial mappings keep their order but lose
++section keys that are not in the bundle. The manifest carries the collection key and
++title, a fixed generator (`pharma-agent-authoring`), no source digests, no files, and the
++document and section counts. Nothing time- or random-dependent is used, so the bundle
++and its digest are deterministic.
++
++## Testing
++
++`tests/domain/corpus/test_authoring.py` covers: heading paths and nesting, fenced
++headings ignored, fallback section, empty sections dropped, table runs and document-wide
++table numbering, prose stripping, `slugify` with Vietnamese marks and length limit,
++`section_key` with empty and nested paths, `section_choices` labels and order, and
++`build_bundle` (document key format and sort, section records, glossary passthrough,
++colloquial filtering, manifest fields, passes `write_bundle` validation, same digest for
++equal input and for documents given in a different order). The full backend suite
++(`uv run pytest`) must stay green.
+diff --git a/docs/plan.md b/docs/plan.md
+new file mode 100644
+index 0000000..fd538d4
+--- /dev/null
++++ b/docs/plan.md
+@@ -0,0 +1,46 @@
++# Plan: knowledge bundles from authored Markdown
++
++## Constraints
++
++- Domain layer only: `pharma_agent.domain.corpus.authoring` imports nothing outside
++  `pharma_agent.domain` and the standard library / pydantic; no I/O.
++- Existing modules (`bundle.py`, `models.py`, `source.py`, import service) do not change.
++- Output is deterministic: no clocks, randomness or set/dict-order dependence.
++- Reuse `BlockRecord`, `SectionRecord`, `DocumentRecord`, `KnowledgeBundle` as they are;
++  bundles produced must pass `write_bundle` validation.
++- Each task is test-first (see the test fail, then make it pass); ruff-clean code.
++
++## Task 1 — Markdown splitting
++
++- Files: create `backend/src/pharma_agent/domain/corpus/authoring.py`; test
++  `backend/tests/domain/corpus/test_authoring.py`.
++- Interfaces: uses `BlockRecord`, `BlockKind`. Provides `MarkdownSection` and
++  `split_markdown(markdown, *, fallback_heading)`.
++- Done when: tests for heading paths, fenced headings, fallback section, dropped empty
++  sections, ordinals, table runs with document-wide `t1`/`t2` keys and stripped prose
++  blocks pass.
++
++## Task 2 — Slugs and section keys
++
++- Files: modify `authoring.py`; extend `test_authoring.py`.
++- Interfaces: provides `slugify(text, *, max_length=80)`,
++  `section_key(document_key, path)` and `bundle_document_key(collection_key, key)` for
++  Task 3.
++- Done when: tests show `Đường uống` → `duong-uong`, length limit without trailing
++  hyphen, `doc#body` for an empty path and `doc#a/b` for nested paths.
++
++## Task 3 — Section choices and bundle building
++
++- Files: modify `authoring.py`; extend `test_authoring.py`.
++- Interfaces: uses Tasks 1–2, `Collection`, `SourceDocument`, `GlossaryEntry`,
++  `ColloquialMappingRecord`, `KnowledgeBundle`, `bundle_digest`. Provides
++  `section_choices(collection, documents)` and
++  `build_bundle(collection, documents, glossary, colloquial)` for the publishing job.
++- Done when: tests show labels joined by ` › ` in reading order, `<collection>:<doc>`
++  keys sorted, one section record per section with matching keys, glossary unchanged,
++  unknown colloquial section keys removed, manifest key/title/counts, `write_bundle`
++  accepts the bundle, and equal content (in any document order) gives an equal digest.
++
++## Finish
++
++Run `uv run pytest` from `backend/` and fix any failures; run ruff on the new files.

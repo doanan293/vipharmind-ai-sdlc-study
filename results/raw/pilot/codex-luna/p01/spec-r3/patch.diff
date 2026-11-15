@@ -1,0 +1,298 @@
+diff --git a/backend/src/pharma_agent/domain/corpus/authoring.py b/backend/src/pharma_agent/domain/corpus/authoring.py
+new file mode 100644
+index 0000000..a80fd6d
+--- /dev/null
++++ b/backend/src/pharma_agent/domain/corpus/authoring.py
+@@ -0,0 +1,151 @@
++"""Turn human-authored Markdown into the existing knowledge bundle records."""
++
++from __future__ import annotations
++
++import re
++import unicodedata
++from dataclasses import dataclass
++from typing import Sequence
++
++from pharma_agent.domain.corpus.bundle import (
++    BlockKind, BlockRecord, BundleCollection, BundleFile, BundleGenerator,
++    BundleManifest, ColloquialMappingRecord, DocumentKind, DocumentRecord,
++    GlossaryEntry, KnowledgeBundle, SectionRecord, SourceInfo,
++)
++
++_HEADING = re.compile(r"^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
++_FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
++
++
++@dataclass(frozen=True)
++class AuthoredSection:
++    heading: str
++    path: tuple[str, ...]
++    ordinal: int
++    blocks: list[BlockRecord]
++
++
++@dataclass(frozen=True)
++class AuthoredDocument:
++    document: DocumentRecord
++    markdown: str
++
++
++def split_markdown(markdown: str, *, fallback_heading: str) -> list[AuthoredSection]:
++    raw: list[tuple[str, tuple[str, ...], list[str]]] = []
++    stack: list[tuple[int, str]] = []
++    heading = fallback_heading
++    path: tuple[str, ...] = ()
++    lines: list[str] = []
++    fenced: tuple[str, int] | None = None
++    for line in markdown.splitlines():
++        fence = _FENCE.match(line)
++        if fenced:
++            lines.append(line)
++            if fence and fence.group(1)[0] == fenced[0] and len(fence.group(1)) >= fenced[1]:
++                fenced = None
++            continue
++        if fence:
++            fenced = (fence.group(1)[0], len(fence.group(1)))
++            lines.append(line)
++            continue
++        match = _HEADING.match(line)
++        if match:
++            if lines:
++                raw.append((heading, path, lines))
++            level, title = len(match.group(1)), match.group(2).strip()
++            stack = [(depth, name) for depth, name in stack if depth < level]
++            stack.append((level, title))
++            path = tuple(name for _, name in stack)
++            heading = title
++            lines = []
++        else:
++            lines.append(line)
++    if lines:
++        raw.append((heading, path, lines))
++
++    result: list[AuthoredSection] = []
++    table_number = 0
++    for title, section_path, section_lines in raw:
++        blocks: list[BlockRecord] = []
++        prose: list[str] = []
++        table: list[str] = []
++        def flush_prose() -> None:
++            content = "\n".join(prose).strip()
++            if content:
++                blocks.append(BlockRecord(kind=BlockKind.PROSE, markdown=content))
++            prose.clear()
++        def flush_table() -> None:
++            nonlocal table_number
++            content = "\n".join(table).strip()
++            if content:
++                table_number += 1
++                blocks.append(BlockRecord(kind=BlockKind.TABLE, markdown=content, table_key=f"t{table_number}"))
++            table.clear()
++        for line in section_lines:
++            if line.lstrip().startswith("|"):
++                flush_prose()
++                table.append(line.strip())
++            else:
++                flush_table()
++                prose.append(line)
++        flush_table()
++        flush_prose()
++        if blocks:
++            result.append(AuthoredSection(title, section_path, len(result) + 1, blocks))
++    return result
++
++
++def slugify(text: str, *, max_length: int = 80) -> str:
++    decomposed = unicodedata.normalize("NFKD", text.replace("Đ", "D").replace("đ", "d"))
++    ascii_text = decomposed.encode("ascii", "ignore").decode("ascii").lower()
++    slug = re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")
++    if max_length <= 0:
++        return ""
++    slug = slug[:max_length].rstrip("-")
++    return slug
++
++
++def section_key(document_key: str, path: Sequence[str]) -> str:
++    parts = [slugify(part) for part in path]
++    parts = [part for part in parts if part]
++    return f"{document_key}#{'/'.join(parts) if parts else 'body'}"
++
++
++def _document_key(collection: BundleCollection, document: AuthoredDocument) -> str:
++    return f"{collection.key}:{document.document.key}"
++
++
++def _sections_for(collection: BundleCollection, authored: AuthoredDocument) -> list[SectionRecord]:
++    key = _document_key(collection, authored)
++    return [SectionRecord(key=section_key(key, section.path), document_key=key,
++                          heading=section.heading, context_path=list(section.path),
++                          ordinal=section.ordinal, blocks=section.blocks)
++            for section in split_markdown(authored.markdown, fallback_heading="Body")]
++
++
++def section_choices(collection: BundleCollection, documents: Sequence[AuthoredDocument]) -> list[tuple[str, str]]:
++    choices = []
++    for authored in documents:
++        title = authored.document.title
++        for section in split_markdown(authored.markdown, fallback_heading="Body"):
++            choices.append((section_key(_document_key(collection, authored), section.path),
++                            " › ".join([title, *section.path])))
++    return choices
++
++
++def build_bundle(collection: BundleCollection, documents: Sequence[AuthoredDocument],
++                 glossary: list[GlossaryEntry], colloquial: list[ColloquialMappingRecord]) -> KnowledgeBundle:
++    ordered = sorted(documents, key=lambda item: item.document.key)
++    records = [item.document.model_copy(update={"key": _document_key(collection, item)}) for item in ordered]
++    sections = [section for item in ordered for section in _sections_for(collection, item)]
++    valid = {section.key for section in sections}
++    mappings = [mapping.model_copy(update={"section_keys": [key for key in mapping.section_keys if key in valid]})
++                for mapping in colloquial]
++    manifest = BundleManifest(
++        schema_version="knowledge-bundle/v1", collection=collection,
++        generator=BundleGenerator(name="pharma-agent-authoring", version="1", build_id="authored"),
++        source_digests={}, document_count=len(records), section_count=len(sections), files={},
++    )
++    return KnowledgeBundle(manifest=manifest, documents=records, sections=sections,
++                           glossary=list(glossary), colloquial_mappings=mappings)
+diff --git a/backend/tests/domain/corpus/test_authoring.py b/backend/tests/domain/corpus/test_authoring.py
+new file mode 100644
+index 0000000..a7a7998
+--- /dev/null
++++ b/backend/tests/domain/corpus/test_authoring.py
+@@ -0,0 +1,71 @@
++from pharma_agent.domain.corpus.authoring import (
++    AuthoredDocument,
++    build_bundle,
++    section_choices,
++    section_key,
++    slugify,
++    split_markdown,
++)
++from pharma_agent.domain.corpus.bundle import (
++    BundleCollection, ColloquialMappingRecord, DocumentKind, DocumentRecord,
++    GlossaryEntry, SourceInfo, BlockKind,
++)
++
++
++def test_split_markdown_headings_fences_fallback_tables_and_ordinals():
++    sections = split_markdown(
++        "intro\n\n| A | B |\n|---|---|\n| x | y |\n\n## Parent\nbody\n"
++        "### Child\n| C |\n|---|\n\n```md\n# not heading\n```\n## Empty\n",
++        fallback_heading="Body",
++    )
++    assert [(s.heading, s.path, s.ordinal) for s in sections] == [
++        ("Body", (), 1), ("Parent", ("Parent",), 2), ("Child", ("Parent", "Child"), 3)
++    ]
++    assert [b.kind for b in sections[0].blocks] == [BlockKind.PROSE, BlockKind.TABLE]
++    assert sections[0].blocks[1].table_key == "t1"
++    assert next(b for b in sections[2].blocks if b.kind is BlockKind.TABLE).table_key == "t2"
++    assert "# not heading" in sections[2].blocks[-1].markdown
++
++
++def test_slug_and_section_key():
++    assert slugify("Đường uống / Liều 2") == "duong-uong-lieu-2"
++    assert slugify("A very long title", max_length=8) == "a-very-l"
++    assert section_key("collection:doc", ()) == "collection:doc#body"
++    assert section_key("collection:doc", ("Đường uống", "Liều dùng")) == "collection:doc#duong-uong/lieu-dung"
++
++
++def test_build_bundle_qualifies_sorts_and_prunes_mappings():
++    collection = BundleCollection(key="c", title="Collection")
++    docs = [
++        AuthoredDocument(
++            document=DocumentRecord(key="z", kind=DocumentKind.LEAFLET, title="Zed", source=SourceInfo(title="S")),
++            markdown="# Use\nTake it.",
++        ),
++        AuthoredDocument(
++            document=DocumentRecord(key="a", kind=DocumentKind.LEAFLET, title="Alpha", source=SourceInfo(title="S")),
++            markdown="Plain text",
++        ),
++    ]
++    mappings = [ColloquialMappingRecord(key="m", section_keys=["c:z#use", "missing"])]
++    bundle = build_bundle(collection, docs, [GlossaryEntry(term="term")], mappings)
++    assert [d.key for d in bundle.documents] == ["c:a", "c:z"]
++    assert [s.key for s in bundle.sections] == ["c:a#body", "c:z#use"]
++    assert bundle.colloquial_mappings[0].section_keys == ["c:z#use"]
++    assert bundle.manifest.collection == collection
++    assert (bundle.manifest.document_count, bundle.manifest.section_count) == (2, 2)
++    assert section_choices(collection, docs) == [("c:z#use", "Zed › Use"), ("c:a#body", "Alpha")]
++
++
++def test_bundle_write_is_deterministic(tmp_path):
++    from pharma_agent.domain.corpus.bundle import write_bundle
++
++    collection = BundleCollection(key="c", title="Collection")
++    document = AuthoredDocument(
++        document=DocumentRecord(key="a", kind=DocumentKind.LEAFLET, title="Alpha", source=SourceInfo(title="S")),
++        markdown="# Use\nTake it.",
++    )
++    first = build_bundle(collection, [document], [], [])
++    second = build_bundle(collection, [document], [], [])
++    manifest_a = write_bundle(first, tmp_path / "a")
++    manifest_b = write_bundle(second, tmp_path / "b")
++    assert manifest_a.model_dump(mode="json") == manifest_b.model_dump(mode="json")
+diff --git a/docs/design.md b/docs/design.md
+new file mode 100644
+index 0000000..0e2ce47
+--- /dev/null
++++ b/docs/design.md
+@@ -0,0 +1,29 @@
++# Authored Markdown knowledge bundle design
++
++## Goal
++
++Convert authored Markdown documents into the existing `KnowledgeBundle` representation so the current bundle writer and import path can consume them. Parsing, identifiers, ordering, pruning, and manifest counts must be deterministic.
++
++## Scope
++
++Included: a new `pharma_agent.domain.corpus.authoring` module with Markdown section splitting, ASCII/Vietnamese slugging, section identifiers, reading-order choices, and bundle construction. Headings, nested heading paths, prose/table blocks, document records, glossary entries, and colloquial mappings use the existing bundle schemas.
++
++Unchanged: bundle schemas, serialization, validation, chunking, embedding, import behavior, authored persistence, and APIs. Existing document keys remain unique within a collection; bundle document keys are collection-qualified.
++
++## Interfaces
++
++- `split_markdown(markdown: str, *, fallback_heading: str) -> list[AuthoredSection]`, where each result exposes `heading: str`, `path: tuple[str, ...]`, `ordinal: int`, and `blocks: list[BlockRecord]`.
++- `slugify(text: str, *, max_length: int = 80) -> str`.
++- `section_key(document_key: str, path: Sequence[str]) -> str`.
++- `section_choices(collection: BundleCollection, documents: Sequence[AuthoredDocument]) -> list[tuple[str, str]]`.
++- `build_bundle(collection: BundleCollection, documents: Sequence[AuthoredDocument], glossary: list[GlossaryEntry], colloquial: list[ColloquialMappingRecord]) -> KnowledgeBundle`.
++
++`AuthoredDocument` is the input record carrying the existing `DocumentRecord` metadata and Markdown content (title, key, kind, source, attributes, markdown). The returned bundle uses existing `DocumentRecord`, `SectionRecord`, and manifest models.
++
++## Approach
++
++Keep this as a pure domain transformation beside `bundle.py`. Parse ATX headings outside fenced code, maintaining a heading stack by level. Content before any heading uses the fallback heading and an empty path. Drop empty sections while assigning contiguous ordinals in output order. Within each section, coalesce consecutive pipe-prefixed lines into a table block and assign document-wide `t1`, `t2`, etc.; non-table runs become stripped prose blocks. Build section identifiers from collection-qualified document keys and path slugs. Sort documents by key while preserving each document's reading order. Filter colloquial section references against generated section keys. Populate manifest collection metadata and counts with stable generator values and empty file metadata; the existing writer computes file digests.
++
++## Testing
++
++Add focused domain tests for nested headings, fenced-code heading text, fallback and empty sections, table/prose runs and numbering, Vietnamese slugging and truncation, keys, reading-order labels, document qualification, sorted bundle content, dangling mapping removal, manifest counts, and deterministic bundle serialization/digest after `write_bundle`.
+diff --git a/docs/plan.md b/docs/plan.md
+new file mode 100644
+index 0000000..d784523
+--- /dev/null
++++ b/docs/plan.md
+@@ -0,0 +1,23 @@
++# Authored Markdown bundle implementation plan
++
++## Constraints
++
++- Keep all work in the domain corpus authoring layer and its tests; preserve existing bundle schemas and import behavior.
++- Use existing bundle record types and make outputs deterministic.
++- A task must leave the code working and its test must be written and observed failing before implementation.
++
++## Task 1: Markdown splitting and identifiers
++
++- **Files:** create `backend/src/pharma_agent/domain/corpus/authoring.py`; create `backend/tests/domain/corpus/test_authoring.py`.
++- **Interfaces:** provides `AuthoredSection`, `split_markdown`, `slugify`, and `section_key` based on existing `BlockRecord` and `BlockKind`; no earlier task dependencies.
++- **Test:** assert heading nesting, fenced code handling, fallback behavior, empty section removal, table/prose blocks and table numbering, Vietnamese slugging, truncation, and section key formatting.
++
++## Task 2: Choice labels and bundle construction
++
++- **Files:** modify `backend/src/pharma_agent/domain/corpus/authoring.py`; extend `backend/tests/domain/corpus/test_authoring.py`.
++- **Interfaces:** uses Task 1 parsing and keys; provides `AuthoredDocument`, `section_choices`, and `build_bundle` returning existing `KnowledgeBundle` records.
++- **Test:** assert collection-qualified keys, sorted documents, reading-order choices, section records, mapping pruning, counts, and reproducible bundle output through the existing writer.
++
++## Completion check
++
++Run the requested backend suite with `cd backend && uv run pytest`, then resolve failures.

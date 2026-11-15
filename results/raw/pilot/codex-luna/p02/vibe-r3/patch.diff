@@ -1,0 +1,212 @@
+diff --git a/backend/src/pharma_agent/application/chat/service.py b/backend/src/pharma_agent/application/chat/service.py
+index d9da0d6..3b9965a 100644
+--- a/backend/src/pharma_agent/application/chat/service.py
++++ b/backend/src/pharma_agent/application/chat/service.py
+@@ -2,6 +2,7 @@
+ 
+ import logging
+ from collections.abc import AsyncGenerator
++from datetime import datetime
+ from typing import Any
+ 
+ from pydantic import BaseModel, Field
+@@ -19,13 +20,10 @@ from pharma_agent.domain.conversation.ports import ConversationRepository
+ from pharma_agent.domain.conversation.turns import build_turn_messages
+ from pharma_agent.domain.retrieval.audit import audit_from_run
+ from pharma_agent.domain.shared.clock import Clock
++from pharma_agent.domain.shared.ids import new_id
+ 
+ logger = logging.getLogger(__name__)
+ 
+-PERSIST_FAILED_MESSAGE = (
+-    "Không lưu được lượt hội thoại này; câu trả lời vẫn hiển thị bình thường."
+-)
+-
+ 
+ class MemoryPolicy(BaseModel):
+     context_turns: int = 4
+@@ -35,6 +33,9 @@ class MemoryPolicy(BaseModel):
+ class ChatTurnResult(BaseModel):
+     conversation_id: str
+     message_id: str | None
++    user_message_id: str
++    assistant_message_id: str
++    created_at: datetime
+     run_id: str
+     status: str
+     content: str
+@@ -53,18 +54,30 @@ class ChatSession:
+         created: bool,
+         conversations: ConversationRepository,
+         clock: Clock,
++        user_message_id: str,
++        assistant_message_id: str,
+     ) -> None:
+         self._execution = execution
+         self._conversation = conversation
+         self._created = created
+         self._conversations = conversations
+         self._clock = clock
++        self._user_message_id = user_message_id
++        self._assistant_message_id = assistant_message_id
+         self.result: ChatTurnResult | None = None
+ 
+     @property
+     def conversation_id(self) -> str:
+         return self._conversation.conversation_id
+ 
++    @property
++    def user_message_id(self) -> str:
++        return self._user_message_id
++
++    @property
++    def assistant_message_id(self) -> str:
++        return self._assistant_message_id
++
+     async def events(self) -> AsyncGenerator[ProgressEvent]:
+         yield ProgressEvent(
+             type=EventType.CONVERSATION,
+@@ -72,6 +85,7 @@ class ChatSession:
+                 "conversation_id": self.conversation_id,
+                 "title": self._conversation.title,
+                 "created": self._created,
++                "message_id": self.assistant_message_id,
+             },
+         )
+         phases: list[str] = []
+@@ -88,10 +102,10 @@ class ChatSession:
+                     **event.data,
+                     "conversation_id": self.conversation_id,
+                     "message_id": result.message_id,
++                    "persisted": result.persisted,
++                    "created_at": result.created_at.isoformat(),
+                 },
+             )
+-            if not result.persisted:
+-                yield ProgressEvent.error("PERSIST_FAILED", PERSIST_FAILED_MESSAGE)
+ 
+     async def _persist(self, phases: list[str]) -> ChatTurnResult:
+         outcome = self._execution.outcome
+@@ -99,6 +113,8 @@ class ChatSession:
+             raise RuntimeError("runner emitted done without an outcome")
+         user_message, assistant_message = build_turn_messages(
+             conversation_id=self.conversation_id,
++            user_message_id=self.user_message_id,
++            assistant_message_id=self.assistant_message_id,
+             run=outcome.run,
+             answer_text=outcome.answer_text,
+             citations=outcome.citations,
+@@ -122,6 +138,9 @@ class ChatSession:
+         self.result = ChatTurnResult(
+             conversation_id=self.conversation_id,
+             message_id=assistant_message.message_id if persisted else None,
++            user_message_id=user_message.message_id,
++            assistant_message_id=assistant_message.message_id,
++            created_at=assistant_message.created_at,
+             run_id=outcome.run.run_id,
+             status=outcome.run.status.value,
+             content=outcome.answer_text,
+@@ -181,12 +200,18 @@ class ChatService:
+             conversation=context,
+             conversation_id=conversation.conversation_id,
+         )
++        user_message_id = new_id()
++        assistant_message_id = new_id()
++        while assistant_message_id == user_message_id:
++            assistant_message_id = new_id()
+         return ChatSession(
+             execution,
+             conversation,
+             created=created,
+             conversations=self._conversations,
+             clock=self._clock,
++            user_message_id=user_message_id,
++            assistant_message_id=assistant_message_id,
+         )
+ 
+     async def ask(
+diff --git a/backend/src/pharma_agent/application/progress.py b/backend/src/pharma_agent/application/progress.py
+index 7bbf594..836c130 100644
+--- a/backend/src/pharma_agent/application/progress.py
++++ b/backend/src/pharma_agent/application/progress.py
+@@ -24,7 +24,6 @@ class EventType(StrEnum):
+     TOKEN = "token"
+     CITATIONS = "citations"
+     DONE = "done"
+-    ERROR = "error"
+ 
+ 
+ class ProgressEvent(BaseModel):
+@@ -39,6 +38,3 @@ class ProgressEvent(BaseModel):
+     def token(cls, text: str) -> "ProgressEvent":
+         return cls(type=EventType.TOKEN, data={"text": text})
+ 
+-    @classmethod
+-    def error(cls, code: str, message: str) -> "ProgressEvent":
+-        return cls(type=EventType.ERROR, data={"code": code, "message": message})
+diff --git a/backend/src/pharma_agent/cli.py b/backend/src/pharma_agent/cli.py
+index 232705c..d2a8b04 100644
+--- a/backend/src/pharma_agent/cli.py
++++ b/backend/src/pharma_agent/cli.py
+@@ -99,8 +99,8 @@ def _render(event: ProgressEvent, evidence: list[dict[str, Any]]) -> None:
+     elif event.type is EventType.TOKEN:
+         sys.stdout.write(event.data["text"])
+         sys.stdout.flush()
+-    elif event.type is EventType.ERROR:
+-        typer.echo(f"!! {event.data['code']}: {event.data['message']}", err=True)
++    elif event.type is EventType.DONE and not event.data.get("persisted", True):
++        typer.echo("!! Không lưu được lượt hội thoại này.", err=True)
+ 
+ 
+ @app.command()
+diff --git a/backend/src/pharma_agent/domain/agent/run.py b/backend/src/pharma_agent/domain/agent/run.py
+index b5c5087..d83dced 100644
+--- a/backend/src/pharma_agent/domain/agent/run.py
++++ b/backend/src/pharma_agent/domain/agent/run.py
+@@ -82,7 +82,6 @@ class ErrorCode(StrEnum):
+     ANSWER_FAILED = "ANSWER_FAILED"
+     BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
+     DEADLINE_EXCEEDED = "DEADLINE_EXCEEDED"
+-    PERSIST_FAILED = "PERSIST_FAILED"
+     EVIDENCE_REQUIRED = "EVIDENCE_REQUIRED"
+     INTERNAL = "INTERNAL"
+ 
+diff --git a/backend/src/pharma_agent/domain/conversation/turns.py b/backend/src/pharma_agent/domain/conversation/turns.py
+index 53eb082..8619906 100644
+--- a/backend/src/pharma_agent/domain/conversation/turns.py
++++ b/backend/src/pharma_agent/domain/conversation/turns.py
+@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
+ 
+ from pharma_agent.domain.agent.run import AgentRun
+ from pharma_agent.domain.conversation.models import Citation, Message, MessageRole, Turn
+-from pharma_agent.domain.shared.ids import new_id
+ 
+ # The assistant message must sort after the user message even when both are
+ # created within the same clock tick.
+@@ -13,6 +12,8 @@ _ASSISTANT_OFFSET = timedelta(microseconds=1)
+ def build_turn_messages(
+     *,
+     conversation_id: str,
++    user_message_id: str,
++    assistant_message_id: str,
+     run: AgentRun,
+     answer_text: str,
+     citations: Sequence[Citation],
+@@ -21,7 +22,7 @@ def build_turn_messages(
+ ) -> tuple[Message, Message]:
+     status = run.status.value
+     user_message = Message(
+-        message_id=new_id(),
++        message_id=user_message_id,
+         conversation_id=conversation_id,
+         role=MessageRole.USER,
+         content=run.original_query,
+@@ -30,7 +31,7 @@ def build_turn_messages(
+         created_at=now,
+     )
+     assistant_message = Message(
+-        message_id=new_id(),
++        message_id=assistant_message_id,
+         conversation_id=conversation_id,
+         role=MessageRole.ASSISTANT,
+         content=answer_text,

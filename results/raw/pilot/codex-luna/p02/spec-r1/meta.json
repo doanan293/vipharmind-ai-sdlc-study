@@ -1,0 +1,54 @@
+{
+  "cohort": "codex-luna",
+  "task_id": "p02",
+  "arm": "spec",
+  "rep": 1,
+  "agent": "codex",
+  "tool_version": "codex-cli 0.162.1",
+  "model": "gpt-6-luna",
+  "model_served": null,
+  "effort": "medium",
+  "account": 1,
+  "started_at": "2026-11-15T09:13:34+00:00",
+  "wall_s": 236.154,
+  "timed_out": false,
+  "returncode": 0,
+  "usage": {
+    "input_tokens": 861446,
+    "output_tokens": 7461,
+    "turns": 1,
+    "model_served": null,
+    "reasoning_tokens": 944
+  },
+  "status": "done",
+  "work_dir": "/tmp/sdlc-runs/44b5fdc9347c450dadb9701d6d1f060a/work",
+  "kept_dir": null,
+  "removed_from_tree": [
+    "backend/docs/superpowers",
+    "frontend/docs/superpowers",
+    "seed-pipeline/.agents",
+    "seed-pipeline/skills-lock.json"
+  ],
+  "prompt_sha256": "6c9aba1a593e64fc8b4e239917baf2ac1f0fd1cb3f53acfea23e78099a3c9937",
+  "tree_sha": "54725b3c148d1966a85c1beef8ed4eca67ba6481",
+  "tree_files": 549,
+  "config_files": [
+    "home/.codex/config.toml"
+  ],
+  "env_names": [
+    "CODEX_HOME",
+    "HOME",
+    "LANG",
+    "LOGNAME",
+    "PATH",
+    "SDLC_PROXY_API_KEY",
+    "SHELL",
+    "TERM",
+    "USER",
+    "UV_CACHE_DIR",
+    "UV_PYTHON_INSTALL_DIR",
+    "XDG_RUNTIME_DIR"
+  ],
+  "endpoint": "proxy",
+  "regraded_at": "2026-11-15T09:27:23+00:00"
+}
