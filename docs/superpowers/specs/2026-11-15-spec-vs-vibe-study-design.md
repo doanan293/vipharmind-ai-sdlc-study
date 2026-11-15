@@ -221,8 +221,22 @@ tách riêng.
 khi chấm khôi phục mọi file `backend/tests` đổi trong đoạn và `pyproject.toml`/`uv.lock` từ `end`, rồi
 chạy toàn bộ test không mang nhãn `integration`. Đề bài có thêm mục "giao diện bắt buộc" sinh từ
 `coupling.json` và `fakes_contract.json`, được Fable 5.2 duyệt độc lập (`tasks/FEATURE_REVIEW_fable.md`)
-rồi An duyệt. Chạy trên cả 4 nhóm với 5 lần lặp: 3 nhiệm vụ × 2 cách làm × 5 lần lặp × 4 nhóm =
-**120 lượt**. Giới hạn thời gian bằng 3 lần `timeout_s` của tầng nhỏ.
+rồi An duyệt. Chạy trên cả 4 nhóm với 3 lần lặp như tầng nhỏ. Giới hạn thời gian bằng 3 lần `timeout_s` của tầng nhỏ.
+
+**Ba tầng kích thước (quyết định của An 2026-11-15, trước thẻ `prereg-v1`).** Phân tích lấy mẫu lại theo
+nhiệm vụ, nên số nhiệm vụ quan trọng hơn số lần lặp. Vì vậy giữ 3 lần lặp và tăng số nhiệm vụ:
+
+- **Nhỏ:** 15 nhiệm vụ, mỗi nhiệm vụ 1 commit, 43–311 dòng `backend/src`.
+- **Vừa:** tối đa 5 nhiệm vụ `m01`–`m05`, mỗi nhiệm vụ 2–3 commit liền nhau, 300–700 dòng, lấp khoảng
+  trống giữa hai tầng kia.
+- **Lớn:** F08, F14, F15, thêm F07 và F04 nếu qua cùng tiêu chí (tối đa 35 tên trong đề).
+
+Tiêu chí chọn tầng vừa và hai đoạn lớn thêm giống hệt 3 đoạn đầu (commit liền nhau của một plan, chỉ
+backend, test ẩn trượt ở base và đạt ở end, bản vá gốc chấm đạt không hồi quy, đề nêu được mọi tên test
+cần), cộng giới hạn tên của tầng vừa là khoảng 20. Ưu tiên đoạn không chứa commit của t01–t15. Mọi ứng
+viên và lý do loại được ghi ở `tasks/feature-feasibility/medium_candidates.json`; việc chọn không dựa
+trên bất kỳ lượt chạy AI nào. Đề bài qua cùng quy trình: soạn, đối chiếu tên với test ẩn, Fable 5.2 duyệt
+độc lập, An duyệt.
 
 **Vì sao mở rộng (quyết định của An, 2026-11-15, sau chạy thử, trước thẻ `prereg-v1`).** Chạy thử cho
 thấy Claude gần đạt trần trên đề nhỏ ở cả hai cách làm (11/12 và 12/12), nên khác biệt chỉ có thể lộ
@@ -289,8 +303,8 @@ riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lư
 ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
 Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi mô hình**. Đợt 1 có hai mô hình nên
-180 lượt; tổng cả ba đợt là **360 lượt**, cộng 120 lượt của tầng tính năng (mục 7.2b), tổng
-**480 lượt**.
+180 lượt; tổng cả ba đợt là **360 lượt**. Tầng vừa và tầng lớn (mục 7.2b), mỗi tầng tối đa 5 nhiệm
+vụ × 2 cách làm × 3 lần lặp × 4 nhóm, thêm tối đa 240 lượt; tổng tối đa **600 lượt**.
 
 | Đợt | Công cụ (bản lúc thiết kế) | Lệnh chạy tự động | Mô hình | Vai trò |
 | --- | --- | --- | --- | --- |
@@ -370,7 +384,7 @@ mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" 
 theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh, ít hồi
 quy hơn và có chỉ số bảo trì không kém hơn. H4, khoảng cách về tỉ lệ đạt giữa hai cách làm ở Sonnet
 lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn. H5, hiệu số tỉ lệ đạt (đặc tả trừ
-vibe) ở tầng tính năng lớn hơn ở tầng nhỏ, và tăng theo kích thước bản vá gốc.
+vibe) tăng theo kích thước nhiệm vụ: ở tầng lớn lớn hơn ở tầng nhỏ, và tăng theo số dòng của bản vá gốc.
 
 **Phân tích.** So sánh theo cặp trên từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy
 mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
@@ -380,12 +394,12 @@ Với RQ5, phân tích đợt 1 như một thiết kế 2 × 2 (cách làm × m�
 giữa hai cách làm ở từng mô hình, và hiệu của hai hiệu số đó (tương tác) kèm khoảng tin cậy bootstrap
 theo nhiệm vụ. So sánh thêm Sonnet theo đặc tả với Opus vibe coding về tỉ lệ đạt và chi phí quy đổi.
 
-**H5, tương tác cách làm × kích thước.** Phép thử chính: hiệu của hai hiệu số (tầng tính năng trừ tầng
+**H5, tương tác cách làm × kích thước.** Phép thử chính: hiệu của hai hiệu số (tầng lớn trừ tầng
 nhỏ) của tỉ lệ đạt đặc tả trừ vibe, gộp 4 nhóm, kèm khoảng tin cậy bootstrap lấy mẫu lại theo nhiệm
-vụ trong từng tầng. Phân tích bổ trợ trên cả 18 nhiệm vụ: hồi quy logistic hỗn hợp
+vụ trong từng tầng. Phân tích bổ trợ trên mọi nhiệm vụ của ba tầng: hồi quy logistic hỗn hợp
 `pass ~ arm × log(dòng của bản vá gốc) + (1 | task) + (1 | cohort)`; báo cáo hệ số tương tác và hình
-"hiệu số theo kích thước" (mỗi điểm là một nhiệm vụ, đường xu hướng kèm dải tin cậy). Chỉ có 3 nhiệm
-vụ ở tầng tính năng, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
+"hiệu số theo kích thước" (mỗi điểm là một nhiệm vụ, đường xu hướng kèm dải tin cậy). Tầng vừa và tầng lớn mỗi tầng
+chỉ có tối đa 5 nhiệm vụ, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
 chiều) đều được báo cáo như nhau.
 
 **Hiệu quả chi phí (bổ sung, quyết định của An 2026-11-15).** Với từng nhóm và từng tầng, báo cáo số

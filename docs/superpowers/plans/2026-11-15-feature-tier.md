@@ -16,7 +16,7 @@
 - Id nhiệm vụ: `f08`, `f14`, `f15`; `kind = "range"`; không đổi hành vi của nhiệm vụ `commit` hiện có (153+ test hiện có vẫn đạt).
 - Mọi biện pháp chống rò rỉ của tầng nhỏ áp dụng nguyên (R10: bỏ `superpowers/`, `skills-lock.json`, file hướng dẫn cho AI khỏi cây mã).
 - Đề bài tiếng Anh; phần mô tả 5–12 câu cộng mục "Required interfaces" liệt kê tên, không nêu cách cài đặt, không nhắc test.
-- Chạy cả 4 nhóm (`claude-sonnet`, `claude-opus`, `agy-gemini`, `codex-luna`); 5 lần lặp; giới hạn thời gian là 3 lần `timeout_s` của tầng nhỏ (spec mục 7.2b, H5).
+- Chạy cả 4 nhóm (`claude-sonnet`, `claude-opus`, `agy-gemini`, `codex-luna`); 3 lần lặp; giới hạn thời gian là 3 lần `timeout_s` của tầng nhỏ (spec mục 7.2b, H5).
 - Commit không có dòng ghi công AI.
 
 ## Review Focus
