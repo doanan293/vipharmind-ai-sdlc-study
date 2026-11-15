@@ -123,8 +123,6 @@ def two_by_two(
     same tasks for both cohorts."""
     ta = _arm_table(runs, "task_pass", a, tier)
     tb = _arm_table(runs, "task_pass", b, tier)
-    ca = _arm_table(runs, "cost_usd", a, tier)
-    cb = _arm_table(runs, "cost_usd", b, tier)
     tasks = sorted(set(ta.index) & set(tb.index))
     data = np.column_stack([
         ta.loc[tasks, "spec"], ta.loc[tasks, "vibe"], tb.loc[tasks, "spec"], tb.loc[tasks, "vibe"]
@@ -146,10 +144,13 @@ def two_by_two(
         "sonnet_spec_minus_opus_vibe.pass": boot_stat(
             data, lambda x: (x[..., 0] - x[..., 3]).mean(-1), B=B, seed=seed),
     }
-    # cost: a's spec runs vs b's vibe runs, on tasks with a cost in both cells
-    ctasks = sorted(set(ca.index) & set(cb.index))
-    cdata = np.column_stack([ca.loc[ctasks, "spec"], cb.loc[ctasks, "vibe"]]) if ctasks else \
-        np.empty((0, 2))
+    # cost: a's spec runs vs b's vibe runs, on tasks with a cost in both of those cells (the
+    # unused arms do not matter)
+    cm = cell_means(runs[runs["tier"] == tier], "cost_usd").set_index(["cohort", "task_id", "arm"])
+    sa = cm.xs((a, "spec"), level=("cohort", "arm"))["mean"] if len(cm) else pd.Series(dtype=float)
+    vb = cm.xs((b, "vibe"), level=("cohort", "arm"))["mean"] if len(cm) else pd.Series(dtype=float)
+    ctasks = sorted(set(sa.index) & set(vb.index))
+    cdata = np.column_stack([sa.loc[ctasks], vb.loc[ctasks]]) if ctasks else np.empty((0, 2))
     out["sonnet_spec_minus_opus_vibe.cost_usd"] = boot_stat(
         cdata, lambda x: (x[..., 0] - x[..., 1]).mean(-1), B=B, seed=seed)
     out["sonnet_spec_over_opus_vibe.cost_ratio"] = boot_stat(
@@ -161,13 +162,14 @@ def two_by_two(
 
 def cost_effectiveness(
     runs: pd.DataFrame, cohort: str, tier: str, *, B: int = B_DEFAULT, seed: int = SEED_DEFAULT,
+    cost_col: str = "cost_usd",
 ) -> dict[str, Estimate]:
     """Prereg 9.6: passes per converted dollar and cost per pass, per arm, over the valid runs
     with a known cost; task bootstrap (both arms share the resampled tasks). Cost per pass with 0
     passes is undefined (None), never 0; resamples where it is undefined are counted and left
     out of the interval."""
     sub = runs[(runs["cohort"] == cohort) & (runs["tier"] == tier)].copy()
-    sub["cost_usd"] = pd.to_numeric(sub["cost_usd"].astype("float64"), errors="coerce")
+    sub["cost_usd"] = pd.to_numeric(sub[cost_col].astype("float64"), errors="coerce")
     n_no_cost = int(sub["cost_usd"].isna().sum())
     sub = sub.dropna(subset=["cost_usd"])
     sub["pass"] = sub["task_pass"].astype(float)
@@ -224,14 +226,17 @@ def variability(runs: pd.DataFrame) -> dict:
     }
 
 
-def h5_verdict(ci_low, ci_high, interaction_coef) -> str:
-    """Prereg 9.4: H5 "supported" only when the primary test's 95% CI excludes 0 on the
-    hypothesis side (large > small) AND the logit-scale interaction points the same way.
-    "contrary" mirrors that; anything else is "inconclusive"."""
-    if ci_low is None or ci_high is None or interaction_coef is None:
+def h5_verdict(ci_low, ci_high, interaction_coef, scale: str = "logit") -> str:
+    """Prereg 9.4 with the section 9 reading rule. "supported" only when the primary test's 95%
+    CI lies entirely above 0 AND the logit-scale interaction points the same way (positive point
+    estimate). A level-3 fallback slope is on the difference scale and cannot give the logit
+    guard against the ceiling effect, so it never makes H5 "supported". "contrary" when the
+    primary CI lies entirely below 0 (the general rule; prereg 9.4 adds no condition to it).
+    Otherwise "inconclusive"."""
+    if ci_low is None or ci_high is None:
         return "not_estimable"
-    if ci_low > 0 and interaction_coef > 0:
-        return "supported"
-    if ci_high < 0 and interaction_coef < 0:
+    if ci_high < 0:
         return "contrary"
+    if ci_low > 0 and interaction_coef is not None and interaction_coef > 0 and scale == "logit":
+        return "supported"
     return "inconclusive"

@@ -48,7 +48,20 @@ def passes(cohort: str, tier: str, arm: str, task_index: int, jitter: bool) -> i
     return s if arm == "spec" else v
 
 
+def graded_lines(tid: str, lines: int) -> int | None:
+    """Synthetic graded_src_lines: falls as src_lines rises (opposite slope); m03 unmeasured."""
+    return None if tid == "m03" else int(60_000 / lines)
+
+
 def write_tasks(tasks_dir: Path) -> None:
+    graded = {}
+    for tier, tasks in TIERS.items():
+        for tid, lines in tasks.items():
+            g = graded_lines(tid, lines)
+            graded[tid] = {"graded_src_lines": g} if g is not None else {
+                "graded_src_lines": None, "error": "synthetic: not measurable"}
+    tasks_dir.mkdir(parents=True, exist_ok=True)
+    (tasks_dir / "graded_lines.json").write_text(json.dumps(graded))
     for tier, tasks in TIERS.items():
         for tid, lines in tasks.items():
             d = tasks_dir / tid

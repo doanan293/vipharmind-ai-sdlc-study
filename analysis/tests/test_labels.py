@@ -65,6 +65,15 @@ def test_labeling_template_covers_failing_claude_runs_only(study):
     assert again.equals(sheet)
 
 
+def test_label_ids_are_stable_when_more_runs_finish(study):
+    runs = study[3]
+    valid = runs[runs["valid"]]
+    _, key_all = labeling_template(valid, seed=20261115)
+    _, key_small = labeling_template(valid[valid["tier"] == "small"], seed=20261115)
+    a = dict(zip(key_all["unit"], key_all["unit_id"]))
+    assert all(a[u] == i for u, i in zip(key_small["unit"], key_small["unit_id"]))
+
+
 def test_passing_sample_allocation_and_reproducibility(study):
     runs = study[3]
     valid = runs[runs["valid"]]

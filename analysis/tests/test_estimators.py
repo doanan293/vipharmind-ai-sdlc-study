@@ -150,9 +150,37 @@ def test_variability_share_of_disagreeing_cells(study):
         (0.1, 0.5, -0.2, "inconclusive"),  # logit interaction points the other way
         (-0.1, 0.5, 0.8, "inconclusive"),
         (-0.5, -0.1, -0.3, "contrary"),
-        (-0.5, -0.1, 0.3, "inconclusive"),
+        (-0.5, -0.1, 0.3, "contrary"),  # general rule: CI entirely below 0
         (None, None, 0.3, "not_estimable"),
     ],
 )
 def test_h5_reading_rule(lo, hi, coef, expected):
     assert h5_verdict(lo, hi, coef) == expected
+
+
+def test_level3_slope_never_makes_h5_supported():
+    assert h5_verdict(0.1, 0.5, 0.8, scale="difference") == "inconclusive"
+    assert h5_verdict(-0.5, -0.1, 0.8, scale="difference") == "contrary"
+
+
+def test_pooling_with_a_cohort_missing_a_task_averages_the_cohorts_present(study):
+    # rule (README): a task's pooled difference is the mean over the cohorts that have it
+    runs = valid(study[3])
+    cohorts = ["claude-sonnet", "claude-opus", "agy-gemini"]
+    drop = ~((runs["cohort"] == "claude-sonnet") & (runs["task_id"] == "t07")
+             & (runs["arm"] == "vibe"))
+    p = pooled_task_diffs(runs[drop], "task_pass", cohorts, "small")
+    assert len(p) == 15
+    assert p["t07"] == pytest.approx(0.0)  # opus 0 and agy 0; sonnet (1/3) has no t07
+    assert p["t01"] == pytest.approx(1 / 9)
+    est = pooled_diff(runs[drop], "task_pass", cohorts, "small", B=B)
+    assert est.estimate == pytest.approx((14 / 9 + 0) / 15)
+
+
+def test_two_by_two_cost_keeps_tasks_whose_unused_arms_lack_cost(study):
+    runs = valid(study[3]).copy()
+    # opus spec costs unknown on t03: irrelevant to "sonnet spec vs opus vibe"
+    m = (runs["cohort"] == "claude-opus") & (runs["task_id"] == "t03") & (runs["arm"] == "spec")
+    runs.loc[m, "cost_usd"] = None
+    r = two_by_two(runs, "small", B=B)
+    assert r["sonnet_spec_minus_opus_vibe.cost_usd"].n_tasks == 15

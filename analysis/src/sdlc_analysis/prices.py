@@ -26,10 +26,28 @@ PRICES: dict[str, Price] = {
 LONG_CONTEXT = {"gpt-6-luna": "gpt-6-luna>272k"}
 
 
+def table_model(model: str | None) -> str | None:
+    """The table row a served model id belongs to: exact match, else the longest table id the
+    model id starts with (dated or suffixed ids such as `claude-sonnet-5-5-20261101` or
+    `claude-opus-5-5[1m]`), else None (off-table)."""
+    if model is None:
+        return None
+    if model in PRICES:
+        return model
+    hits = [k for k in PRICES if ">" not in k and model.startswith(k)]
+    return max(hits, key=len) if hits else None
+
+
+def is_off_table(model: str | None) -> bool:
+    """A named model that matches no row of the table. Tokens without a model name (codex does
+    not report one) are the cohort's model, not off-table."""
+    return model is not None and table_model(model) is None
+
+
 def price_for(model: str | None, cohort_model: str, long_context: bool = False) -> Price:
     """The table row for `model`; tokens of a model not in the table (or unnamed) are priced as
-    the cohort's own model."""
-    name = model if model in PRICES else cohort_model
+    the cohort's own model and flagged by the caller (`is_off_table`)."""
+    name = table_model(model) or cohort_model
     if long_context:
         name = LONG_CONTEXT.get(name, name)
     return PRICES[name]

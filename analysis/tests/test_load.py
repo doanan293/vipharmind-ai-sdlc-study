@@ -77,3 +77,30 @@ def test_missing_unit_dirs_are_pending(tmp_path):
     c = comp.set_index(["cohort", "tier"])
     assert not c.loc[("agy-gemini", "medium"), "complete"]
     assert c.loc[("agy-gemini", "medium"), "missing"] == 1
+
+
+def test_several_results_roots_and_duplicates(tmp_path):
+    import shutil
+
+    from sdlc_analysis.load import load_runs
+
+    tasks_dir, results = syn.write_study(tmp_path, statuses=False)
+    tiers = tmp_path / "tiers"
+    for c in syn.COHORTS:
+        (tiers / c).mkdir(parents=True)
+        for tid in list(syn.TIERS["medium"]) + list(syn.TIERS["large"]):
+            shutil.move(results / c / tid, tiers / c / tid)
+    tasks = load_tasks(tasks_dir)
+    both = load_runs([results, tiers], tasks)
+    assert len(both) == 552
+    shutil.copytree(tiers / "claude-opus" / "m01", results / "claude-opus" / "m01")
+    with pytest.raises(ValueError, match="more than one results root"):
+        load_runs([results, tiers], tasks)
+
+
+def test_graded_lines_are_read_into_the_task_table(study):
+    _, _, tasks, runs = study
+    t = tasks.set_index("task_id")
+    assert t.loc["t01", "graded_src_lines"] == syn.graded_lines("t01", 40)
+    assert pd.isna(t.loc["m03", "log_graded_src_lines"])
+    assert runs["log_graded_src_lines"].notna().any()

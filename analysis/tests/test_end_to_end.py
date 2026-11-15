@@ -16,9 +16,20 @@ def out(study, tmp_path_factory):
     a.to_csv(labels / "b.csv", index=False)
     o = tmp_path_factory.mktemp("out")
     assert main(["--results", str(results), "--tasks", str(tasks_dir), "--out", str(o),
-                 "--bootstrap", "500", "--labels", str(labels / "a.csv"),
+                 "--bootstrap", "500", "--model-bootstrap", "5", "--labels", str(labels / "a.csv"),
                  str(labels / "b.csv")]) == 0
     return o, json.loads((o / "summary.json").read_text())
+
+
+def test_passing_sample_is_not_redrawn(out, study):
+    o, _ = out
+    tasks_dir, results, _, _ = study
+    before = (o / "passing_sample.csv").read_text()
+    (o / "passing_sample.csv").write_text(before + "# kept\n")
+    main(["--results", str(results), "--tasks", str(tasks_dir), "--out", str(o),
+          "--bootstrap", "50", "--model-bootstrap", "2"])
+    assert (o / "passing_sample.csv").read_text().endswith("# kept\n")
+    (o / "passing_sample.csv").write_text(before)
 
 
 def test_outputs_exist(out):
@@ -59,10 +70,41 @@ def test_h5(out):
     assert s["estimates"]["h5.primary"]["estimate"] == pytest.approx(2 / 3)
     assert s["estimates"]["h5.hidden_pass_rate"]["estimate"] == pytest.approx(0.2)
     m = s["h5"]["mixed_model"]
-    assert m["model_level"] in (1, 2, 3)
-    assert m["interaction"]["coef"] > 0
-    assert s["verdicts"]["H5"] == "supported"
+    # the synthetic effects are constant within a tier (no task-level variance): both mixed
+    # levels are singular, the ladder ends at level 3, and a difference-scale slope cannot give
+    # the logit guard, so H5 stays "inconclusive" although the primary CI is above 0
+    assert m["model_level"] == 3
+    assert [a["ok"] for a in m["attempts"]] == [False, False, False, True]
+    assert "singular" in m["attempts"][1]["reason"]
+    assert m["interaction"]["scale"] == "difference" and m["interaction"]["coef"] > 0
+    assert s["estimates"]["h5.primary"]["ci_low"] > 0
+    assert s["verdicts"]["H5"] == "inconclusive"
     assert set(s["h5"]["reference_only_tiers"]) == {"medium", "large"}
+    assert m["interaction"]["bootstrap"]["B"] == 5
+    assert m["interaction"]["ci_low"] is not None
+
+
+def test_h5_graded_lines_sensitivity(out):
+    _, s = out
+    g = s["h5"]["mixed_model_graded"]
+    assert g["size_variable"] == "log_graded_src_lines"
+    assert g["tasks_without_size"] == ["m03"]
+    assert g["n_tasks"] == 22
+    # synthetic graded lines fall as src_lines rise: the interaction flips sign
+    assert g["interaction"]["coef"] < 0 < s["h5"]["mixed_model"]["interaction"]["coef"]
+
+
+def test_case_study_and_new_descriptives(out):
+    _, s = out
+    cs = s["case_study"]
+    # sonnet large: every task has difference 1, ties go to the largest patch (f03, 1300 lines)
+    assert cs["task_id"] == "f03" and cs["pass_diff"] == 1.0
+    assert cs["units"] == {"spec": "claude-sonnet/f03/spec-r1", "vibe": "claude-sonnet/f03/vibe-r1"}
+    d = s["descriptives"]
+    assert d["codex_runs_with_several_usage_records"] == 0
+    assert d["offtable_models"] == []
+    assert d["shared_cpu_window"]["runs_started"] == 0
+    assert "cost_eff_upper.codex-luna.small.spec.cost_per_pass" in s["estimates"]
 
 
 def test_h4_and_secondary_verdicts(out):
@@ -79,7 +121,7 @@ def test_h4_and_secondary_verdicts(out):
     assert v["H3b.regression_any.claude-opus.small"] == "supported"
     # agy small: equal pass counts (1, 1) -> pass difference 0 -> inconclusive
     assert v["pass_diff.agy-gemini.small"] == "inconclusive"
-    assert s["meta"]["n_secondary_comparisons"] == len(v) - 1
+    assert s["meta"]["n_secondary_comparisons"] == len(v) - 2  # minus H1 and its own copy
 
 
 def test_sensitivity_known_values(out):
@@ -127,7 +169,7 @@ def test_overlap_sensitivity_drops_listed_tasks(study):
     from sdlc_analysis.report import build_summary
 
     _, _, tasks, runs = study
-    s, _ = build_summary(runs, tasks, list(syn.COHORTS), 3, B=200, seed=1,
+    s, _ = build_summary(runs, tasks, list(syn.COHORTS), 3, B=200, seed=1, model_B=2,
                          overlap={"pairs": [], "tasks": ["t01", "f01"]})
     e = s["estimates"]["sensitivity.overlap.h5"]
     assert e["tasks_dropped"] == ["f01", "t01"]

@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from sdlc_analysis.prices import cost_usd
-from sdlc_analysis.tokens import ModelTokens, parse_tokens, pytest_ran
+from sdlc_analysis.prices import cost_usd, is_off_table
+from sdlc_analysis.tokens import ModelTokens, events, parse_tokens, pytest_ran
 
 ARMS = ("spec", "vibe")
 TIERS = ("small", "medium", "large")
@@ -60,6 +60,12 @@ def load_tasks(tasks_dir: Path, task_ids: list[str] | None = None) -> pd.DataFra
     tasks = pd.DataFrame(rows)
     if tasks.empty:
         return tasks
+    graded = _graded_lines(Path(tasks_dir))
+    tasks["graded_src_lines"] = [graded.get(t) for t in tasks["task_id"]]
+    tasks["log_graded_src_lines"] = [
+        math.log(g) if isinstance(g, (int, float)) and g > 0 else None
+        for g in tasks["graded_src_lines"]
+    ]
     if task_ids:
         unknown = sorted(set(task_ids) - set(tasks["task_id"]))
         if unknown:
@@ -68,6 +74,12 @@ def load_tasks(tasks_dir: Path, task_ids: list[str] | None = None) -> pd.DataFra
     else:
         tasks = tasks[~tasks["pilot"]]
     return tasks.reset_index(drop=True)
+
+
+def _graded_lines(tasks_dir: Path) -> dict:
+    """graded_src_lines per task from tasks/graded_lines.json (tasks/graded_lines.py), if any."""
+    d = _read_json(tasks_dir / "graded_lines.json") or {}
+    return {k: v.get("graded_src_lines") for k, v in d.items() if isinstance(v, dict)}
 
 
 def _read_json(path: Path) -> dict | None:
@@ -123,6 +135,10 @@ def _token_fields(agent: str, model: str, transcript: str, meta: dict) -> dict:
         "token_models": ",".join(sorted({str(t.model) for t in toks})),
         "cost_usd": cost,
         "cost_usd_upper": upper,  # codex: every call at the > 272k-token price
+        # tokens of a named model outside the price table, priced at the cohort model's rate
+        "tok_offtable": sum(t.total for t in toks if is_off_table(t.model)),
+        "cost_has_offtable_model": any(is_off_table(t.model) for t in toks),
+        "offtable_models": ",".join(sorted({t.model for t in toks if is_off_table(t.model)})),
     }
 
 
@@ -174,6 +190,7 @@ def read_unit(unit_dir: Path, tasks: dict[str, dict]) -> dict | None:
         tier=task.get("tier"),
         src_lines=task.get("src_lines"),
         log_src_lines=task.get("log_src_lines"),
+        log_graded_src_lines=task.get("log_graded_src_lines"),
         size_group=task.get("size_group"),
     )
     transcript = ""
@@ -183,6 +200,11 @@ def read_unit(unit_dir: Path, tasks: dict[str, dict]) -> dict | None:
         pass
     row.update(_token_fields(agent, model, transcript, meta))
     row["pytest_ran"] = pytest_ran(agent, transcript) if agent else None
+    # codex: number of usage records summed (one per run so far; >1 could mean cumulative counts)
+    row["usage_records"] = (
+        sum(1 for e in events(transcript) if e.get("type") == "turn.completed")
+        if agent == "codex" else None
+    )
     if grade is not None:
         hp, ht = _num(grade.get("hidden_passed")), _num(grade.get("hidden_total"))
         ruff, pyre = _num(grade.get("ruff_errors")), _num(grade.get("pyrefly_errors"))
@@ -225,17 +247,27 @@ def read_unit(unit_dir: Path, tasks: dict[str, dict]) -> dict | None:
 
 BOOL_COLS = ("task_pass", "regression_any", "process_artifacts", "pytest_config_touched",
              "architecture_pass", "patch_design_doc", "patch_plan_doc", "pytest_ran",
-             "grader_timeout", "tokens_split")
+             "grader_timeout", "tokens_split", "cost_has_offtable_model")
 
 
-def load_runs(results_dir: Path, tasks: pd.DataFrame) -> pd.DataFrame:
-    """One row per unit directory found under results_dir/<cohort>/<task>/<arm>-r<rep>/."""
+def load_runs(results_dir: Path | list[Path], tasks: pd.DataFrame) -> pd.DataFrame:
+    """One row per unit directory found under <results>/<cohort>/<task>/<arm>-r<rep>/, over one
+    or several results roots (prereg-v1.1 runs the medium and large tiers into their own root).
+    A unit found in two roots is an error."""
+    roots = [results_dir] if isinstance(results_dir, (str, Path)) else list(results_dir)
     by_id = {r["task_id"]: r for r in tasks.to_dict("records")} if not tasks.empty else {}
     rows = [
         r
-        for d in sorted(Path(results_dir).glob("*/*/*"))
+        for root in roots
+        for d in sorted(Path(root).glob("*/*/*"))
         if d.is_dir() and (r := read_unit(d, by_id)) is not None
     ]
+    seen: dict[str, int] = {}
+    for r in rows:
+        seen[r["unit"]] = seen.get(r["unit"], 0) + 1
+    dup = sorted(u for u, n in seen.items() if n > 1)
+    if dup:
+        raise ValueError(f"units present in more than one results root: {', '.join(dup[:5])}")
     runs = pd.DataFrame(rows)
     if runs.empty:
         return runs

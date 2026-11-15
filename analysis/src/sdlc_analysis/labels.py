@@ -1,6 +1,7 @@
 """Failure labels (prereg-v1 9.8): labeling sheet template, Cohen's kappa of two raters; and the
 "passes tests but wrong" sample (9.10)."""
 
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -14,22 +15,23 @@ REVEALED = "lộ cách làm"
 TIMEOUT_NOTE = "het_gio"
 
 
+def unit_label_id(unit: str, seed: int) -> str:
+    """Stable random-looking id of a unit: the same unit keeps its id when more runs finish, so
+    filled sheets stay decodable. It carries no cohort, arm or rep text."""
+    return "u" + hashlib.sha256(f"{seed}:{unit}".encode()).hexdigest()[:8]
+
+
 def labeling_template(valid: pd.DataFrame, seed: int) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Every valid failing run of the two Claude cohorts, all tiers, under a random id in a
-    shuffled order. Returns (sheet for the raters, private key id -> unit). Timed-out runs carry
-    `het_gio` in `note` (labeling guide)."""
+    """Every valid failing run of the two Claude cohorts, all tiers, under a stable hash-derived
+    id, in an order shuffled by the seeded generator. Returns (sheet for the raters, private key
+    id -> unit). Timed-out runs carry `het_gio` in `note` (labeling guide)."""
     v = valid[valid["cohort"].isin(CLAUDE) & ~valid["task_pass"].astype(bool)]
     v = v.sort_values(["cohort", "task_id", "arm", "rep"]).reset_index(drop=True)
-    rng = np.random.default_rng(seed)
-    order = rng.permutation(len(v))
-    ids: list[str] = []
-    seen = set()
-    while len(ids) < len(v):
-        uid = "u" + "".join(f"{b:02x}" for b in rng.integers(0, 256, size=4))
-        if uid not in seen:
-            seen.add(uid)
-            ids.append(uid)
+    order = np.random.default_rng(seed).permutation(len(v))
     shuffled = v.iloc[order].reset_index(drop=True)
+    ids = [unit_label_id(u, seed) for u in shuffled["unit"]]
+    if len(set(ids)) != len(ids):
+        raise ValueError("label id collision; change the id length")
     sheet = pd.DataFrame({
         "unit_id": ids,
         "label": "",

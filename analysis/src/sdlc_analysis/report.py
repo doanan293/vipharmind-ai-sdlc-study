@@ -123,7 +123,28 @@ def descriptives(runs: pd.DataFrame, valid: pd.DataFrame) -> dict:
                            for (t, a), n in nuniq.items() if n != 1],
         },
         "served_model_unknown": _counts(v, ["cohort"], "model_served_unknown"),
+        "offtable_model_cost": _counts(v, ["cohort", "arm"], "cost_has_offtable_model"),
+        "offtable_models": sorted({m for ms in v["offtable_models"].dropna() for m in
+                                   str(ms).split(",") if m}),
+        "codex_runs_with_several_usage_records": int(
+            (pd.to_numeric(v["usage_records"], errors="coerce") > 1).sum()),
+        "shared_cpu_window": shared_cpu_window(v),
+        "concurrent_tiers_window": concurrent_tiers_window(v),
     }
+
+
+# prereg-v1.1 operational note: coverage measurements and range-task checks shared the CPU with
+# the first small-tier runs, 19:16-19:52 local time (UTC+7) on 2026-11-15
+WINDOW_UTC = ("2026-11-15T12:16:00+00:00", "2026-11-15T12:52:00+00:00")
+
+
+def shared_cpu_window(v: pd.DataFrame) -> dict:
+    start = pd.to_datetime(v["started_at"], utc=True, errors="coerce")
+    lo, hi = (pd.Timestamp(x) for x in WINDOW_UTC)
+    inside = v[(start >= lo) & (start <= hi)]
+    return {"window_utc": list(WINDOW_UTC), "runs_started": len(inside),
+            "timeouts": int(inside["timed_out"].astype(bool).sum()),
+            "by_cohort": _counts(inside, ["cohort"], "timed_out")}
 
 
 def build_summary(
@@ -136,12 +157,15 @@ def build_summary(
     seed: int,
     overlap: dict | None = None,
     labels: dict | None = None,
+    model_B: int = mixed.B_MODEL_DEFAULT,
+    jobs: int = 1,
 ) -> tuple[dict, dict]:
     """Returns (summary, tables). `tables` holds DataFrames written as CSV next to it."""
     runs = runs.copy()
     runs["tokens_unsplit"] = runs["tokens_split"].map(lambda x: x is False)
     runs["model_served_unknown"] = runs["agent"] == "codex"
-    in_design = runs["task_id"].isin(tasks["task_id"]) & runs["cohort"].isin(cohorts)
+    in_design = (runs["task_id"].isin(tasks["task_id"]) & runs["cohort"].isin(cohorts)
+                 & (runs["rep"] <= reps))
     ignored = runs[~in_design]["unit"].tolist()
     runs = runs[in_design]
     valid = runs[runs["valid"]].copy()
@@ -188,6 +212,11 @@ def build_summary(
                                                            margin)
             for k2, e3 in cost_effectiveness(valid, c, t, **kw).items():
                 est[f"cost_eff.{key}.{k2}"] = _est(e3)
+            if (sv["agent"] == "codex").any():
+                # codex: per-call 272k threshold unknown; the same at the > 272k price (bound)
+                for k2, e3 in cost_effectiveness(valid, c, t, cost_col="cost_usd_upper",
+                                                 **kw).items():
+                    est[f"cost_eff_upper.{key}.{k2}"] = _est(e3)
             est[f"variability.{key}"] = variability(sv)
     cells = pd.DataFrame(diff_rows)
     tables["task_cells"] = cells
@@ -241,9 +270,14 @@ def build_summary(
         est["h5.hidden_pass_rate"] = _est(
             tier_diff(valid, "hidden_pass_rate", h5_cohorts, "large", "small", **kw))
         h5_runs = valid[valid["cohort"].isin(h5_cohorts)]
-        model = mixed.fit_h5_model(h5_runs, h5_cohorts)
+        model = mixed.fit_h5_model(h5_runs, h5_cohorts, B=model_B, seed=seed, jobs=jobs)
         h5["mixed_model"] = model
-        verdicts["H5"] = h5_verdict(p.ci_low, p.ci_high, model["interaction"]["coef"])
+        inter = model["interaction"] or {}
+        verdicts["H5"] = h5_verdict(p.ci_low, p.ci_high, inter.get("coef"),
+                                    inter.get("scale", "logit"))
+        # prereg-v1.1 sensitivity: the same ladder on log(graded_src_lines)
+        h5["mixed_model_graded"] = mixed.fit_h5_model(
+            h5_runs, h5_cohorts, x_col="log_graded_src_lines", B=model_B, seed=seed, jobs=jobs)
         h5["reference_only_tiers"] = [t for t in TIERS
                                       if len(pooled_task_diffs(valid, "task_pass", h5_cohorts,
                                                                t)) < 6]
@@ -283,8 +317,9 @@ def build_summary(
     est["variability.all_complete"] = variability(
         valid[[(c, t) in complete for c, t in zip(valid["cohort"], valid["tier"])]])
 
-    # number of secondary comparisons (everything with a verdict except H1)
-    n_secondary = sum(1 for k in verdicts if k != "H1")
+    # number of secondary comparisons: every verdict except H1 and its own H1-format copy
+    h1_copy = f"pass_diff.{PRIMARY_COHORT}.{PRIMARY_TIER}"
+    n_secondary = sum(1 for k in verdicts if k not in ("H1", h1_copy))
 
     pending = st[~st["status"].isin(["done", "excluded"])]
     summary = {
@@ -302,6 +337,7 @@ def build_summary(
         "not_run_units": pending[["cohort", "task_id", "arm", "rep", "status"]]
         .to_dict("records"),
         "h5": h5,
+        "case_study": case_study(valid, tasks, complete),
         "overlap": overlap,
         "estimates": est,
         "verdicts": verdicts,
@@ -315,3 +351,60 @@ def _mean(s: pd.Series):
     return float(s.astype(float).mean()) if len(s) else None
 
 
+
+
+def case_study(valid: pd.DataFrame, tasks: pd.DataFrame, complete: set) -> dict | None:
+    """Prereg 9.9 with the design's rule (7.5): large tier, claude-sonnet; the task with the
+    largest |pass-rate difference| (ties: larger original patch); if every difference is 0, the
+    task with the largest original patch. In it, the lowest-rep run of each arm; when the arms'
+    pass rates differ, one passing run (arm with the higher rate) and one failing run (the other
+    arm), each the lowest rep that qualifies."""
+    c, t = PRIMARY_COHORT, "large"
+    if (c, t) not in complete:
+        return None
+    d = task_diffs(valid, "task_pass", c, t)
+    if d.empty:
+        return None
+    size = tasks.set_index("task_id")["src_lines"]
+    df = pd.DataFrame({"absdiff": d.abs(), "src_lines": size.reindex(d.index)})
+    rule = "largest |difference|, ties to the larger original patch"
+    if (df["absdiff"] == 0).all():
+        rule = "every difference is 0: largest original patch"
+    tid = df.sort_values(["absdiff", "src_lines"], ascending=False).index[0]
+    runs = valid[(valid["cohort"] == c) & (valid["task_id"] == tid)].sort_values("rep")
+    rate = runs.groupby("arm")["task_pass"].apply(lambda s: s.astype(float).mean())
+    picks = {}
+    if rate.get("spec") != rate.get("vibe") and len(rate) == 2:
+        hi = rate.idxmax()
+        lo = "vibe" if hi == "spec" else "spec"
+        p = runs[(runs["arm"] == hi) & runs["task_pass"].astype(bool)]
+        f = runs[(runs["arm"] == lo) & ~runs["task_pass"].astype(bool)]
+        picks = {hi: p["unit"].iloc[0] if len(p) else None,
+                 lo: f["unit"].iloc[0] if len(f) else None}
+    for arm in ("spec", "vibe"):
+        if picks.get(arm) is None:
+            r = runs[runs["arm"] == arm]
+            picks[arm] = r["unit"].iloc[0] if len(r) else None
+    return {"task_id": tid, "rule": rule, "pass_diff": float(d[tid]), "units": picks}
+
+
+# prereg-v1 section 11, 2026-11-15 19:58: medium and large tiers ran alongside the small tier
+CONCURRENT_START_UTC = "2026-11-15T12:58:00+00:00"
+
+
+def concurrent_tiers_window(v: pd.DataFrame) -> dict:
+    """Timeouts of runs started inside vs outside the concurrent-tier window: from 19:58 local
+    (UTC+7) until the last small-tier run ended (its start plus wall_s)."""
+    start = pd.to_datetime(v["started_at"], utc=True, errors="coerce")
+    lo = pd.Timestamp(CONCURRENT_START_UTC)
+    small = v["tier"] == "small"
+    ends = start[small] + pd.to_timedelta(pd.to_numeric(v.loc[small, "wall_s"], errors="coerce"),
+                                          unit="s")
+    hi = ends.max() if len(ends) and ends.notna().any() else None
+    if hi is None or hi < lo:
+        return {"window_utc": [CONCURRENT_START_UTC, None], "note": "no small-tier run after start"}
+    inside = (start >= lo) & (start <= hi)
+    out = {"window_utc": [CONCURRENT_START_UTC, hi.isoformat()]}
+    for name, mask in (("inside", inside), ("outside", ~inside & start.notna())):
+        out[name] = _counts(v[mask], ["tier", "arm"], "timed_out")
+    return out

@@ -12,6 +12,7 @@ from sdlc_analysis import figures
 from sdlc_analysis.bootstrap import B_DEFAULT, SEED_DEFAULT
 from sdlc_analysis.labels import kappa_report, labeling_template, passing_sample
 from sdlc_analysis.load import COHORTS, TIERS, load_runs, load_tasks
+from sdlc_analysis.mixed import B_MODEL_DEFAULT
 from sdlc_analysis.overlap import commit_sets, cross_tier_overlaps, overlap_tasks
 from sdlc_analysis.report import build_summary
 
@@ -20,8 +21,8 @@ log = logging.getLogger("sdlc_analysis")
 
 def parse_args(argv=None) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="sdlc-analysis", description=__doc__.splitlines()[0])
-    p.add_argument("--results", type=Path, required=True,
-                   help="results root: <cohort>/<task>/<arm>-r<rep>/")
+    p.add_argument("--results", type=Path, required=True, nargs="+",
+                   help="results root(s): <cohort>/<task>/<arm>-r<rep>/ (main and main-tiers)")
     p.add_argument("--tasks", type=Path, required=True, help="tasks dir with */task.toml")
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--seed", type=int, default=SEED_DEFAULT)
@@ -32,6 +33,11 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--reps", type=int, default=3)
     p.add_argument("--repo", type=Path, default=None,
                    help="ViPharmind git repo, to find cross-tier commit overlap (H5 sensitivity)")
+    p.add_argument("--model-bootstrap", type=int, default=B_MODEL_DEFAULT,
+                   help="cluster-bootstrap refits of the H5 mixed model (>= 999)")
+    p.add_argument("--jobs", type=int, default=1, help="processes for the model bootstrap")
+    p.add_argument("--force", action="store_true",
+                   help="overwrite an existing passing_sample.csv (drawn once, after the deadline)")
     p.add_argument("--labels", type=Path, nargs=2, metavar=("RATER_A_CSV", "RATER_B_CSV"),
                    default=None, help="two filled labeling sheets: compute Cohen's kappa")
     return p.parse_args(argv)
@@ -53,7 +59,8 @@ def main(argv=None) -> int:
         overlap = {"pairs": pairs, "tasks": sorted(overlap_tasks(pairs)), "repo": str(a.repo)}
     labels = kappa_report(*a.labels) if a.labels else None
     summary, tables = build_summary(runs, tasks, cohorts, a.reps, B=a.bootstrap, seed=a.seed,
-                                    overlap=overlap, labels=labels)
+                                    overlap=overlap, labels=labels, model_B=a.model_bootstrap,
+                                    jobs=a.jobs)
     out = a.out
     out.mkdir(parents=True, exist_ok=True)
     runs_out = runs.drop(columns=[c for c in ("error",) if c in runs])
@@ -69,7 +76,11 @@ def main(argv=None) -> int:
     sheet, key = labeling_template(valid, a.seed)
     sheet.to_csv(lab / "sheet-template.csv", index=False)
     key.to_csv(lab / "key-PRIVATE.csv", index=False)
-    passing_sample(valid, a.seed).to_csv(out / "passing_sample.csv", index=False)
+    sample_path = out / "passing_sample.csv"
+    if sample_path.exists() and not a.force:
+        log.info("kept existing %s (drawn once; --force to redraw)", sample_path)
+    else:
+        passing_sample(valid, a.seed).to_csv(sample_path, index=False)
     tiers = [t for t in TIERS if t in set(tasks["tier"])]
     est = summary["estimates"]
     figs = figures.effect_vs_size(tables["task_diffs"], tables["pooled_task_diffs"],

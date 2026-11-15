@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from sdlc_analysis.prices import PRICES, cost_usd
+from sdlc_analysis.prices import PRICES, cost_usd, is_off_table, table_model
 from sdlc_analysis.tokens import ModelTokens, commands, parse_tokens, pytest_ran
 
 
@@ -135,9 +135,19 @@ def test_unsplit_tokens_are_priced_as_plain_input_upper_bound():
     assert cost_usd(toks, "claude-opus-5-5") == pytest.approx(4.0 + 20.0)
 
 
-def test_unknown_model_tokens_use_the_cohort_model_price():
+def test_unknown_model_tokens_use_the_cohort_model_price_and_are_flagged():
     toks = [ModelTokens("claude-haiku-9", 1_000_000, 0, 0, 0, 0, None, True, "result")]
     assert cost_usd(toks, "claude-sonnet-5-5") == pytest.approx(2.0)
+    assert is_off_table("claude-haiku-9") and not is_off_table(None)
+
+
+def test_suffixed_model_ids_match_their_table_row_by_prefix():
+    # a Sonnet sub-agent inside an Opus run is priced as Sonnet, not as Opus
+    toks = [ModelTokens("claude-sonnet-5-5-20261101", 1_000_000, 0, 0, 0, 0, None, True, "result")]
+    assert cost_usd(toks, "claude-opus-5-5") == pytest.approx(2.0)
+    assert table_model("claude-opus-5-5[1m]") == "claude-opus-5-5"
+    assert not is_off_table("claude-opus-5-5[1m]")
+    assert table_model("gpt-6-luna-2026") == "gpt-6-luna"  # never the >272k row
 
 
 def test_no_tokens_means_unknown_cost():
