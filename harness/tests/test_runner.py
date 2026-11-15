@@ -1,11 +1,14 @@
 """The parallel runner, driven by tests/fakes/fake_agent.py on a toy repo."""
 
+import fcntl
 import json
+import logging
 import os
 import signal
 import sys
 import threading
 import time
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -371,3 +374,69 @@ def test_cli_run_refuses_work_root_in_repo(world, tmp_path):
     argv += ["--out", str(tmp_path / "raw")]
     assert main(argv) == 2
     assert not (tmp_path / "raw").exists()
+
+
+# --- fix round 2 (ruling R9) ---------------------------------------------------------------
+
+
+def test_units_of_one_task_never_overlap(world, fake, tmp_path):
+    timelog = tmp_path / "times.log"
+    fake.setenv("FAKE_AGENT_TIMELOG", str(timelog))
+    fake.setenv("FAKE_AGENT_DELAY", "0.5")
+    units = [
+        RunUnit("claude-sonnet", "t01", arm, rep) for arm in ("spec", "vibe") for rep in (1, 2)
+    ]
+    out = tmp_path / "raw"
+    summary = run_all(units, _cfg(world, tmp_path), out, jobs=4)
+    assert summary["done"] == 4, [_meta(out, u).get("error") for u in units]
+    spans = sorted(tuple(map(float, line.split())) for line in timelog.read_text().splitlines())
+    assert len(spans) == 4, spans
+    for (_, end), (start, _) in pairwise(spans):
+        assert start >= end, spans
+
+
+def test_work_root_is_not_listable(world, fake, tmp_path):
+    cfg = _cfg(world, tmp_path)
+    cfg.work_root.mkdir(mode=0o755)
+    run_all([UNIT], cfg, tmp_path / "raw", jobs=1)
+    assert cfg.work_root.stat().st_mode & 0o777 == 0o711
+
+
+def test_work_root_is_empty_after_done_quota_and_error_units(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "quota_once")
+    cfg = _cfg(world, tmp_path)
+    units = [UNIT, RunUnit("claude-sonnet", "t02", "spec", 1)]
+    summary = run_all(units, cfg, tmp_path / "raw", jobs=1)  # one shared quota_once marker
+    assert summary["done"] == 1 and summary["error"] == 1 and summary["quota"] == 1
+    assert list(cfg.work_root.iterdir()) == []
+
+
+def test_keep_work_moves_attempts_out_of_the_shared_root(world, fake, tmp_path):
+    cfg = _cfg(world, tmp_path, keep_work=True)
+    out = tmp_path / "raw"
+    run_all([UNIT], cfg, out, jobs=1)
+    assert list(cfg.work_root.iterdir()) == []
+    kept = Path(_meta(out)["kept_dir"])
+    assert kept.parent == cfg.work_root.with_name(cfg.work_root.name + ".kept")
+    assert kept.name == Path(_meta(out)["work_dir"]).parent.name
+    assert (kept / "work" / CALC).read_text() == CALC_COMMIT
+    assert not (kept / "config").exists()
+
+
+def test_stale_attempts_are_cleaned_at_start(world, fake, tmp_path, caplog):
+    cfg = _cfg(world, tmp_path)
+    stale = cfg.work_root / "deadbeef"
+    (stale / "work").mkdir(parents=True)
+    with caplog.at_level(logging.WARNING):
+        run_all([UNIT], cfg, tmp_path / "raw", jobs=1)
+    assert not stale.exists()
+    assert "deadbeef" in caplog.text
+
+
+def test_work_root_in_use_by_another_run_is_refused(world, tmp_path):
+    cfg = _cfg(world, tmp_path)
+    lock = cfg.work_root.with_name(cfg.work_root.name + ".lock")
+    with lock.open("w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(ValueError, match="in use"):
+            run_all([UNIT], cfg, tmp_path / "raw", jobs=1)

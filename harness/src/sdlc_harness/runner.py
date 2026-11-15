@@ -5,6 +5,7 @@ A unit stopped by a quota error is not a rep: it goes to the back of the queue w
 cohort's next account, and when every account of a cohort ran out the cohort waits.
 """
 
+import fcntl
 import json
 import logging
 import os
@@ -22,7 +23,7 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal, cast
+from typing import IO, Literal, cast
 
 from sdlc_harness.agents import build_command, is_quota_error, parse_usage
 from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
@@ -141,6 +142,49 @@ def validate_work_root(work_root: Path) -> None:
         for marker in AGENT_MARKERS:
             if (d / marker).exists():
                 raise ValueError(f"work root {root} is below {d / marker}, which agents would read")
+
+
+def kept_root(work_root: Path) -> Path:
+    """--keep-work moves finished attempts here, out of the root agents run in."""
+    return work_root.with_name(work_root.name + ".kept")
+
+
+def _lock_work_root(work_root: Path) -> IO[str]:
+    """One run per work root: an exclusive lock on the sibling <work_root>.lock file."""
+    work_root.parent.mkdir(parents=True, exist_ok=True)
+    f = work_root.with_name(work_root.name + ".lock").open("w")
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        f.close()
+        raise ValueError(f"work root {work_root} is in use by another run") from None
+    return f
+
+
+def _prepare_work_root(work_root: Path) -> None:
+    """Mode 0711 (agents can enter their own dir but not list siblings); no stale attempts."""
+    work_root.mkdir(parents=True, exist_ok=True)
+    work_root.chmod(0o711)
+    for entry in sorted(work_root.iterdir()):
+        log.warning("removing stale attempt %s left by an earlier run", entry)
+        if entry.is_dir() and not entry.is_symlink():
+            shutil.rmtree(entry, ignore_errors=True)
+        else:
+            entry.unlink(missing_ok=True)
+
+
+def _dispose(scratch: Path, keep: bool) -> None:
+    """Drop an attempt's dir from the shared root: delete it, or with keep move it aside."""
+    shutil.rmtree(scratch / "config", ignore_errors=True)  # credentials copy
+    if not scratch.exists():
+        return
+    if keep:
+        kept = kept_root(scratch.parent)
+        kept.mkdir(parents=True, exist_ok=True)
+        kept.chmod(0o711)
+        shutil.move(scratch, kept / scratch.name)
+    else:
+        shutil.rmtree(scratch, ignore_errors=True)
 
 
 def unit_dir(out_root: Path, unit: RunUnit) -> Path:
@@ -310,6 +354,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "usage": None,
         "status": None,
         "work_dir": str(scratch / "work"),
+        "kept_dir": str(kept_root(cfg.work_root) / scratch.name) if cfg.keep_work else None,
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
@@ -341,7 +386,6 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
             with cfg._lock, (out_root / QUOTA_LOG).open("a") as f:
                 f.write(f"{meta['started_at']} {unit.cohort} {unit.task_id} ")
                 f.write(f"{unit.arm}-r{unit.rep} account={account}\n")
-            shutil.rmtree(scratch, ignore_errors=True)
             return "quota"
         (out / "patch.diff").write_text(collect_patch(work))
         result = _grade(cfg, task, work)
@@ -350,17 +394,14 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         meta["status"] = "done"
         _write_json(out / META, meta)
         _write_json(out / GRADE, grade_to_dict(result))  # last: marks the unit done
-        if not cfg.keep_work:
-            shutil.rmtree(scratch, ignore_errors=True)
         return "done"
-    except RunCancelled:
-        shutil.rmtree(scratch / "config", ignore_errors=True)
-        raise
     except GradingError as e:
         meta.update(status="error", error=f"grading: {e}")
     except Exception as e:  # one broken unit must not stop the whole run
         log.exception("unit %s failed", unit)
         meta.update(status="error", error=f"{type(e).__name__}: {e}")
+    finally:
+        _dispose(scratch, cfg.keep_work)
     _write_json(out / META, meta)
     return "error"
 
@@ -401,11 +442,21 @@ def _ids(u: RunUnit) -> tuple[str, str, str, int]:
 def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1) -> dict[str, int]:
     """Run every unit not yet done with `jobs` agent sessions at a time.
 
+    Two units of the same cohort and task never run at once (they could see each other's work).
     Returns counts: done, skipped (already done), error, quota (attempts stopped by quota).
     On Ctrl-C, kills every running agent's process group and re-raises KeyboardInterrupt.
     """
     validate_work_root(cfg.work_root)
-    _stop.clear()
+    lock = _lock_work_root(cfg.work_root)
+    try:
+        _prepare_work_root(cfg.work_root)
+        _stop.clear()
+        return _run_queue(units, cfg, out_root, jobs)
+    finally:
+        lock.close()
+
+
+def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) -> dict[str, int]:
     summary = {"done": 0, "skipped": 0, "error": 0, "quota": 0}
     queue: deque[RunUnit] = deque()
     for u in units:
@@ -421,15 +472,17 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
         while queue or running:
             now = time.monotonic()
             held: list[RunUnit] = []
+            busy = {(u.cohort, u.task_id) for u, _, _ in running.values()}
             while queue and len(running) < jobs:
                 u = queue.popleft()
                 accounts = pools[u.cohort]
-                if accounts.resume_at > now:
-                    held.append(u)
+                if accounts.resume_at > now or (u.cohort, u.task_id) in busy:
+                    held.append(u)  # keeps its place in the queue
                     continue
                 account = accounts.account()
                 future = pool.submit(run_unit, u, cfg, out_root, account)
                 running[future] = (u, account, accounts.generation)
+                busy.add((u.cohort, u.task_id))
             queue.extendleft(reversed(held))
             wake = [pools[u.cohort].resume_at - now for u in queue]
             wake = [w for w in wake if w > 0]

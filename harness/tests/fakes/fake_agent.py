@@ -6,6 +6,8 @@ It ignores the real CLI flags it receives and acts on environment variables:
   FAKE_AGENT_WRITE   JSON {relative path: content} written into the work tree (cwd)
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
   FAKE_AGENT_CWDLOG  file to append the agent's working directory to
+  FAKE_AGENT_DELAY   seconds to sleep before finishing (ok mode)
+  FAKE_AGENT_TIMELOG file to append "<start> <end>" to (CLOCK_MONOTONIC, system-wide on Linux)
 """
 
 import json
@@ -24,6 +26,7 @@ def main() -> int:
     if "--version" in sys.argv:
         print("fake-agent 0.0.1")
         return 0
+    started = time.monotonic()
     sys.stdin.read()
     if os.environ.get("FAKE_AGENT_CWDLOG"):
         with open(os.environ["FAKE_AGENT_CWDLOG"], "a") as f:
@@ -45,6 +48,10 @@ def main() -> int:
         target.write_text(content)
     if mode == "sleep":
         time.sleep(300)
+    time.sleep(float(os.environ.get("FAKE_AGENT_DELAY", "0")))
+    if os.environ.get("FAKE_AGENT_TIMELOG"):
+        with open(os.environ["FAKE_AGENT_TIMELOG"], "a") as f:
+            f.write(f"{started} {time.monotonic()}\n")
     emit(
         {
             "type": "result",
