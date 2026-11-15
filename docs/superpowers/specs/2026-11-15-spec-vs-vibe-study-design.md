@@ -238,6 +238,29 @@ Lý do chọn mô hình:
 - Chi phí bằng tiền là số quy đổi: lượng token thật của mỗi lượt nhân với bảng giá API công khai tại
   ngày chạy, ghi rõ là quy đổi.
 
+**Nhiều tài khoản và proxy.** An có nhiều tài khoản để đổi khi hết hạn mức. Thông tin đăng nhập nằm
+trong proxy `cli-proxy-api` (v8.0.28) của repo
+`/home/andv/personal/HUST/principle-technique-program-analysis`, thư mục `infra/proxy/`, dùng chung
+volume Docker `vipharmind_cli_proxy_auth`. Theo `infra/proxy/MODELS.md` ngày 2026-11-08: 4 tài khoản
+Antigravity, 4 tài khoản Codex miễn phí, 1 tài khoản Claude; proxy chia lượt xoay vòng và tự đổi tài
+khoản khi một tài khoản hết hạn mức. Proxy là cổng gọi mô hình kiểu API, không phải trợ lý lập trình,
+nên mỗi công cụ dùng nó theo cách riêng:
+
+- **Claude Code:** chỉ có 1 tài khoản, chạy thẳng bằng đăng nhập sẵn có, không qua proxy.
+- **Codex CLI:** trỏ nhà cung cấp mô hình của Codex tới proxy để xoay vòng 4 tài khoản.
+- **Antigravity CLI:** ưu tiên chạy thẳng `agy` vì mức Medium chỉ có ở đó (proxy chỉ có
+  `gemini-3.8-flash-high`). Khi hết hạn mức thì đổi tài khoản đăng nhập của `agy`; cách đổi tự động
+  do người thực hiện xác định khi chạy thử.
+
+Ràng buộc khi dùng proxy và nhiều tài khoản:
+
+- Không chép khóa, token hay file cấu hình của proxy vào repo này; chỉ ghi đường dẫn.
+- Proxy có thể sửa yêu cầu gửi đi (ép mức suy luận, đổi mô hình phía sau một tên gọi). Dùng cấu hình
+  không ép mức suy luận, và ghi mô hình thực tế được phục vụ cho từng lượt.
+- Ghi lại tài khoản thứ mấy (số thứ tự, không ghi email) phục vụ từng lượt. Báo cáo nêu rõ thí nghiệm
+  chạy trên nhiều tài khoản và qua proxy.
+- Kiểm tra điều khoản của từng dịch vụ về việc xoay nhiều tài khoản trước khi chạy đợt 2 và 3.
+
 Phải kiểm tra khi chạy 2 nhiệm vụ thử, trước thẻ `prereg-v1`: điều khoản của từng gói về chạy tự
 động; hạn mức thực tế; cách tắt truy cập web ở `agy` và `codex`; mỗi công cụ có trả lượng token hay
 không. Công cụ nào không tắt được truy cập web hoặc không cho chạy tự động thì loại khỏi thí nghiệm
