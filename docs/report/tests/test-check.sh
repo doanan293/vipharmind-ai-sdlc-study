@@ -8,12 +8,15 @@ fails=0
 fresh() {
   local dir
   dir=$(mktemp -d)
+  # Dựng lại cấu trúc repo tối thiểu: docs/report và prompts/ (phụ lục chép lời dặn từ đó).
   # Chỉ chép mã nguồn; bỏ file trung gian và PDF để mỗi ca build từ đầu.
+  mkdir -p "$dir/docs/report"
   (cd "$here" && tar --exclude='./tests' --exclude='./scripts/.venv' --exclude='*.aux' \
     --exclude='*.log' --exclude='*.fls' --exclude='*.fdb_latexmk' --exclude='*.xdv' \
     --exclude='*.bbl' --exclude='*.blg' --exclude='*.toc' --exclude='main.pdf' -cf - .) |
-    (cd "$dir" && tar -xf -)
-  echo "$dir"
+    (cd "$dir/docs/report" && tar -xf -)
+  cp -r "$here/../../prompts" "$dir/prompts"
+  echo "$dir/docs/report"
 }
 
 # expect <tên ca> <mã thoát mong đợi> <chuỗi phải có trong output, rỗng = bỏ qua> <thư mục> [đối số check.sh]
@@ -34,7 +37,7 @@ expect() {
   else
     echo "ok   $name"
   fi
-  rm -rf "$dir"
+  rm -rf "${dir%/docs/report}"
 }
 
 # Gài một dòng vào đầu mục 1.
@@ -58,6 +61,21 @@ expect hand_typed_number_rejected 1 "98765" "$d" --draft
 
 d=$(fresh); inject "$d" 'Một con số thập phân gõ tay 42,7 phần trăm.'
 expect hand_typed_decimal_rejected 1 "42,7" "$d" --draft
+
+d=$(fresh); inject "$d" 'Bảng 12 mục 99 có 37 và 97 dòng.'
+expect number_after_label_word_rejected 1 "99" "$d" --draft
+
+d=$(fresh); printf '\n\n77\n\n' >>"$d/sections/01-introduction.tex"
+expect standalone_number_line_rejected 1 "77" "$d" --draft
+
+d=$(fresh); inject "$d" 'Số 2935909 là một mảnh mã commit trong bảng nhiệm vụ.'
+expect hash_fragment_from_table_rejected 1 "2935909" "$d" --draft
+
+d=$(fresh); sed -i 's/^\\pending{tóm tắt, viết sau cùng}/Tóm tắt có số gõ tay 86420./' "$d/sections/00-frontmatter.tex"
+expect number_in_abstract_rejected 1 "86420" "$d" --draft
+
+d=$(fresh); printf 'Phụ lục có số gõ tay 97531.\n' >>"$d/sections/appendix.tex"
+expect number_in_appendix_rejected 1 "97531" "$d" --draft
 
 d=$(fresh); inject "$d" 'TODO viết tiếp.'
 expect todo_rejected 1 "TODO" "$d" --draft

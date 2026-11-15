@@ -5,8 +5,8 @@ mã, sửa file và chạy test trong kho mã của người dùng. Người dù
 phổ biến. Cách thứ nhất là \emph{vibe coding}: mô tả ngắn việc cần làm rồi để tác tử viết mã ngay
 \cite{chou_2025,fawzy_2026}. Cách thứ hai là phát triển theo đặc
 tả: yêu cầu tác tử viết tài liệu thiết kế và kế hoạch trước, rồi mới cài đặt theo kế hoạch
-\cite{agarwal_2026,diaz_2026}. Các công cụ như GitHub Spec Kit đóng gói cách thứ hai thành quy trình
-có sẵn \cite{taghavi_2026}.
+\cite{agarwal_2026,diaz_2026}. Taghavi và cộng sự đánh giá một quy trình tác tử
+theo đặc tả như vậy bằng mô hình chấm điểm \cite{taghavi_2026}.
 
 Bằng chứng định lượng so sánh hai cách này còn ít. Nghiên cứu về
 vibe coding chủ yếu là định tính hoặc tổng quan tài liệu xám \cite{chou_2025,fawzy_2026}. Nghiên cứu
@@ -21,8 +21,8 @@ lời dặn về quy trình, rồi chấm bằng test mà tác tử không thấ
 
 Đề tài này làm thí nghiệm đó trên một dự án thật. ViPharmind là trợ lý AI tra cứu thuốc cho người
 Việt, gồm một backend tác tử AI viết bằng Python, một ứng dụng web và bộ công cụ dựng kho tri thức từ
-Dược thư Quốc gia và tờ hướng dẫn sử dụng thuốc. Doãn Văn An xây dựng và triển khai hệ thống này với
-trợ lý lập trình AI tham gia mọi khâu, từ nghiên cứu, dữ liệu, mã, kiểm thử đến triển khai; kho mã có
+Dược thư Quốc gia và tờ hướng dẫn sử dụng thuốc. Doãn Văn An xây dựng và triển khai hệ thống này; theo lời
+tác giả, trợ lý lập trình AI tham gia mọi khâu, từ nghiên cứu, dữ liệu, mã, kiểm thử đến triển khai. Kho mã có
 \NumCommits{} commit từ \mbox{\NumFirstDate{}} đến \mbox{\NumLastDate{}}. Chất lượng trả lời của ViPharmind là nội
 dung của một bài báo khác (SoICT 2026) và không được đánh giá lại ở đây. Đối tượng đo của đề tài là
 \emph{quá trình phát triển có AI tham gia}.
@@ -44,8 +44,8 @@ kế hoạch phân tích được chốt bằng thẻ git trước lượt chạ
 \item Bộ chạy, bộ chấm, đề bài, lời dặn và kết quả thô được công bố để người khác chạy lại.
 \end{itemize}
 
-AI cũng tham gia vào chính nghiên cứu này: soạn nháp đề bài, gợi ý kiểm tra quy tắc nối commit với
-plan, dựng bộ chạy và viết nháp báo cáo. Mục~\ref{sec:method} ghi rõ từng việc và phần người đã kiểm.
+AI cũng tham gia vào chính nghiên cứu này: tìm và kiểm tra tài liệu, soạn nháp đề bài, gợi ý kiểm tra
+quy tắc nối commit với plan, dựng bộ chạy và viết nháp báo cáo. Mục~\ref{sec:method} ghi rõ từng việc và phần người đã kiểm.
 
 Phần còn lại của báo cáo như sau. Mục~\ref{sec:related-work} tổng quan tài liệu.
 Mục~\ref{sec:questions} nêu câu hỏi nghiên cứu và giả thuyết. Mục~\ref{sec:method} trình bày phương

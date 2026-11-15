@@ -8,3 +8,5 @@
 750         # cỡ tầng tính năng trong RQ6 (bản thiết kế mục 3)
 1.500       # cỡ tầng tính năng trong RQ6
 20261115    # hạt giống ngẫu nhiên của bộ chạy (bản thiết kế, harness)
+9           # tháng 9 (mô tả thời gian ở mục 5.1)
+10          # tháng 10; cũng là "mười câu"
