@@ -55,7 +55,9 @@ RQ1, RQ2 do phần hồi cứu trả lời. RQ3, RQ4, RQ5 do phần thực nghi�
 - Không so sánh công cụ với công cụ. Ba công cụ dùng mô hình khác hãng, khác hạng nhau; phép so sánh
   luôn là hai cách làm trong cùng một công cụ. Ngoại lệ duy nhất là Sonnet với Opus trong Claude Code
   (RQ5): cùng công cụ, cùng hãng, chỉ khác mô hình, nên là phép so sánh sạch.
-- Không sửa gì trong repo ViPharmind.
+- Không viết lại lịch sử repo ViPharmind (không rebase, không force-push các commit đến mốc ở mục 5).
+  Commit mới sau mốc được phép (ngày 2026-11-15: gộp `camera-ready` vào `v2.0.0` và chuẩn hóa spec,
+  plan dưới `docs/superpowers/`); chúng không ảnh hưởng nghiên cứu vì mọi phân tích dùng mã commit cố định.
 
 **Điều phải tránh** (bài hỏng dù chạy được)
 
