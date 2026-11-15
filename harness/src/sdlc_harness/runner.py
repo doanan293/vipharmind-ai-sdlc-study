@@ -596,3 +596,50 @@ def _give_up(out_root: Path, unit: RunUnit) -> None:
     meta = json.loads(path.read_text()) if path.is_file() else {}
     meta.update(status="error", error=QUOTA_EXHAUSTED)
     _write_json(path, meta)
+
+
+# --- regrading ---------------------------------------------------------------------------
+
+
+def regrade_unit(unit_out: Path, cfg: RunConfig) -> tuple[dict, dict]:
+    """Grade a finished unit again from its saved patch.diff; return (old grade, new grade).
+
+    Rebuilds the parent workspace, applies the patch on top of `baseline` and grades it, so a
+    grader change (e.g. a new field) reaches results already on disk; meta.json gets
+    regraded_at. The agent is not run again.
+    """
+    meta = json.loads((unit_out / META).read_text())
+    old = json.loads((unit_out / GRADE).read_text())
+    task = load_task(cfg.tasks_dir / meta["task_id"])
+    scratch = cfg.work_root / uuid.uuid4().hex
+    try:
+        work = prepare_workspace(cfg.repo, task, scratch, cfg.grade_timeout_s)
+        patch = unit_out / "patch.diff"
+        if patch.read_text().strip():
+            subprocess.run(
+                ["git", "-C", str(work), "apply", "--whitespace=nowarn", str(patch.resolve())],
+                check=True,
+                capture_output=True,
+            )
+        new = grade_to_dict(_grade(cfg, task, work))
+    finally:
+        _dispose(scratch, False)
+    meta["regraded_at"] = datetime.now(UTC).isoformat(timespec="seconds")
+    _write_json(unit_out / META, meta)
+    _write_json(unit_out / GRADE, new)
+    return old, new
+
+
+def regrade_all(
+    unit_dirs: list[Path], cfg: RunConfig, jobs: int = 1
+) -> list[tuple[Path, dict, dict]]:
+    """regrade_unit over many units, `jobs` at a time, under the work-root lock."""
+    validate_work_root(cfg.work_root)
+    lock = _lock_work_root(cfg.work_root)
+    try:
+        _prepare_work_root(cfg.work_root)
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            futures = {pool.submit(regrade_unit, d, cfg): d for d in unit_dirs}
+            return [(futures[f], *f.result()) for f in futures]
+    finally:
+        lock.close()

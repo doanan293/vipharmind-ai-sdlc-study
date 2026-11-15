@@ -13,6 +13,7 @@ from sdlc_harness.runner import (
     RunConfig,
     load_cohorts,
     plan_units,
+    regrade_all,
     run_all,
     select_tasks,
     validate_work_root,
@@ -154,6 +155,30 @@ def run(args: argparse.Namespace) -> int:
     return 1 if summary["error"] else 0
 
 
+def regrade(args: argparse.Namespace) -> int:
+    try:
+        validate_work_root(args.work_root)
+    except ValueError as e:
+        print(e)
+        return 2
+    cfg = RunConfig(
+        repo=args.repo,
+        tasks_dir=args.tasks_dir,
+        cohorts={},
+        grade_timeout_s=args.grade_timeout_s,
+        cache_dir=args.cache_dir,
+        work_root=args.work_root,
+    )
+    dirs = sorted(p.parent for p in args.results.glob("*/*/*/grade.json"))
+    results = regrade_all(dirs, cfg, args.jobs)
+    keys = ("task_pass", "hidden_passed", "hidden_total", "regressions")
+    changed = [(d, o, n) for d, o, n in results if any(o.get(k) != n.get(k) for k in keys)]
+    for d, o, n in changed:
+        print(f"CHANGED {d}: " + ", ".join(f"{k} {o.get(k)} -> {n.get(k)}" for k in keys))
+    print(f"{len(results)} regraded, {len(changed)} changed")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="sdlc-harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -199,7 +224,20 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     r.add_argument("--accounts-file", type=Path, default=None)
     r.add_argument("--keep-work", action="store_true", help="keep workspaces after grading")
+    rg = sub.add_parser("regrade", help="grade finished units again from their saved patches")
+    rg.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
+    rg.add_argument(
+        "--results", type=Path, required=True, help="dir holding <cohort>/<task>/<unit>"
+    )
+    rg.add_argument("--tasks-dir", type=Path, default=Path("tasks"))
+    rg.add_argument("--jobs", type=int, default=1)
+    rg.add_argument("--grade-timeout-s", type=int, default=900)
+    rg.add_argument("--work-root", type=Path, default=DEFAULT_WORK_ROOT)
+    rg.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     args = parser.parse_args(argv)
+    if args.command == "regrade":
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+        return regrade(args)
     if args.command == "run":
         logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
         return run(args)

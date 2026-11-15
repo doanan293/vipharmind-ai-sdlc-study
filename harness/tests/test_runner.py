@@ -547,3 +547,48 @@ def test_prompt_or_tree_drift_between_units_is_refused(world, fake, tmp_path):
     rep3 = RunUnit("claude-sonnet", "t01", "vibe", 3)
     assert run_unit(rep3, cfg, out) == "error"
     assert "tree" in _meta(out, rep3)["error"]
+
+
+def test_regrade_reproduces_the_grade_from_the_saved_patch(world, fake, tmp_path):
+    from sdlc_harness.runner import regrade_unit
+
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    d = unit_dir(out, UNIT)
+    first = json.loads((d / "grade.json").read_text())
+    del first["hidden_failed"]  # a grade written before the field existed
+    (d / "grade.json").write_text(json.dumps(first))
+    old, new = regrade_unit(d, cfg)
+    assert old == first
+    assert new["hidden_failed"] == {}
+    assert {k: v for k, v in new.items() if k != "hidden_failed"} == first
+    assert json.loads((d / "grade.json").read_text()) == new
+    assert _meta(out)["regraded_at"]
+    assert list((tmp_path / "work").iterdir()) == []  # its workspace is cleaned up
+
+
+def test_cli_regrade_reports_changes(world, fake, tmp_path, capsys):
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    repo, tasks, _accounts, cache = world
+    rc = main(
+        [
+            "regrade",
+            "--repo",
+            str(repo),
+            "--tasks-dir",
+            str(tasks),
+            "--results",
+            str(out),
+            "--work-root",
+            str(tmp_path / "work"),
+            "--cache-dir",
+            str(cache),
+            "--jobs",
+            "2",
+        ]
+    )
+    assert rc == 0
+    assert "1 regraded, 0 changed" in capsys.readouterr().out

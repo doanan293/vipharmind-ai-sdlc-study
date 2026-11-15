@@ -124,6 +124,7 @@ def test_original_patch_passes(ws):
     assert g.task_pass is True
     assert g.regressions == []
     assert (g.hidden_passed, g.hidden_total) == (3, 3)
+    assert g.hidden_failed == {}
     assert g.architecture_pass is True
     # the original patch: calc.py +4, test_mul.py +9, test_mod.py +5/-2
     assert (g.lines_added, g.lines_deleted) == (4 + 9 + 5, 2)
@@ -144,6 +145,7 @@ def test_breaking_an_old_test_is_a_regression(ws):
 
 def test_no_change_passes_no_hidden_test(ws):
     g = _grade(ws)
+    assert len(g.hidden_failed) == 3  # missing from the run counts as not passing
     assert g.hidden_passed == 0
     assert g.hidden_total == 3
     assert g.task_pass is False
@@ -160,6 +162,10 @@ def test_partial_hidden_pass(ws):
     g = _grade(ws)
     assert (g.hidden_passed, g.hidden_total) == (2, 3)
     assert g.task_pass is False
+    # which hidden test did not pass, and how (failure labels need it)
+    assert len(g.hidden_failed) == 1
+    ((nodeid, outcome),) = g.hidden_failed.items()
+    assert nodeid.startswith("tests/") and outcome == "failed"
 
 
 def test_ai_edits_to_hidden_tests_are_overwritten(ws):

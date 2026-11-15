@@ -59,6 +59,8 @@ class Grade:
     process_artifacts: bool  # docs/design.md and docs/plan.md both written
     pytest_config_touched: bool = False  # patch changes conftest.py or pytest settings
     grading_notes: list[str] = field(default_factory=list)  # tools that failed or timed out
+    # hidden tests that did not pass: nodeid -> outcome ("failed", "error", "missing", ...)
+    hidden_failed: dict[str, str] = field(default_factory=dict)
 
 
 def grade_to_dict(g: Grade) -> dict:
@@ -410,6 +412,7 @@ def grade(
         notes.append(f"final test run failed: {e}")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
+    hidden_failed = {n: final.get(n, "missing") for n in hidden_ids if final.get(n) != "passed"}
     # skipped only counts as fine when the parent run skipped that test too
     regressions = sorted(
         n
@@ -440,6 +443,7 @@ def grade(
         ),
         pytest_config_touched=_pytest_config_touched(work, all_files),
         grading_notes=notes,
+        hidden_failed=hidden_failed,
     )
 
 
