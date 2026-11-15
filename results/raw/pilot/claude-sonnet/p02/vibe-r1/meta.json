@@ -1,0 +1,53 @@
+{
+  "cohort": "claude-sonnet",
+  "task_id": "p02",
+  "arm": "vibe",
+  "rep": 1,
+  "agent": "claude",
+  "tool_version": "2.1.325 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "model_served": "claude-sonnet-5-5",
+  "effort": "medium",
+  "account": 1,
+  "started_at": "2026-11-15T09:05:05+00:00",
+  "wall_s": 70.703,
+  "timed_out": false,
+  "returncode": 0,
+  "usage": {
+    "input_tokens": 261944,
+    "output_tokens": 4100,
+    "turns": 9,
+    "model_served": "claude-sonnet-5-5",
+    "reasoning_tokens": 83
+  },
+  "status": "done",
+  "work_dir": "/tmp/sdlc-runs/bde6a94e7bf0449598ec34238ba57d77/work",
+  "kept_dir": null,
+  "removed_from_tree": [
+    "backend/docs/superpowers",
+    "frontend/docs/superpowers",
+    "seed-pipeline/.agents",
+    "seed-pipeline/skills-lock.json"
+  ],
+  "prompt_sha256": "e99c28845fa5bf3346d99e0c26198fd772b8924748cdbfc984f6f5b9c891e277",
+  "tree_sha": "54725b3c148d1966a85c1beef8ed4eca67ba6481",
+  "tree_files": 549,
+  "config_files": [
+    "home/.claude/.credentials.json"
+  ],
+  "env_names": [
+    "CLAUDE_CONFIG_DIR",
+    "HOME",
+    "LANG",
+    "LOGNAME",
+    "PATH",
+    "SHELL",
+    "TERM",
+    "USER",
+    "UV_CACHE_DIR",
+    "UV_PYTHON_INSTALL_DIR",
+    "XDG_RUNTIME_DIR"
+  ],
+  "endpoint": "direct",
+  "regraded_at": "2026-11-15T09:26:20+00:00"
+}

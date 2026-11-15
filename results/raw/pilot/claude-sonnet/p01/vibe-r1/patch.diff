@@ -1,0 +1,259 @@
+diff --git a/backend/src/pharma_agent/domain/corpus/authoring.py b/backend/src/pharma_agent/domain/corpus/authoring.py
+new file mode 100644
+index 0000000..e905093
+--- /dev/null
++++ b/backend/src/pharma_agent/domain/corpus/authoring.py
+@@ -0,0 +1,253 @@
++"""Turn authored Markdown documents into a ``KnowledgeBundle`` (spec §4.7).
++
++Pure and deterministic: the same content always gives the same bundle, so the same
++bundle digest. Document keys in the bundle are ``<collection key>:<document key>``, so
++chunk ids never collide across collections.
++"""
++
++import hashlib
++import re
++import unicodedata
++from collections.abc import Iterator, Sequence
++from dataclasses import dataclass
++from typing import Final, Protocol
++
++from pharma_agent.domain.corpus.bundle import (
++    BUNDLE_SCHEMA_VERSION,
++    BlockKind,
++    BlockRecord,
++    BundleCollection,
++    BundleGenerator,
++    BundleManifest,
++    ColloquialMappingRecord,
++    DocumentKind,
++    DocumentRecord,
++    GlossaryEntry,
++    KnowledgeBundle,
++    SectionRecord,
++    SourceInfo,
++)
++
++_HEADING_RE: Final = re.compile(r"^ {0,3}(#{1,6})[ \t]+(.*?)(?:[ \t]+#+)?[ \t]*$")
++_FENCE_RE: Final = re.compile(r"^ {0,3}(`{3,}|~{3,})")
++_WORD_RE: Final = re.compile(r"[^a-z0-9]+")
++PATH_SEPARATOR: Final = " › "
++GENERATOR: Final = BundleGenerator(
++    name="pharma-agent-authoring", version="1", build_id="authored"
++)
++
++
++class _Collection(Protocol):
++    @property
++    def key(self) -> str: ...
++    @property
++    def title(self) -> str: ...
++
++
++class _Document(Protocol):
++    @property
++    def key(self) -> str: ...
++    @property
++    def title(self) -> str: ...
++    @property
++    def kind(self) -> DocumentKind: ...
++    @property
++    def source_title(self) -> str: ...
++    @property
++    def source_url(self) -> str | None: ...
++    @property
++    def markdown(self) -> str: ...
++
++
++@dataclass(frozen=True)
++class Section:
++    heading: str
++    path: tuple[str, ...]
++    ordinal: int
++    blocks: list[BlockRecord]
++
++
++def slugify(text: str, *, max_length: int = 80) -> str:
++    folded = text.replace("đ", "d").replace("Đ", "D")
++    decomposed = unicodedata.normalize("NFKD", folded)
++    ascii_text = "".join(c for c in decomposed if not unicodedata.combining(c))
++    slug = _WORD_RE.sub("-", ascii_text.lower()).strip("-")
++    return slug[:max_length].strip("-")
++
++
++def section_key(document_key: str, path: Sequence[str]) -> str:
++    if not path:
++        return f"{document_key}#body"
++    return f"{document_key}#" + "/".join(slugify(part) or "section" for part in path)
++
++
++def split_markdown(markdown: str, *, fallback_heading: str) -> list[Section]:
++    drafts: list[tuple[str, tuple[str, ...], list[str]]] = [(fallback_heading, (), [])]
++    stack: list[tuple[int, str]] = []
++    fence: str | None = None
++    for line in markdown.splitlines():
++        fence_match = _FENCE_RE.match(line)
++        if fence_match:
++            marker = fence_match.group(1)
++            if fence is None:
++                fence = marker
++            elif marker[0] == fence[0] and len(marker) >= len(fence):
++                fence = None
++        heading = None if fence is not None or fence_match else _HEADING_RE.match(line)
++        if heading is None:
++            drafts[-1][2].append(line)
++            continue
++        level, title = len(heading.group(1)), heading.group(2).strip()
++        while stack and stack[-1][0] >= level:
++            stack.pop()
++        stack.append((level, title))
++        drafts.append((title, tuple(t for _, t in stack), []))
++
++    sections: list[Section] = []
++    table_count = 0
++    for heading, path, lines in drafts:
++        blocks, table_count = _blocks(lines, table_count)
++        if blocks:
++            sections.append(Section(heading, path, len(sections) + 1, blocks))
++    return sections
++
++
++def _blocks(lines: list[str], table_count: int) -> tuple[list[BlockRecord], int]:
++    blocks: list[BlockRecord] = []
++    prose: list[str] = []
++    table: list[str] = []
++    fence: str | None = None
++
++    def flush_prose() -> None:
++        text = "\n".join(prose).strip()
++        if text:
++            blocks.append(BlockRecord(kind=BlockKind.PROSE, markdown=text))
++        prose.clear()
++
++    def flush_table() -> None:
++        nonlocal table_count
++        if table:
++            table_count += 1
++            blocks.append(
++                BlockRecord(
++                    kind=BlockKind.TABLE,
++                    markdown="\n".join(table),
++                    table_key=f"t{table_count}",
++                )
++            )
++        table.clear()
++
++    for line in lines:
++        fence_match = _FENCE_RE.match(line)
++        if fence_match:
++            marker = fence_match.group(1)
++            if fence is None:
++                fence = marker
++            elif marker[0] == fence[0] and len(marker) >= len(fence):
++                fence = None
++            flush_table()
++            prose.append(line)
++        elif fence is None and line.lstrip().startswith("|"):
++            flush_prose()
++            table.append(line.strip())
++        else:
++            flush_table()
++            prose.append(line)
++    flush_table()
++    flush_prose()
++    return blocks, table_count
++
++
++def _bundle_document_key(collection: _Collection, document: _Document) -> str:
++    return f"{collection.key}:{document.key}"
++
++
++def _sorted(collection: _Collection, documents: Sequence[_Document]) -> list[_Document]:
++    return sorted(documents, key=lambda d: _bundle_document_key(collection, d))
++
++
++def _keyed_sections(
++    collection: _Collection, document: _Document
++) -> Iterator[tuple[str, Section]]:
++    """Sections with unique keys; repeated headings get ``-2``, ``-3``..."""
++    document_key = _bundle_document_key(collection, document)
++    taken: set[str] = set()
++    for section in split_markdown(document.markdown, fallback_heading=document.title):
++        base = section_key(document_key, section.path)
++        key, n = base, 1
++        while key in taken:
++            n += 1
++            key = f"{base}-{n}"
++        taken.add(key)
++        yield key, section
++
++
++def section_choices(
++    collection: _Collection, documents: Sequence[_Document]
++) -> list[tuple[str, str]]:
++    choices: list[tuple[str, str]] = []
++    for document in _sorted(collection, documents):
++        for key, section in _keyed_sections(collection, document):
++            label = PATH_SEPARATOR.join([document.title, *section.path])
++            choices.append((key, label))
++    return choices
++
++
++def build_bundle(
++    collection: _Collection,
++    documents: Sequence[_Document],
++    glossary: Sequence[GlossaryEntry],
++    colloquial: Sequence[ColloquialMappingRecord],
++) -> KnowledgeBundle:
++    ordered = _sorted(collection, documents)
++    document_records: list[DocumentRecord] = []
++    section_records: list[SectionRecord] = []
++    digest = hashlib.sha256()
++    for document in ordered:
++        document_key = _bundle_document_key(collection, document)
++        document_records.append(
++            DocumentRecord(
++                key=document_key,
++                kind=document.kind,
++                title=document.title,
++                source=SourceInfo(title=document.source_title, url=document.source_url),
++            )
++        )
++        digest.update(document_key.encode())
++        digest.update(b"\0")
++        digest.update(document.markdown.encode())
++        digest.update(b"\0")
++        for key, section in _keyed_sections(collection, document):
++            section_records.append(
++                SectionRecord(
++                    key=key,
++                    document_key=document_key,
++                    heading=section.heading,
++                    context_path=list(section.path),
++                    ordinal=section.ordinal,
++                    blocks=section.blocks,
++                )
++            )
++    known = {record.key for record in section_records}
++    mappings = [
++        record.model_copy(
++            update={"section_keys": [k for k in record.section_keys if k in known]}
++        )
++        for record in colloquial
++    ]
++    manifest = BundleManifest(
++        schema_version=BUNDLE_SCHEMA_VERSION,
++        collection=BundleCollection(key=collection.key, title=collection.title),
++        generator=GENERATOR,
++        source_digests={"authored_markdown_sha256": digest.hexdigest()},
++        document_count=len(document_records),
++        section_count=len(section_records),
++        files={},
++    )
++    return KnowledgeBundle(
++        manifest=manifest,
++        documents=document_records,
++        sections=section_records,
++        glossary=list(glossary),
++        colloquial_mappings=mappings,
++    )

@@ -14,6 +14,8 @@ from sdlc_harness.vcs import read_file
 REQUIRED_KEYS = ("id", "commit", "parent", "layer", "src_lines", "hidden_tests", "pilot")
 MIN_SENTENCES = 5
 MAX_SENTENCES = 10
+TIERS = ("small", "medium", "large")
+MAX_RANGE_SENTENCES = 12  # feature-tier (range) prompts describe a whole feature
 
 _CODE_SPAN = re.compile(r"```.*?```|`[^`]*`", re.DOTALL)
 _SENTENCE_END = re.compile(r"[.!?]+(?=\s|$)")
@@ -33,6 +35,14 @@ class Task:
     missing_keys: tuple[str, ...] = ()
     baseline_radon_cc: float | None = None  # set by the grader's baseline step
     baseline_radon_mi: float | None = None
+    base: str = ""  # range tasks: the commit the agent starts from (commit tasks: the parent)
+    kind: str = "commit"  # "commit" (one commit) or "range" (base..commit, commit is the end)
+    tier: str = "small"  # size tier: small | medium | large (range tasks must say which)
+
+    @property
+    def start(self) -> str:
+        """The commit the agent's workspace is exported from."""
+        return self.base or self.parent
 
 
 def count_sentences(text: str) -> int:
@@ -54,6 +64,12 @@ def _opt_float(v: object) -> float | None:
     return None if v is None else float(v)  # type: ignore[arg-type]
 
 
+def _required(data: dict) -> tuple[str, ...]:
+    if data.get("kind") == "range":  # a range starts at `base`; no parent needed; tier is explicit
+        return tuple("base" if k == "parent" else k for k in REQUIRED_KEYS)
+    return REQUIRED_KEYS
+
+
 def load_task(dir: Path, repo: Path | None = None) -> Task:
     """Read dir/task.toml and dir/prompt.md; with repo, also read hidden test names at the commit."""
     data = tomllib.loads((dir / "task.toml").read_text())
@@ -66,6 +82,14 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         for path in hidden:
             found.update(_test_functions(read_file(repo, data["commit"], path)))
         names = tuple(sorted(found))
+    kind = str(data.get("kind", "commit"))
+    if kind not in ("commit", "range"):
+        raise ValueError(f"{dir}: unknown task kind {kind!r}")
+    tier = str(data.get("tier", "small"))
+    if kind == "range" and "tier" not in data:
+        raise ValueError(f"{dir}: range task without tier (small | medium | large)")
+    if tier not in TIERS:
+        raise ValueError(f"{dir}: tier {tier!r} is not one of {', '.join(TIERS)}")
     return Task(
         id=str(data.get("id", dir.name)),
         commit=str(data.get("commit", "")),
@@ -76,9 +100,12 @@ def load_task(dir: Path, repo: Path | None = None) -> Task:
         pilot=bool(data.get("pilot", False)),
         prompt=prompt,
         test_names=names,
-        missing_keys=tuple(k for k in REQUIRED_KEYS if k not in data),
+        missing_keys=tuple(k for k in _required(data) if k not in data),
         baseline_radon_cc=_opt_float(data.get("baseline_radon_cc")),
         baseline_radon_mi=_opt_float(data.get("baseline_radon_mi")),
+        base=str(data.get("base", "")),
+        kind=kind,
+        tier=tier,
     )
 
 
@@ -88,11 +115,13 @@ def write_task(dir: Path, task: Task) -> None:
     (dir / "task.toml").write_text(
         f'id = "{task.id}"\n'
         f'commit = "{task.commit}"\n'
-        f'parent = "{task.parent}"\n'
-        f'layer = "{task.layer}"\n'
+        + (f'kind = "range"\nbase = "{task.base}"\n' if task.kind == "range" else "")
+        + (f'parent = "{task.parent}"\n' if task.kind == "commit" or task.parent else "")
+        + f'layer = "{task.layer}"\n'
         f"src_lines = {task.src_lines}\n"
         f"hidden_tests = [{hidden}]\n"
         f"pilot = {'true' if task.pilot else 'false'}\n"
+        f'tier = "{task.tier}"\n'
         + (
             f"baseline_radon_cc = {task.baseline_radon_cc!r}\n"
             f"baseline_radon_mi = {task.baseline_radon_mi!r}\n"
@@ -110,8 +139,9 @@ def _mentions(text: str, name: str) -> bool:
 def validate_task(task: Task) -> list[str]:
     errors = [f"{task.id}: task.toml missing key '{k}'" for k in task.missing_keys]
     n = count_sentences(task.prompt)
-    if not MIN_SENTENCES <= n <= MAX_SENTENCES:
-        errors.append(f"{task.id}: prompt has {n} sentences, needs {MIN_SENTENCES}-{MAX_SENTENCES}")
+    top = MAX_RANGE_SENTENCES if task.kind == "range" else MAX_SENTENCES
+    if not MIN_SENTENCES <= n <= top:
+        errors.append(f"{task.id}: prompt has {n} sentences, needs {MIN_SENTENCES}-{top}")
     if "TODO" in task.prompt:
         errors.append(f"{task.id}: prompt contains TODO")
     for path in task.hidden_tests:

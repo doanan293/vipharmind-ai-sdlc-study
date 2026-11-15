@@ -1,12 +1,14 @@
 """Stand-in for an agent CLI in tests; the runner uses it when SDLC_FAKE_AGENT points here.
 
 It ignores the real CLI flags it receives and acts on environment variables:
-  FAKE_AGENT_MODE    ok (default) | quota_once | sleep
+  FAKE_AGENT_MODE    ok (default) | quota_once | auth_once | auth_always | sleep | crash
   FAKE_AGENT_STATE   marker file: quota_once fails while it is absent, then creates it
   FAKE_AGENT_WRITE   JSON {relative path: content} written into the work tree (cwd)
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
   FAKE_AGENT_CWDLOG  file to append the agent's working directory to
   FAKE_AGENT_DELAY   seconds to sleep before finishing (ok mode)
+  FAKE_AGENT_ROTATE  claude: rewrite $CLAUDE_CONFIG_DIR/.credentials.json with this text
+  FAKE_AGENT_SAY     text emitted in an assistant event (e.g. a URL the agent "fetched")
   FAKE_AGENT_TIMELOG file to append "<start> <end>" to (CLOCK_MONOTONIC, system-wide on Linux)
 """
 
@@ -33,6 +35,19 @@ def main() -> int:
             f.write(os.getcwd() + "\n")
     mode = os.environ.get("FAKE_AGENT_MODE", "ok")
     emit({"type": "system", "subtype": "init", "model": "fake-model-served"})
+    if os.environ.get("FAKE_AGENT_ROTATE"):
+        (Path(os.environ["CLAUDE_CONFIG_DIR"]) / ".credentials.json").write_text(
+            os.environ["FAKE_AGENT_ROTATE"]
+        )
+    if os.environ.get("FAKE_AGENT_SAY"):
+        emit({"type": "assistant", "text": os.environ["FAKE_AGENT_SAY"]})
+    if mode == "auth_always" or (
+        mode == "auth_once" and not Path(os.environ["FAKE_AGENT_STATE"]).exists()
+    ):
+        if mode == "auth_once":
+            Path(os.environ["FAKE_AGENT_STATE"]).write_text("failed once\n")
+        print("Failed to authenticate. API Error: 401", file=sys.stderr)
+        return 1
     if mode == "quota_once":
         state = Path(os.environ["FAKE_AGENT_STATE"])
         if not state.exists():
@@ -48,6 +63,9 @@ def main() -> int:
         target.write_text(content)
     if mode == "sleep":
         time.sleep(300)
+    if mode == "crash":  # non-zero exit that is neither quota nor auth
+        print("connection reset by peer", file=sys.stderr)
+        return 3
     time.sleep(float(os.environ.get("FAKE_AGENT_DELAY", "0")))
     if os.environ.get("FAKE_AGENT_TIMELOG"):
         with open(os.environ["FAKE_AGENT_TIMELOG"], "a") as f:

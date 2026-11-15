@@ -6,19 +6,18 @@ from pathlib import Path
 import pytest
 
 from sdlc_harness.agents import (
-    AGY_AGENT,
-    AGY_DENY,
-    CODEX_WEB_OFF_FLAGS,
     Usage,
     build_command,
+    is_auth_error,
     is_quota_error,
     parse_usage,
+    upstream_urls,
 )
 
 PROMPT = Path("/runs/x/prompt.txt")
 
 
-def test_build_command_claude_disables_web_and_sets_medium():
+def test_build_command_claude_stock_agent_at_medium():
     cmd = build_command("claude", "claude-sonnet-5-5", "medium", PROMPT)
     assert cmd == [
         "claude",
@@ -32,9 +31,6 @@ def test_build_command_claude_disables_web_and_sets_medium():
         "--verbose",
         "--permission-mode",
         "bypassPermissions",
-        "--disallowedTools",
-        "WebFetch",
-        "WebSearch",
         "--strict-mcp-config",
         "--setting-sources",
         "",
@@ -57,12 +53,11 @@ def test_build_command_codex_sets_reasoning_medium():
     assert "--sandbox" not in cmd
     assert "--json" in cmd
     assert "--strict-config" in cmd
-    assert CODEX_WEB_OFF_FLAGS == ("-c", 'web_search="disabled"')
-    assert cmd[cmd.index("-c", cmd.index("-c") + 1) + 1] == 'web_search="disabled"'
+    assert not any("web_search" in a for a in cmd)  # stock tools (ruling R11)
     assert cmd[-1] == "-"  # prompt on stdin
 
 
-def test_build_command_agy_passes_prompt_as_print_value_and_uses_no_web_agent(tmp_path):
+def test_build_command_agy_passes_prompt_as_print_value_and_uses_stock_agent(tmp_path):
     prompt = tmp_path / "prompt.txt"
     prompt.write_text("Add mul.\n-p is not a flag here\n")
     cmd = build_command("agy", "gemini-3.8-flash-medium", "medium", prompt)
@@ -70,9 +65,7 @@ def test_build_command_agy_passes_prompt_as_print_value_and_uses_no_web_agent(tm
     assert cmd[cmd.index("--model") + 1] == "gemini-3.8-flash-medium"
     assert cmd[cmd.index("--effort") + 1] == "medium"
     assert cmd[cmd.index("--output-format") + 1] == "stream-json"
-    assert cmd[cmd.index("--agent") + 1] == AGY_AGENT
-    assert json.loads(cmd[cmd.index("--settings") + 1]) == {"permissions": {"deny": list(AGY_DENY)}}
-    assert "read_url(*)" in AGY_DENY
+    assert "--agent" not in cmd and "--settings" not in cmd  # stock agent (ruling R11)
     assert "--dangerously-skip-permissions" in cmd
     assert "--disable-slash-commands" in cmd
     # agy -p takes the prompt as its value (stdin is ignored): it must be the last argument
@@ -196,6 +189,9 @@ def test_is_quota_error_needs_failure_and_limit_message():
     ("agent", "message"),
     [
         ("claude", "Usage limit reached"),
+        ("claude", "5-hour limit reached - resets 3pm"),
+        ("claude", "Weekly limit reached"),
+        ("claude", "5 hour limit reached"),
         ("claude", "You've hit your session limit · resets 3pm"),
         ("claude", '{"type":"error","error":{"type":"rate_limit_error"}}'),
         ("codex", "You've reached your usage limit. Increase your limits to continue using codex."),
@@ -204,12 +200,113 @@ def test_is_quota_error_needs_failure_and_limit_message():
         ("agy", 'AGY_ERROR: {"short_error":"x","status":"RESOURCE_EXHAUSTED"}'),
         ("agy", "model gemini-3.8-flash-medium is out of quota until 18:00"),
         ("agy", "You have exhausted your capacity on this model"),
+        # observed in the pilot (agy 1.5.9, 2026-11-15), stderr of a run that exited 3
+        (
+            "agy",
+            (
+                "error: Individual quota reached. Please upgrade your subscription to increase "
+                "your limits. Resets in 167h3m55s."
+            ),
+        ),
     ],
 )
 def test_is_quota_error_known_messages(agent, message):
-    assert is_quota_error(agent, 1, message)
+    assert is_quota_error(agent, 1, message, message)  # as transcript and as stderr
+    if agent == "agy":
+        assert is_quota_error(agent, 1, "", message)
 
 
 def test_is_quota_error_ignores_unrelated_limits():
+    assert not is_quota_error("claude", 1, "Subagent nesting limit reached (depth 3 of 3)", "")
     assert not is_quota_error("claude", 1, "Subagent nesting limit reached (depth 3 of 3)")
     assert not is_quota_error("agy", 1, 'AGY_ERROR: {"short_error":"tool \\"swarm\\" not found"}')
+
+
+def test_upstream_urls_finds_repo_links_only():
+    transcript = (
+        '{"cmd": "git clone https://github.com/doanan293/ViPharmind.git"}\n'
+        '{"text": "from vipharmind.domain import X; see https://docs.python.org/3/"}\n'
+        '{"url": "https://raw.githubusercontent.com/x/vipharmind/main/a.py"}\n'
+        '{"cmd": "git clone https://github.com/doanan293/ViPharmind.git"}\n'
+    )
+    assert upstream_urls(transcript) == [
+        "https://github.com/doanan293/ViPharmind.git",
+        "https://raw.githubusercontent.com/x/vipharmind/main/a.py",
+    ]
+    assert upstream_urls('{"text": "import vipharmind"}') == []
+
+
+def test_agy_quota_ignores_code_the_agent_read():
+    read = _jsonl(
+        {
+            "event": "step_update",
+            "step_update": {"step_type": "tool", "output": "if status == 429: # rate limit"},
+        },
+        {"event": "result", "result": {"status": "ERROR", "error": "tool crashed"}},
+    )
+    assert not is_quota_error("agy", 3, read, "error: tool crashed")
+    # tool output mentioning quota is not agy's own error either
+    noisy = _jsonl({"event": "step_update", "step_update": {"output": "RESOURCE_EXHAUSTED"}})
+    assert not is_quota_error("agy", 3, noisy, "")
+
+
+def test_agy_quota_from_pilot_result_event_and_agy_error_line():
+    result = _jsonl(
+        {"event": "result", "result": {"status": "ERROR", "error": "Individual quota reached."}}
+    )
+    assert is_quota_error("agy", 3, result, "")
+    line = 'AGY_ERROR: {"short_error":"RESOURCE_EXHAUSTED (code 429): Individual quota reached."}'
+    assert is_quota_error("agy", 3, f"some output\n{line}\n", "")
+    assert not is_quota_error("agy", 0, result, "")
+
+
+def test_agy_generic_429_in_stderr_still_counts():
+    assert is_quota_error("agy", 1, "", "request failed: 429 Too Many Requests")
+
+
+def test_agy_quota_ignores_the_final_message_text():
+    final = _jsonl(
+        {"event": "result", "result": {"status": "DONE", "response": "fixed the 429 rate limit"}}
+    )
+    assert not is_quota_error("agy", 1, final, "")
+
+
+@pytest.mark.parametrize(
+    ("agent", "transcript", "stderr"),
+    [
+        (
+            "claude",
+            _jsonl(
+                {
+                    "type": "result",
+                    "is_error": True,
+                    "result": "Failed to authenticate. API Error: 401",
+                }
+            ),
+            "",
+        ),
+        ("claude", "", "Please run /login"),
+        ("codex", _jsonl({"type": "error", "message": "refresh token was already used"}), ""),
+        ("codex", "", "ERROR: unexpected status 401 Unauthorized"),
+        ("agy", "", 'AGY_ERROR: {"short_error":"invalid_grant"}'),
+        (
+            "agy",
+            _jsonl({"event": "result", "result": {"status": "ERROR", "error": "not logged in"}}),
+            "",
+        ),
+    ],
+)
+def test_is_auth_error_known_messages(agent, transcript, stderr):
+    assert is_auth_error(agent, 1, transcript, stderr)
+    assert not is_auth_error(agent, 0, transcript, stderr)
+
+
+def test_is_auth_error_ignores_tool_output_and_final_text():
+    tool = _jsonl(
+        {"type": "user", "message": {"content": "grep: 401 Unauthorized, invalid_grant"}},
+        {"type": "result", "is_error": False, "result": "handled the 401 case"},
+    )
+    assert not is_auth_error("claude", 1, tool, "")
+    agy = _jsonl({"event": "step_update", "step_update": {"output": "invalid_grant 401"}})
+    assert not is_auth_error("agy", 1, agy, "")
+    assert not is_auth_error("codex", 1, _jsonl({"type": "item.completed", "text": "401"}), "")

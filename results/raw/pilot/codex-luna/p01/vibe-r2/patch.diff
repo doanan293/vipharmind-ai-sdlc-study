@@ -1,0 +1,211 @@
+diff --git a/backend/src/pharma_agent/domain/corpus/authoring.py b/backend/src/pharma_agent/domain/corpus/authoring.py
+new file mode 100644
+index 0000000..a15d510
+--- /dev/null
++++ b/backend/src/pharma_agent/domain/corpus/authoring.py
+@@ -0,0 +1,205 @@
++"""Build knowledge bundles from authored Markdown documents."""
++
++from __future__ import annotations
++
++import re
++import unicodedata
++from collections.abc import Iterable, Sequence
++from dataclasses import dataclass
++
++from pharma_agent.domain.corpus.bundle import (
++    BUNDLE_SCHEMA_VERSION,
++    BlockKind,
++    BlockRecord,
++    BundleCollection,
++    BundleGenerator,
++    BundleManifest,
++    ColloquialMappingRecord,
++    DocumentRecord,
++    GlossaryEntry,
++    KnowledgeBundle,
++    SectionRecord,
++    SourceInfo,
++)
++from pharma_agent.domain.corpus.models import Collection
++from pharma_agent.domain.corpus.source import SourceDocument
++
++
++@dataclass(frozen=True)
++class MarkdownSection:
++    heading: str
++    path: tuple[str, ...]
++    ordinal: int
++    blocks: list[BlockRecord]
++
++
++_HEADING = re.compile(r"^( {0,3})(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
++
++
++def split_markdown(markdown: str, *, fallback_heading: str) -> list[MarkdownSection]:
++    """Split Markdown into heading sections, preserving prose and table blocks."""
++    lines = markdown.splitlines()
++    raw: list[tuple[str, tuple[str, ...], list[str]]] = []
++    stack: list[tuple[int, str]] = []
++    heading_seen = False
++    current_heading = fallback_heading
++    current_path: tuple[str, ...] = ()
++    current_lines: list[str] = []
++    fence: tuple[str, int] | None = None
++
++    def save() -> None:
++        raw.append((current_heading, current_path, current_lines.copy()))
++
++    for line in lines:
++        stripped = line.lstrip()
++        fence_match = re.match(r"^(`{3,}|~{3,})", stripped)
++        if fence is not None:
++            current_lines.append(line)
++            marker, width = fence
++            close = re.match(r"^\s*([`~]+)\s*$", line)
++            if close and close.group(1)[0] == marker and len(close.group(1)) >= width:
++                fence = None
++            continue
++        if fence_match:
++            token = fence_match.group(1)
++            fence = (token[0], len(token))
++            current_lines.append(line)
++            continue
++        match = _HEADING.match(line)
++        if not match:
++            current_lines.append(line)
++            continue
++        level, title = len(match.group(2)), match.group(3).strip()
++        if not title:
++            current_lines.append(line)
++            continue
++        if not heading_seen:
++            if any(part.strip() for part in current_lines):
++                save()
++            heading_seen = True
++        else:
++            save()
++        stack = [(depth, name) for depth, name in stack if depth < level]
++        parent_path = tuple(name for _, name in stack)
++        current_heading, current_path = title, parent_path
++        stack.append((level, title))
++        current_lines = []
++    save()
++
++    sections: list[MarkdownSection] = []
++    table_number = 0
++    for heading, path, content in raw:
++        blocks: list[BlockRecord] = []
++        prose: list[str] = []
++
++        def flush_prose(lines: list[str], output: list[BlockRecord]) -> None:
++            text = "\n".join(lines).strip()
++            if text:
++                output.append(BlockRecord(kind=BlockKind.PROSE, markdown=text))
++            lines.clear()
++
++        index = 0
++        block_fence: tuple[str, int] | None = None
++        while index < len(content):
++            line = content[index]
++            fence_match = re.match(r"^\s*(`{3,}|~{3,})", line)
++            if block_fence is not None:
++                prose.append(line)
++                close = re.match(r"^\s*([`~]+)\s*$", line)
++                if close and close.group(1)[0] == block_fence[0] and len(close.group(1)) >= block_fence[1]:
++                    block_fence = None
++                index += 1
++                continue
++            if fence_match:
++                block_fence = (fence_match.group(1)[0], len(fence_match.group(1)))
++                prose.append(line)
++                index += 1
++                continue
++            if line.startswith("|"):
++                flush_prose(prose, blocks)
++                rows: list[str] = []
++                while index < len(content) and content[index].startswith("|"):
++                    rows.append(content[index])
++                    index += 1
++                table_number += 1
++                blocks.append(BlockRecord(kind=BlockKind.TABLE, markdown="\n".join(rows), table_key=f"t{table_number}"))
++                continue
++            prose.append(line)
++            index += 1
++        flush_prose(prose, blocks)
++        if blocks:
++            sections.append(MarkdownSection(heading, path, len(sections) + 1, blocks))
++    return sections
++
++
++def slugify(text: str, *, max_length: int = 80) -> str:
++    """Return a bounded lowercase ASCII slug, including Vietnamese letter forms."""
++    text = text.replace("Đ", "D").replace("đ", "d")
++    normalized = unicodedata.normalize("NFKD", text)
++    ascii_text = normalized.encode("ascii", "ignore").decode("ascii").lower()
++    slug = re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")
++    if max_length < 1:
++        return ""
++    return slug[:max_length].rstrip("-")
++
++
++def section_key(document_key: str, path: Sequence[str]) -> str:
++    suffix = "/".join(filter(None, (slugify(part) for part in path))) or "body"
++    return f"{document_key}#{suffix}"
++
++
++def _qualified_key(collection_key: str, document_key: str) -> str:
++    return f"{collection_key}:{document_key}"
++
++
++def section_choices(
++    collection: Collection, documents: Iterable[SourceDocument]
++) -> list[tuple[str, str]]:
++    choices: list[tuple[str, str]] = []
++    for document in sorted(documents, key=lambda item: item.key):
++        full_key = _qualified_key(collection.key, document.key)
++        for section in split_markdown(document.markdown, fallback_heading=document.title):
++            path = (*section.path, section.heading)
++            choices.append((section_key(full_key, path), " › ".join((document.title, *path))))
++    return choices
++
++
++def build_bundle(
++    collection: Collection,
++    documents: Iterable[SourceDocument],
++    glossary: Sequence[GlossaryEntry],
++    colloquial: Sequence[ColloquialMappingRecord],
++) -> KnowledgeBundle:
++    """Build the deterministic bundle representation consumed by bundle import."""
++    ordered_documents = sorted(documents, key=lambda item: item.key)
++    sections: list[SectionRecord] = []
++    section_keys: set[str] = set()
++    for document in ordered_documents:
++        doc_key = _qualified_key(collection.key, document.key)
++        # The document key in both records and references is collection-qualified so
++        # identical authored keys in separate collections cannot collide.
++        for part in split_markdown(document.markdown, fallback_heading=document.title):
++            path = (*part.path, part.heading)
++            key = section_key(doc_key, path)
++            section_keys.add(key)
++            sections.append(SectionRecord(key=key, document_key=doc_key, heading=part.heading, context_path=list(part.path), ordinal=part.ordinal, blocks=part.blocks))
++    qualified_documents = [
++        DocumentRecord(
++            key=_qualified_key(collection.key, doc.key),
++            kind=doc.kind,
++            title=doc.title,
++            source=SourceInfo(title=doc.source_title, url=doc.source_url),
++        )
++        for doc in ordered_documents
++    ]
++    mappings = [mapping.model_copy(update={"section_keys": [key for key in mapping.section_keys if key in section_keys]}) for mapping in colloquial]
++    manifest = BundleManifest(
++        schema_version=BUNDLE_SCHEMA_VERSION,
++        collection=BundleCollection(key=collection.key, title=collection.title),
++        generator=BundleGenerator(name="pharma-agent-authoring", version="1", build_id="deterministic"),
++        source_digests={},
++        document_count=len(qualified_documents),
++        section_count=len(sections),
++        files={},
++    )
++    return KnowledgeBundle(manifest=manifest, documents=qualified_documents, sections=sections, glossary=list(glossary), colloquial_mappings=mappings)

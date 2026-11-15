@@ -1,0 +1,13 @@
+cohort,tier,task_id,arm,n_valid,pass_rate,hidden_pass_rate
+claude-sonnet,small,p01,spec,3,0.6666666666666666,0.9444444444444445
+claude-sonnet,small,p01,vibe,3,1.0,1.0
+claude-sonnet,small,p02,spec,3,1.0,1.0
+claude-sonnet,small,p02,vibe,3,1.0,1.0
+claude-opus,small,p01,spec,3,1.0,1.0
+claude-opus,small,p01,vibe,3,1.0,1.0
+claude-opus,small,p02,spec,3,1.0,1.0
+claude-opus,small,p02,vibe,3,1.0,1.0
+codex-luna,small,p01,spec,3,0.0,0.7222222222222222
+codex-luna,small,p01,vibe,3,0.3333333333333333,0.888888888888889
+codex-luna,small,p02,spec,3,1.0,1.0
+codex-luna,small,p02,vibe,3,1.0,1.0

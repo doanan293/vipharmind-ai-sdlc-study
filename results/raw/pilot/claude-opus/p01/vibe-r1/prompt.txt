@@ -1,0 +1,10 @@
+Implement the following change in this repository.
+
+Build a knowledge bundle from authored Markdown documents, in a new domain module `pharma_agent.domain.corpus.authoring`, so authored content can go through the existing bundle import.
+Provide `split_markdown(markdown, *, fallback_heading)` returning sections with `heading`, `path` (the tuple of enclosing headings, empty for the first section), `ordinal` and `blocks` (existing `BlockRecord` values); headings inside fenced code do not count, text before the first heading (or a document without headings) is a section titled `fallback_heading`, and sections with no content are dropped.
+Inside a section, each run of table rows (lines starting with `|`) becomes a table block with a `table_key` of `t1`, `t2` and so on, numbered across the whole document, and the text between tables becomes stripped prose blocks.
+Provide `slugify(text, *, max_length=80)` producing lowercase ASCII words joined by hyphens with Vietnamese marks removed (so `Đường uống` becomes `duong-uong`), and `section_key(document_key, path)` returning `<document_key>#<slugified path parts joined by "/">`, or `<document_key>#body` for an empty path.
+Document keys in the bundle are the collection key and the document key joined by a colon, so chunk ids never collide across collections.
+Provide `section_choices(collection, documents)` returning `(section key, label)` pairs in reading order, where the label is the document title followed by the heading path, joined by ` › `.
+Provide `build_bundle(collection, documents, glossary, colloquial)` returning a `KnowledgeBundle` with documents sorted by key, one section record per section, the glossary as given, colloquial mappings whose section keys that do not exist are removed, and a manifest that carries the collection key and title and the document and section counts.
+The bundle must be deterministic, so the same content always gives the same bundle digest.

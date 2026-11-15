@@ -4,10 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from sdlc_harness.agents import AGY_AGENT, AGY_TOOLS
 from sdlc_harness.tasks import Task
 from sdlc_harness.workspace import (
-    PROXY_KEY_ENV,
     ContaminatedTreeError,
     assert_clean_tree,
     collect_patch,
@@ -15,6 +13,9 @@ from sdlc_harness.workspace import (
     find_contaminants,
     prepare_config,
     prepare_workspace,
+    strip_contaminants,
+    tree_urls,
+    write_back_credentials,
 )
 
 HIDDEN_NEW = "backend/tests/test_new.py"
@@ -112,7 +113,7 @@ def test_prepare_config_claude_copies_only_credentials(tmp_path, host_uv):
     assert _tree(tmp_path / "run" / "config") == ["home/.claude/.credentials.json"]
 
 
-def test_prepare_config_agy_copies_token_and_writes_no_web_agent(tmp_path, host_uv):
+def test_prepare_config_agy_copies_only_the_token(tmp_path, host_uv):
     src = tmp_path / "antigravity-cli"
     (src / "brain").mkdir(parents=True)
     (src / "antigravity-oauth-token").write_text("tok")
@@ -124,38 +125,7 @@ def test_prepare_config_agy_copies_token_and_writes_no_web_agent(tmp_path, host_
     assert env["HOME"] == str(config / "home")
     assert _tree(config) == [
         "home/.gemini/antigravity-cli/antigravity-oauth-token",
-        f"home/.gemini/config/agents/{AGY_AGENT}.md",
     ]
-    agent = (config / f"home/.gemini/config/agents/{AGY_AGENT}.md").read_text()
-    assert f"name: {AGY_AGENT}" in agent
-    assert f"tools: [{', '.join(AGY_TOOLS)}]" in agent
-    assert "search_web" not in agent and "browser" not in agent
-    assert "mainAgent: true" in agent and "subagent: false" in agent
-
-
-def test_prepare_config_codex_proxy_reads_key_at_runtime(tmp_path, host_uv):
-    proxy = tmp_path / "proxy.yaml"
-    proxy.write_text('port: 8317\napi-keys:\n  - "sk-test-123"\nrouting:\n  strategy: rr\n')
-    accounts = tmp_path / "accounts.toml"
-    accounts.write_text(
-        f'[codex]\n1 = {{ proxy_config = "{proxy}", base_url = "http://localhost:8317/v1" }}\n'
-    )
-    env = prepare_config("codex", tmp_path / "run", 1, accounts)
-    codex_home = tmp_path / "run" / "config" / "home" / ".codex"
-    assert env["CODEX_HOME"] == str(codex_home)
-    assert env[PROXY_KEY_ENV] == "sk-test-123"
-    assert _tree(tmp_path / "run" / "config") == ["home/.codex/config.toml"]
-    config = tomllib.loads((codex_home / "config.toml").read_text())
-    assert "sk-test" not in (codex_home / "config.toml").read_text()
-    assert config["model_provider"] == "sdlc-proxy"
-    provider = config["model_providers"]["sdlc-proxy"]
-    assert provider["base_url"] == "http://localhost:8317/v1"
-    assert provider["env_key"] == PROXY_KEY_ENV
-    assert config["web_search"] == "disabled"
-    assert config["project_doc_max_bytes"] == 0
-    assert config["skills"] == {"bundled": {"enabled": False}, "include_instructions": False}
-    assert config["features"]["memories"] is False and config["features"]["plugins"] is False
-    assert "model_reasoning_effort" not in config  # only the command line sets it
 
 
 def test_prepare_config_codex_direct_copies_only_auth_json(tmp_path, host_uv):
@@ -165,14 +135,21 @@ def test_prepare_config_codex_direct_copies_only_auth_json(tmp_path, host_uv):
         (src / name).write_text("x")
     accounts = tmp_path / "accounts.toml"
     accounts.write_text(f'[codex]\n2 = "{src}"\n')
-    env = prepare_config("codex", tmp_path / "run", 2, accounts)
-    assert PROXY_KEY_ENV not in env
+    prepare_config("codex", tmp_path / "run", 2, accounts)
     assert _tree(tmp_path / "run" / "config") == [
         "home/.codex/auth.json",
         "home/.codex/config.toml",
     ]
     config = tomllib.loads((tmp_path / "run/config/home/.codex/config.toml").read_text())
-    assert "model_provider" not in config and config["web_search"] == "disabled"
+    assert "model_provider" not in config and "web_search" not in config
+    assert config["project_doc_max_bytes"] == 0
+    assert config["skills"] == {"bundled": {"enabled": False}, "include_instructions": False}
+    features = config["features"]
+    assert features["memories"] is False and features["plugins"] is False
+    assert features["apps"] is False
+    for stock in ("browser_use", "computer_use", "in_app_browser", "image_generation"):
+        assert stock not in features  # stock tools stay as shipped (ruling R11)
+    assert "model_reasoning_effort" not in config  # only the command line sets it
 
 
 def test_prepare_config_is_identical_for_two_attempts(tmp_path, host_uv):
@@ -231,7 +208,6 @@ CONTAMINANTS = {
 KEPT = {
     "docs/specs/keep.md": "k",
     "backend/src/pharma_agent/domain/superpowersish.py": "Z = 1\n",
-    "docs/agents.md": "lowercase name is not an instruction file",
 }
 
 
@@ -288,3 +264,124 @@ def test_assert_clean_tree_refuses_contaminated_tree(tmp_path):
     (tmp_path / "CLAUDE.md").write_text("x")
     with pytest.raises(ContaminatedTreeError, match="CLAUDE.md"):
         assert_clean_tree(tmp_path)
+
+
+def test_prepare_config_rejects_non_path_accounts(tmp_path, host_uv):
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text('[codex]\n1 = { base_url = "http://localhost:8317/v1" }\n')
+    with pytest.raises(TypeError):
+        prepare_config("codex", tmp_path / "run", 1, accounts)
+
+
+def test_strip_contaminants_is_case_insensitive_and_covers_editor_files(tmp_path):
+    for rel in (
+        "Agents.md",
+        "sub/claude.MD",
+        "gemini.md",
+        ".cursorrules",
+        ".windsurfrules",
+        ".Cursor/rules/x.mdc",
+        ".windsurf/rules.md",
+        ".github/copilot-instructions.md",
+        "a/Docs/SuperPowers/plans/p.md",
+        "Skills-Lock.json",
+        ".Claude/settings.json",
+        "keep/readme.md",
+        ".github/workflows/ci.yml",
+    ):
+        f = tmp_path / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("x")
+    removed = strip_contaminants(tmp_path)
+    assert find_contaminants(tmp_path) == []
+    assert len(removed) == 11
+    assert (tmp_path / "keep/readme.md").exists()
+    assert (tmp_path / ".github/workflows/ci.yml").exists()
+    assert not (tmp_path / ".github/copilot-instructions.md").exists()
+
+
+def test_tree_urls_collects_urls_present_in_the_tree(tmp_path):
+    (tmp_path / "pyproject.toml").write_text('url = "https://github.com/doanan293/ViPharmind"\n')
+    (tmp_path / "bin.dat").write_bytes(b"\xff\xfe")
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git/config").write_text("https://github.com/doanan293/secret")
+    assert tree_urls(tmp_path) == {"https://github.com/doanan293/ViPharmind"}
+
+
+def _creds_world(tmp_path, agent="claude"):
+    name = {"claude": ".credentials.json", "codex": "auth.json", "agy": "antigravity-oauth-token"}
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / name[agent]).write_text("old")
+    (src / name[agent]).chmod(0o600)
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text(f'[{agent}]\n1 = "{src}"\n')
+    return src / name[agent], accounts
+
+
+@pytest.mark.parametrize("agent", ["claude", "codex", "agy"])
+def test_write_back_copies_a_rotated_token(tmp_path, host_uv, agent):
+    source, accounts = _creds_world(tmp_path, agent)
+    prepare_config(agent, tmp_path / "run", 1, accounts)
+    (tmp_path / "run").glob("config/home/**/*")
+    cred = next(p for p in (tmp_path / "run/config/home").rglob(source.name))
+    cred.write_text('{"t": "new"}')
+    assert write_back_credentials(agent, tmp_path / "run", 1, accounts) is True
+    assert source.read_text() == '{"t": "new"}'
+    assert source.stat().st_mode & 0o777 == 0o600
+    assert [p.name for p in source.parent.iterdir()] == [source.name]  # no temp file left
+
+
+def test_write_back_skips_unchanged_and_missing(tmp_path, host_uv):
+    source, accounts = _creds_world(tmp_path)
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    source.write_text("someone else rotated")  # unchanged copy must not clobber a newer source
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    assert source.read_text() == "someone else rotated"
+    assert write_back_credentials("claude", tmp_path / "never", 1, accounts) is False
+
+
+def _run_cred(tmp_path):
+    return next((tmp_path / "run/config/home").rglob(".credentials.json"))
+
+
+def test_write_back_is_compare_and_swap(tmp_path, host_uv, caplog):
+    source, accounts = _creds_world(tmp_path)
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text('{"t": "mine"}')
+    source.write_text('{"t": "theirs"}')  # another unit already wrote back a newer token
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    assert source.read_text() == '{"t": "theirs"}'
+    assert "mine" not in caplog.text and "theirs" not in caplog.text
+
+
+@pytest.mark.parametrize("bad", ["", "  \n", "not json"])
+def test_write_back_needs_non_empty_json(tmp_path, host_uv, bad):
+    source, accounts = _creds_world(tmp_path)
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text(bad)
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is False
+    assert source.read_text() == "old"
+
+
+def test_write_back_follows_a_symlinked_source(tmp_path, host_uv):
+    real = tmp_path / "real.json"
+    real.write_text("old")
+    real.chmod(0o600)
+    link = tmp_path / "link.json"
+    link.symlink_to(real)
+    accounts = tmp_path / "accounts.toml"
+    accounts.write_text(f'[claude]\n1 = "{link}"\n')
+    prepare_config("claude", tmp_path / "run", 1, accounts)
+    _run_cred(tmp_path).write_text('{"t": 1}')
+    assert write_back_credentials("claude", tmp_path / "run", 1, accounts) is True
+    assert link.is_symlink() and real.read_text() == '{"t": 1}'
+
+
+def test_agents_md_is_stripped_only_at_root(tmp_path):
+    for rel in ("agents.md", "docs/agents.md", "docs/AGENTS.md", "CLAUDE.md", "docs/Claude.md"):
+        f = tmp_path / rel
+        f.parent.mkdir(exist_ok=True)
+        f.write_text("x")
+    assert find_contaminants(tmp_path) == ["CLAUDE.md", "agents.md", "docs/Claude.md"]

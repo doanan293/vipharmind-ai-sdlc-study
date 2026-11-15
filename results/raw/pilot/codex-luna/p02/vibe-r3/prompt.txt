@@ -1,0 +1,10 @@
+Implement the following change in this repository.
+
+Pre-generate the message ids of a chat turn so clients know them from the start of the stream, and report on the final event whether the turn was saved.
+When `ChatService.open_turn` creates a `ChatSession`, it must generate two distinct ids with the existing `new_id` helper and expose them as the read-only properties `user_message_id` and `assistant_message_id`.
+`build_turn_messages` in `pharma_agent.domain.conversation.turns` must take these ids as the new required keyword arguments `user_message_id` and `assistant_message_id` and use them for the stored user and assistant messages instead of generating ids itself.
+The first `conversation` progress event must also carry `message_id`, set to the assistant message id.
+The final `done` event must carry `message_id` (the assistant message id, or `None` when saving failed), `persisted` (whether the turn was saved) and `created_at` (the ISO timestamp of the stored assistant message).
+`ChatTurnResult` gains `user_message_id`, `assistant_message_id` and `created_at`, the latter equal to the stored assistant message's creation time.
+A failed save must no longer emit a separate `error` event after `done`: remove the `error` event type, the `PERSIST_FAILED` code and its message, so `done` is always the last and only completion event and the answer is still delivered.
+The CLI's event rendering must print `!! Không lưu được lượt hội thoại này.` to standard error when a `done` event reports `persisted` as false, and print nothing to standard error otherwise.

@@ -35,8 +35,9 @@ phân tích phản biện (25%): có đối chứng, số liệu thật, lặp l
   không?
 - **RQ5.** Lợi ích của làm theo đặc tả thay đổi thế nào khi dùng mô hình mạnh hơn (Claude Opus 5.5 so
   với Claude Sonnet 5.5, cùng trong Claude Code)?
-- **RQ6 (khám phá).** Khoảng cách giữa hai cách làm thay đổi thế nào khi nhiệm vụ lớn cỡ một tính năng
-  (nhiều commit, 750–1.500 dòng) thay vì một commit?
+- **RQ6.** Khoảng cách giữa hai cách làm thay đổi thế nào theo kích thước nhiệm vụ, từ một commit nhỏ
+  tới cỡ một tính năng (nhiều commit, 750–1.500 dòng)? Đây là trục chính của câu chuyện nghiên cứu:
+  làm theo đặc tả có một chi phí cố định (thiết kế, kế hoạch), chỉ có thể đáng khi nhiệm vụ đủ lớn.
 
 RQ1, RQ2 do phần hồi cứu trả lời. RQ3 đến RQ6 do phần thực nghiệm trả lời.
 
@@ -195,7 +196,7 @@ do AI soạn, tác giả không sửa.
 commit và gắn thẻ git `prereg-v1` trước lượt chạy chính đầu tiên. Lượt chạy trên 2 nhiệm vụ thử được
 phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong báo cáo kèm lý do.
 
-### 7.2b Tầng tính năng (khám phá, RQ6)
+### 7.2b Tầng tính năng (RQ6, H5)
 
 **Lý do.** Đề một commit có trung vị 120 dòng, trong khi một plan của ViPharmind gồm khoảng 11 phần
 việc (khoảng 11 commit). Đề nhỏ có thể làm lợi ích của làm theo đặc tả không lộ ra (quyết định của An,
@@ -212,16 +213,44 @@ mà test ẩn chỉ cần đề bài nêu ít tên (6–25) và collect được
 | F14 invitations | `c2935909a101` | `11079ab21c7f` | 4 | 1.464 |
 | F15 collections | `11079ab21c7f` | `ef23fe8cb403` | 5 | 1.367 |
 
-F09 và F04 bị loại vì đề bài phải nêu 30–35 tên, gần như là một bản thiết kế viết sẵn, làm nhiễu phép
-so sánh. F08 chứa commit của nhiệm vụ nhỏ t03 và nhiệm vụ thử p02; báo cáo ghi chú, phân tích hai tầng
+Trong đợt chọn đầu, F09 và F04 bị loại vì đề bài phải nêu 30–35 tên, gần như là một bản thiết kế viết
+sẵn. Từ `prereg-v1`, mọi đoạn (kể cả F04, F07, F09) được xét lại theo cùng ngưỡng tối đa 35 tên. F08 chứa commit của nhiệm vụ nhỏ t03 và nhiệm vụ thử p02; báo cáo ghi chú, phân tích hai tầng
 tách riêng.
 
 **Khác với tầng nhỏ.** Mã nền là commit `base`; test ẩn là mọi `test_*.py` thêm hoặc sửa trong đoạn;
 khi chấm khôi phục mọi file `backend/tests` đổi trong đoạn và `pyproject.toml`/`uv.lock` từ `end`, rồi
 chạy toàn bộ test không mang nhãn `integration`. Đề bài có thêm mục "giao diện bắt buộc" sinh từ
-`coupling.json` và `fakes_contract.json`. Chỉ chạy trên `claude-sonnet` và `claude-opus`: 3 nhiệm vụ ×
-2 cách làm × 3 lần lặp × 2 mô hình = **36 lượt**. Phân tích chỉ mô tả, kèm khoảng tin cậy, không kết
-luận thống kê.
+`coupling.json` và `fakes_contract.json`, được Fable 5.2 duyệt độc lập (`tasks/FEATURE_REVIEW_fable.md`)
+rồi An duyệt. Chạy trên cả 4 nhóm với 3 lần lặp như tầng nhỏ. Giới hạn thời gian đặt theo quy tắc:
+tầng nhỏ 3600 s, tầng vừa gấp 2 (7200 s), tầng lớn gấp 3 (10800 s) (`prereg/prereg-v1.md` mục 4).
+
+**Ba tầng kích thước (quyết định của An 2026-11-15, trước thẻ `prereg-v1`).** Phân tích lấy mẫu lại theo
+nhiệm vụ, nên số nhiệm vụ quan trọng hơn số lần lặp. Vì vậy giữ 3 lần lặp và tăng số nhiệm vụ:
+
+- **Nhỏ:** 15 nhiệm vụ, mỗi nhiệm vụ 1 commit, 43–311 dòng `backend/src`.
+- **Vừa:** tối đa 5 nhiệm vụ `m01`–`m05`, mỗi nhiệm vụ 2–3 commit liền nhau, 300–700 dòng, tối đa 20
+  tên trong đề, lấp khoảng trống giữa hai tầng kia.
+- **Lớn:** tối đa 5 đoạn trong 16 đoạn của `ranges.json` qua cùng tiêu chí: từ 750 dòng trở lên, tối đa
+  35 tên trong đề (F08, F14, F15 và các đoạn khác như F04, F07, F09 nếu qua).
+
+Tiêu chí chọn tầng vừa và hai đoạn lớn thêm giống hệt 3 đoạn đầu (commit liền nhau của một plan, chỉ
+backend, test ẩn trượt ở base và đạt ở end, bản vá gốc chấm đạt không hồi quy, đề nêu được mọi tên test
+cần), cộng giới hạn số dòng và số tên ở trên. Mọi ứng viên qua tiêu chí đều được nhận; tầng nào có hơn
+5 ứng viên thì giữ theo thứ tự cố định (không chứa commit của t01–t15 trước, rồi số tên tăng dần, rồi mã
+commit `end`). Mọi ứng viên và lý do loại được ghi ở `tasks/feature-feasibility/medium_candidates.json`;
+việc chọn không dựa trên bất kỳ lượt chạy AI nào, và không lượt AI nào chạy trên một ứng viên trước thẻ
+`prereg-v1.1`. Ràng buộc đầy đủ ở đầu `prereg/prereg-v1.md`. Đề bài qua cùng quy trình: soạn, đối chiếu tên với test ẩn, Fable 5.2 duyệt
+độc lập, An duyệt.
+
+**Vì sao mở rộng (quyết định của An, 2026-11-15, sau chạy thử, trước thẻ `prereg-v1`).** Chạy thử cho
+thấy Claude gần đạt trần trên đề nhỏ ở cả hai cách làm (11/12 và 12/12), nên khác biệt chỉ có thể lộ
+ra ở nhiệm vụ lớn. Chỉ có 3 đoạn commit đủ sạch nên không thêm được đề; tăng lần lặp và số nhóm để
+ước lượng ở tầng này đủ chặt. Quyết định này dựa trên hiện tượng chạm trần, không dựa trên hiệu số
+giữa hai cách làm ở chạy thử (2 đề, chênh 1 lượt, không có ý nghĩa).
+
+**Giới hạn của bộ chấm ở tầng này.** Test mang nhãn `integration` (cần Postgres thật) không nằm trong
+bộ chấm, nên repository Postgres, migration và CLI quản trị của F14, F15 (khoảng một phần ba F15)
+không được chấm. Giới hạn này như nhau cho hai cách làm.
 
 ### 7.3 Hai cách làm
 
@@ -237,8 +266,9 @@ hình, cùng quyền dùng công cụ, cùng giới hạn lượt và thời gia
 Mỗi lượt là **một phiên duy nhất** cho cả hai cách. Ở cách theo đặc tả, AI viết tài liệu thiết kế và
 kế hoạch thành file trong thư mục làm việc rồi cài đặt tiếp trong cùng phiên đó; giới hạn lượt và
 thời gian tính cho cả phiên. Không chia thành ba lần gọi riêng, để hai cách chỉ khác nhau ở lời dặn.
-Lượt theo đặc tả mà không để lại file thiết kế và kế hoạch được đánh dấu "không tuân thủ quy trình",
-vẫn chấm và báo cáo riêng.
+Lượt theo đặc tả mà không để lại file thiết kế và kế hoạch được đánh dấu "không tuân thủ quy trình".
+Phép thử chính vẫn tính các lượt này (phân tích theo phân bổ); bỏ chúng chỉ là phân tích độ nhạy
+(`prereg/prereg-v1.md` mục 2).
 
 **Tái hiện quy trình thật.** Lời dặn của nhánh theo đặc tả mô tả đúng quy trình An dùng khi làm
 ViPharmind: viết spec, viết plan, rồi làm theo plan. Plan chia việc theo kích thước tự nhiên, mỗi phần
@@ -263,9 +293,12 @@ Mỗi lượt chạy:
 1. Xuất mã ViPharmind tại commit cha vào một thư mục mới **không kèm lịch sử git**, để AI không đọc
    được các commit tương lai.
 2. Xóa các file test ẩn khỏi thư mục đó.
-3. Gọi trợ lý lập trình ở chế độ không tương tác với đề bài và lời dặn của cách làm. Tắt công cụ truy
-   cập web, vì repo ViPharmind công khai. Dùng thư mục cấu hình sạch: không plugin, không skill,
-   không bộ nhớ, không file hướng dẫn riêng.
+3. Gọi trợ lý lập trình ở chế độ không tương tác với đề bài và lời dặn của cách làm. Mỗi công cụ chạy
+   **agent mặc định với bộ công cụ mặc định**, kể cả công cụ web (quyết định của An sau chạy thử,
+   ruling R11). Chỉ bỏ phần cài thêm của người dùng: thư mục cấu hình sạch, không plugin, không skill,
+   không MCP, không bộ nhớ, không file hướng dẫn riêng. Vì repo ViPharmind công khai, bộ chạy ghi mọi
+   đường dẫn tới repo gốc xuất hiện trong nhật ký (`upstream_urls`); phần phân tích chạy lại một lần
+   bỏ các lượt có truy cập này, và báo cáo ghi việc mở mạng là một hạn chế.
 4. Khi AI dừng hoặc chạm giới hạn, chép test ẩn vào lại và chấm.
 5. Lưu kết quả thô: đề bài đã gửi, toàn bộ nhật ký lượt chạy, bản vá, kết quả từng test, số liệu chi
    phí.
@@ -275,17 +308,19 @@ riêng, không dùng chung trạng thái. Thời gian chạy đo theo từng lư
 ngẫu nhiên có hạt giống cố định, để hai cách làm không rơi vào hai khung giờ khác nhau của dịch vụ.
 
 Quy mô: 15 nhiệm vụ × 2 cách làm × 3 lần lặp = **90 lượt mỗi mô hình**. Đợt 1 có hai mô hình nên
-180 lượt; tổng cả ba đợt là **360 lượt**, cộng 36 lượt của tầng tính năng (mục 7.2b).
+180 lượt; tổng cả ba đợt là **360 lượt**. Tầng vừa và tầng lớn (mục 7.2b), mỗi tầng tối đa 5 nhiệm
+vụ × 2 cách làm × 3 lần lặp × 4 nhóm, thêm tối đa 240 lượt; tổng tối đa **600 lượt**.
 
 | Đợt | Công cụ (bản lúc thiết kế) | Lệnh chạy tự động | Mô hình | Vai trò |
 | --- | --- | --- | --- | --- |
 | 1 | Claude Code 2.1.325 | `claude -p` | Claude Sonnet 5.5 (`claude-sonnet-5-5`), effort medium | Kết quả chính, RQ3 |
 | 1 | Claude Code 2.1.325 | `claude -p` | Claude Opus 5.5 (`claude-opus-5-5`), effort medium | RQ3, RQ5 |
-| 2 | Antigravity CLI 1.5.8 | `agy -p` | Gemini 3.8 Flash Medium (`gemini-3.8-flash-medium`) | Kiểm chứng, RQ4 |
+| 2 | Antigravity CLI 1.5.8 (1.5.9 lúc chạy thử) | `agy -p` | Gemini 3.8 Flash Medium (`gemini-3.8-flash-medium`) | Kiểm chứng, RQ4 |
 | 3 | Codex CLI 0.162.1 | `codex exec` | `gpt-6-luna`, mức suy luận medium | Kiểm chứng, RQ4 |
 
-Ba đợt dùng cùng nhiệm vụ, cùng đề bài, cùng lời dặn. Đợt 2 và 3 chỉ bắt đầu sau khi đợt 1 xong và
-đã phân tích; nếu thiếu thời gian, bỏ đợt 3 trước, rồi đợt 2, và ghi rõ trong báo cáo.
+Ba đợt dùng cùng nhiệm vụ, cùng đề bài, cùng lời dặn. Bốn nhóm chạy cùng lúc vì mỗi nhóm có hạn mức
+riêng; hạn chót thu dữ liệu, cách xử lý nhóm chưa chạy đủ và thứ tự ưu tiên ở `prereg/prereg-v1.md`
+mục 10.
 
 Lý do chọn mô hình:
 
@@ -302,10 +337,14 @@ Lý do chọn mô hình:
 - Thư mục cấu hình sạch vẫn phải giữ thông tin đăng nhập của công cụ.
 - Khi chạm hạn mức, bộ chạy tạm dừng và chạy lại đúng lượt đó sau; lượt bị ngắt vì hạn mức không tính
   là thất bại và không tính vào 3 lần lặp.
-- Chi phí bằng tiền là số quy đổi: lượng token thật của mỗi lượt nhân với bảng giá API công khai tại
-  ngày chạy, ghi rõ là quy đổi.
+- Chi phí bằng tiền là số quy đổi: lượng token thật của mỗi lượt (tách đọc cache, ghi cache) nhân với
+  một bảng giá API công khai chốt ngày 2026-11-15 (`prereg/prereg-v1.md` mục 7), ghi rõ là quy đổi.
 
-**Nhiều tài khoản và proxy.** An có nhiều tài khoản để đổi khi hết hạn mức. Thông tin đăng nhập nằm
+**Nhiều tài khoản và proxy.** Theo ruling R11 (sau chạy thử), lượt chính không chạy qua proxy: mọi
+công cụ gọi thẳng CLI của nó, proxy chỉ là nơi lấy token đăng nhập của các tài khoản phụ. Phần dưới
+ghi lại cấu hình lúc thiết kế; chỗ nào nói chạy qua proxy thì không còn áp dụng.
+
+An có nhiều tài khoản để đổi khi hết hạn mức. Thông tin đăng nhập nằm
 trong proxy `cli-proxy-api` (v8.0.28) của repo
 `/home/andv/personal/HUST/principle-technique-program-analysis`, thư mục `infra/proxy/`, dùng chung
 volume Docker `vipharmind_cli_proxy_auth`. Theo `infra/proxy/MODELS.md` ngày 2026-11-08: 4 tài khoản
@@ -313,11 +352,14 @@ Antigravity, 4 tài khoản Codex miễn phí, 1 tài khoản Claude; proxy chia
 khoản khi một tài khoản hết hạn mức. Proxy là cổng gọi mô hình kiểu API, không phải trợ lý lập trình,
 nên mỗi công cụ dùng nó theo cách riêng:
 
-- **Claude Code:** chỉ có 1 tài khoản, chạy thẳng bằng đăng nhập sẵn có, không qua proxy.
-- **Codex CLI:** trỏ nhà cung cấp mô hình của Codex tới proxy để xoay vòng 4 tài khoản.
-- **Antigravity CLI:** ưu tiên chạy thẳng `agy` vì mức Medium chỉ có ở đó (proxy chỉ có
-  `gemini-3.8-flash-high`). Khi hết hạn mức thì đổi tài khoản đăng nhập của `agy`; cách đổi tự động
-  do người thực hiện xác định khi chạy thử.
+- **Claude Code:** 1 tài khoản, chạy thẳng bằng đăng nhập sẵn có, không qua proxy (token Claude trong
+  proxy không dùng được cho Claude Code).
+- **Codex CLI:** chạy thẳng `codex exec`, xoay vòng các đăng nhập trực tiếp như Antigravity.
+- **Antigravity CLI:** chạy thẳng `agy` vì mức Medium chỉ có ở đó. Xoay vòng các đăng nhập trực tiếp:
+  tài khoản 1 là `~/.gemini`, các tài khoản khác lấy token đăng nhập trong proxy chuyển sang định dạng
+  của `agy` (đã chạy thử từng tài khoản). Bộ chạy tự đổi sang tài khoản kế tiếp khi hết hạn mức.
+
+Mọi tài khoản đều của An. An quyết định xoay vòng nhiều tài khoản là chấp nhận được (2026-11-15).
 
 Ràng buộc khi dùng proxy và nhiều tài khoản:
 
@@ -325,13 +367,12 @@ Ràng buộc khi dùng proxy và nhiều tài khoản:
 - Proxy có thể sửa yêu cầu gửi đi (ép mức suy luận, đổi mô hình phía sau một tên gọi). Dùng cấu hình
   không ép mức suy luận, và ghi mô hình thực tế được phục vụ cho từng lượt.
 - Ghi lại tài khoản thứ mấy (số thứ tự, không ghi email) phục vụ từng lượt. Báo cáo nêu rõ thí nghiệm
-  chạy trên nhiều tài khoản và qua proxy.
-- Kiểm tra điều khoản của từng dịch vụ về việc xoay nhiều tài khoản trước khi chạy đợt 2 và 3.
+  chạy trên nhiều tài khoản (không qua proxy, ruling R11).
 
 Phải kiểm tra khi chạy 2 nhiệm vụ thử, trước thẻ `prereg-v1`: điều khoản của từng gói về chạy tự
-động; hạn mức thực tế; cách tắt truy cập web ở `agy` và `codex`; mỗi công cụ có trả lượng token hay
-không. Công cụ nào không tắt được truy cập web hoặc không cho chạy tự động thì loại khỏi thí nghiệm
-và ghi lý do.
+động; hạn mức thực tế; mỗi công cụ có trả lượng token hay không. Công cụ nào không cho chạy tự động thì
+loại khỏi thí nghiệm và ghi lý do. (Yêu cầu tắt truy cập web đã bỏ theo ruling R11: mạng mở là hạn chế
+được chấp nhận, xem mục 7.4.)
 
 Ghi lại phiên bản công cụ và mã mô hình chính xác của từng lượt. Tra mốc dữ liệu huấn luyện của cả ba
 mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" cho mô hình có mốc trước 2026-07-23.
@@ -352,15 +393,38 @@ mô hình; chỉ viết nhận định "mô hình chưa từng thấy mã này" 
 **Giả thuyết ghi trước:** H1, làm theo đặc tả có tỉ lệ đạt nhiệm vụ cao hơn vibe coding. H2, làm
 theo đặc tả tốn nhiều token và thời gian hơn. H3, làm theo đặc tả ít lỗi chất lượng tĩnh, ít hồi
 quy hơn và có chỉ số bảo trì không kém hơn. H4, khoảng cách về tỉ lệ đạt giữa hai cách làm ở Sonnet
-lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn.
+lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhiều hơn. H5, hiệu số tỉ lệ đạt (đặc tả trừ
+vibe) tăng theo kích thước nhiệm vụ: ở tầng lớn lớn hơn ở tầng nhỏ, và tăng theo số dòng của bản vá gốc.
 
-**Phân tích.** So sánh theo cặp trên từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy
-mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
+**Phân tích.** Phép thử xác nhận duy nhất là H1 trên nhóm `claude-sonnet`, tầng nhỏ; H5 là phép thử
+phụ quan trọng nhất; còn lại là phụ (chi tiết ở `prereg/prereg-v1.md` mục 9). So sánh theo cặp trên
+từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
 vào ngưỡng p. Báo cáo cả độ dao động giữa 3 lần lặp của cùng một nhiệm vụ.
 
 Với RQ5, phân tích đợt 1 như một thiết kế 2 × 2 (cách làm × mô hình): báo cáo bốn tỉ lệ đạt, hiệu số
 giữa hai cách làm ở từng mô hình, và hiệu của hai hiệu số đó (tương tác) kèm khoảng tin cậy bootstrap
 theo nhiệm vụ. So sánh thêm Sonnet theo đặc tả với Opus vibe coding về tỉ lệ đạt và chi phí quy đổi.
+
+**H5, tương tác cách làm × kích thước.** Phép thử chính: hiệu của hai hiệu số (tầng lớn trừ tầng
+nhỏ) của tỉ lệ đạt đặc tả trừ vibe, gộp các nhóm chạy đủ ở cả ba tầng, kèm khoảng tin cậy bootstrap
+lấy mẫu lại theo nhiệm vụ trong từng tầng. Phân tích bổ trợ trên mọi nhiệm vụ của ba tầng: hồi quy
+logistic hỗn hợp `pass ~ arm × log(src_lines) + cohort + (1 + arm | task)`, có phương án lùi khi không
+hội tụ (`prereg/prereg-v1.md` mục 9, điểm 4); báo cáo hệ số tương tác và hình
+"hiệu số theo kích thước" (mỗi điểm là một nhiệm vụ, đường xu hướng kèm dải tin cậy). Tầng vừa và tầng lớn mỗi tầng
+chỉ có tối đa 5 nhiệm vụ, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
+chiều) đều được báo cáo như nhau.
+
+**Hiệu quả chi phí (bổ sung, quyết định của An 2026-11-15).** Với từng nhóm và từng tầng, báo cáo số
+lượt đạt trên mỗi đô quy đổi (tổng lượt đạt chia tổng chi phí quy đổi) của hai cách làm, và chi phí
+quy đổi trung bình cho một lượt đạt, kèm khoảng tin cậy bootstrap theo nhiệm vụ.
+
+**Ca nghiên cứu định tính (bổ sung, quyết định của An 2026-11-15).** Quy tắc chọn chốt trước: trong tầng
+lớn, với nhóm `claude-sonnet`, lấy nhiệm vụ có trị tuyệt đối hiệu số tỉ lệ đạt giữa hai cách
+làm lớn nhất (hòa thì lấy nhiệm vụ có bản vá gốc lớn hơn); trong nhiệm vụ đó, lấy lượt có số lần lặp
+nhỏ nhất của mỗi cách làm (ưu tiên một lượt đạt và một lượt không đạt nếu hai cách làm khác kết quả).
+Đặt cạnh nhau: thiết kế và kế hoạch AI viết (cách làm theo đặc tả), chuỗi hành động chính, chỗ sai,
+cách sửa, test ẩn trượt, chi phí. Nếu mọi nhiệm vụ tầng lớn có hiệu số bằng 0 thì lấy nhiệm vụ có bản
+vá gốc lớn nhất. Trích nguyên văn nhật ký, đã xóa email. Phần này minh họa cơ chế, không dùng để kết luận.
 
 **Theo kích thước nhiệm vụ.** Chia 15 nhiệm vụ theo số dòng thay đổi của bản vá gốc (nhỏ, vừa, lớn,
 ngưỡng chốt trước thẻ `prereg-v1`) và báo cáo hiệu số giữa hai cách làm ở từng nhóm. Đây là phân tích
@@ -368,19 +432,22 @@ khám phá vì mỗi nhóm chỉ có khoảng 5 nhiệm vụ, không dùng để
 
 ### 7.6 Phân tích lỗi và kiểm tra bằng người
 
-- **Gán nhãn nguyên nhân thất bại.** Hai thành viên thuyết trình gán nhãn độc lập cho mọi lượt của đợt 1 không
-  đạt, theo một bảng nhãn có định nghĩa và ví dụ. Họ nhận kết quả test và bản vá đã bỏ file thiết kế,
-  kế hoạch, để không biết lượt đó thuộc cách làm nào. Báo cáo hệ số kappa của Cohen. Chỗ lệch nhau do
-  An phân xử và ghi lại.
-- **Bảng nhãn khởi đầu:** hiểu sai yêu cầu; làm thiếu; sai giao diện đã nêu trong đề bài; làm hỏng
-  chức năng cũ; lỗi logic; không hoàn thành trong giới hạn; lỗi môi trường. Bảng được chỉnh sau khi
-  gán thử trên các lượt của 2 nhiệm vụ thử, rồi khóa.
+- **Gán nhãn nguyên nhân thất bại.** Hai thành viên thuyết trình gán nhãn độc lập cho mọi lượt hợp lệ
+  không đạt của hai nhóm Claude ở cả ba tầng, theo một bảng nhãn có định nghĩa và ví dụ. Họ nhận kết quả
+  test và bản vá đã bỏ file thiết kế, kế hoạch, dưới mã ngẫu nhiên. Việc làm mù chỉ là một phần, vì bản
+  vá vẫn có thể để lộ cách làm; người gán ghi "lộ cách làm" khi nhận ra. Báo cáo hệ số kappa của Cohen.
+  Chỗ lệch nhau do An phân xử và ghi lại.
+- **Bảng nhãn:** hiểu sai yêu cầu; làm thiếu; sai giao diện đã nêu trong đề bài; làm hỏng chức năng cũ;
+  lỗi logic; không hoàn thành trong giới hạn; lỗi môi trường; cộng hai nhãn từ gán thử: đề bài thiếu
+  hoặc mơ hồ; dùng sai kiểu hoặc API có sẵn của dự án. Bảng khóa tại thẻ `prereg-v1`
+  (`prereg/labeling-guide.md`).
 - **Đạt test nhưng sai.** An đọc một mẫu ngẫu nhiên 20 lượt đạt, đối chiếu với bản vá gốc, ghi lại
   trường hợp mã đạt test nhưng sai hoặc thiếu hành vi.
 
 ### 7.7 Hạn chế phải nêu trong báo cáo
 
-- Một dự án, một ngôn ngữ (Python), 15 nhiệm vụ.
+- Một dự án, một ngôn ngữ (Python), 15 nhiệm vụ một commit cộng tối đa 10 nhiệm vụ nhiều commit; các
+  tầng có nhiệm vụ chung commit hoặc chung test ẩn.
 - Ba mô hình khác hạng nhau, nên không so sánh được công cụ với công cụ.
 - Test ẩn được viết cho bản cài đặt gốc, và bản gốc được làm theo đặc tả, nên có thể thiên vị nhánh
   theo đặc tả.
@@ -431,14 +498,15 @@ Thứ tự làm, mỗi bước là một kế hoạch riêng:
 1. Đề cương.
 2. Bộ nhiệm vụ và bộ chạy, chạy thử 2 nhiệm vụ, gắn thẻ `prereg-v1`. Làm sớm vì đây là rủi ro khả
    thi lớn nhất (hạn mức, tắt truy cập web, số token).
-3. Đợt 1 (Claude Code) và phân tích. Kết quả đầu tiên dùng cho báo cáo tiến độ.
+3. Chạy chính bốn nhóm cùng lúc, tầng nhỏ trước, rồi tầng vừa và tầng lớn sau thẻ `prereg-v1.1`;
+   phân tích sau thẻ `prereg-v1-analysis`. Kết quả đầu tiên dùng cho báo cáo tiến độ.
 4. Gán nhãn và kiểm tra bằng người.
 5. Phân tích hồi cứu, bản gọn.
-6. Đợt 2 (Antigravity) và đợt 3 (Codex).
+6. (Gộp vào bước 3: Antigravity và Codex chạy cùng lúc với Claude Code.)
 7. Báo cáo, slide, tài liệu hỏi đáp.
 
 Việc không phụ thuộc nhau thì chạy song song: tổng quan tài liệu và phân tích hồi cứu chạy cùng lúc
-với bước 2–3; đợt 2 và đợt 3 chạy cùng lúc với nhau.
+với bước 2–3; bốn nhóm chạy cùng lúc với nhau.
 
 **Báo cáo tiến độ** (mốc thứ ba của thầy): nộp sau khi có kết quả chạy thử hoặc đợt 1, kèm số liệu
 đầu tiên, để góp ý của thầy còn kịp vào thiết kế.
@@ -448,7 +516,7 @@ với bước 2–3; đợt 2 và đợt 3 chạy cùng lúc với nhau.
 - Ngôn ngữ và thư viện của bộ chạy, bộ phân tích (mặc định: Python với `uv`, giống ViPharmind).
 - Định dạng file nhiệm vụ và file kết quả thô.
 - Cách xuất mã không kèm lịch sử và cách cô lập từng lượt chạy.
-- Giới hạn lượt và thời gian cho mỗi lượt, chốt sau khi chạy 2 nhiệm vụ thử và ghi vào `prereg-v1`.
+- Giới hạn thời gian cho mỗi lượt: đã chốt theo quy tắc ở `prereg/prereg-v1.md` mục 4.
 - Công cụ soạn báo cáo và slide (mặc định: LaTeX cho báo cáo, ppt-master cho slide như bài SoICT).
 - Cách lọc khóa API và dữ liệu riêng khỏi nhật ký phiên.
 - Số bản ghi và cách chọn mẫu khi trích nhật ký phiên làm minh họa.

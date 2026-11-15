@@ -1,0 +1,462 @@
+diff --git a/backend/src/pharma_agent/application/chat/service.py b/backend/src/pharma_agent/application/chat/service.py
+index d9da0d6..ce32a82 100644
+--- a/backend/src/pharma_agent/application/chat/service.py
++++ b/backend/src/pharma_agent/application/chat/service.py
+@@ -2,6 +2,7 @@
+ 
+ import logging
+ from collections.abc import AsyncGenerator
++from datetime import datetime
+ from typing import Any
+ 
+ from pydantic import BaseModel, Field
+@@ -19,14 +20,10 @@ from pharma_agent.domain.conversation.ports import ConversationRepository
+ from pharma_agent.domain.conversation.turns import build_turn_messages
+ from pharma_agent.domain.retrieval.audit import audit_from_run
+ from pharma_agent.domain.shared.clock import Clock
++from pharma_agent.domain.shared.ids import new_id
+ 
+ logger = logging.getLogger(__name__)
+ 
+-PERSIST_FAILED_MESSAGE = (
+-    "Không lưu được lượt hội thoại này; câu trả lời vẫn hiển thị bình thường."
+-)
+-
+-
+ class MemoryPolicy(BaseModel):
+     context_turns: int = 4
+     context_chars: int = 4000
+@@ -35,6 +32,9 @@ class MemoryPolicy(BaseModel):
+ class ChatTurnResult(BaseModel):
+     conversation_id: str
+     message_id: str | None
++    user_message_id: str
++    assistant_message_id: str
++    created_at: datetime
+     run_id: str
+     status: str
+     content: str
+@@ -51,12 +51,16 @@ class ChatSession:
+         conversation: Conversation,
+         *,
+         created: bool,
++        user_message_id: str,
++        assistant_message_id: str,
+         conversations: ConversationRepository,
+         clock: Clock,
+     ) -> None:
+         self._execution = execution
+         self._conversation = conversation
+         self._created = created
++        self._user_message_id = user_message_id
++        self._assistant_message_id = assistant_message_id
+         self._conversations = conversations
+         self._clock = clock
+         self.result: ChatTurnResult | None = None
+@@ -65,6 +69,14 @@ class ChatSession:
+     def conversation_id(self) -> str:
+         return self._conversation.conversation_id
+ 
++    @property
++    def user_message_id(self) -> str:
++        return self._user_message_id
++
++    @property
++    def assistant_message_id(self) -> str:
++        return self._assistant_message_id
++
+     async def events(self) -> AsyncGenerator[ProgressEvent]:
+         yield ProgressEvent(
+             type=EventType.CONVERSATION,
+@@ -72,6 +84,7 @@ class ChatSession:
+                 "conversation_id": self.conversation_id,
+                 "title": self._conversation.title,
+                 "created": self._created,
++                "message_id": self.assistant_message_id,
+             },
+         )
+         phases: list[str] = []
+@@ -88,10 +101,10 @@ class ChatSession:
+                     **event.data,
+                     "conversation_id": self.conversation_id,
+                     "message_id": result.message_id,
++                    "persisted": result.persisted,
++                    "created_at": result.created_at.isoformat(),
+                 },
+             )
+-            if not result.persisted:
+-                yield ProgressEvent.error("PERSIST_FAILED", PERSIST_FAILED_MESSAGE)
+ 
+     async def _persist(self, phases: list[str]) -> ChatTurnResult:
+         outcome = self._execution.outcome
+@@ -104,6 +117,8 @@ class ChatSession:
+             citations=outcome.citations,
+             phases=phases,
+             now=self._clock.now(),
++            user_message_id=self.user_message_id,
++            assistant_message_id=self.assistant_message_id,
+         )
+         self._conversation.record_turn(assistant_message.created_at)
+         persisted = True
+@@ -122,6 +137,9 @@ class ChatSession:
+         self.result = ChatTurnResult(
+             conversation_id=self.conversation_id,
+             message_id=assistant_message.message_id if persisted else None,
++            user_message_id=user_message.message_id,
++            assistant_message_id=assistant_message.message_id,
++            created_at=assistant_message.created_at,
+             run_id=outcome.run.run_id,
+             status=outcome.run.status.value,
+             content=outcome.answer_text,
+@@ -181,10 +199,16 @@ class ChatService:
+             conversation=context,
+             conversation_id=conversation.conversation_id,
+         )
++        user_message_id = new_id()
++        assistant_message_id = new_id()
++        while assistant_message_id == user_message_id:
++            assistant_message_id = new_id()
+         return ChatSession(
+             execution,
+             conversation,
+             created=created,
++            user_message_id=user_message_id,
++            assistant_message_id=assistant_message_id,
+             conversations=self._conversations,
+             clock=self._clock,
+         )
+diff --git a/backend/src/pharma_agent/application/progress.py b/backend/src/pharma_agent/application/progress.py
+index 7bbf594..836c130 100644
+--- a/backend/src/pharma_agent/application/progress.py
++++ b/backend/src/pharma_agent/application/progress.py
+@@ -24,7 +24,6 @@ class EventType(StrEnum):
+     TOKEN = "token"
+     CITATIONS = "citations"
+     DONE = "done"
+-    ERROR = "error"
+ 
+ 
+ class ProgressEvent(BaseModel):
+@@ -39,6 +38,3 @@ class ProgressEvent(BaseModel):
+     def token(cls, text: str) -> "ProgressEvent":
+         return cls(type=EventType.TOKEN, data={"text": text})
+ 
+-    @classmethod
+-    def error(cls, code: str, message: str) -> "ProgressEvent":
+-        return cls(type=EventType.ERROR, data={"code": code, "message": message})
+diff --git a/backend/src/pharma_agent/cli.py b/backend/src/pharma_agent/cli.py
+index 232705c..d2a8b04 100644
+--- a/backend/src/pharma_agent/cli.py
++++ b/backend/src/pharma_agent/cli.py
+@@ -99,8 +99,8 @@ def _render(event: ProgressEvent, evidence: list[dict[str, Any]]) -> None:
+     elif event.type is EventType.TOKEN:
+         sys.stdout.write(event.data["text"])
+         sys.stdout.flush()
+-    elif event.type is EventType.ERROR:
+-        typer.echo(f"!! {event.data['code']}: {event.data['message']}", err=True)
++    elif event.type is EventType.DONE and not event.data.get("persisted", True):
++        typer.echo("!! Không lưu được lượt hội thoại này.", err=True)
+ 
+ 
+ @app.command()
+diff --git a/backend/src/pharma_agent/domain/agent/run.py b/backend/src/pharma_agent/domain/agent/run.py
+index b5c5087..d83dced 100644
+--- a/backend/src/pharma_agent/domain/agent/run.py
++++ b/backend/src/pharma_agent/domain/agent/run.py
+@@ -82,7 +82,6 @@ class ErrorCode(StrEnum):
+     ANSWER_FAILED = "ANSWER_FAILED"
+     BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
+     DEADLINE_EXCEEDED = "DEADLINE_EXCEEDED"
+-    PERSIST_FAILED = "PERSIST_FAILED"
+     EVIDENCE_REQUIRED = "EVIDENCE_REQUIRED"
+     INTERNAL = "INTERNAL"
+ 
+diff --git a/backend/src/pharma_agent/domain/conversation/turns.py b/backend/src/pharma_agent/domain/conversation/turns.py
+index 53eb082..e8d749d 100644
+--- a/backend/src/pharma_agent/domain/conversation/turns.py
++++ b/backend/src/pharma_agent/domain/conversation/turns.py
+@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
+ 
+ from pharma_agent.domain.agent.run import AgentRun
+ from pharma_agent.domain.conversation.models import Citation, Message, MessageRole, Turn
+-from pharma_agent.domain.shared.ids import new_id
+ 
+ # The assistant message must sort after the user message even when both are
+ # created within the same clock tick.
+@@ -18,10 +17,12 @@ def build_turn_messages(
+     citations: Sequence[Citation],
+     phases: Sequence[str],
+     now: datetime,
++    user_message_id: str,
++    assistant_message_id: str,
+ ) -> tuple[Message, Message]:
+     status = run.status.value
+     user_message = Message(
+-        message_id=new_id(),
++        message_id=user_message_id,
+         conversation_id=conversation_id,
+         role=MessageRole.USER,
+         content=run.original_query,
+@@ -30,7 +31,7 @@ def build_turn_messages(
+         created_at=now,
+     )
+     assistant_message = Message(
+-        message_id=new_id(),
++        message_id=assistant_message_id,
+         conversation_id=conversation_id,
+         role=MessageRole.ASSISTANT,
+         content=answer_text,
+diff --git a/backend/tests/api/test_conversations_api.py b/backend/tests/api/test_conversations_api.py
+index 3fc3627..6ad08a2 100644
+--- a/backend/tests/api/test_conversations_api.py
++++ b/backend/tests/api/test_conversations_api.py
+@@ -19,6 +19,8 @@ async def add_turn(harness: Harness, conversation: Conversation, at: datetime) -
+         citations=[],
+         phases=[],
+         now=at,
++        user_message_id=f"{len(await harness.repo.messages(conversation.conversation_id, limit=100)) + 1:032x}",
++        assistant_message_id=f"{len(await harness.repo.messages(conversation.conversation_id, limit=100)) + 2:032x}",
+     )
+     conversation.record_turn(at)
+     await harness.repo.append_turn(conversation, user_msg, assistant_msg, [])
+diff --git a/backend/tests/application/test_chat_service.py b/backend/tests/application/test_chat_service.py
+index 8108507..c06f3ff 100644
+--- a/backend/tests/application/test_chat_service.py
++++ b/backend/tests/application/test_chat_service.py
+@@ -78,16 +78,22 @@ async def test_new_conversation_turn_is_persisted_with_audit() -> None:
+         "conversation_id": session.conversation_id,
+         "title": "Paracetamol uống bao nhiêu?",
+         "created": True,
++        "message_id": session.assistant_message_id,
+     }
++    assert session.user_message_id != session.assistant_message_id
+     done = next(e for e in events if e.type is EventType.DONE)
+     assert done.data["conversation_id"] == session.conversation_id
+     assert done.data["status"] == "completed" and done.data["message_id"]
++    assert done.data["message_id"] == session.assistant_message_id
++    assert done.data["persisted"] is True
++    assert done.data["created_at"] == session.result.created_at.isoformat()
+     assert events[-1] is done
+ 
+     stored = repo.rows[session.conversation_id]
+     assert stored.turn_count == 1 and stored.user_id == OWNER
+     user_msg, assistant_msg = repo.message_log[session.conversation_id]
+     assert user_msg.content == "Paracetamol uống bao nhiêu?"
++    assert user_msg.message_id == session.user_message_id
+     assert (
+         assistant_msg.message_id == done.data["message_id"] and assistant_msg.citations
+     )
+@@ -97,6 +103,8 @@ async def test_new_conversation_turn_is_persisted_with_audit() -> None:
+         == "Liều paracetamol cho người lớn"
+     )
+     assert session.result is not None and session.result.persisted is True
++    assert session.result.user_message_id == session.user_message_id
++    assert session.result.assistant_message_id == session.assistant_message_id
+ 
+ 
+ async def test_follow_up_turn_sends_previous_turn_to_rephrase() -> None:
+@@ -138,7 +146,7 @@ async def test_unknown_or_foreign_conversation_is_not_found() -> None:
+         )
+ 
+ 
+-async def test_persist_failure_reports_error_after_done() -> None:
++async def test_persist_failure_reports_only_done() -> None:
+     llm, repo = FakeLlm(), InMemoryConversationRepository()
+     scripted_turn(llm, "Liều paracetamol")
+     service = service_with(llm, repo)
+@@ -149,9 +157,11 @@ async def test_persist_failure_reports_error_after_done() -> None:
+ 
+     events = await collect(session.events())
+ 
+-    assert [e.type for e in events[-2:]] == [EventType.DONE, EventType.ERROR]
+-    assert events[-2].data["message_id"] is None
+-    assert events[-1].data["code"] == "PERSIST_FAILED"
++    assert events[-1].type is EventType.DONE
++    assert sum(e.type is EventType.DONE for e in events) == 1
++    assert events[-1].data["message_id"] is None
++    assert events[-1].data["persisted"] is False
++    assert events[-1].data["created_at"] == session.result.created_at.isoformat()
+     assert session.result is not None and session.result.persisted is False
+     assert session.result.content  # the answer is still delivered
+ 
+@@ -175,6 +185,7 @@ async def test_first_turn_names_a_pre_created_conversation() -> None:
+         "conversation_id": empty.conversation_id,
+         "title": "Paracetamol uống bao nhiêu?",
+         "created": False,
++        "message_id": session.assistant_message_id,
+     }
+     stored = repo.rows[empty.conversation_id]
+     assert stored.title == "Paracetamol uống bao nhiêu?" and stored.turn_count == 1
+diff --git a/backend/tests/application/test_feedback_service.py b/backend/tests/application/test_feedback_service.py
+index 772774e..4c0a600 100644
+--- a/backend/tests/application/test_feedback_service.py
++++ b/backend/tests/application/test_feedback_service.py
+@@ -41,6 +41,8 @@ async def seeded() -> tuple[InMemoryConversationRepository, str, str]:
+         citations=[],
+         phases=[],
+         now=NOW,
++        user_message_id="11111111111111111111111111111111",
++        assistant_message_id="22222222222222222222222222222222",
+     )
+     conversation.record_turn(NOW)
+     await repo.append_turn(conversation, user_msg, assistant_msg, [])
+diff --git a/backend/tests/application/test_queries.py b/backend/tests/application/test_queries.py
+index fcc3697..9425abb 100644
+--- a/backend/tests/application/test_queries.py
++++ b/backend/tests/application/test_queries.py
+@@ -26,6 +26,8 @@ async def add_turn(
+         citations=[],
+         phases=[],
+         now=NOW,
++        user_message_id=f"{len(await repo.messages(conversation.conversation_id, limit=100)) + 1:032x}",
++        assistant_message_id=f"{len(await repo.messages(conversation.conversation_id, limit=100)) + 2:032x}",
+     )
+     conversation.record_turn(NOW)
+     await repo.append_turn(conversation, user_msg, assistant_msg, [])
+@@ -47,6 +49,8 @@ async def test_list_get_messages_rename_delete() -> None:
+         citations=[],
+         phases=["answering"],
+         now=NOW,
++        user_message_id="11111111111111111111111111111111",
++        assistant_message_id="22222222222222222222222222222222",
+     )
+     older.record_turn(NOW + timedelta(minutes=2))
+     await repo.append_turn(older, user_msg, assistant_msg, [])
+diff --git a/backend/tests/application/test_summarize.py b/backend/tests/application/test_summarize.py
+index d5b75dd..3198325 100644
+--- a/backend/tests/application/test_summarize.py
++++ b/backend/tests/application/test_summarize.py
+@@ -27,6 +27,8 @@ async def seeded(
+             citations=[],
+             phases=[],
+             now=NOW + timedelta(minutes=index),
++            user_message_id=f"{index + 1:032x}",
++            assistant_message_id=f"{index + 100:032x}",
+         )
+         user_msg = user_msg.model_copy(update={"status": status})
+         assistant_msg = assistant_msg.model_copy(update={"status": status})
+diff --git a/backend/tests/domain/test_conversation.py b/backend/tests/domain/test_conversation.py
+index ad273c2..e9f7460 100644
+--- a/backend/tests/domain/test_conversation.py
++++ b/backend/tests/domain/test_conversation.py
+@@ -69,8 +69,12 @@ def test_build_turn_messages_and_pair_turns() -> None:
+         citations=[citation],
+         phases=["guarding", "answering"],
+         now=NOW,
++        user_message_id="user-fixed",
++        assistant_message_id="assistant-fixed",
+     )
+     assert user_msg.role is MessageRole.USER and user_msg.content == "Liều paracetamol?"
++    assert user_msg.message_id == "user-fixed"
++    assert assistant_msg.message_id == "assistant-fixed"
+     assert user_msg.status == RunStatus.COMPLETED.value
+     assert assistant_msg.role is MessageRole.ASSISTANT and assistant_msg.citations == [
+         citation
+diff --git a/backend/tests/test_cli.py b/backend/tests/test_cli.py
+index a0c62fd..2ca70a1 100644
+--- a/backend/tests/test_cli.py
++++ b/backend/tests/test_cli.py
+@@ -9,6 +9,7 @@ from pharma_agent.api.app import create_app
+ from pharma_agent.api.openapi import openapi_export_settings, render_openapi
+ from pharma_agent.application.chat.graph import build_chat_graph
+ from pharma_agent.application.chat.runner import ChatTurnRunner
++from pharma_agent.application.progress import EventType, ProgressEvent
+ from pharma_agent.domain.agent.budget import BudgetLimits
+ from pharma_agent.domain.agent.schemas import (
+     Audience,
+@@ -76,6 +77,20 @@ def test_ask_json_output(monkeypatch) -> None:
+     assert payload["trace"]["usage"]["llm_calls"] == 5
+ 
+ 
++def test_done_reports_persistence_failure_to_stderr(capsys) -> None:
++    cli._render(
++        ProgressEvent(type=EventType.DONE, data={"persisted": False}), []
++    )
++    captured = capsys.readouterr()
++    assert captured.err == "!! Không lưu được lượt hội thoại này.\n"
++    assert captured.out == ""
++
++
++def test_done_reports_no_stderr_when_persisted(capsys) -> None:
++    cli._render(ProgressEvent(type=EventType.DONE, data={"persisted": True}), [])
++    assert capsys.readouterr().err == ""
++
++
+ def test_migrate_upgrades_to_head(monkeypatch) -> None:
+     calls = []
+     monkeypatch.setattr(
+diff --git a/docs/design.md b/docs/design.md
+new file mode 100644
+index 0000000..60909de
+--- /dev/null
++++ b/docs/design.md
+@@ -0,0 +1,30 @@
++# Design: Pre-generated chat message ids
++
++## Goal
++
++Generate a user and assistant message id when a chat session opens so clients can identify the assistant message from the first `conversation` event. Persisted messages must use those ids. The initial `conversation` event carries the assistant id, and the final `done` event reports its id when saved, whether persistence succeeded, and the stored assistant message creation timestamp. Persistence failure still delivers the answer and is represented only by `done`. The CLI reports an unsaved turn on standard error.
++
++## Scope
++
++Included: chat session setup and result model, conversation turn message construction, progress event contract, CLI rendering, and affected tests/call sites.
++
++Unchanged: runner generation and token streaming, conversation/message persistence semantics, API route structure, and successful answer content. Existing `new_id` remains the identifier source. The generic runner's `done` event remains an internal input to the chat service; the service emits the client-facing completion event.
++
++## Interfaces
++
++- `ChatService.open_turn(*, user_id: str, message: str, conversation_id: str | None) -> ChatSession`: generate two distinct ids and pass them into the session.
++- `ChatSession.user_message_id` and `ChatSession.assistant_message_id`: read-only `str` properties.
++- `build_turn_messages(*, conversation_id: str, run: AgentRun, answer_text: str, citations: Sequence[Citation], phases: Sequence[str], now: datetime, user_message_id: str, assistant_message_id: str) -> tuple[Message, Message]`: required ids replace internal id generation.
++- First `conversation` progress event data adds `message_id: str` for the assistant message.
++- Client-facing final `done` data includes `message_id: str | None`, `persisted: bool`, and `created_at: str` (ISO timestamp of the assistant message), while retaining existing runner completion fields and `conversation_id`.
++- `ChatTurnResult` adds `user_message_id: str`, `assistant_message_id: str`, and `created_at: datetime`.
++- Remove `EventType.ERROR`, its error event factory if unused, and `ErrorCode.PERSIST_FAILED`.
++- CLI `_render(event: ProgressEvent, evidence: list[dict[str, Any]]) -> None` prints `!! Không lưu được lượt hội thoại này.` to standard error for an unsaved `done` event and emits no error output for a saved `done` event.
++
++## Approach
++
++Keep id allocation in the application layer at `open_turn`, using `new_id`; ensure the generated values differ. Store them privately in `ChatSession` and expose getter-only properties. Pass them through the domain turn builder, which remains responsible for message construction and timestamps but not identity allocation. In `_persist`, use the assistant message timestamp for `ChatTurnResult.created_at`; return assistant `message_id` only on successful persistence as the completion contract requires. The service enriches the runner completion event with persistence outcome and ISO timestamp and emits no trailing event. Put the failure notice in the CLI's done-event rendering branch.
++
++## Testing
++
++Update domain builder tests and every direct call site for the required ids. Add assertions for generated distinct/read-only session ids, their propagation to stored messages and events, completion fields and timestamp, and failure completion ordering and fields. Exercise CLI rendering for persisted and failed completion events, checking standard error. Run focused tests during each plan task, then run `uv run pytest` from `backend/`.
+diff --git a/docs/plan.md b/docs/plan.md
+new file mode 100644
+index 0000000..b18ee4a
+--- /dev/null
++++ b/docs/plan.md
+@@ -0,0 +1,33 @@
++# Implementation plan
++
++## Constraints
++
++- Allocate two distinct message ids with the existing `new_id` helper in `ChatService.open_turn`.
++- Keep both `ChatSession` id properties read-only and pass the same ids through to persisted messages.
++- `build_turn_messages` requires both ids as keyword arguments and must not generate ids.
++- Include assistant id in the first `conversation` event; make enriched `done` the sole and last completion event, including `persisted`, nullable `message_id`, and ISO `created_at`.
++- Preserve answer delivery on save failure; remove the persistence error event/type/code/message.
++- CLI failure notice goes to standard error only when `done.persisted` is false.
++- For each task, add or update tests first, run them to observe failure, implement the task, then run the focused test. Finish with `cd backend && uv run pytest`.
++
++## Task 1: Make message identity explicit in the domain builder
++
++- **Files:** Modify `backend/src/pharma_agent/domain/conversation/turns.py`; update direct call sites and tests in `backend/tests/domain/test_conversation.py`, `backend/tests/application/test_queries.py`, `backend/tests/application/test_summarize.py`, `backend/tests/application/test_feedback_service.py`, and `backend/tests/api/test_conversations_api.py`.
++- **Interfaces:** The builder accepts required `user_message_id` and `assistant_message_id` keyword arguments and uses each for its respective `Message`. Existing callers provide deterministic ids. Provides explicit identity construction for Task 2.
++- **Test:** Update/add domain assertions that supplied ids appear on messages; run the affected domain/application/API tests and observe missing arguments or assertions fail before implementation.
++
++## Task 2: Pre-generate and propagate ids through chat sessions and completion
++
++- **Files:** Modify `backend/src/pharma_agent/application/chat/service.py`; update `backend/tests/application/test_chat_service.py`.
++- **Interfaces:** `open_turn` creates two distinct ids, `ChatSession` exposes getter-only properties, `conversation` carries assistant `message_id`, `_persist` passes the ids to the builder and returns ids plus assistant `created_at`, and final `done` reports persistence fields and ISO timestamp.
++- **Test:** Assert id distinctness/read-only behavior, event and stored-message identity agreement, result timestamp equality, and all final completion fields; run `uv run pytest tests/application/test_chat_service.py` after seeing the new assertions fail.
++
++## Task 3: Represent persistence failure only in `done` and render it in CLI
++
++- **Files:** Modify `backend/src/pharma_agent/application/progress.py`, `backend/src/pharma_agent/domain/agent/run.py`, and `backend/src/pharma_agent/cli.py`; update `backend/tests/application/test_chat_service.py` and `backend/tests/test_cli.py`.
++- **Interfaces:** Remove `EventType.ERROR`, error factory if unused, `ErrorCode.PERSIST_FAILED`, and service persistence error constant/event. CLI renders the fixed Vietnamese notice to stderr only on failed `done`.
++- **Test:** Assert failed persistence produces exactly one final `done` with `persisted=False`, null id, timestamp, and preserved answer; assert CLI stderr notice only for failed completion; run focused tests.
++
++## Final verification
++
++Run the complete backend suite with `uv run pytest` from `backend/` and address any failures.

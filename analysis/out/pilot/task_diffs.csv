@@ -1,0 +1,7 @@
+cohort,tier,task_id,pass_diff,src_lines
+claude-sonnet,small,p01,-0.33333333333333337,201
+claude-sonnet,small,p02,0.0,46
+claude-opus,small,p01,0.0,201
+claude-opus,small,p02,0.0,46
+codex-luna,small,p01,-0.3333333333333333,201
+codex-luna,small,p02,0.0,46

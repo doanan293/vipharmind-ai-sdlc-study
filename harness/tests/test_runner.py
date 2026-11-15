@@ -27,6 +27,7 @@ from sdlc_harness.runner import (
     run_unit,
     scrub_env,
     select_tasks,
+    status_report,
     unit_dir,
     validate_work_root,
 )
@@ -144,7 +145,15 @@ def test_runner_requeues_quota_without_counting(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path), out, jobs=2)
-    assert summary == {"done": 1, "skipped": 0, "error": 0, "quota": 1}
+    assert summary == {
+        "done": 1,
+        "skipped": 0,
+        "error": 0,
+        "quota": 1,
+        "auth": 0,
+        "deferred": 0,
+        "excluded": 0,
+    }
     assert len(list(out.rglob("grade.json"))) == 1
     d = unit_dir(out, UNIT)
     for name in ("prompt.txt", "transcript.jsonl", "patch.diff", "grade.json", "meta.json"):
@@ -210,7 +219,15 @@ def test_runner_skips_done_units(world, fake, tmp_path):
     before = grade_file.stat().st_mtime_ns
     fake.setenv("FAKE_AGENT_MODE", "sleep")  # would hang if it ran again
     fake.setenv("FAKE_AGENT_PIDFILE", str(tmp_path / "child.pid"))
-    assert run_all([UNIT], cfg, out, jobs=1) == {"done": 0, "skipped": 1, "error": 0, "quota": 0}
+    assert run_all([UNIT], cfg, out, jobs=1) == {
+        "done": 0,
+        "skipped": 1,
+        "error": 0,
+        "quota": 0,
+        "auth": 0,
+        "deferred": 0,
+        "excluded": 0,
+    }
     assert grade_file.stat().st_mtime_ns == before
 
 
@@ -326,6 +343,20 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
     environ["XDG_CONFIG_HOME"] = "/home/x/.config"
     environ["XDG_RUNTIME_DIR"] = "/run/user/1"
     environ["SDLC_PROXY_API_KEY"] = "leak"
+    # parent-session leftovers (an IDE terminal, a Claude Code session, `uv run`)
+    environ.update(
+        AI_AGENT="claude-code_2-1-325_agent",
+        VSCODE_IPC_HOOK_CLI="/run/x.sock",
+        GIT_ASKPASS="/vscode/askpass.sh",
+        PYTHONSTARTUP="/vscode/pythonrc.py",
+        UV_RUN_RECURSION_DEPTH="1",
+        TERM_PROGRAM="vscode",
+        LANG="C.UTF-8",
+        LC_ALL="C.UTF-8",
+        TERM="xterm-256color",
+        USER="u",
+        HTTPS_PROXY="http://corp:3128",
+    )
     scrubbed = {
         agent: scrub_env(agent, environ, {"HOME": "/fresh"}) for agent in ("claude", "agy", "codex")
     }
@@ -336,20 +367,35 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
     assert not [k for k in env if k.startswith(("GEMINI_", "GOOGLE_", "SDLC_PROXY"))]
     assert "VIRTUAL_ENV" not in env and "XDG_CONFIG_HOME" not in env
     assert env["XDG_RUNTIME_DIR"] == "/run/user/1"
+    # an allowlist: only basic shell/locale/network settings pass, nothing from the parent session
+    assert set(env) == {
+        "PATH",
+        "HOME",
+        "USER",
+        "LANG",
+        "LC_ALL",
+        "TERM",
+        "XDG_RUNTIME_DIR",
+        "HTTPS_PROXY",
+    }
     assert venv_bin not in env["PATH"].split(":") and "/usr/bin" in env["PATH"]
     assert env["HOME"] == "/fresh"
     assert scrub_env("codex", environ, {"CODEX_HOME": "/c"})["CODEX_HOME"] == "/c"
 
 
-def test_quota_retries_are_capped(world, fake, tmp_path):
+def test_quota_retries_exhausted_defers_the_unit_and_a_later_run_resumes_it(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path, max_quota_retries=0), out, jobs=1)
-    assert summary == {"done": 0, "skipped": 0, "error": 1, "quota": 1}
+    assert summary["deferred"] == 1 and summary["error"] == 0 and summary["quota"] == 1
     meta = _meta(out)
-    assert meta["status"] == "error"
+    assert meta["status"] == "deferred"
     assert meta["error"] == "quota retries exhausted"
     assert not (unit_dir(out, UNIT) / "grade.json").exists()
+    assert status_report(out)["excluded"] == []  # never counted as excluded
+    # the quota is back (the fake's marker file exists): the next invocation runs it again
+    assert run_all([UNIT], _cfg(world, tmp_path), out, jobs=1)["done"] == 1
+    assert _meta(out)["status"] == "done"
 
 
 def test_ctrl_c_kills_live_agents_and_leaves_units_undone(world, fake, tmp_path):
@@ -522,3 +568,378 @@ def test_prompt_or_tree_drift_between_units_is_refused(world, fake, tmp_path):
     rep3 = RunUnit("claude-sonnet", "t01", "vibe", 3)
     assert run_unit(rep3, cfg, out) == "error"
     assert "tree" in _meta(out, rep3)["error"]
+
+
+def test_regrade_reproduces_the_grade_from_the_saved_patch(world, fake, tmp_path):
+    from sdlc_harness.runner import regrade_unit
+
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    d = unit_dir(out, UNIT)
+    first = json.loads((d / "grade.json").read_text())
+    del first["hidden_failed"]  # a grade written before the field existed
+    (d / "grade.json").write_text(json.dumps(first))
+    old, new = regrade_unit(d, cfg)
+    assert old == first
+    assert new["hidden_failed"] == {}
+    assert {k: v for k, v in new.items() if k != "hidden_failed"} == first
+    assert json.loads((d / "grade.json").read_text()) == new
+    assert _meta(out)["regraded_at"]
+    assert list((tmp_path / "work").iterdir()) == []  # its workspace is cleaned up
+
+
+def test_cli_regrade_reports_changes(world, fake, tmp_path, capsys):
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    repo, tasks, _accounts, cache = world
+    rc = main(
+        [
+            "regrade",
+            "--repo",
+            str(repo),
+            "--tasks-dir",
+            str(tasks),
+            "--results",
+            str(out),
+            "--work-root",
+            str(tmp_path / "work"),
+            "--cache-dir",
+            str(cache),
+            "--jobs",
+            "2",
+        ]
+    )
+    assert rc == 0
+    assert "1 regraded, 0 changed" in capsys.readouterr().out
+
+
+def _creds_file(world, n=1) -> Path:
+    return world[2].parent / "creds" / str(n) / ".credentials.json"
+
+
+def test_rotated_credentials_are_written_back_to_the_account_source(world, fake, tmp_path):
+    src = _creds_file(world)
+    src.write_text("{}")
+    fake.setenv("FAKE_AGENT_ROTATE", '{"token": "rotated"}')
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "done"
+    assert src.read_text() == '{"token": "rotated"}'
+    assert src.stat().st_mode & 0o777 == 0o600
+    src.write_text("{}")
+
+
+def test_no_write_back_when_the_unit_fails_before_launch(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    src = _creds_file(world)
+    src.write_text("{}")
+    fake.setenv("FAKE_AGENT_ROTATE", '{"t": "rotated"}')
+    fake.setattr(runner, "config_manifest", lambda *a: (_ for _ in ()).throw(OSError("boom")))
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "error"
+    assert src.read_text() == "{}"
+
+
+def test_meta_upstream_urls_predeclared_on_early_error(world, fake, tmp_path):
+    out = tmp_path / "out"
+    assert run_unit(RunUnit("claude-sonnet", "nope", "vibe", 1), _cfg(world, tmp_path), out) == (
+        "error"
+    )
+    meta = _meta(out, RunUnit("claude-sonnet", "nope", "vibe", 1))
+    assert meta["upstream_urls"] == [] and "endpoint" not in meta
+
+
+def test_upstream_urls_exclude_urls_already_in_the_tree(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    known = "https://github.com/doanan293/ViPharmind"
+    fake.setattr(runner, "tree_urls", lambda root: {known})
+    fake.setenv("FAKE_AGENT_SAY", f"read {known} then fetched https://github.com/doanan293/other")
+    out = tmp_path / "out"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out)["upstream_urls"] == ["https://github.com/doanan293/other"]
+
+
+def test_failed_write_back_does_not_fail_the_unit(world, fake, tmp_path):
+    from sdlc_harness import runner
+
+    def boom(*a, **k):
+        raise PermissionError("secret-path")
+
+    fake.setattr(runner, "write_back_credentials", boom)
+    assert run_unit(UNIT, _cfg(world, tmp_path), tmp_path / "out") == "done"
+
+
+def test_auth_failure_is_requeued_without_exhausting_the_account(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "auth_once")
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    summary = run_all([UNIT], cfg, out, jobs=1)
+    assert summary["auth"] == 1 and summary["done"] == 1 and summary["quota"] == 0
+    assert _meta(out)["account"] == 1  # same account retried: it was not marked exhausted
+    assert "vibe-r1" in (out / "auth.log").read_text()
+
+
+def test_auth_failure_gives_up_after_the_retry_cap(world, fake, tmp_path):
+    fake.setenv("FAKE_AGENT_MODE", "auth_always")
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path, max_quota_retries=2)
+    summary = run_all([UNIT], cfg, out, jobs=1)
+    assert summary["auth"] == 3 and summary["deferred"] == 1 and summary["error"] == 0
+    assert _meta(out)["status"] == "deferred"
+    assert _meta(out)["error"] == "auth retries exhausted"
+
+
+# --- run status rules (B4) ---------------------------------------------------------------
+
+
+def _time_out_grader(monkeypatch, times: int):
+    """The graded copy's test run times out `times` times, then works."""
+    import sdlc_harness.grade as grade_mod
+
+    real = grade_mod.run_backend_tests
+    calls = {"n": 0}
+
+    def flaky(tree, timeout_s=900):
+        if tree.name == "graded" and calls["n"] < times:
+            calls["n"] += 1
+            raise subprocess.TimeoutExpired(["pytest"], 1)
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", flaky)
+    return calls
+
+
+def test_grader_timeout_regrades_once_and_a_second_timeout_is_a_fail(
+    world, fake, tmp_path, monkeypatch
+):
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"  # fills the reference cache
+    cwd_log = tmp_path / "cwd.log"
+    fake.setenv("FAKE_AGENT_CWDLOG", str(cwd_log))
+    calls = _time_out_grader(monkeypatch, times=2)
+    import sdlc_harness.runner as runner_mod
+
+    built: list[Path] = []
+    real_prepare = runner_mod.prepare_workspace
+
+    def spy(*a, **kw):
+        built.append(real_prepare(*a, **kw))
+        return built[-1]
+
+    monkeypatch.setattr(runner_mod, "prepare_workspace", spy)
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, cfg, out) == "done"
+    assert calls["n"] == 2
+    assert len(built) == 2 and built[0] != built[1]  # the retry grades a fresh workspace
+    assert cwd_log.read_text().count("\n") == 1  # the agent ran once
+    grade = json.loads((unit_dir(out, UNIT) / "grade.json").read_text())
+    assert grade["task_pass"] is False
+    assert "grader timeout on agent patch (twice)" in grade["grading_notes"]
+    assert _meta(out)["status"] == "done"
+
+
+def test_grader_timeout_once_then_success_is_graded_normally(world, fake, tmp_path, monkeypatch):
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"
+    _time_out_grader(monkeypatch, times=1)
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, cfg, out) == "done"
+    grade = json.loads((unit_dir(out, UNIT) / "grade.json").read_text())
+    assert grade["task_pass"] is True
+    assert not any("grader timeout" in n for n in grade["grading_notes"])
+
+
+def test_grader_crash_is_an_error_not_a_fail(world, fake, tmp_path, monkeypatch):
+    import sdlc_harness.grade as grade_mod
+
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"
+    real = grade_mod.run_backend_tests
+
+    def crashing(tree, timeout_s=900):
+        if tree.name == "graded":
+            raise subprocess.CalledProcessError(1, ["uv", "sync"])
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", crashing)
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, cfg, out) == "error"
+    assert _meta(out)["status"] == "error"
+    assert not (unit_dir(out, UNIT) / "grade.json").exists()
+
+
+def test_system_errors_are_rerun_twice_then_excluded_and_listed(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    fake.setenv("FAKE_AGENT_CWDLOG", str(tmp_path / "cwd.log"))
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)  # always a grading error
+    cfg = _cfg(world, tmp_path)
+    for attempt in (1, 2, 3):
+        assert run_all([unit], cfg, out, jobs=1)["error"] == 1
+        assert _meta(out, unit)["error_attempts"] == attempt
+    summary = run_all([unit], cfg, out, jobs=1)  # the cap: it is not run a fourth time
+    assert summary["excluded"] == 1 and summary["error"] == 0
+    assert (tmp_path / "cwd.log").read_text().count("\n") == 3
+    meta = _meta(out, unit)
+    assert meta["status"] == "error" and meta["error_attempts"] == 3
+    report = status_report(out)
+    assert report["counts"] == {"claude-sonnet": {"small": {"error": 1}}}
+    assert [e["unit"] for e in report["excluded"]] == ["claude-sonnet/t02/spec-r1"]
+    assert "hidden tests do not pass" in report["excluded"][0]["error"]
+
+
+def test_a_unit_below_the_error_cap_is_not_excluded(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)
+    run_all([unit], _cfg(world, tmp_path), out, jobs=1)
+    assert status_report(out)["excluded"] == []
+
+
+def test_cli_status_prints_counts_and_excluded_units(world, fake, tmp_path, capsys):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)
+    cfg = _cfg(world, tmp_path)
+    for _ in range(3):
+        run_all([unit], cfg, out, jobs=1)
+    run_all([UNIT], cfg, out, jobs=1)
+    assert main(["status", "--out", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "claude-sonnet small" in text
+    assert "done 1" in text and "error 1" in text
+    assert "claude-sonnet/t02/spec-r1" in text
+
+
+@pytest.mark.parametrize(
+    ("mode", "expected"), [("ok", "ok"), ("crash", "nonzero"), ("sleep", "timeout")]
+)
+def test_agent_exit_is_recorded_and_the_unit_is_graded_as_is(world, fake, tmp_path, mode, expected):
+    fake.setenv("FAKE_AGENT_MODE", mode)
+    fake.setenv("FAKE_AGENT_PIDFILE", str(tmp_path / "child.pid"))
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path, timeout_s=2), out) == "done"
+    meta = _meta(out)
+    assert meta["agent_exit"] == expected and meta["status"] == "done"
+    assert (unit_dir(out, UNIT) / "grade.json").is_file()
+
+
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [
+        ({}, {"design": False, "plan": False}),
+        ({"docs/design.md": "d\n"}, {"design": True, "plan": False}),
+        ({"docs/design.md": "d\n", "docs/plan.md": "p\n"}, {"design": True, "plan": True}),
+    ],
+)
+def test_meta_records_which_spec_docs_the_agent_left(world, fake, tmp_path, written, expected):
+    fake.setenv("FAKE_AGENT_WRITE", json.dumps({CALC: CALC_COMMIT, **written}))
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t01", "spec", 1)
+    assert run_unit(unit, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out, unit)["spec_docs_present"] == expected
+    # what is graded does not change: the docs are not in the graded patch metrics
+    assert json.loads((unit_dir(out, unit) / "grade.json").read_text())["task_pass"] is True
+
+
+def test_meta_records_tier(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out)["tier"] == "small"
+
+
+def test_error_then_deferred_keeps_the_attempt_counter(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)  # a grading error whenever it is graded
+    run_all([unit], _cfg(world, tmp_path), out, jobs=1)
+    assert _meta(out, unit)["error_attempts"] == 1
+    fake.setenv("FAKE_AGENT_MODE", "quota_once")
+    capped = _cfg(world, tmp_path, max_quota_retries=0)
+    assert run_all([unit], capped, out, jobs=1)["deferred"] == 1
+    assert _meta(out, unit)["status"] == "deferred"
+    assert _meta(out, unit)["error_attempts"] == 1
+    run_all([unit], capped, out, jobs=1)  # quota is back: graded, errors again
+    assert _meta(out, unit)["error_attempts"] == 2
+
+
+def test_status_tolerates_a_corrupt_meta(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path), out) == "done"
+    bad = unit_dir(out, RunUnit("claude-sonnet", "t01", "spec", 1))
+    bad.mkdir(parents=True)
+    (bad / "meta.json").write_text("{not json")
+    counts = status_report(out)["counts"]["claude-sonnet"]
+    assert counts["small"] == {"done": 1} and counts["unknown"] == {"unreadable": 1}
+
+
+def _done_unit_copy(world, fake, tmp_path):
+    out = tmp_path / "out"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, out) == "done"
+    return out, cfg
+
+
+def test_regrade_second_grader_timeout_keeps_the_old_grade(world, fake, tmp_path, monkeypatch):
+    from sdlc_harness.runner import regrade_all
+
+    out, cfg = _done_unit_copy(world, fake, tmp_path)
+    d = unit_dir(out, UNIT)
+    _time_out_grader(monkeypatch, times=2)
+    [(_, old, new)] = regrade_all([d], cfg)
+    assert "regrade_error" in new and old["task_pass"] is True
+    assert json.loads((d / "grade.json").read_text())["task_pass"] is True
+    assert json.loads((d / "meta.json").read_text())["regrade_status"] == "error"
+    # a later successful regrade clears the stale error
+    [(_, _, new)] = regrade_all([d], cfg)
+    assert "regrade_error" not in new
+    meta = json.loads((d / "meta.json").read_text())
+    assert "regrade_status" not in meta and "regrade_error" not in meta
+
+
+def test_collected_patch_replays_binary_files_with_git_apply(tmp_path):
+    import sdlc_harness.workspace as ws_mod
+
+    work = tmp_path / "bin"
+    subprocess.run(["git", "init", "-q", str(work)], check=True)
+    (work / "a.bin").write_bytes(bytes(range(256)))
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(work),
+            "-c",
+            "user.name=t",
+            "-c",
+            "user.email=t@t",
+            "commit",
+            "-q",
+            "--allow-empty",
+            "-m",
+            "m",
+        ],
+        check=True,
+    )
+    subprocess.run(["git", "-C", str(work), "branch", "-f", ws_mod.BASELINE], check=True)
+    patch = ws_mod.collect_patch(work)
+    assert "GIT binary patch" in patch
+    clone = tmp_path / "clone"
+    subprocess.run(["git", "init", "-q", str(clone)], check=True)
+    subprocess.run(["git", "-C", str(clone), "apply"], input=patch, text=True, check=True)
+    assert (clone / "a.bin").read_bytes() == bytes(range(256))
+
+
+def test_regrade_all_records_a_failing_unit_and_continues(world, fake, tmp_path):
+    import shutil
+
+    from sdlc_harness.runner import regrade_all
+
+    out, cfg = _done_unit_copy(world, fake, tmp_path)
+    bad_unit = RunUnit("claude-sonnet", "t01", "vibe", 2)
+    bad = unit_dir(out, bad_unit)
+    shutil.copytree(unit_dir(out, UNIT), bad)
+    (bad / "patch.diff").write_text("garbage\n")  # does not apply: a per-unit failure
+    results = regrade_all([bad, unit_dir(out, UNIT)], cfg, jobs=1)
+    by_dir = {d: new for d, _, new in results}
+    assert "regrade_error" in by_dir[bad]
+    assert "regrade_error" not in by_dir[unit_dir(out, UNIT)]
+    meta = json.loads((bad / "meta.json").read_text())
+    assert meta["regrade_status"] == "error" and meta["regrade_error"]
+    assert json.loads((bad / "grade.json").read_text())["task_pass"] is True  # old grade kept

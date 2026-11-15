@@ -31,6 +31,8 @@ PROCESS_FILES = {
     "plan": ("docs/plan.md", "backend/docs/plan.md"),
 }
 ARTIFACT_PATHS = {p for paths in PROCESS_FILES.values() for p in paths}
+# restored from the range end when grading a range task (dependencies the feature adds)
+MANIFEST_PATHS = ("pyproject.toml", "uv.lock", "backend/pyproject.toml", "backend/uv.lock")
 PYTEST_CONFIG_FILES = {"conftest.py", "pytest.ini", "setup.cfg", "tox.ini"}
 COPY_IGNORE = shutil.ignore_patterns(
     ".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"
@@ -59,6 +61,16 @@ class Grade:
     process_artifacts: bool  # docs/design.md and docs/plan.md both written
     pytest_config_touched: bool = False  # patch changes conftest.py or pytest settings
     grading_notes: list[str] = field(default_factory=list)  # tools that failed or timed out
+    # hidden tests that did not pass: nodeid -> outcome ("failed", "error", "missing", ...)
+    hidden_failed: dict[str, str] = field(default_factory=dict)
+
+
+class GraderTimeout(GradingError):
+    """The final test run timed out. `grade` is the fail grade for the patch, if it is kept."""
+
+    def __init__(self, grade: Grade):
+        super().__init__("final test run timed out")
+        self.grade = grade
 
 
 def grade_to_dict(g: Grade) -> dict:
@@ -213,6 +225,13 @@ def _pytest_table(source: str | None) -> object:
     return tomllib.loads(source).get("tool", {}).get("pytest")
 
 
+def _same_file(a: Path, b: Path) -> bool:
+    """Both missing, or both files with the same bytes."""
+    if not a.is_file() or not b.is_file():
+        return not a.is_file() and not b.is_file()
+    return a.read_bytes() == b.read_bytes()
+
+
 def _pytest_config_touched(work: Path, files: list["FilePatch"]) -> bool:
     for f in files:
         name = f.path.rsplit("/", 1)[-1]
@@ -307,6 +326,91 @@ def _restore(target: Path, content: bytes) -> None:
     target.write_bytes(content)
 
 
+def _range_changes(repo: Path, task: Task) -> list[tuple[str, str]]:
+    """(status, path) for every file under backend/tests/ changed in a range task's base..end."""
+    out = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--name-status", "-z", "--no-renames",
+         task.start, task.commit, "--", TESTS_PREFIX],
+        check=True, capture_output=True, text=True,
+    ).stdout.split("\0")  # fmt: skip
+    return list(zip(out[0::2], out[1::2], strict=False))
+
+
+def range_hidden_tests(repo: Path, task: Task) -> set[str]:
+    """Every test_*.py under backend/tests/ added or modified in base..end."""
+    return {
+        p
+        for s, p in _range_changes(repo, task)
+        if s != "D" and p.rsplit("/", 1)[-1].startswith("test_") and p.endswith(".py")
+    }
+
+
+def range_hidden_errors(repo: Path, task: Task) -> list[str]:
+    """Problems with a range task's hidden_tests list versus the git-computed set."""
+    if task.kind != "range":
+        return []
+    expected = range_hidden_tests(repo, task)
+    listed = set(task.hidden_tests)
+    errors = [
+        f"{task.id}: hidden_tests lacks {p} (added or modified in the range)"
+        for p in sorted(expected - listed)
+    ]
+    errors += [
+        f"{task.id}: hidden_tests lists {p}, not an added or modified test in the range"
+        for p in sorted(listed - expected)
+    ]
+    return errors
+
+
+def _range_support(repo: Path, task: Task) -> tuple[list[str], list[str]]:
+    """Support files changed in a range task's base..end: (present at end, deleted at end).
+
+    Support files are every file under backend/tests/ that is changed in the range and is not a
+    hidden test (conftest, fakes, factories, fixtures, helper modules).
+    """
+    if task.kind != "range":
+        return [], []
+    present: list[str] = []
+    deleted: list[str] = []
+    for status, path in _range_changes(repo, task):
+        if path in task.hidden_tests:
+            continue
+        (deleted if status == "D" else present).append(path)
+    return present, deleted
+
+
+def original_patch_errors(
+    repo: Path, task: Task, run_dir: Path, cache_dir: Path | None = None, timeout_s: int = 900
+) -> list[str]:
+    """Grade the original `git diff start end` on a fresh workspace; list everything that is not
+    a clean pass (failing hidden tests, regressions, grading errors). Empty means gradable."""
+    from sdlc_harness.workspace import drop_contaminant_hunks, prepare_workspace
+
+    errors = range_hidden_errors(repo, task)
+    if errors:
+        return errors
+    work = prepare_workspace(repo, task, run_dir, timeout_s)
+    diff = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--binary", task.start, task.commit],
+        check=True, capture_output=True, text=True,
+    ).stdout  # fmt: skip
+    # the export stripped those paths; their hunks would not apply
+    diff = drop_contaminant_hunks(diff)
+    subprocess.run(["git", "-C", str(work), "apply"], input=diff, text=True, check=True)
+    try:
+        g = grade(repo, task, work, cache_dir=cache_dir, timeout_s=timeout_s)
+    except GradingError as e:
+        return [f"{task.id}: {e}"]
+    errors = [f"{task.id}: hidden test {n} -> {o}" for n, o in sorted(g.hidden_failed.items())]
+    errors += [f"{task.id}: base test fails under the original patch: {n}" for n in g.regressions]
+    errors += [
+        f"{task.id}: {n}"
+        for n in g.grading_notes
+        if not n.startswith(("ruff", "pyrefly", "old tests excluded"))
+    ]
+    return errors
+
+
 def _in_files(nodeid: str, rels: set[str]) -> bool:
     return nodeid.split("::", 1)[0] in rels
 
@@ -320,23 +424,40 @@ def grade(
     """Grade the agent's workspace. The workspace is left as is; a copy at
     work.parent/"graded" (no docs, the commit's hidden tests) is the one tested and labeled.
 
-    Old tests are the parent's tests outside the hidden files; hidden tests are the commit's
+    Old tests are the start (parent, or range base) tests outside the hidden files; hidden tests are the commit's
     tests in the hidden files. Both sets come from reference runs of the original trees, so a
     deleted old test still counts as a regression and the hidden total is exact.
     """
     hidden = set(task.hidden_tests)
     hidden_rel = {p.removeprefix("backend/") for p in hidden}
 
-    baseline = _reference(repo, task.parent, cache_dir, timeout_s)
+    start = task.start
+    mismatch = range_hidden_errors(repo, task)
+    if mismatch:
+        raise GradingError("; ".join(mismatch))
+    support, support_deleted = _range_support(repo, task)
+    baseline = _reference(repo, start, cache_dir, timeout_s)
     old = {n: o for n, o in baseline.items() if not _in_files(n, hidden_rel)}
+    notes: list[str] = []
+    if task.kind == "range":
+        # base test files that no longer exist at the end were deleted or moved by the range
+        at_end = set(_ls_tree(repo, task.commit, TESTS_PREFIX))
+        gone = {n.split("::", 1)[0] for n in old if "backend/" + n.split("::", 1)[0] not in at_end}
+        old = {n: o for n, o in old.items() if n.split("::", 1)[0] not in gone}
+        notes += [f"old tests excluded, file gone at end: backend/{p}" for p in sorted(gone)]
     broken = sorted(n for n, o in old.items() if o in ("failed", "error"))
     if broken:
-        raise GradingError(f"old tests already fail at parent {task.parent}: {broken}")
+        raise GradingError(f"old tests already fail at start {start}: {broken}")
     reference = _reference(repo, task.commit, cache_dir, timeout_s)
     hidden_ids = sorted(n for n in reference if _in_files(n, hidden_rel))
     not_passing = [n for n in hidden_ids if reference[n] != "passed"]
     if not hidden_ids or not_passing:
         raise GradingError(f"hidden tests do not pass at commit {task.commit}: {not_passing}")
+    if task.kind == "range":
+        # the end tree (with its support files) must itself pass every old test that survives
+        broken_end = sorted(n for n in old if reference.get(n) not in ("passed", "skipped"))
+        if broken_end:
+            raise GradingError(f"old tests do not pass at end {task.commit}: {broken_end}")
 
     # (1) patch, size, process artifacts, radon, ruff, pyrefly
     all_files = parse_patch(collect_patch(work))
@@ -346,7 +467,6 @@ def grade(
     changed_py = [f.path for f in present if f.path.endswith(".py")]
     changed_src = [p for p in changed_py if p.startswith(SRC_PREFIX)]
     cc_mean, mi_mean = _radon([(work / p).read_text() for p in changed_src])
-    notes: list[str] = []
     ruff_errors: int | None = None
     try:
         ruff_errors = _ruff_errors(work, changed_py)
@@ -391,25 +511,67 @@ def grade(
 
     # (4) old test files back at the parent version, the commit's hidden tests over the copy,
     # then the whole suite
-    for path in _ls_tree(repo, task.parent, TESTS_PREFIX):
-        if path not in hidden:
-            _restore(graded / path, _blob(repo, task.parent, path))
-    for path in task.hidden_tests:
+    # (range tasks: support files and the dependency manifests come from the end instead)
+    for path in _ls_tree(repo, start, TESTS_PREFIX):
+        if path not in hidden and path not in support and path not in support_deleted:
+            _restore(graded / path, _blob(repo, start, path))
+    for path in support_deleted:
+        (graded / path).unlink(missing_ok=True)
+    for path in [*task.hidden_tests, *support]:
         _restore(graded / path, _blob(repo, task.commit, path))
+    if task.kind == "range":
+        at_end = set(_ls_tree(repo, task.commit, "."))
+        for path in MANIFEST_PATHS:
+            if path in at_end:
+                _restore(graded / path, _blob(repo, task.commit, path))
+            else:
+                (graded / path).unlink(missing_ok=True)
     final: dict[str, Outcome] = {}
-    try:
-        report = run_backend_tests(graded, timeout_s)
-        final = report.outcomes
-        if not final:
-            notes.append(f"final test run produced no report: {report.stderr_tail}")
-        elif report.collection_error:
-            notes.append("final test run had collection errors")
-    except subprocess.TimeoutExpired:
-        notes.append("final test run timed out")
-    except (subprocess.SubprocessError, OSError) as e:
-        notes.append(f"final test run failed: {e}")
+    # a grader timeout or crash says nothing about the AI's work: GradingError, so the unit is a
+    # system error and is rerun (not a task_pass = false)
+    timed_out = False
+    # a patch that touches pytest config, conftest, pyproject or the lock can break the run itself.
+    # Only trigger files that survive into the graded tree count (a range task restores some).
+    # The final run is repeated once; the patch is blamed only for the same failure twice
+    # (a fail grade). Anything else, and every OSError, is infra: GradingError, so a rerun.
+    breaks_test_setup = any(
+        f.path.rsplit("/", 1)[-1] in PYTEST_CONFIG_FILES | {"pyproject.toml", "uv.lock"}
+        and _same_file(work / f.path, graded / f.path)
+        for f in all_files
+    )
+    failures: list[str] = []
+    for _ in range(2 if breaks_test_setup else 1):
+        failure = None
+        try:
+            report = run_backend_tests(graded, timeout_s)
+        except subprocess.TimeoutExpired:
+            timed_out = True  # the grade below is the fail grade the caller may keep (see below)
+            notes.append("final test run timed out")
+            break
+        except OSError as e:
+            raise GradingError(f"final test run failed: {e}") from e
+        except subprocess.SubprocessError as e:
+            failure = f"failed: {e}"
+        else:
+            final = report.outcomes
+            if not final:
+                failure = f"produced no report: {report.stderr_tail}"
+        if failure is None:
+            if report.collection_error:
+                notes.append("final test run had collection errors")
+            break
+        failures.append(failure)
+    if failures and not timed_out and not final:
+        if (
+            not breaks_test_setup
+            or len(failures) < 2
+            or (failures[0].split(":")[0] != failures[1].split(":")[0])
+        ):
+            raise GradingError(f"final test run {failures[-1]}")
+        notes.append(f"final test run {failures[-1]} twice, caused by the patch (config or lock)")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
+    hidden_failed = {n: final.get(n, "missing") for n in hidden_ids if final.get(n) != "passed"}
     # skipped only counts as fine when the parent run skipped that test too
     regressions = sorted(
         n
@@ -420,7 +582,7 @@ def grade(
     arch += [n for n in final if n.startswith(ARCH_PREFIX) and n not in old]
     architecture_pass = all(final.get(n) == "passed" for n in arch)
 
-    return Grade(
+    result = Grade(
         task_pass=hidden_passed == len(hidden_ids) and not regressions,
         hidden_passed=hidden_passed,
         hidden_total=len(hidden_ids),
@@ -440,7 +602,11 @@ def grade(
         ),
         pytest_config_touched=_pytest_config_touched(work, all_files),
         grading_notes=notes,
+        hidden_failed=hidden_failed,
     )
+    if timed_out:
+        raise GraderTimeout(result)
+    return result
 
 
 # --- baseline maintainability ---------------------------------------------------------------
@@ -449,7 +615,7 @@ def grade(
 def baseline_radon(repo: Path, task: Task) -> tuple[float, float]:
     """The same radon means for the original commit, over the src files it changed."""
     patch = subprocess.run(
-        ["git", "-C", str(repo), "diff", task.parent, task.commit],
+        ["git", "-C", str(repo), "diff", task.start, task.commit],
         check=True,
         capture_output=True,
         text=True,

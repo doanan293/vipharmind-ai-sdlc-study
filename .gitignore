@@ -28,3 +28,6 @@ docs/report/body.txt
 *.toc
 *.lot
 *.lof
+
+# Run logs are results (the *.log rule above is for LaTeX)
+!results/**/*.log

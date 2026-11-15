@@ -7,20 +7,18 @@ from pathlib import Path
 
 AGENTS = ("claude", "agy", "codex")
 
-# Web access (pilot probes, docs/pilot-report.md). claude: --disallowedTools WebFetch WebSearch.
-# agy: its stock agent always has search_web and a browser subagent, and search_web is not a
-# permission action, so agy runs a custom main agent (AGY_AGENT, written by prepare_config) whose
-# tool list has no web tools; the deny rules are a second guard. codex: web_search disabled here
-# and in the CODEX_HOME config. Shell network stays on for all three (agy cannot sandbox it).
-AGY_AGENT = "sdlc-coder"
-AGY_TOOLS = ("read_file", "edit_file", "write_file", "run_command", "manage_task")
-AGY_DENY = ("read_url(*)", "execute_url(*)", "download_url(*)", "mcp(*)")
-CODEX_WEB_OFF_FLAGS: tuple[str, ...] = ("-c", 'web_search="disabled"')
+# Stock agents (ruling R11, owner 2026-11-15): each CLI runs its default agent with its default
+# tools, web included; only user-level extras are removed (skills, plugins, MCP, memory, custom
+# instructions) by the clean HOME (workspace.prepare_config) and the flags below. Any run whose
+# transcript reaches the upstream ViPharmind repo is flagged (upstream_urls) for a sensitivity check.
+UPSTREAM_RE = re.compile(
+    r"(?:https?://|git@)[^\s\"'<>]*(?:vipharmind|doanan293)[^\s\"'<>]*", re.IGNORECASE
+)
 CLAUDE_SETTINGS = '{"autoMemoryEnabled": false}'
 # Messages that mean "out of quota / usage limit / rate limited", matched case-insensitively
 # against the tail of the transcript and stderr of a run that exited non-zero. Taken from the
-# CLIs' own strings (claude 2.1.325, agy 1.5.9 incl. its QUOTA_RE, codex 0.162.1); none was seen
-# in a real run yet, so they stay provisional.
+# CLIs' own strings (claude 2.1.325, agy 1.5.9 incl. its QUOTA_RE, codex 0.162.1). Only agy's
+# was seen in a real run (pilot, marked below); the others stay provisional.
 QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
     "claude": (
         r"usage limit reached",
@@ -28,9 +26,12 @@ QUOTA_PATTERNS: dict[str, tuple[str, ...]] = {
         r"spend limit reached",
         r"out of extra usage",
         r"rate_limit_error",
+        # "5-hour limit reached", "weekly limit reached"; not e.g. "Subagent nesting limit reached"
+        r"\b(?:\d+[- ]?(?:hour|day)|weekly|daily|monthly|session|opus|sonnet|extra usage)\s+limit reached",
     ),
     "agy": (
-        r"RESOURCE_EXHAUSTED",
+        r"RESOURCE_EXHAUSTED",  # observed: "RESOURCE_EXHAUSTED (code 429): Individual quota reached"
+        r"quota reached",
         r"out of quota",
         r"quota (?:exceeded|exhausted)",
         r"exhausted your capacity",
@@ -74,9 +75,6 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
             "--verbose",
             "--permission-mode",
             "bypassPermissions",
-            "--disallowedTools",
-            "WebFetch",
-            "WebSearch",
             "--strict-mcp-config",
             "--setting-sources",
             "",
@@ -89,8 +87,6 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
     if agent == "agy":
         return [
             "agy",
-            "--agent",
-            AGY_AGENT,
             "--model",
             model,
             "--effort",
@@ -99,13 +95,10 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
             "stream-json",
             "--dangerously-skip-permissions",
             "--disable-slash-commands",
-            "--settings",
-            json.dumps({"permissions": {"deny": list(AGY_DENY)}}),
             f"-p={prompt_file.read_text()}",
         ]
     if agent == "codex":
-        # the proxy is selected by config.toml in CODEX_HOME (prepare_config); like claude's
-        # bypassPermissions and agy's --dangerously-skip-permissions: no approvals, no sandbox
+        # like claude's bypassPermissions and agy's --dangerously-skip-permissions: no approvals, no sandbox
         return [
             "codex",
             "exec",
@@ -114,12 +107,21 @@ def build_command(agent: str, model: str, effort: str, prompt_file: Path) -> lis
             model,
             "-c",
             f'model_reasoning_effort="{effort}"',
-            *CODEX_WEB_OFF_FLAGS,
             "--dangerously-bypass-approvals-and-sandbox",
             "--json",
             "-",
         ]
     raise ValueError(f"unknown agent {agent!r}, expected one of {AGENTS}")
+
+
+def urls_in(text: str) -> set[str]:
+    return {m.group(0).rstrip(".,);]}\\") for m in UPSTREAM_RE.finditer(text)}
+
+
+def upstream_urls(transcript: str, exclude: set[str] | frozenset[str] = frozenset()) -> list[str]:
+    """Distinct URLs in a transcript that point at the upstream ViPharmind repo or its owner,
+    minus `exclude` (URLs already in the task tree)."""
+    return sorted(urls_in(transcript) - set(exclude))
 
 
 def _events(transcript: str) -> list[dict]:
@@ -234,9 +236,65 @@ def parse_usage(agent: str, transcript: str) -> Usage:
     raise ValueError(f"unknown agent {agent!r}, expected one of {AGENTS}")
 
 
-def is_quota_error(agent: str, returncode: int, transcript: str) -> bool:
-    """A failed run whose last output reports an exhausted quota or usage limit."""
+def _agy_own_errors(transcript: str) -> str:
+    """agy's own error text in a transcript: AGY_ERROR lines and the final result/error event,
+    never tool output (which can hold code that says "429" or "rate limit")."""
+    parts = [ln for ln in transcript.splitlines() if ln.startswith("AGY_ERROR:")]
+    for e in _events(transcript):
+        if e.get("event") in ("result", "error"):
+            r = e.get("result") if e.get("event") == "result" else e
+            if isinstance(r, dict):  # error/status fields only, not the agent's final message
+                parts.extend(str(r[k]) for k in ("error", "status") if r.get(k))
+    return "\n".join(parts)
+
+
+def is_quota_error(agent: str, returncode: int, transcript: str, stderr: str = "") -> bool:
+    """A failed run whose output reports an exhausted quota or usage limit.
+
+    claude and codex: the tail of transcript + stderr. agy: only stderr and agy's own error
+    lines/events, so code the agent read cannot look like a quota error.
+    """
     if returncode == 0:
         return False
-    tail = transcript[-QUOTA_TAIL_CHARS:]
+    if agent == "agy":
+        tail = (stderr + "\n" + _agy_own_errors(transcript))[-QUOTA_TAIL_CHARS:]
+    else:
+        tail = f"{transcript}\n{stderr}"[-QUOTA_TAIL_CHARS:]
     return any(re.search(p, tail, re.IGNORECASE) for p in QUOTA_PATTERNS[agent])
+
+
+AUTH_PATTERNS = (
+    r"\b401\b",
+    r"invalid_grant",
+    r"refresh[ _]token[^\n]{0,60}(?:already|expired|revoked|invalid|reused|used)",
+    r"failed to authenticate",
+    r"authentication[_ ](?:error|failed)",
+    r"not logged in",
+    r"please (?:log ?in|run /login|sign in)",
+    r"invalid (?:api key|credentials|authentication)",
+    r"unauthenticated",
+)
+
+
+def _own_error_text(agent: str, transcript: str, stderr: str) -> str:
+    """stderr plus the agent's own error/result fields; never tool output or the final message
+    of a successful-looking turn."""
+    if agent == "agy":
+        return stderr + "\n" + _agy_own_errors(transcript)
+    parts = [stderr]
+    for e in _events(transcript):
+        kind = e.get("type")
+        if agent == "claude" and kind == "result" and e.get("is_error"):
+            parts.append(str(e.get("result", "")))
+        if kind in ("error", "turn.failed"):
+            parts.append(json.dumps(e.get("error") or e.get("message") or ""))
+    return "\n".join(parts)
+
+
+def is_auth_error(agent: str, returncode: int, transcript: str, stderr: str = "") -> bool:
+    """A failed run whose own error output says the login was rejected (expired, revoked or
+    already-rotated token); matched like agy's quota errors, never on tool output."""
+    if returncode == 0:
+        return False
+    text = _own_error_text(agent, transcript, stderr)[-QUOTA_TAIL_CHARS:]
+    return any(re.search(p, text, re.IGNORECASE) for p in AUTH_PATTERNS)

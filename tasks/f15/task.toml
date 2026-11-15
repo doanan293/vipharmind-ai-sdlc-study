@@ -1,0 +1,11 @@
+id = "f15"
+commit = "ef23fe8cb40354573c362e570f8a399ad4328c42"
+kind = "range"
+base = "11079ab21c7fa8299bd59f73b7e6a901ba98ffc4"
+layer = "infrastructure"
+src_lines = 1367
+hidden_tests = ["backend/tests/api/test_collections_api_postgres.py", "backend/tests/api/test_conversations_api.py", "backend/tests/api/test_openapi.py", "backend/tests/application/test_chat_service.py", "backend/tests/application/test_collection_service.py", "backend/tests/application/test_conversation_service.py", "backend/tests/domain/corpus/test_corpus_models.py", "backend/tests/domain/test_retrieval_service.py", "backend/tests/infrastructure/test_collection_repository.py", "backend/tests/infrastructure/test_migrations.py", "backend/tests/infrastructure/test_qdrant_adapter.py", "backend/tests/infrastructure/test_scope_resolver.py", "backend/tests/infrastructure/test_scope_retrieval_integration.py", "backend/tests/test_cli_corpus.py"]
+pilot = false
+tier = "large"
+baseline_radon_cc = 2.074660633484163
+baseline_radon_mi = 57.37140844616323

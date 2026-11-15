@@ -1,0 +1,11 @@
+id = "m02"
+commit = "68edeac53e8e8fe94c8d8952130448397ad9c40b"
+kind = "range"
+base = "a133d4cd1cbaf8926aeb90d7e2d0eed5f7c6668e"
+layer = "application"
+src_lines = 335
+hidden_tests = ["backend/tests/application/test_queries.py", "backend/tests/application/test_summarize.py", "backend/tests/infrastructure/test_checkpointer.py", "backend/tests/infrastructure/test_container.py", "backend/tests/infrastructure/test_migrations.py"]
+pilot = false
+tier = "medium"
+baseline_radon_cc = 1.8235294117647058
+baseline_radon_mi = 71.29625462826844

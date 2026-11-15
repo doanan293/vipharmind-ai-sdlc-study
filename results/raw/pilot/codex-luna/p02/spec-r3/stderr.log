@@ -1,0 +1,5 @@
+WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir "/tmp" (codex_home: AbsolutePathBuf("/tmp/sdlc-runs/f81066b3852b42aa90a454dda04f53eb/config/home/.codex"))
+2026-11-15T09:20:14.338867Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /tmp/sdlc-runs/f81066b3852b42aa90a454dda04f53eb/work/backend/tests/application/test_chat_service.py:
+    assert len({session.user_message_id, session.assistant_message_id}) == 2
+2026-11-15T09:21:03.218511Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /tmp/sdlc-runs/f81066b3852b42aa90a454dda04f53eb/work/backend/tests/application/test_queries.py:
+        user_message_id="user-1",

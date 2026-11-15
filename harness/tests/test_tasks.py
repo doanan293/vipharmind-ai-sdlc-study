@@ -119,6 +119,25 @@ def test_cli_tasks_validate_requires_17_tasks(tmp_path: Path):
     assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
 
 
+def test_range_prompt_may_have_twelve_sentences():
+    long = " ".join(f"Sentence number {i} says something." for i in range(12))
+    assert validate_task(_task(long, kind="range", base="c" * 40)) == []
+    assert validate_task(_task(long)) != []
+    assert validate_task(_task(long + " One more here.", kind="range", base="c" * 40)) != []
+
+
+def test_cli_tasks_validate_accepts_feature_tasks(tmp_path: Path):
+    _write_set(tmp_path)
+    for tid in ("f08", "f14", "f15"):
+        write_task(tmp_path / tid, _task(id=tid))
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 0
+    write_task(tmp_path / "f99", _task(id="f99"))
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
+    (tmp_path / "t15" / "task.toml").unlink()
+    (tmp_path / "f99" / "task.toml").unlink()
+    assert main(["tasks", "validate", "--dir", str(tmp_path)]) == 1
+
+
 # --- baseline keys round trip and generate ------------------------------------------------------
 
 
@@ -226,3 +245,51 @@ def test_generate_fails_when_quota_cannot_be_filled(tmp_path: Path):
     verdicts = {r["sha"]: "fail" for r in eligible}
     with pytest.raises(ValueError, match="quota"):
         _gen(tmp_path, _review(scr, verdicts), scr)
+
+
+def _write_toml(tmp_path: Path, extra: str, kind: str = "commit") -> Path:
+    d = tmp_path / "x01"
+    write_task(d, _task())
+    lines = [ln for ln in (d / "task.toml").read_text().splitlines() if not ln.startswith("tier")]
+    if kind == "range":
+        lines = [ln for ln in lines if not ln.startswith("parent")]
+        lines += ['kind = "range"', 'base = "' + "c" * 40 + '"']
+    (d / "task.toml").write_text("\n".join([*lines, extra]) + "\n")
+    return d
+
+
+def test_tier_defaults_to_small_for_commit_tasks(tmp_path: Path):
+    d = _write_toml(tmp_path, "")
+    assert load_task(d).tier == "small"
+    assert validate_task(load_task(d)) == []
+
+
+def test_tier_is_required_for_range_tasks_at_load(tmp_path: Path):
+    with pytest.raises(ValueError, match="tier"):
+        load_task(_write_toml(tmp_path, "", kind="range"))
+    ok = load_task(_write_toml(tmp_path, 'tier = "large"', kind="range"))
+    assert ok.tier == "large"
+    assert not any("tier" in e for e in validate_task(ok))
+
+
+def test_unknown_tier_is_refused_at_load(tmp_path: Path):
+    with pytest.raises(ValueError, match="huge"):
+        load_task(_write_toml(tmp_path, 'tier = "huge"'))
+
+
+def test_validate_tasks_reports_a_range_task_without_tier(tmp_path: Path):
+    from sdlc_harness.cli import validate_tasks
+
+    d = _write_toml(tmp_path, "", kind="range")
+    assert any("tier" in e for e in validate_tasks(d.parent, None))
+
+
+def test_feature_tasks_declare_tier_large():
+    root = Path(__file__).resolve().parents[2] / "tasks"
+    for tid in ("f08", "f14", "f15"):
+        assert load_task(root / tid).tier == "large"
+
+
+def test_tier_round_trips_through_write_task(tmp_path: Path):
+    write_task(tmp_path / "m", _task(tier="medium"))
+    assert load_task(tmp_path / "m").tier == "medium"

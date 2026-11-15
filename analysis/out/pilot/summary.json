@@ -1,0 +1,2499 @@
+{
+  "meta": {
+    "prereg": "prereg-v1 (section 9); tiers from prereg-v1.1",
+    "bootstrap": {
+      "B": 10000,
+      "seed": 20261115,
+      "ci": "percentile 2.5-97.5, tasks resampled with replacement"
+    },
+    "cohorts": [
+      "claude-sonnet",
+      "claude-opus",
+      "agy-gemini",
+      "codex-luna"
+    ],
+    "reps": 3,
+    "tasks": [
+      {
+        "task_id": "p01",
+        "tier": "small",
+        "src_lines": 201
+      },
+      {
+        "task_id": "p02",
+        "tier": "small",
+        "src_lines": 46
+      }
+    ],
+    "n_secondary_comparisons": 19,
+    "versions": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.1",
+      "scipy": "1.18.1",
+      "statsmodels": "0.15.0"
+    },
+    "ignored_units_outside_design": []
+  },
+  "completeness": [
+    {
+      "cohort": "claude-sonnet",
+      "tier": "small",
+      "expected": 12,
+      "valid": 12,
+      "excluded": 0,
+      "missing": 0,
+      "pending": 0,
+      "deferred": 0,
+      "complete": true
+    },
+    {
+      "cohort": "claude-opus",
+      "tier": "small",
+      "expected": 12,
+      "valid": 12,
+      "excluded": 0,
+      "missing": 0,
+      "pending": 0,
+      "deferred": 0,
+      "complete": true
+    },
+    {
+      "cohort": "agy-gemini",
+      "tier": "small",
+      "expected": 12,
+      "valid": 2,
+      "excluded": 0,
+      "missing": 8,
+      "pending": 2,
+      "deferred": 0,
+      "complete": false
+    },
+    {
+      "cohort": "codex-luna",
+      "tier": "small",
+      "expected": 12,
+      "valid": 12,
+      "excluded": 0,
+      "missing": 0,
+      "pending": 0,
+      "deferred": 0,
+      "complete": true
+    }
+  ],
+  "not_run_units": [
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p01",
+      "arm": "spec",
+      "rep": 1,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p01",
+      "arm": "spec",
+      "rep": 2,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p01",
+      "arm": "spec",
+      "rep": 3,
+      "status": "quota"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p01",
+      "arm": "vibe",
+      "rep": 1,
+      "status": "quota"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p01",
+      "arm": "vibe",
+      "rep": 2,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p02",
+      "arm": "spec",
+      "rep": 1,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p02",
+      "arm": "spec",
+      "rep": 3,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p02",
+      "arm": "vibe",
+      "rep": 1,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p02",
+      "arm": "vibe",
+      "rep": 2,
+      "status": "missing"
+    },
+    {
+      "cohort": "agy-gemini",
+      "task_id": "p02",
+      "arm": "vibe",
+      "rep": 3,
+      "status": "missing"
+    }
+  ],
+  "h5": {
+    "cohorts": [],
+    "reason": "no cohort is complete in all three tiers"
+  },
+  "case_study": null,
+  "overlap": null,
+  "estimates": {
+    "pass_diff.claude-sonnet.small": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333333,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tokens_total.claude-sonnet.small": {
+      "estimate": 144047.0,
+      "ci_low": -13693.333333333372,
+      "ci_high": 301787.3333333334,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 497255.3333333334,
+      "mean_vibe": 353208.3333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.wall_s.claude-sonnet.small": {
+      "estimate": 42.59033333333333,
+      "ci_low": 39.033,
+      "ci_high": 46.14766666666665,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 113.01383333333334,
+      "mean_vibe": 70.4235,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.static_errors.claude-sonnet.small": {
+      "estimate": -2.1666666666666665,
+      "ci_low": -3.333333333333333,
+      "ci_high": -1.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333334,
+      "mean_vibe": 3.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regression_any.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_mi_delta.claude-sonnet.small": {
+      "estimate": 0.7489308977236888,
+      "ci_low": -0.007964758339866762,
+      "ci_high": 1.5058265537872444,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": -5.1033664221924715,
+      "mean_vibe": -5.85229731991616,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.hidden_pass_rate.claude-sonnet.small": {
+      "estimate": -0.027777777777777735,
+      "ci_low": -0.05555555555555547,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.9722222222222223,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regressions_n.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ruff_errors.claude-sonnet.small": {
+      "estimate": -1.6666666666666665,
+      "ci_low": -3.333333333333333,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333334,
+      "mean_vibe": 2.5,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.pyrefly_errors.claude-sonnet.small": {
+      "estimate": -0.5,
+      "ci_low": -1.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.5,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.architecture_pass.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_cc_delta.claude-sonnet.small": {
+      "estimate": 0.4074074074074072,
+      "ci_low": 0.0,
+      "ci_high": 0.8148148148148144,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.1972222222222221,
+      "mean_vibe": -0.2101851851851851,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_tests_added.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_changed_line_coverage.claude-sonnet.small": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 12,
+      "reference_only": true
+    },
+    "secondary.patch_lines.claude-sonnet.small": {
+      "estimate": 68.5,
+      "ci_low": 43.0,
+      "ci_high": 94.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 231.5,
+      "mean_vibe": 163.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_input_uncached.claude-sonnet.small": {
+      "estimate": 4.333333333333334,
+      "ci_low": 0.0,
+      "ci_high": 8.666666666666668,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 26.333333333333336,
+      "mean_vibe": 22.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_read.claude-sonnet.small": {
+      "estimate": 131591.1666666667,
+      "ci_low": -16668.333333333314,
+      "ci_high": 279850.6666666667,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 458099.5,
+      "mean_vibe": 326508.3333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_5m.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_1h.claude-sonnet.small": {
+      "estimate": 8401.000000000002,
+      "ci_low": -328.66666666666424,
+      "ci_high": 17130.666666666668,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 29428.5,
+      "mean_vibe": 21027.5,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_output.claude-sonnet.small": {
+      "estimate": 4050.5,
+      "ci_low": 3303.666666666667,
+      "ci_high": 4797.333333333333,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 9701.0,
+      "mean_vibe": 5650.5,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.cost_usd.claude-sonnet.small": {
+      "estimate": 0.0872767833333333,
+      "ci_low": 0.03005516666666666,
+      "ci_high": 0.14449839999999994,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.26058661666666666,
+      "mean_vibe": 0.17330983333333336,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.turns.claude-sonnet.small": {
+      "estimate": 2.333333333333334,
+      "ci_low": 0.0,
+      "ci_high": 4.666666666666668,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 13.333333333333334,
+      "mean_vibe": 11.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "cost_eff.claude-sonnet.small.spec.passes_per_usd": {
+      "estimate": 3.1979130163822047,
+      "ci_low": 2.856958379258939,
+      "ci_high": 3.474335374119329,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 5.0,
+      "cost_usd": 1.5635197,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-sonnet.small.spec.cost_per_pass": {
+      "estimate": 0.31270394,
+      "ci_low": 0.2878248333333333,
+      "ci_high": 0.3500226,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 5.0,
+      "cost_usd": 1.5635197,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-sonnet.small.vibe.passes_per_usd": {
+      "estimate": 5.770013049846181,
+      "ci_low": 4.919002878764451,
+      "ci_high": 6.977080059435418,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 1.039859,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-sonnet.small.vibe.cost_per_pass": {
+      "estimate": 0.17330983333333336,
+      "ci_low": 0.14332643333333336,
+      "ci_high": 0.20329323333333335,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 1.039859,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-sonnet.small.diff.passes_per_usd": {
+      "estimate": -2.5721000334639763,
+      "ci_low": -3.5027446853160895,
+      "ci_high": -2.0620444995055123,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-sonnet.small.diff.cost_per_pass": {
+      "estimate": 0.13939410666666666,
+      "ci_low": 0.13939410666666666,
+      "ci_high": 0.14672936666666667,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "variability.claude-sonnet.small": {
+      "cells": 4,
+      "disagree": 1,
+      "share": 0.25,
+      "cells_single_rep": 0
+    },
+    "pass_diff.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tokens_total.claude-opus.small": {
+      "estimate": 435252.1666666666,
+      "ci_low": 381934.3333333333,
+      "ci_high": 488570.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 958594.0,
+      "mean_vibe": 523341.8333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.wall_s.claude-opus.small": {
+      "estimate": 90.51716666666667,
+      "ci_low": 85.04566666666669,
+      "ci_high": 95.98866666666666,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 206.16266666666667,
+      "mean_vibe": 115.6455,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.static_errors.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regression_any.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_mi_delta.claude-opus.small": {
+      "estimate": 3.84093421867496,
+      "ci_low": 0.008963103826784405,
+      "ci_high": 7.672905333523136,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": -1.5277055675668962,
+      "mean_vibe": -5.3686397862418564,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.hidden_pass_rate.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regressions_n.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ruff_errors.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.pyrefly_errors.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.architecture_pass.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_cc_delta.claude-opus.small": {
+      "estimate": -0.26498778998779005,
+      "ci_low": -0.5299755799755801,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": -0.13122710622710634,
+      "mean_vibe": 0.13376068376068373,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_tests_added.claude-opus.small": {
+      "estimate": -0.3333333333333333,
+      "ci_low": -0.6666666666666666,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.3333333333333333,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_changed_line_coverage.claude-opus.small": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 11,
+      "reference_only": true
+    },
+    "secondary.patch_lines.claude-opus.small": {
+      "estimate": 86.83333333333331,
+      "ci_low": 49.33333333333333,
+      "ci_high": 124.33333333333331,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 365.8333333333333,
+      "mean_vibe": 279.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_input_uncached.claude-opus.small": {
+      "estimate": 11.000000000000002,
+      "ci_low": 10.0,
+      "ci_high": 12.000000000000004,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 36.66666666666667,
+      "mean_vibe": 25.666666666666664,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_read.claude-opus.small": {
+      "estimate": 415144.6666666667,
+      "ci_low": 365033.3333333333,
+      "ci_high": 465256.00000000006,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 894449.5,
+      "mean_vibe": 479304.8333333333,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_5m.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_1h.claude-opus.small": {
+      "estimate": 13191.833333333332,
+      "ci_low": 11085.0,
+      "ci_high": 15298.666666666664,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 47622.5,
+      "mean_vibe": 34430.66666666667,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_output.claude-opus.small": {
+      "estimate": 6904.666666666667,
+      "ci_low": 5806.0,
+      "ci_high": 8003.333333333334,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 16485.333333333336,
+      "mean_vibe": 9580.666666666668,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.cost_usd.claude-opus.small": {
+      "estimate": 0.3267009333333334,
+      "ci_low": 0.2778466666666666,
+      "ci_high": 0.3755552000000002,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8897232333333334,
+      "mean_vibe": 0.5630223,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.turns.claude-opus.small": {
+      "estimate": 6.666666666666666,
+      "ci_low": 6.0,
+      "ci_high": 7.333333333333332,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 20.666666666666664,
+      "mean_vibe": 14.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "cost_eff.claude-opus.small.spec.passes_per_usd": {
+      "estimate": 1.1239450230534236,
+      "ci_low": 1.002218376970144,
+      "ci_high": 1.2793287174584618,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 5.338339400000001,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-opus.small.spec.cost_per_pass": {
+      "estimate": 0.8897232333333335,
+      "ci_low": 0.7816599333333333,
+      "ci_high": 0.9977865333333334,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 5.338339400000001,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-opus.small.vibe.passes_per_usd": {
+      "estimate": 1.7761285831840055,
+      "ci_low": 1.6071193243241797,
+      "ci_high": 1.9848623808900625,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 3.3781337999999996,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-opus.small.vibe.cost_per_pass": {
+      "estimate": 0.5630223,
+      "ci_low": 0.5038132666666667,
+      "ci_high": 0.6222313333333332,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 6.0,
+      "cost_usd": 3.3781337999999996,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-opus.small.diff.passes_per_usd": {
+      "estimate": -0.6521835601305819,
+      "ci_low": -0.7055336634316007,
+      "ci_high": -0.6049009473540357,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.claude-opus.small.diff.cost_per_pass": {
+      "estimate": 0.3267009333333335,
+      "ci_low": 0.2778466666666666,
+      "ci_high": 0.3755552000000002,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "variability.claude-opus.small": {
+      "cells": 4,
+      "disagree": 0,
+      "share": 0.0,
+      "cells_single_rep": 0
+    },
+    "descriptive_incomplete.agy-gemini.small": {
+      "complete": false,
+      "valid_runs": 2,
+      "not_run_or_pending": 10,
+      "pass_rate_spec_runs": 1.0,
+      "pass_rate_vibe_runs": 1.0
+    },
+    "pass_diff.codex-luna.small": {
+      "estimate": -0.16666666666666666,
+      "ci_low": -0.3333333333333333,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.5,
+      "mean_vibe": 0.6666666666666666,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tokens_total.codex-luna.small": {
+      "estimate": 236589.3333333333,
+      "ci_low": 48764.333333333314,
+      "ci_high": 424414.3333333333,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 663064.1666666666,
+      "mean_vibe": 426474.8333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.wall_s.codex-luna.small": {
+      "estimate": 65.27883333333332,
+      "ci_low": 24.19266666666664,
+      "ci_high": 106.36500000000001,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 225.77483333333333,
+      "mean_vibe": 160.496,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.static_errors.codex-luna.small": {
+      "estimate": -4.833333333333334,
+      "ci_low": -6.666666666666667,
+      "ci_high": -3.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 2.6666666666666665,
+      "mean_vibe": 7.5,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regression_any.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_mi_delta.codex-luna.small": {
+      "estimate": -1.9011183528966022,
+      "ci_low": -3.808069996621004,
+      "ci_high": 0.005833290827799431,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": -9.14278205855857,
+      "mean_vibe": -7.241663705661968,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.hidden_pass_rate.codex-luna.small": {
+      "estimate": -0.08333333333333337,
+      "ci_low": -0.16666666666666674,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8611111111111112,
+      "mean_vibe": 0.9444444444444444,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.regressions_n.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ruff_errors.codex-luna.small": {
+      "estimate": -0.16666666666666674,
+      "ci_low": -2.3333333333333335,
+      "ci_high": 2.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 2.0,
+      "mean_vibe": 2.166666666666667,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.pyrefly_errors.codex-luna.small": {
+      "estimate": -4.666666666666667,
+      "ci_low": -5.0,
+      "ci_high": -4.333333333333334,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.6666666666666666,
+      "mean_vibe": 5.333333333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.architecture_pass.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.radon_cc_delta.codex-luna.small": {
+      "estimate": -0.4312169312169314,
+      "ci_low": -0.8624338624338628,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.20145409494001038,
+      "mean_vibe": 0.6326710261569417,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_tests_added.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.ai_changed_line_coverage.codex-luna.small": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 12,
+      "reference_only": true
+    },
+    "secondary.patch_lines.codex-luna.small": {
+      "estimate": 73.5,
+      "ci_low": 27.333333333333343,
+      "ci_high": 119.66666666666666,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 196.83333333333334,
+      "mean_vibe": 123.33333333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_input_uncached.codex-luna.small": {
+      "estimate": 16300.0,
+      "ci_low": 8105.3333333333285,
+      "ci_high": 24494.66666666667,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 78013.33333333333,
+      "mean_vibe": 61713.33333333333,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_read.codex-luna.small": {
+      "estimate": 217301.33333333337,
+      "ci_low": 38826.666666666686,
+      "ci_high": 395776.00000000006,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 577920.0,
+      "mean_vibe": 360618.6666666666,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_5m.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_cache_write_1h.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.tok_output.codex-luna.small": {
+      "estimate": 2988.0,
+      "ci_low": 1832.333333333333,
+      "ci_high": 4143.666666666667,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 7130.833333333334,
+      "mean_vibe": 4142.833333333334,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.cost_usd.codex-luna.small": {
+      "estimate": 0.005297013333333334,
+      "ci_low": 0.0021149666666666657,
+      "ci_high": 0.008479060000000002,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.01714595,
+      "mean_vibe": 0.011848936666666667,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "secondary.turns.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "cost_eff.codex-luna.small.spec.passes_per_usd": {
+      "estimate": 29.1614054630977,
+      "ci_low": 0.0,
+      "ci_high": 44.401135248226026,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.1028757,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.codex-luna.small.spec.cost_per_pass": {
+      "estimate": 0.0342919,
+      "ci_low": 0.022521946666666667,
+      "ci_high": 0.0342919,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.1028757,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.codex-luna.small.vibe.passes_per_usd": {
+      "estimate": 56.26383914618499,
+      "ci_low": 34.52447370892278,
+      "ci_high": 71.2104301442296,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.07109362,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.codex-luna.small.vibe.cost_per_pass": {
+      "estimate": 0.017773405,
+      "ci_low": 0.014042886666666666,
+      "ci_high": 0.02896496,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.07109362,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.codex-luna.small.diff.passes_per_usd": {
+      "estimate": -27.10243368308729,
+      "ci_low": -34.52447370892278,
+      "ci_high": -26.80929489600358,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff.codex-luna.small.diff.cost_per_pass": {
+      "estimate": 0.016518495,
+      "ci_low": 0.008479060000000002,
+      "ci_high": 0.016518495,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.spec.passes_per_usd": {
+      "estimate": 15.380265530030865,
+      "ci_low": 0.0,
+      "ci_high": 23.189493798858816,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.19505515,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.spec.cost_per_pass": {
+      "estimate": 0.06501838333333333,
+      "ci_low": 0.04312297666666667,
+      "ci_high": 0.06501838333333333,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 3.0,
+      "cost_usd": 0.19505515,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.vibe.passes_per_usd": {
+      "estimate": 29.417607129180578,
+      "ci_low": 18.392269214265706,
+      "ci_high": 36.76366064102099,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.13597299000000002,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.vibe.cost_per_pass": {
+      "estimate": 0.033993247500000004,
+      "ci_low": 0.027200773333333334,
+      "ci_high": 0.05437067,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "passes": 4.0,
+      "cost_usd": 0.13597299000000002,
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.diff.passes_per_usd": {
+      "estimate": -14.037341599149713,
+      "ci_low": -18.392269214265706,
+      "ci_high": -13.574166842162175,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "cost_eff_upper.codex-luna.small.diff.cost_per_pass": {
+      "estimate": 0.031025135833333328,
+      "ci_low": 0.015922203333333333,
+      "ci_high": 0.031025135833333328,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 2457,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "n_runs_without_cost": 0
+    },
+    "variability.codex-luna.small": {
+      "cells": 4,
+      "disagree": 1,
+      "share": 0.25,
+      "cells_single_rep": 0
+    },
+    "pooled.pass_diff.small": {
+      "estimate": -0.11111111111111112,
+      "ci_low": -0.22222222222222224,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus",
+        "codex-luna"
+      ],
+      "reference_only": true
+    },
+    "h1.primary": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333333,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "h4.small.rate.claude-sonnet.spec": {
+      "estimate": 0.8333333333333333,
+      "ci_low": 0.6666666666666666,
+      "ci_high": 1.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.rate.claude-sonnet.vibe": {
+      "estimate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.rate.claude-opus.spec": {
+      "estimate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.rate.claude-opus.vibe": {
+      "estimate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.diff.claude-sonnet": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.diff.claude-opus": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.diff_of_diffs": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.sonnet_spec_minus_opus_vibe.pass": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.sonnet_spec_minus_opus_vibe.cost_usd": {
+      "estimate": -0.3024356833333333,
+      "ci_low": -0.38888293333333324,
+      "ci_high": -0.2159884333333334,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h4.small.sonnet_spec_over_opus_vibe.cost_ratio": {
+      "estimate": 0.46283533825688017,
+      "ci_low": 0.37501872294012845,
+      "ci_high": 0.5712926839692853,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "cohorts": [
+        "claude-sonnet",
+        "claude-opus"
+      ]
+    },
+    "h5.primary": null,
+    "sensitivity.upstream_urls.h1": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333333,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true,
+      "runs_dropped_all_cohorts": 0
+    },
+    "sensitivity.pytest_config_touched.h1": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333333,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true,
+      "runs_dropped_all_cohorts": 0
+    },
+    "sensitivity.spec_noncompliant.h1": {
+      "estimate": -0.16666666666666669,
+      "ci_low": -0.33333333333333337,
+      "ci_high": 0.0,
+      "n_tasks": 2,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.8333333333333333,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true,
+      "runs_dropped_all_cohorts": 0
+    },
+    "exploratory.size_group.claude-sonnet.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.claude-sonnet.medium": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.claude-sonnet.large": {
+      "estimate": -0.33333333333333337,
+      "ci_low": -0.33333333333333337,
+      "ci_high": -0.33333333333333337,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.6666666666666666,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.claude-opus.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.claude-opus.medium": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.claude-opus.large": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.codex-luna.small": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 1.0,
+      "mean_vibe": 1.0,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.codex-luna.medium": {
+      "estimate": null,
+      "ci_low": null,
+      "ci_high": null,
+      "n_tasks": 0,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": null,
+      "mean_vibe": null,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "exploratory.size_group.codex-luna.large": {
+      "estimate": -0.3333333333333333,
+      "ci_low": -0.3333333333333333,
+      "ci_high": -0.3333333333333333,
+      "n_tasks": 1,
+      "B": 10000,
+      "seed": 20261115,
+      "n_undefined": 0,
+      "ci_type": "percentile 2.5-97.5, tasks resampled with replacement",
+      "mean_spec": 0.0,
+      "mean_vibe": 0.3333333333333333,
+      "n_null_runs": 0,
+      "reference_only": true
+    },
+    "variability.all_complete": {
+      "cells": 12,
+      "disagree": 2,
+      "share": 0.16666666666666666,
+      "cells_single_rep": 0
+    }
+  },
+  "verdicts": {
+    "pass_diff.claude-sonnet.small": "inconclusive",
+    "H2.tokens_total.claude-sonnet.small": "inconclusive",
+    "H2.wall_s.claude-sonnet.small": "supported",
+    "H3a.static_errors.claude-sonnet.small": "supported",
+    "H3b.regression_any.claude-sonnet.small": "inconclusive",
+    "H3c.radon_mi_delta.claude-sonnet.small": "supported",
+    "pass_diff.claude-opus.small": "inconclusive",
+    "H2.tokens_total.claude-opus.small": "supported",
+    "H2.wall_s.claude-opus.small": "supported",
+    "H3a.static_errors.claude-opus.small": "inconclusive",
+    "H3b.regression_any.claude-opus.small": "inconclusive",
+    "H3c.radon_mi_delta.claude-opus.small": "supported",
+    "pass_diff.codex-luna.small": "inconclusive",
+    "H2.tokens_total.codex-luna.small": "supported",
+    "H2.wall_s.codex-luna.small": "supported",
+    "H3a.static_errors.codex-luna.small": "supported",
+    "H3b.regression_any.codex-luna.small": "inconclusive",
+    "H3c.radon_mi_delta.codex-luna.small": "supported",
+    "H1": "inconclusive",
+    "H4.small": "inconclusive",
+    "H5": "not_estimable"
+  },
+  "descriptives": {
+    "status_counts": [
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "status": "done",
+        "n": 2
+      },
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "status": "quota",
+        "n": 2
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "status": "done",
+        "n": 12
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "status": "done",
+        "n": 12
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "status": "done",
+        "n": 12
+      }
+    ],
+    "timeouts": [
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "nonzero_exit": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "grader_timeout_twice": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "excluded_runs": [],
+    "excluded_by_arm": {},
+    "compliance_spec": [
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "n": 1,
+        "of": 1,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      }
+    ],
+    "vibe_wrote_design_or_plan": [
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "vibe_process_artifacts": [
+      {
+        "cohort": "agy-gemini",
+        "tier": "small",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "tier": "small",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "pytest_ran": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 1,
+        "of": 1,
+        "share": 1.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 1,
+        "of": 1,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 3,
+        "of": 6,
+        "share": 0.5
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 6,
+        "of": 6,
+        "share": 1.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 2,
+        "of": 6,
+        "share": 0.3333333333333333
+      }
+    ],
+    "ai_tests_added_mean": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "ai_tests_added": 0.3333333333333333
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "ai_tests_added": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "ai_tests_added": 0.0
+      }
+    ],
+    "upstream_urls": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "upstream_urls_field_missing": 38,
+    "pytest_config_touched": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "tool_versions": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "tool_version": "1.5.9",
+        "n": 1
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "tool_version": "1.5.9",
+        "n": 1
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "tool_version": "2.1.325 (Claude Code)",
+        "n": 6
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "tool_version": "2.1.325 (Claude Code)",
+        "n": 6
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "tool_version": "2.1.325 (Claude Code)",
+        "n": 6
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "tool_version": "2.1.325 (Claude Code)",
+        "n": 6
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "tool_version": "codex-cli 0.162.1",
+        "n": 6
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "tool_version": "codex-cli 0.162.1",
+        "n": 6
+      }
+    ],
+    "tokens_unsplit_upper_bound": [
+      {
+        "cohort": "agy-gemini",
+        "n": 0,
+        "of": 2,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "n": 0,
+        "of": 12,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "n": 0,
+        "of": 12,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "n": 0,
+        "of": 12,
+        "share": 0.0
+      }
+    ],
+    "runs_without_cost": 0,
+    "prompt_sha256_check": {
+      "cells": 4,
+      "cells_with_one_value": 4,
+      "violations": []
+    },
+    "served_model_unknown": [
+      {
+        "cohort": "agy-gemini",
+        "n": 0,
+        "of": 2,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "n": 0,
+        "of": 12,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "n": 0,
+        "of": 12,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "n": 12,
+        "of": 12,
+        "share": 1.0
+      }
+    ],
+    "offtable_model_cost": [
+      {
+        "cohort": "agy-gemini",
+        "arm": "spec",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "agy-gemini",
+        "arm": "vibe",
+        "n": 0,
+        "of": 1,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-opus",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "claude-sonnet",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "spec",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      },
+      {
+        "cohort": "codex-luna",
+        "arm": "vibe",
+        "n": 0,
+        "of": 6,
+        "share": 0.0
+      }
+    ],
+    "offtable_models": [],
+    "codex_runs_with_several_usage_records": 0,
+    "shared_cpu_window": {
+      "window_utc": [
+        "2026-11-15T12:16:00+00:00",
+        "2026-11-15T12:52:00+00:00"
+      ],
+      "runs_started": 0,
+      "timeouts": 0,
+      "by_cohort": []
+    },
+    "concurrent_tiers_window": {
+      "window_utc": [
+        "2026-11-15T12:58:00+00:00",
+        null
+      ],
+      "note": "no small-tier run after start"
+    }
+  },
+  "labels": null,
+  "figures": [
+    "effect_vs_size.pdf",
+    "effect_vs_size.png",
+    "pass_diff_by_cohort.pdf",
+    "pass_diff_by_cohort.png",
+    "two_by_two_small.pdf",
+    "two_by_two_small.png",
+    "cost_per_pass.pdf",
+    "cost_per_pass.png"
+  ]
+}

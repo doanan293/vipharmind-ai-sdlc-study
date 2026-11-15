@@ -3,18 +3,22 @@
 import argparse
 import json
 import logging
+import tempfile
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
+from sdlc_harness.grade import original_patch_errors, range_hidden_errors
 from sdlc_harness.runner import (
     COHORTS_FILE,
     DEFAULT_WORK_ROOT,
     RunConfig,
     load_cohorts,
     plan_units,
+    regrade_all,
     run_all,
     select_tasks,
+    status_report,
     validate_work_root,
 )
 from sdlc_harness.screen import hidden_tests, layer_of, screen_static, src_lines
@@ -85,23 +89,41 @@ def _print_funnel(records: list[dict]) -> None:
 
 
 EXPECTED_TASKS = {f"t{i:02d}" for i in range(1, 16)} | {"p01", "p02"}
+# optional range tasks: medium tier m01-m05, large tier f08, f14, f15
+FEATURE_TASKS = {f"m{i:02d}" for i in range(1, 6)} | {"f08", "f14", "f15"}
 
 
-def validate_tasks(root: Path, repo: Path | None) -> list[str]:
+def validate_tasks(
+    root: Path, repo: Path | None, original_patch: bool = False, cache_dir: Path | None = None
+) -> list[str]:
     if not root.is_dir():
         return [f"{root} is not a directory"]
     dirs = sorted(d for d in root.iterdir() if (d / "task.toml").exists())
     errors = []
     found = {d.name for d in dirs}
-    if found != EXPECTED_TASKS:
+    if found - FEATURE_TASKS != EXPECTED_TASKS:
         missing = sorted(EXPECTED_TASKS - found)
-        extra = sorted(found - EXPECTED_TASKS)
-        errors.append(f"expected task dirs t01-t15, p01, p02; missing {missing}, extra {extra}")
+        extra = sorted(found - EXPECTED_TASKS - FEATURE_TASKS)
+        errors.append(
+            f"expected task dirs t01-t15, p01, p02 (and optionally m01-m05, f08, f14, f15); "
+            f"missing {missing}, extra {extra}"
+        )
     for d in dirs:
-        task = load_task(d, repo)
+        try:
+            task = load_task(d, repo)
+        except ValueError as e:
+            errors.append(f"{d.name}: {e}")
+            continue
         if task.id != d.name:
             errors.append(f"{d.name}: id is '{task.id}'")
         errors.extend(validate_task(task))
+        if repo is not None:
+            errors.extend(range_hidden_errors(repo, task))
+            if original_patch and task.kind == "range":
+                with tempfile.TemporaryDirectory() as tmp:
+                    errors.extend(
+                        original_patch_errors(repo, task, Path(tmp) / "run", cache_dir=cache_dir)
+                    )
     return errors
 
 
@@ -149,9 +171,50 @@ def run(args: argparse.Namespace) -> int:
         return 130
     print(
         f"done {summary['done']}, already done {summary['skipped']}, "
-        f"errors {summary['error']}, quota requeues {summary['quota']}"
+        f"errors {summary['error']}, quota requeues {summary['quota']}, "
+        f"deferred {summary['deferred']}, excluded {summary['excluded']}"
     )
     return 1 if summary["error"] else 0
+
+
+def regrade(args: argparse.Namespace) -> int:
+    try:
+        validate_work_root(args.work_root)
+    except ValueError as e:
+        print(e)
+        return 2
+    cfg = RunConfig(
+        repo=args.repo,
+        tasks_dir=args.tasks_dir,
+        cohorts={},
+        grade_timeout_s=args.grade_timeout_s,
+        cache_dir=args.cache_dir,
+        work_root=args.work_root,
+    )
+    dirs = sorted(p.parent for p in args.results.glob("*/*/*/grade.json"))
+    results = regrade_all(dirs, cfg, args.jobs)
+    keys = ("task_pass", "hidden_passed", "hidden_total", "regressions")
+    changed = [(d, o, n) for d, o, n in results if any(o.get(k) != n.get(k) for k in keys)]
+    failed = [(d, n["regrade_error"]) for d, _, n in results if "regrade_error" in n]
+    changed = [(d, o, n) for d, o, n in changed if "regrade_error" not in n]
+    for d, why in failed:
+        print(f"FAILED {d}: {why}")
+    for d, o, n in changed:
+        print(f"CHANGED {d}: " + ", ".join(f"{k} {o.get(k)} -> {n.get(k)}" for k in keys))
+    print(f"{len(results) - len(failed)} regraded, {len(changed)} changed, {len(failed)} failed")
+    return 1 if failed else 0
+
+
+def status(args: argparse.Namespace) -> int:
+    report = status_report(args.out)
+    for cohort, tiers in sorted(report["counts"].items()):
+        for tier, by_status in sorted(tiers.items()):
+            cells = ", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))
+            print(f"{cohort} {tier}: {cells}")
+    print(f"excluded units: {len(report['excluded'])}")
+    for e in report["excluded"]:
+        print(f"  {e['unit']} after {e['attempts']} attempts: {e['error']}")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -165,11 +228,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workroot", type=Path, default=Path(".work"))
     t = sub.add_parser("tasks", help="task files")
     tsub = t.add_subparsers(dest="tasks_command", required=True)
-    v = tsub.add_parser("validate", help="check the 17 task dirs (exit 0 when all are valid)")
+    v = tsub.add_parser(
+        "validate",
+        help="check the 17 task dirs (plus the optional m01-m05, f08, f14, f15) (exit 0 when all are valid)",
+    )
     v.add_argument("--dir", type=Path, default=Path("tasks"))
     v.add_argument(
         "--repo", type=Path, default=None, help="ViPharmind repo, to check hidden test names"
     )
+    v.add_argument(
+        "--original-patch",
+        action="store_true",
+        help="range tasks: grade the original base..end patch; any failure is a problem",
+    )
+    v.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     g = tsub.add_parser("generate", help="write task dirs from the reviewed REVIEW.md")
     g.add_argument("--review", type=Path, required=True)
     g.add_argument("--screening", type=Path, default=Path("tasks/screening.json"))
@@ -199,7 +271,24 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     r.add_argument("--accounts-file", type=Path, default=None)
     r.add_argument("--keep-work", action="store_true", help="keep workspaces after grading")
+    rg = sub.add_parser("regrade", help="grade finished units again from their saved patches")
+    rg.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
+    rg.add_argument(
+        "--results", type=Path, required=True, help="dir holding <cohort>/<task>/<unit>"
+    )
+    rg.add_argument("--tasks-dir", type=Path, default=Path("tasks"))
+    rg.add_argument("--jobs", type=int, default=1)
+    rg.add_argument("--grade-timeout-s", type=int, default=900)
+    rg.add_argument("--work-root", type=Path, default=DEFAULT_WORK_ROOT)
+    rg.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
+    st = sub.add_parser("status", help="counts by status per cohort and tier; excluded units")
+    st.add_argument("--out", type=Path, default=Path("results/raw"))
     args = parser.parse_args(argv)
+    if args.command == "status":
+        return status(args)
+    if args.command == "regrade":
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+        return regrade(args)
     if args.command == "run":
         logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
         return run(args)
@@ -221,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "tasks":
         if args.repo is None:
             print("note: no --repo, hidden test function names not checked")
-        errors = validate_tasks(args.dir, args.repo)
+        errors = validate_tasks(args.dir, args.repo, args.original_patch, args.cache_dir)
         for e in errors:
             print(e)
         print("tasks valid" if not errors else f"{len(errors)} problem(s)")

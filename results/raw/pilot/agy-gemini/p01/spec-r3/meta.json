@@ -1,0 +1,50 @@
+{
+  "cohort": "agy-gemini",
+  "task_id": "p01",
+  "arm": "spec",
+  "rep": 3,
+  "agent": "agy",
+  "tool_version": "1.5.9",
+  "model": "gemini-3.8-flash-medium",
+  "model_served": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "account": 1,
+  "started_at": "2026-11-15T09:04:25+00:00",
+  "wall_s": 160.94,
+  "timed_out": false,
+  "returncode": 3,
+  "usage": {
+    "input_tokens": 777517,
+    "output_tokens": 6815,
+    "turns": 30,
+    "model_served": "gemini-3.8-flash-medium",
+    "reasoning_tokens": 4745
+  },
+  "status": "quota",
+  "work_dir": "/tmp/sdlc-runs/492e85ba93a9466e95437658a9701a70/work",
+  "kept_dir": null,
+  "removed_from_tree": [
+    "docs/superpowers",
+    "skills-lock.json"
+  ],
+  "prompt_sha256": "e8fe06aea1d43dccecb79183f2a4d20506909044b0d3b538e18f129c2fdaf1e8",
+  "tree_sha": "0b17c29601649c1b7223d9dc2f273f7acb8d30aa",
+  "tree_files": 1089,
+  "config_files": [
+    "home/.gemini/antigravity-cli/antigravity-oauth-token",
+    "home/.gemini/config/agents/sdlc-coder.md"
+  ],
+  "env_names": [
+    "HOME",
+    "LANG",
+    "LOGNAME",
+    "PATH",
+    "SHELL",
+    "TERM",
+    "USER",
+    "UV_CACHE_DIR",
+    "UV_PYTHON_INSTALL_DIR",
+    "XDG_RUNTIME_DIR"
+  ],
+  "endpoint": "direct"
+}
