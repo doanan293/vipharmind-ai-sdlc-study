@@ -326,6 +326,20 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
     environ["XDG_CONFIG_HOME"] = "/home/x/.config"
     environ["XDG_RUNTIME_DIR"] = "/run/user/1"
     environ["SDLC_PROXY_API_KEY"] = "leak"
+    # parent-session leftovers (an IDE terminal, a Claude Code session, `uv run`)
+    environ.update(
+        AI_AGENT="claude-code_2-1-325_agent",
+        VSCODE_IPC_HOOK_CLI="/run/x.sock",
+        GIT_ASKPASS="/vscode/askpass.sh",
+        PYTHONSTARTUP="/vscode/pythonrc.py",
+        UV_RUN_RECURSION_DEPTH="1",
+        TERM_PROGRAM="vscode",
+        LANG="C.UTF-8",
+        LC_ALL="C.UTF-8",
+        TERM="xterm-256color",
+        USER="u",
+        HTTPS_PROXY="http://corp:3128",
+    )
     scrubbed = {
         agent: scrub_env(agent, environ, {"HOME": "/fresh"}) for agent in ("claude", "agy", "codex")
     }
@@ -336,6 +350,17 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
     assert not [k for k in env if k.startswith(("GEMINI_", "GOOGLE_", "SDLC_PROXY"))]
     assert "VIRTUAL_ENV" not in env and "XDG_CONFIG_HOME" not in env
     assert env["XDG_RUNTIME_DIR"] == "/run/user/1"
+    # an allowlist: only basic shell/locale/network settings pass, nothing from the parent session
+    assert set(env) == {
+        "PATH",
+        "HOME",
+        "USER",
+        "LANG",
+        "LC_ALL",
+        "TERM",
+        "XDG_RUNTIME_DIR",
+        "HTTPS_PROXY",
+    }
     assert venv_bin not in env["PATH"].split(":") and "/usr/bin" in env["PATH"]
     assert env["HOME"] == "/fresh"
     assert scrub_env("codex", environ, {"CODEX_HOME": "/c"})["CODEX_HOME"] == "/c"

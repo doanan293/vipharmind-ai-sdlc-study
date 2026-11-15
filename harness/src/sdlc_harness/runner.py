@@ -56,23 +56,33 @@ STUDY_ROOT = Path(__file__).resolve().parents[3]
 # task files, other reps) and outside any tree whose ancestors hold agent instructions or config.
 DEFAULT_WORK_ROOT = Path(os.environ.get("SDLC_WORK_ROOT") or "/tmp/sdlc-runs")
 AGENT_MARKERS = ("CLAUDE.md", "AGENTS.md", "GEMINI.md", ".claude", ".codex")
-# provider and parent-session variables that could override an account's login, endpoint or
-# model, and XDG dirs that would point back into the real home. One list for every agent, so all
-# three start from the same environment; prepare_config's own variables are added after the scrub.
-ENV_DROP_PREFIXES = (
-    "ANTHROPIC_",
-    "CLAUDE",
-    "OPENAI_",
-    "CODEX_",
-    "GEMINI_",
-    "GOOGLE_",
-    "SDLC_PROXY",
-    "XDG_CONFIG_HOME",
-    "XDG_DATA_HOME",
-    "XDG_STATE_HOME",
-    "XDG_CACHE_HOME",
-    "VIRTUAL_ENV",
+# The agent env is an allowlist, the same for every agent: basic shell, locale and network
+# settings only. Everything else in the parent env (provider keys and endpoints, a parent Claude
+# Code session's AI_AGENT/CLAUDECODE, IDE hooks, uv's recursion counter, XDG dirs pointing into the
+# real home) is dropped; prepare_config's own variables are added after the scrub.
+ENV_KEEP = frozenset(
+    {
+        "PATH",
+        "USER",
+        "LOGNAME",
+        "SHELL",
+        "LANG",
+        "LANGUAGE",
+        "TERM",
+        "TZ",
+        "TMPDIR",
+        "XDG_RUNTIME_DIR",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "NO_PROXY",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR",
+    }
 )
+ENV_KEEP_PREFIXES = ("LC_", "FAKE_AGENT_")  # locale; the test fake agent's knobs
 
 
 @dataclass(frozen=True)
@@ -243,7 +253,7 @@ def tool_version(agent: str) -> str | None:
 
 
 def scrub_env(agent: str, environ: dict[str, str], extra: dict[str, str]) -> dict[str, str]:
-    """The agent's env: no provider/session overrides, no harness venv; then `extra` on top.
+    """The agent's env: the ENV_KEEP allowlist, harness venv off PATH; then `extra` on top.
 
     `agent` is kept for the interface: the scrub is the same for every agent (parity).
     """
@@ -251,7 +261,7 @@ def scrub_env(agent: str, environ: dict[str, str], extra: dict[str, str]) -> dic
     venv_bins = {Path(environ["VIRTUAL_ENV"]) / "bin"} if environ.get("VIRTUAL_ENV") else set()
     if sys.prefix != sys.base_prefix:
         venv_bins.add(Path(sys.prefix) / "bin")
-    env = {k: v for k, v in environ.items() if not k.startswith(ENV_DROP_PREFIXES)}
+    env = {k: v for k, v in environ.items() if k in ENV_KEEP or k.startswith(ENV_KEEP_PREFIXES)}
     if "PATH" in env:
         env["PATH"] = os.pathsep.join(
             p for p in env["PATH"].split(os.pathsep) if p and Path(p) not in venv_bins
