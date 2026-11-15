@@ -27,6 +27,7 @@ from sdlc_harness.runner import (
     run_unit,
     scrub_env,
     select_tasks,
+    status_report,
     unit_dir,
     validate_work_root,
 )
@@ -144,7 +145,15 @@ def test_runner_requeues_quota_without_counting(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path), out, jobs=2)
-    assert summary == {"done": 1, "skipped": 0, "error": 0, "quota": 1, "auth": 0}
+    assert summary == {
+        "done": 1,
+        "skipped": 0,
+        "error": 0,
+        "quota": 1,
+        "auth": 0,
+        "deferred": 0,
+        "excluded": 0,
+    }
     assert len(list(out.rglob("grade.json"))) == 1
     d = unit_dir(out, UNIT)
     for name in ("prompt.txt", "transcript.jsonl", "patch.diff", "grade.json", "meta.json"):
@@ -216,6 +225,8 @@ def test_runner_skips_done_units(world, fake, tmp_path):
         "error": 0,
         "quota": 0,
         "auth": 0,
+        "deferred": 0,
+        "excluded": 0,
     }
     assert grade_file.stat().st_mtime_ns == before
 
@@ -372,15 +383,19 @@ def test_scrub_env_drops_provider_vars_and_harness_venv():
     assert scrub_env("codex", environ, {"CODEX_HOME": "/c"})["CODEX_HOME"] == "/c"
 
 
-def test_quota_retries_are_capped(world, fake, tmp_path):
+def test_quota_retries_exhausted_defers_the_unit_and_a_later_run_resumes_it(world, fake, tmp_path):
     fake.setenv("FAKE_AGENT_MODE", "quota_once")
     out = tmp_path / "raw"
     summary = run_all([UNIT], _cfg(world, tmp_path, max_quota_retries=0), out, jobs=1)
-    assert summary == {"done": 0, "skipped": 0, "error": 1, "quota": 1, "auth": 0}
+    assert summary["deferred"] == 1 and summary["error"] == 0 and summary["quota"] == 1
     meta = _meta(out)
-    assert meta["status"] == "error"
+    assert meta["status"] == "deferred"
     assert meta["error"] == "quota retries exhausted"
     assert not (unit_dir(out, UNIT) / "grade.json").exists()
+    assert status_report(out)["excluded"] == []  # never counted as excluded
+    # the quota is back (the fake's marker file exists): the next invocation runs it again
+    assert run_all([UNIT], _cfg(world, tmp_path), out, jobs=1)["done"] == 1
+    assert _meta(out)["status"] == "done"
 
 
 def test_ctrl_c_kills_live_agents_and_leaves_units_undone(world, fake, tmp_path):
@@ -670,5 +685,100 @@ def test_auth_failure_gives_up_after_the_retry_cap(world, fake, tmp_path):
     out = tmp_path / "out"
     cfg = _cfg(world, tmp_path, max_quota_retries=2)
     summary = run_all([UNIT], cfg, out, jobs=1)
-    assert summary["auth"] == 3 and summary["error"] == 1
+    assert summary["auth"] == 3 and summary["deferred"] == 1 and summary["error"] == 0
+    assert _meta(out)["status"] == "deferred"
+    assert _meta(out)["error"] == "auth retries exhausted"
+
+
+# --- run status rules (B4) ---------------------------------------------------------------
+
+
+def test_grader_timeout_is_an_error_not_a_fail(world, fake, tmp_path, monkeypatch):
+    import sdlc_harness.grade as grade_mod
+
+    out = tmp_path / "raw"
+    cfg = _cfg(world, tmp_path)
+    assert run_unit(UNIT, cfg, tmp_path / "warm") == "done"  # fills the reference cache
+    real = grade_mod.run_backend_tests
+
+    def timing_out(tree, timeout_s=900):
+        if tree.name == "graded":
+            raise subprocess.TimeoutExpired(["pytest"], 1)
+        return real(tree, timeout_s)
+
+    monkeypatch.setattr(grade_mod, "run_backend_tests", timing_out)
+    assert run_unit(UNIT, cfg, out) == "error"
     assert _meta(out)["status"] == "error"
+    assert "timed out" in _meta(out)["error"]
+    assert not (unit_dir(out, UNIT) / "grade.json").exists()
+
+
+def test_system_errors_are_rerun_twice_then_excluded_and_listed(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    fake.setenv("FAKE_AGENT_CWDLOG", str(tmp_path / "cwd.log"))
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)  # always a grading error
+    cfg = _cfg(world, tmp_path)
+    for attempt in (1, 2, 3):
+        assert run_all([unit], cfg, out, jobs=1)["error"] == 1
+        assert _meta(out, unit)["error_attempts"] == attempt
+    summary = run_all([unit], cfg, out, jobs=1)  # the cap: it is not run a fourth time
+    assert summary["excluded"] == 1 and summary["error"] == 0
+    assert (tmp_path / "cwd.log").read_text().count("\n") == 3
+    meta = _meta(out, unit)
+    assert meta["status"] == "error" and meta["error_attempts"] == 3
+    report = status_report(out)
+    assert report["counts"] == {"claude-sonnet": {"commit": {"error": 1}}}
+    assert [e["unit"] for e in report["excluded"]] == ["claude-sonnet/t02/spec-r1"]
+    assert "hidden tests do not pass" in report["excluded"][0]["error"]
+
+
+def test_a_unit_below_the_error_cap_is_not_excluded(world, fake, tmp_path):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)
+    run_all([unit], _cfg(world, tmp_path), out, jobs=1)
+    assert status_report(out)["excluded"] == []
+
+
+def test_cli_status_prints_counts_and_excluded_units(world, fake, tmp_path, capsys):
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t02", "spec", 1)
+    cfg = _cfg(world, tmp_path)
+    for _ in range(3):
+        run_all([unit], cfg, out, jobs=1)
+    run_all([UNIT], cfg, out, jobs=1)
+    assert main(["status", "--out", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "claude-sonnet" in text and "commit" in text
+    assert "done 1" in text and "error 1" in text
+    assert "claude-sonnet/t02/spec-r1" in text
+
+
+@pytest.mark.parametrize(
+    ("mode", "expected"), [("ok", "ok"), ("crash", "nonzero"), ("sleep", "timeout")]
+)
+def test_agent_exit_is_recorded_and_the_unit_is_graded_as_is(world, fake, tmp_path, mode, expected):
+    fake.setenv("FAKE_AGENT_MODE", mode)
+    fake.setenv("FAKE_AGENT_PIDFILE", str(tmp_path / "child.pid"))
+    out = tmp_path / "raw"
+    assert run_unit(UNIT, _cfg(world, tmp_path, timeout_s=2), out) == "done"
+    meta = _meta(out)
+    assert meta["agent_exit"] == expected and meta["status"] == "done"
+    assert (unit_dir(out, UNIT) / "grade.json").is_file()
+
+
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [
+        ({}, {"design": False, "plan": False}),
+        ({"docs/design.md": "d\n"}, {"design": True, "plan": False}),
+        ({"docs/design.md": "d\n", "docs/plan.md": "p\n"}, {"design": True, "plan": True}),
+    ],
+)
+def test_meta_records_which_spec_docs_the_agent_left(world, fake, tmp_path, written, expected):
+    fake.setenv("FAKE_AGENT_WRITE", json.dumps({CALC: CALC_COMMIT, **written}))
+    out = tmp_path / "raw"
+    unit = RunUnit("claude-sonnet", "t01", "spec", 1)
+    assert run_unit(unit, _cfg(world, tmp_path), out) == "done"
+    assert _meta(out, unit)["spec_docs_present"] == expected
+    # what is graded does not change: the docs are not in the graded patch metrics
+    assert json.loads((unit_dir(out, unit) / "grade.json").read_text())["task_pass"] is True

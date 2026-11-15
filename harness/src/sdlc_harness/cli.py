@@ -18,6 +18,7 @@ from sdlc_harness.runner import (
     regrade_all,
     run_all,
     select_tasks,
+    status_report,
     validate_work_root,
 )
 from sdlc_harness.screen import hidden_tests, layer_of, screen_static, src_lines
@@ -165,7 +166,8 @@ def run(args: argparse.Namespace) -> int:
         return 130
     print(
         f"done {summary['done']}, already done {summary['skipped']}, "
-        f"errors {summary['error']}, quota requeues {summary['quota']}"
+        f"errors {summary['error']}, quota requeues {summary['quota']}, "
+        f"deferred {summary['deferred']}, excluded {summary['excluded']}"
     )
     return 1 if summary["error"] else 0
 
@@ -191,6 +193,18 @@ def regrade(args: argparse.Namespace) -> int:
     for d, o, n in changed:
         print(f"CHANGED {d}: " + ", ".join(f"{k} {o.get(k)} -> {n.get(k)}" for k in keys))
     print(f"{len(results)} regraded, {len(changed)} changed")
+    return 0
+
+
+def status(args: argparse.Namespace) -> int:
+    report = status_report(args.out)
+    for cohort, tiers in sorted(report["counts"].items()):
+        for tier, by_status in sorted(tiers.items()):
+            cells = ", ".join(f"{k} {v}" for k, v in sorted(by_status.items()))
+            print(f"{cohort} {tier}: {cells}")
+    print(f"excluded units: {len(report['excluded'])}")
+    for e in report["excluded"]:
+        print(f"  {e['unit']} after {e['attempts']} attempts: {e['error']}")
     return 0
 
 
@@ -258,7 +272,11 @@ def main(argv: list[str] | None = None) -> int:
     rg.add_argument("--grade-timeout-s", type=int, default=900)
     rg.add_argument("--work-root", type=Path, default=DEFAULT_WORK_ROOT)
     rg.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
+    st = sub.add_parser("status", help="counts by status per cohort and tier; excluded units")
+    st.add_argument("--out", type=Path, default=Path("results/raw"))
     args = parser.parse_args(argv)
+    if args.command == "status":
+        return status(args)
     if args.command == "regrade":
         logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
         return regrade(args)

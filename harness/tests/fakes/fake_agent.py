@@ -1,7 +1,7 @@
 """Stand-in for an agent CLI in tests; the runner uses it when SDLC_FAKE_AGENT points here.
 
 It ignores the real CLI flags it receives and acts on environment variables:
-  FAKE_AGENT_MODE    ok (default) | quota_once | auth_once | auth_always | sleep
+  FAKE_AGENT_MODE    ok (default) | quota_once | auth_once | auth_always | sleep | crash
   FAKE_AGENT_STATE   marker file: quota_once fails while it is absent, then creates it
   FAKE_AGENT_WRITE   JSON {relative path: content} written into the work tree (cwd)
   FAKE_AGENT_PIDFILE sleep mode: where to record the pid of a child that also sleeps
@@ -63,6 +63,9 @@ def main() -> int:
         target.write_text(content)
     if mode == "sleep":
         time.sleep(300)
+    if mode == "crash":  # non-zero exit that is neither quota nor auth
+        print("connection reset by peer", file=sys.stderr)
+        return 3
     time.sleep(float(os.environ.get("FAKE_AGENT_DELAY", "0")))
     if os.environ.get("FAKE_AGENT_TIMELOG"):
         with open(os.environ["FAKE_AGENT_TIMELOG"], "a") as f:

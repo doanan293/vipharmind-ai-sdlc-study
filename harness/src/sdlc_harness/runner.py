@@ -33,7 +33,7 @@ from sdlc_harness.agents import (
     parse_usage,
     upstream_urls,
 )
-from sdlc_harness.grade import Grade, GradingError, grade, grade_to_dict
+from sdlc_harness.grade import PROCESS_FILES, Grade, GradingError, grade, grade_to_dict
 from sdlc_harness.prompting import ARMS, PROMPTS_DIR, Arm, render_prompt
 from sdlc_harness.tasks import Task, load_task
 from sdlc_harness.workspace import (
@@ -50,7 +50,7 @@ from sdlc_harness.workspace import (
 
 log = logging.getLogger(__name__)
 
-Status = Literal["done", "quota", "auth", "error"]
+Status = Literal["done", "quota", "auth", "error", "deferred"]
 COHORTS_FILE = Path(__file__).resolve().parents[2] / "cohorts.toml"
 FAKE_AGENT_ENV = "SDLC_FAKE_AGENT"  # tests: path of a script that stands in for the agent CLI
 SEED = 20261115
@@ -60,6 +60,7 @@ QUOTA_LOG = "quota.log"
 QUOTA_EXHAUSTED = "quota retries exhausted"
 AUTH_LOG = "auth.log"
 AUTH_FAILED = "auth retries exhausted"
+MAX_ERROR_RERUNS = 2  # a system-error unit is rerun at most this often, then it is excluded
 STUDY_ROOT = Path(__file__).resolve().parents[3]
 # Agents run with permission checks off, so their work dirs live outside the study repo (results,
 # task files, other reps) and outside any tree whose ancestors hold agent instructions or config.
@@ -123,7 +124,7 @@ class RunConfig:
     accounts_file: Path | None = None  # None: workspace.ACCOUNTS_FILE
     prompts_dir: Path = PROMPTS_DIR
     quota_backoff_s: float = 600.0
-    max_quota_retries: int = 20  # per unit; then the unit is an error
+    max_quota_retries: int = 20  # per unit; then the unit is deferred to a later run
     keep_work: bool = False
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
     _task_locks: dict[str, threading.Lock] = field(default_factory=dict, init=False, repr=False)
@@ -229,6 +230,24 @@ def _dispose(scratch: Path, keep: bool) -> None:
 
 def unit_dir(out_root: Path, unit: RunUnit) -> Path:
     return out_root / unit.cohort / unit.task_id / f"{unit.arm}-r{unit.rep}"
+
+
+def _prior_meta(out_root: Path, unit: RunUnit) -> dict:
+    path = unit_dir(out_root, unit) / META
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def is_excluded(out_root: Path, unit: RunUnit) -> bool:
+    """A system-error unit that used up its reruns: it stays error and is not run again."""
+    meta = _prior_meta(out_root, unit)
+    return (
+        meta.get("status") == "error"
+        and not is_done(out_root, unit)
+        and meta.get("error_attempts", 0) >= MAX_ERROR_RERUNS + 1
+    )
 
 
 def is_done(out_root: Path, unit: RunUnit) -> bool:
@@ -390,6 +409,8 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
     account = cohort.accounts[0] if account is None else account
     # opaque: the agent's cwd must not reveal arm, task, cohort or rep
     scratch = cfg.work_root / uuid.uuid4().hex
+    prior = _prior_meta(out_root, unit)
+    error_attempts = int(prior.get("error_attempts", 0))
     if out.exists():
         shutil.rmtree(out)  # a partial or quota-stopped attempt
     out.mkdir(parents=True)
@@ -408,6 +429,10 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "wall_s": None,
         "timed_out": False,
         "returncode": None,
+        "agent_exit": None,  # ok | nonzero | timeout
+        "spec_docs_present": None,  # {"design": bool, "plan": bool}: left in the workspace
+        "error_attempts": error_attempts,  # system errors so far; reruns are capped
+        "task_kind": None,
         "usage": None,
         "status": None,
         "work_dir": str(scratch / "work"),
@@ -422,6 +447,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
     }
     try:
         task = load_task(cfg.tasks_dir / unit.task_id)
+        meta["task_kind"] = task.kind
         prompt = render_prompt(task, unit.arm, cfg.prompts_dir).encode()
         (out / "prompt.txt").write_bytes(prompt)
         meta["prompt_sha256"] = hashlib.sha256(prompt).hexdigest()
@@ -461,6 +487,11 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         usage = parse_usage(cohort.agent, transcript)
         meta.update(
             returncode=rc,
+            agent_exit="timeout" if timed_out else "nonzero" if rc != 0 else "ok",
+            spec_docs_present={
+                name: any((work / p).is_file() for p in paths)
+                for name, paths in PROCESS_FILES.items()
+            },
             timed_out=timed_out,
             wall_s=wall,
             usage=asdict(usage),
@@ -500,6 +531,7 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         meta.update(status="error", error=f"{type(e).__name__}: {e}")
     finally:
         _dispose(scratch, cfg.keep_work)
+    meta["error_attempts"] = error_attempts + 1
     _write_json(out / META, meta)
     return "error"
 
@@ -541,7 +573,8 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
     """Run every unit not yet done with `jobs` agent sessions at a time.
 
     Two units of the same cohort and task never run at once (they could see each other's work).
-    Returns counts: done, skipped (already done), error, quota (attempts stopped by quota).
+    Returns counts: done, skipped (already done), error, quota (attempts stopped by quota),
+    auth, deferred (retry cap reached; a later run picks it up), excluded (error reruns used up).
     On Ctrl-C, kills every running agent's process group and re-raises KeyboardInterrupt.
     """
     validate_work_root(cfg.work_root)
@@ -555,11 +588,21 @@ def run_all(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int = 1)
 
 
 def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) -> dict[str, int]:
-    summary = {"done": 0, "skipped": 0, "error": 0, "quota": 0, "auth": 0}
+    summary = {
+        "done": 0,
+        "skipped": 0,
+        "error": 0,
+        "quota": 0,
+        "auth": 0,
+        "deferred": 0,
+        "excluded": 0,
+    }
     queue: deque[RunUnit] = deque()
     for u in units:
         if is_done(out_root, u):
             summary["skipped"] += 1
+        elif is_excluded(out_root, u):
+            summary["excluded"] += 1
         else:
             queue.append(u)
     pools = {name: _Accounts(c.accounts) for name, c in cfg.cohorts.items()}
@@ -603,7 +646,7 @@ def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) 
                     pools[u.cohort].hit_quota(account, generation, cfg.quota_backoff_s)
                     if quota_hits[u] > cfg.max_quota_retries:
                         _give_up(out_root, u)
-                        summary["error"] += 1
+                        summary["deferred"] += 1
                     else:
                         queue.append(u)
                 elif status == "auth":
@@ -611,7 +654,7 @@ def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) 
                     quota_hits[u] += 1  # same cap as quota; the account stays in rotation
                     if quota_hits[u] > cfg.max_quota_retries:
                         _give_up(out_root, u, AUTH_FAILED)
-                        summary["error"] += 1
+                        summary["deferred"] += 1
                     else:
                         queue.append(u)
                 else:
@@ -628,7 +671,7 @@ def _run_queue(units: list[RunUnit], cfg: RunConfig, out_root: Path, jobs: int) 
 def _give_up(out_root: Path, unit: RunUnit, reason: str = "") -> None:
     path = unit_dir(out_root, unit) / META
     meta = json.loads(path.read_text()) if path.is_file() else {}
-    meta.update(status="error", error=reason or QUOTA_EXHAUSTED)
+    meta.update(status="deferred", error=reason or QUOTA_EXHAUSTED)  # rerun later, not excluded
     _write_json(path, meta)
 
 
@@ -677,3 +720,28 @@ def regrade_all(
             return [(futures[f], *f.result()) for f in futures]
     finally:
         lock.close()
+
+
+# --- status ------------------------------------------------------------------------------
+
+
+def status_report(out_root: Path) -> dict:
+    """Counts by status per cohort and tier (task kind), and the units excluded after reruns."""
+    counts: dict[str, dict[str, dict[str, int]]] = {}
+    excluded: list[dict] = []
+    for path in sorted(out_root.glob("*/*/*/" + META)):
+        meta = json.loads(path.read_text())
+        status = "done" if (path.parent / GRADE).is_file() else meta.get("status") or "unknown"
+        cell = counts.setdefault(path.parts[-4], {}).setdefault(
+            meta.get("task_kind") or "unknown", {}
+        )
+        cell[status] = cell.get(status, 0) + 1
+        if status == "error" and meta.get("error_attempts", 0) >= MAX_ERROR_RERUNS + 1:
+            excluded.append(
+                {
+                    "unit": "/".join(path.parts[-4:-1]),
+                    "error": meta.get("error"),
+                    "attempts": meta["error_attempts"],
+                }
+            )
+    return {"counts": counts, "excluded": excluded}

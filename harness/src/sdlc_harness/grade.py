@@ -510,17 +510,19 @@ def grade(
             else:
                 (graded / path).unlink(missing_ok=True)
     final: dict[str, Outcome] = {}
+    # a grader timeout or crash says nothing about the AI's work: GradingError, so the unit is a
+    # system error and is rerun (not a task_pass = false)
     try:
         report = run_backend_tests(graded, timeout_s)
-        final = report.outcomes
-        if not final:
-            notes.append(f"final test run produced no report: {report.stderr_tail}")
-        elif report.collection_error:
-            notes.append("final test run had collection errors")
-    except subprocess.TimeoutExpired:
-        notes.append("final test run timed out")
+    except subprocess.TimeoutExpired as e:
+        raise GradingError("final test run timed out") from e
     except (subprocess.SubprocessError, OSError) as e:
-        notes.append(f"final test run failed: {e}")
+        raise GradingError(f"final test run failed: {e}") from e
+    final = report.outcomes
+    if not final:
+        raise GradingError(f"final test run produced no report: {report.stderr_tail}")
+    if report.collection_error:
+        notes.append("final test run had collection errors")
 
     hidden_passed = sum(final.get(n) == "passed" for n in hidden_ids)
     hidden_failed = {n: final.get(n, "missing") for n in hidden_ids if final.get(n) != "passed"}

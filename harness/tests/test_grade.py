@@ -676,21 +676,31 @@ def _fail_final(monkeypatch, exc):
         (subprocess.CalledProcessError(1, ["uv", "sync"]), "final test run failed"),
     ],
 )
-def test_final_run_failure_is_graded_as_fail(ws, monkeypatch, exc, note):
+def test_final_run_failure_is_a_grading_error(ws, monkeypatch, exc, note):
+    """A grader timeout or crash is a system error (rerun), not an AI failure."""
     repo, task, work, _ = ws
     _apply_original(repo, task, work)
     _grade(ws)  # fill the reference cache with the real runner
     _fail_final(monkeypatch, exc)
-    g = _grade(ws)
-    assert g.task_pass is False
-    assert g.hidden_passed == 0
-    assert g.regressions == [
-        "tests/architecture/test_layering.py::test_domain_does_not_import_api",
-        "tests/test_calc.py::test_add",
-        "tests/test_calc.py::test_add_zero",
-    ]
-    assert g.architecture_pass is False
-    assert any(note in n for n in g.grading_notes)
+    with pytest.raises(GradingError, match=note):
+        _grade(ws)
+
+
+def test_final_run_without_report_is_a_grading_error(ws, monkeypatch):
+    import sdlc_harness.grade as grade_mod
+    from sdlc_harness.pytest_run import TestReport
+
+    repo, task, work, _ = ws
+    _apply_original(repo, task, work)
+    _grade(ws)
+    real = grade_mod.run_backend_tests
+    monkeypatch.setattr(
+        grade_mod,
+        "run_backend_tests",
+        lambda t, s=900: TestReport({}, 0.0, True, "boom") if t.name == "graded" else real(t, s),
+    )
+    with pytest.raises(GradingError, match="no report"):
+        _grade(ws)
 
 
 def test_pyrefly_failure_is_none(ws, monkeypatch):
