@@ -11,7 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from report_data import fmt, results
+from report_data import fmt, passcheck, results
 
 Numbers = dict[str, str | None]
 
@@ -463,6 +463,7 @@ def numbers(data: dict[str, Any]) -> Numbers:
     out |= _group(LIT_KEYS, data.get("literature"), _literature)
     out |= _group(PILOT_KEYS, data.get("pilot_results"), _pilot)
     out |= _group(results.KEYS, data.get("analysis"), results.numbers)
+    out |= _group(passcheck.KEYS, data.get("passcheck"), passcheck.numbers)
     return out
 
 

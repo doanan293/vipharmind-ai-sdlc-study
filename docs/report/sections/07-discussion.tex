@@ -66,7 +66,10 @@ với tổng tối đa 24 phiên thay vì tám, nên thời gian chạy và số
 hơn; mục~\ref{sec:results} so số lượt hết giờ trong và ngoài khoảng chạy chồng. Việc làm mù khi gán nhãn
 chỉ là một phần, và nhãn sau phân xử của An không mù.
 
-\textit{Tính hợp lệ cấu trúc.} ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
+\textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt (\texttt{t12} đòi
+\texttt{ValueError} khi đề chỉ nói ``phải báo lỗi''; \texttt{t07} đòi list chứ không phải tuple;
+\texttt{f15} không nói trả về mã hay đối tượng). Chúng hạ tỉ lệ đạt ở cả hai nhánh (ba nhiệm vụ này trượt ở
+cả hai), nên ít ảnh hưởng hiệu số; E2 chấm bằng danh sách hành vi một phần vì thế. ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
 Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
 \NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của bản vá gốc, nên
 theo \texttt{task\_pass} hai nhiệm vụ này gần tầng nhỏ hơn số dòng gợi ý; phân tích độ nhạy với

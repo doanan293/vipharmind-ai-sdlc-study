@@ -300,5 +300,10 @@
  "ResCasePlanTasks": "9",
  "ResCoverageHits": "33",
  "ResCoverageSets": "40",
- "ResCoveragePct": "82,5"
+ "ResCoveragePct": "82,5",
+ "PassCheckRuns": "20",
+ "PassCheckCorrect": "20",
+ "PassCheckLoi": "10",
+ "PassCheckBao": "10",
+ "PassCheckPerArm": "5"
 }

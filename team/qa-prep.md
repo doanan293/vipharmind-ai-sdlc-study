@@ -311,9 +311,10 @@ Cho mỗi ô thì ít, nhưng mục đích của lặp là trung bình hóa đ�
 ## L. Chất lượng mã AI viết và phân loại lỗi [B]
 
 **L1. Đạt test là đủ đúng chưa?**
-Chưa chắc. An đọc mẫu ngẫu nhiên 20 lượt đạt (10 mỗi cách), đối chiếu với bản vá gốc, ghi lượt nào đạt test
-nhưng sai hoặc thiếu hành vi: [CHỜ KẾT QUẢ]. An không mù cách làm, và kết quả này là mô tả, không sửa
-`task_pass`.
+Nhóm đã kiểm. Lợi và Bảo đối chiếu mẫu ngẫu nhiên 20 lượt đạt (10 mỗi cách, mỗi người 10) với bản vá gốc,
+không biết lượt thuộc cách làm nào: cả 20 lượt đúng thật, không lượt nào đạt test mà sai hay thiếu hành vi.
+Mẫu nhỏ, mỗi lượt một người đọc, nên đây là kết quả mô tả, không sửa `task_pass`. (Bản đăng ký giao việc này
+cho An; đổi sang hai người mù cách làm được ghi ở mục 11.)
 
 **L2. Ngoài đạt hay không, còn đo chất lượng mã không?**
 Có (H3): lỗi `ruff` và `pyrefly`, tỉ lệ lượt làm hỏng test cũ, chỉ số bảo trì `radon mi` so với mã nền với

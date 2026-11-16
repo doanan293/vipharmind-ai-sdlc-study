@@ -172,3 +172,21 @@ def test_missing_analysis_gives_pending_result_tables(tmp_path):
     tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
     assert tex["ResHOneEstPp"] == r"\pending{ResHOneEstPp}"
     assert "pending" in (tmp_path / "gen" / "tables" / "results_main.tex").read_text()
+
+
+def test_passcheck_counts(tmp_path):
+    d = tmp_path / "results" / "analysis" / "main" / "labeling"
+    (d / "returned").mkdir(parents=True)
+    head = "ma_luot,dung_that(yes/no),ghi_chu\n"
+    (d / "returned" / "passcheck-loi.csv").write_text(head + "p1,yes,\np2,no,x\n")
+    (d / "returned" / "passcheck-bao.csv").write_text(head + "p3,yes,\np4,yes,\n")
+    (d / "passing-key-PRIVATE.csv").write_text(
+        "code,rater,arm\np1,loi,spec\np2,loi,vibe\np3,bao,spec\np4,bao,vibe\n"
+    )
+    data = sources.load(tmp_path)
+    build.write(data, tmp_path / "gen")
+    tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
+    assert tex["PassCheckRuns"] == "4"
+    assert tex["PassCheckCorrect"] == "3"
+    assert tex["PassCheckLoi"] == "2"
+    assert tex["PassCheckPerArm"] == "1"

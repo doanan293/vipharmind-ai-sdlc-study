@@ -34,7 +34,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Gói phân tích (`analysis/`) | C | – | – | Mã do AI viết; Fable 5.2 duyệt độc lập |
 | Gán nhãn nguyên nhân thất bại (mù) | – | C | C | Hai người làm độc lập; An không gán, chỉ phân xử chỗ lệch |
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
-| Kiểm tra "đạt test nhưng sai" (20 lượt) | C | – | – | |
+| Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
 | Báo cáo viết (`docs/report/`) | C | H | H | Lợi, Bảo đọc bản nháp và góp ý [CHỜ KẾT QUẢ: ghi có hay không] |
 | Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi, Bảo góp ý lời nói phần mình [CHỜ KẾT QUẢ] |
 | Tập dượt thuyết trình | H | C | C | |
@@ -58,13 +58,14 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Đăng ký trước và mọi thay đổi sau thẻ (mục 11 của `prereg-v1.md`).
 - Vận hành lượt chạy chính: [CHỜ KẾT QUẢ: số lượt hợp lệ, số lượt lỗi, ngày kết thúc].
 - Gói phân tích, báo cáo, slide, tài liệu nhóm.
-- Phân xử nhãn lệch và kiểm tra "đạt test nhưng sai".
+- Phân xử nhãn lệch; dựng gói và soát lại kiểm tra "đạt test nhưng sai".
 - Thời gian ước tính: [An điền] giờ.
 
 ### Lê Xuân Lợi
 
 - Gán nhãn độc lập [CHỜ KẾT QUẢ: N] lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
+- Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Thuyết trình khoảng 7 phút: vấn đề và câu hỏi nghiên cứu, ViPharmind, tổng quan ngắn, phương pháp
   (bộ đề, hai cách làm, chống rò rỉ), kết quả hồi cứu.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
@@ -75,6 +76,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 - Gán nhãn độc lập [CHỜ KẾT QUẢ: N] lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
   Lợi.
+- Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Thuyết trình khoảng 7 phút: kết quả thí nghiệm, Sonnet so với Opus, ba công cụ, đề nhỏ và đề lớn, phân
   loại lỗi, hạn chế, kết luận.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
