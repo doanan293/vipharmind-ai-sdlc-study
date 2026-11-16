@@ -16,20 +16,30 @@ def out(study, tmp_path_factory):
     a.to_csv(labels / "b.csv", index=False)
     o = tmp_path_factory.mktemp("out")
     assert main(["--results", str(results), "--tasks", str(tasks_dir), "--out", str(o),
-                 "--bootstrap", "500", "--model-bootstrap", "5", "--labels", str(labels / "a.csv"),
+                 "--bootstrap", "500", "--model-bootstrap", "5", "--draw-passing-sample",
+                 "--labels", str(labels / "a.csv"),
                  str(labels / "b.csv")]) == 0
     return o, json.loads((o / "summary.json").read_text())
 
 
-def test_passing_sample_is_not_redrawn(out, study):
-    o, _ = out
+def test_passing_sample_is_drawn_only_when_asked_and_never_silently_redrawn(out, study, tmp_path):
+    _, s = out
     tasks_dir, results, _, _ = study
-    before = (o / "passing_sample.csv").read_text()
-    (o / "passing_sample.csv").write_text(before + "# kept\n")
-    main(["--results", str(results), "--tasks", str(tasks_dir), "--out", str(o),
-          "--bootstrap", "50", "--model-bootstrap", "2"])
-    assert (o / "passing_sample.csv").read_text().endswith("# kept\n")
-    (o / "passing_sample.csv").write_text(before)
+    assert s["passing_sample"] == {"drawn": True}
+    base = ["--results", str(results), "--tasks", str(tasks_dir), "--bootstrap", "50",
+            "--model-bootstrap", "2"]
+    # without the flag: no sample is written
+    fresh = tmp_path / "fresh"
+    main(base + ["--out", str(fresh)])
+    assert not (fresh / "passing_sample.csv").exists()
+    assert json.loads((fresh / "summary.json").read_text())["passing_sample"] == {"drawn": False}
+    # with the flag on an existing sample: refused without --force
+    (fresh / "passing_sample.csv").write_text("kept\n")
+    with pytest.raises(SystemExit, match="--force"):
+        main(base + ["--out", str(fresh), "--draw-passing-sample"])
+    assert (fresh / "passing_sample.csv").read_text() == "kept\n"
+    main(base + ["--out", str(fresh), "--draw-passing-sample", "--force"])
+    assert len(pd.read_csv(fresh / "passing_sample.csv")) == 20
 
 
 def test_outputs_exist(out):
@@ -175,3 +185,22 @@ def test_overlap_sensitivity_drops_listed_tasks(study):
     assert e["tasks_dropped"] == ["f01", "t01"]
     assert e["n_tasks"] == {"large": 2, "small": 14}
     assert e["estimate"] == pytest.approx(2 / 3)  # effects are constant within tiers
+
+
+@pytest.mark.parametrize(("scale", "expected"), [("logit", "supported"),
+                                                  ("difference", "inconclusive")])
+def test_report_h5_verdict_uses_the_model_scale(study, monkeypatch, scale, expected):
+    """Review N3: the H5 verdict through build_summary. The synthetic primary CI is above 0;
+    a positive logit-scale interaction makes H5 supported, a difference-scale one cannot."""
+    from sdlc_analysis import mixed
+    from sdlc_analysis.report import build_summary
+
+    def stub(runs, cohorts, **kw):
+        return {"model_level": 1 if scale == "logit" else 3, "attempts": [],
+                "interaction": {"coef": 0.4, "scale": scale, "ci_low": 0.1, "ci_high": 0.7}}
+
+    monkeypatch.setattr(mixed, "fit_h5_model", stub)
+    _, _, tasks, runs = study
+    s, _ = build_summary(runs, tasks, list(syn.COHORTS), 3, B=200, seed=1, model_B=2)
+    assert s["estimates"]["h5.primary"]["ci_low"] > 0
+    assert s["verdicts"]["H5"] == expected

@@ -2486,6 +2486,9 @@
     }
   },
   "labels": null,
+  "passing_sample": {
+    "drawn": true
+  },
   "figures": [
     "effect_vs_size.pdf",
     "effect_vs_size.png",

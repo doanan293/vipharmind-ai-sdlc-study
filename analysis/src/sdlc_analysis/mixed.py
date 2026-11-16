@@ -230,7 +230,10 @@ def bootstrap_interaction(df: pd.DataFrame, level: int, formula: str, B: int, se
         "B": B,
         "seed": seed,
         "n_failed": int((~ok).sum()),
-        "n_not_converged": int(sum(1 for c, conv in flat if np.isfinite(c) and not conv)),
+        "n_not_converged": (nnc := int(sum(1 for c, conv in flat
+                                           if np.isfinite(c) and not conv))),
+        "share_not_converged": nnc / B if B else None,
+        "reportable": B >= B_MODEL_DEFAULT,
         "ci_type": "cluster bootstrap of the whole fit: tasks resampled with replacement within "
                    "tier, chosen level refitted, percentile 2.5-97.5",
     }

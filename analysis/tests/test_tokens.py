@@ -148,6 +148,10 @@ def test_suffixed_model_ids_match_their_table_row_by_prefix():
     assert table_model("claude-opus-5-5[1m]") == "claude-opus-5-5"
     assert not is_off_table("claude-opus-5-5[1m]")
     assert table_model("gpt-6-luna-2026") == "gpt-6-luna"  # never the >272k row
+    assert table_model("claude-opus-5-5@20261101") == "claude-opus-5-5"
+    # a different model whose id extends a table id is off-table, not that row
+    assert table_model("gpt-6-luna-mini") is None and is_off_table("gpt-6-luna-mini")
+    assert table_model("") is None and not is_off_table("")
 
 
 def test_no_tokens_means_unknown_cost():

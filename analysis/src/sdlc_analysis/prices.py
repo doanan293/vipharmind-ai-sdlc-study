@@ -1,5 +1,6 @@
 """The frozen price table of prereg-v1 section 7 (USD per 1M tokens, list prices of 2026-11-15)."""
 
+import re
 from dataclasses import dataclass
 
 from sdlc_analysis.tokens import ModelTokens
@@ -26,22 +27,27 @@ PRICES: dict[str, Price] = {
 LONG_CONTEXT = {"gpt-6-luna": "gpt-6-luna>272k"}
 
 
+# what may follow a table id: a date (-2026, -20261101), a bracketed tag ([1m]) or @version
+SUFFIX_RE = re.compile(r"^(-20\d{2,6}|\[.*\]|@.*)$")
+
+
 def table_model(model: str | None) -> str | None:
     """The table row a served model id belongs to: exact match, else the longest table id the
     model id starts with (dated or suffixed ids such as `claude-sonnet-5-5-20261101` or
     `claude-opus-5-5[1m]`), else None (off-table)."""
-    if model is None:
+    if not model:
         return None
     if model in PRICES:
         return model
-    hits = [k for k in PRICES if ">" not in k and model.startswith(k)]
+    hits = [k for k in PRICES if ">" not in k and model.startswith(k)
+            and SUFFIX_RE.match(model[len(k):])]
     return max(hits, key=len) if hits else None
 
 
 def is_off_table(model: str | None) -> bool:
     """A named model that matches no row of the table. Tokens without a model name (codex does
     not report one) are the cohort's model, not off-table."""
-    return model is not None and table_model(model) is None
+    return bool(model) and table_model(model) is None
 
 
 def price_for(model: str | None, cohort_model: str, long_context: bool = False) -> Price:

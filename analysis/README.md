@@ -27,7 +27,8 @@ tiers into `results/raw/main-tiers` (prereg-v1.1); a unit found in two roots is 
 
 Options: `--bootstrap B` (default 10000), `--model-bootstrap` (cluster-bootstrap refits of the H5
 mixed model, default 999; each refit takes 1-5 s, so use `--jobs`), `--jobs` (processes for those
-refits), `--force` (redraw an existing `passing_sample.csv`), `--cohorts` (default: the four prereg cohorts),
+refits), `--draw-passing-sample` (write `passing_sample.csv`; give it once, after the deadline),
+`--force` (allow overwriting an existing `passing_sample.csv`), `--cohorts` (default: the four prereg cohorts),
 `--reps` (default 3), `--task-ids` (default: every task with `pilot = false`), `--repo` (the
 ViPharmind git repo, needed for the H5 overlap sensitivity analysis), `--labels A B` (two filled
 labeling sheets, for Cohen's kappa).
@@ -41,7 +42,7 @@ labeling sheets, for Cohen's kappa).
 | `task_diffs.csv` | Per (cohort, tier, task) pass-rate difference. This is the per-task table the prereg asks for when a tier has fewer than 6 tasks |
 | `pooled_task_diffs.csv` | Per task: the mean difference over the cohorts complete in that tier |
 | `task_cells.csv` | Per (cohort, tier, task, arm): valid reps, pass rate, hidden-test pass rate |
-| `passing_sample.csv` | The 20 passing runs for An's "passes tests but wrong" check (9.10). Drawn once, after the collection deadline: an existing file is kept unless `--force` is given |
+| `passing_sample.csv` | The 20 passing runs for An's "passes tests but wrong" check (9.10). Written only with `--draw-passing-sample`, to be given once, after the collection deadline; an existing file is never overwritten without `--force` |
 | `labeling/sheet-template.csv` | Blank labeling sheet: every valid failing run of the two Claude cohorts, under random ids, in shuffled order |
 | `labeling/key-PRIVATE.csv` | Maps ids to units. Do not give it to the raters |
 
@@ -103,7 +104,9 @@ not follow it word for word. Each note says what the code does.
    level chosen on the full data is refitted on each resample (default 999 resamples, seed
    20261115, resample b fitted with seed 20261116 + b), the interval is the 2.5–97.5 percentile,
    and "SE" is the SD of the resampled coefficients. Failed and non-converged refits are counted
-   (`bootstrap.n_failed`, `n_not_converged`); failed ones are left out. The variational posterior
+   (`bootstrap.n_failed`, `n_not_converged`, `share_not_converged`); failed ones are left out,
+   non-converged ones stay in (on the full data, non-convergence steps down the ladder instead).
+   `bootstrap.reportable` is false when fewer than 999 refits were made (interim runs). The variational posterior
    SD is kept as `vb_posterior_sd` for reference only: on the 23-task design it understated the
    spread of the estimate by about a third (review B2: 65–87% coverage of the old ±1.96 SD
    interval). The slow test `test_interval_coverage_on_the_23_task_design`
@@ -118,7 +121,9 @@ not follow it word for word. Each note says what the code does.
    data sets with true SD 0 and in few with true SD 0.8 (the exact rates are printed by the
    script and listed in note 2a). The design cannot tell a slope SD of 0 from 0.4, so the
    criterion behaves like lme4's `isSingular` would: a small slope variance is often reported as
-   singular. Two other criteria were tried and rejected: the variational ELBO of level 2 was
+   singular. The threshold was calibrated on the slope SD only (intercept SD 0.8 in the
+   simulation) and is applied to the intercept SD too, which is what moves level 2 to level 3.
+   Two other criteria were tried and rejected: the variational ELBO of level 2 was
    higher than level 1's in every simulated data set, whatever the true slope SD (the
    mean-field penalty for 23 extra effects dominates), and the posterior mode (`fit_map`)
    collapses the slope SD to about 1e-10 in every data set.
@@ -138,11 +143,14 @@ not follow it word for word. Each note says what the code does.
    level 1 in 90% of data sets with a clear slope SD (0.8). ELBO(level 2) ≥ ELBO(level 1) in
    60 of 60 data sets, which is why the ELBO is not used.
 
-   **Coverage of the bootstrap interval was not measured in this session.** The slow test
-   `test_interval_coverage_on_the_23_task_design` (40 data sets × 99 refits; a level-1 refit takes
-   3–15 s on this machine while the main runs share the CPU) needs several CPU-hours. Run it
-   before relying on the interval: `SDLC_SLOW_TESTS=1 SDLC_COVERAGE_JOBS=8 uv run pytest
-   tests/test_mixed.py -k coverage -s`.
+   **Coverage of the bootstrap interval:** danh nghĩa 95%, độ phủ mô phỏng khoảng 88–90%, quan
+   sát k/40 (k: to be filled from `calibration/coverage-run.txt`). The within-tier percentile
+   bootstrap undercovers by construction on tiers of 15, 5 and 3 tasks (review N1: an ordinary
+   linear slope on the same sizes covers 88–89%). The H5 verdict uses only the sign of the
+   coefficient, not this interval. The slow test `test_interval_coverage_on_the_23_task_design`
+   is a regression guard (≥ 80% of 40 data sets, against 65–87% for the old interval), not a
+   calibration: `SDLC_SLOW_TESTS=1 SDLC_COVERAGE_JOBS=8 uv run pytest tests/test_mixed.py -k
+   coverage -s`.
 3. **Model details.** `arm` is coded spec = 1. The log size is centred on its mean over tasks;
    this does not change the interaction coefficient. `cohort` is a fixed effect. The data are the
    valid runs of the cohorts used by the H5 primary test (complete in all three tiers), not every
@@ -185,8 +193,8 @@ not follow it word for word. Each note says what the code does.
       run), the code sums assistant messages, counting each message id once. Cache writes
       without a 5 m / 1 h split are priced at the 1 h rate, the upper bound.
     - A served model id is matched to the price table exactly, else by the longest table id it
-      starts with (dated or suffixed ids such as `claude-sonnet-5-5-20261101` or
-      `claude-opus-5-5[1m]`), so a Sonnet sub-agent inside an Opus run is priced as Sonnet. Tokens
+      starts with when the rest is a date or suffix (`-20…`, `[…]` or `@…`, as in
+      `claude-sonnet-5-5-20261101` or `claude-opus-5-5[1m]`; `gpt-6-luna-mini` is off-table), so a Sonnet sub-agent inside an Opus run is priced as Sonnet. Tokens
       of a named model that matches no row are priced at the cohort model's rate and flagged:
       `tok_offtable`, `cost_has_offtable_model` and `offtable_models` per run, counted per cohort
       and arm in `descriptives.offtable_model_cost`. Unnamed models (codex) are the cohort model.
@@ -238,12 +246,15 @@ not follow it word for word. Each note says what the code does.
     hit the time limit start with `het_gio` in `note`, as the labeling guide requires. Kappa uses
     units labeled by both raters. The "arm revealed" rate is the case-insensitive substring
     `lộ cách làm` in either rater's note. Labels outside the locked set of 9 are listed in
-    `invalid_labels`.
+    `invalid_labels`. Two units sharing an id stop the analysis with an error (chance about
+    1 in 100,000 at 300 failing runs); the id length would then be raised.
 20. **Passing-run sample (9.10).** Within each arm, the 10 runs are allocated to tiers in
     proportion to that arm's passing runs per tier, by largest remainder, with ties going to the
     smaller tier first. One generator draws spec then vibe, small to large, from the list sorted
     by (cohort, task, arm, rep). The sample depends on the set of passing runs, so it is drawn
-    once, after the collection deadline; the CLI keeps an existing file unless `--force`.
+    once, after the collection deadline: the CLI writes it only with `--draw-passing-sample`, and
+    refuses to overwrite an existing file without `--force`. `summary.json` records whether it
+    exists (`passing_sample.drawn`).
 21. **Exploratory size groups** (≤ 82, 83–173, ≥ 174 lines) are computed for each cohort
     complete in the small tier.
 22. **Cohort pooling with a missing cohort.** A task's pooled difference is the mean over the
