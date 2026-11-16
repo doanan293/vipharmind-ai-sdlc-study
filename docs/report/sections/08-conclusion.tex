@@ -1,17 +1,19 @@
-\section{Kết luận và hướng tiếp}\label{sec:conclusion}
+\section{Hạn chế, việc tiếp theo và lịch}\label{sec:conclusion}
 
-Phần hồi cứu cho thấy ViPharmind được làm gần như hoàn toàn với trợ lý AI và theo nếp spec, plan:
-\NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên, vì quy tắc nối nghiêng về nối
-thừa), và mã do AI viết được sửa lại với mức gần như nhau dù có hay không có plan (RQ1, RQ2).
+\textit{Hạn chế chính.}
+\begin{itemize}[leftmargin=*]
+\item Một dự án Python, \NumTasksMain{} nhiệm vụ; tầng vừa có \NumMediumTasks{} và tầng lớn \NumFeatureTasks{}
+nhiệm vụ, nên khoảng tin cậy ở hai tầng này chỉ để tham khảo.
+\item Đề bài do AI soạn và An duyệt gộp, và phải nêu đủ tên để test ẩn chấm được, nên gần như đã là một bản
+đặc tả; test ẩn còn kiểm cả chi tiết đề không chốt.
+\item Nhánh theo đặc tả là quy trình tự động, không có người duyệt thiết kế như khi người làm nghề dùng nó;
+E1 và E2 được thêm sau khi đã thấy kết quả chính nên chỉ là thăm dò.
+\end{itemize}
 
-Phần thực nghiệm cho hai phát hiện. Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc
-nhỏ: trên \NumResRuns{} lượt của ba nhóm, nó không đạt test ẩn nhiều hơn (H1, H5 chưa kết luận được), tốn
-gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token, chỉ có dấu hiệu có ích ở Codex trên ba
-nhiệm vụ lớn nhất, và luôn để lại test do tác tử tự viết. Và \NumLabOutside{} trên \NumLabRuns{} lượt hỏng
-của Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau.
-
-Kết quả \NumETwoStatus{} của E2 (tới \NumETwoCutoff{}): \NumETwoReading{}. Kết luận chính: \pending{viết từ kết quả E2 (và E1): khi đề chỉ một hai câu, quy trình đặc tả có bù được
-phần đề thiếu không}.
-
-Hướng tiếp theo: nhánh đặc tả có người duyệt, thêm dự án, ngôn ngữ và nhiệm vụ cỡ tính năng, và đo giá trị
-về sau của test do tác tử viết.
+\textit{Việc tiếp theo (dự kiến).}
+\begin{itemize}[leftmargin=*]
+\item Đến 20/11: chạy xong E2 ở tầng vừa và tầng lớn và E1 (Haiku); Lợi và Bảo chấm tay một mẫu của E2 để
+kiểm người chấm máy.
+\item Đến 24/11: phân tích E1, E2 đầy đủ; hoàn thiện phần hồi cứu (RQ1, RQ2), phân tích nguyên nhân thất
+bại, mối đe dọa đến tính hợp lệ; viết kết luận chính từ kết quả E2; nộp báo cáo cuối kỳ và thuyết trình.
+\end{itemize}

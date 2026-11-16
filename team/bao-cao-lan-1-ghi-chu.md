@@ -1,49 +1,49 @@
 # Báo cáo lần 1 (17/11): ghi chú cho An
 
-Bản nộp cuối: 24/11. Trước buổi gặp, chạy `bash refresh-interim.sh` ở gốc repo báo cáo để làm mới số E1/E2
-trong `main.pdf` và slide; số E2 dưới đây là bản lúc 2026-11-16 16:31 và sẽ đổi; đọc số mới ở slide 23 hoặc mục 6.9.
+Bản nộp lần 1 là bản rút gọn (nhánh `report-lan1`): `docs/report/main.pdf` (9 trang) và
+`docs/presentation/vipharmind-slides.pdf` (12 slide). Báo cáo cuối: 24/11 (nhánh `report`).
+Trước buổi gặp, làm mới số E2 sơ bộ bằng `bash refresh-interim.sh` ngay trong worktree này
+(`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); lệnh chạy lại sdlc-e2, build lại PDF và slide
+và in con số gộp mới cùng thời điểm dữ liệu.
 
-## Mạch trình bày
+## Nói gì (khoảng 8 phút)
 
 1. **Vấn đề.** Người ta vibe-code bằng vài câu ngắn; phát triển theo đặc tả (kiểu Superpowers: thiết kế →
-   kế hoạch → viết test trước → kiểm lại) hứa bù cho phần đề thiếu. Bằng chứng định lượng còn ít.
-2. **Phát hiện 1 (đề chi tiết, thí nghiệm chính).** Khi đề đã nêu tên, chữ ký: quy trình gần như thừa ở việc
-   nhỏ (H1 chưa kết luận, KTC [−6,7; 0,0] đpt, tốn ×1,3–2,2 token); dấu hiệu có ích duy nhất là Codex ở ba
-   nhiệm vụ lớn (44% so với 11%, hồi quy 0% so với 78%), chỉ ba nhiệm vụ; quy trình luôn để lại test.
-3. **Phát hiện 2 (nhãn lỗi).** 23/30 lượt hỏng của Claude do chi tiết đề không chốt (14) hoặc nối sai mã có
-   sẵn (9), như nhau ở hai cách làm (76% và 77%). Kappa Lợi–Bảo 0,95.
-4. **Câu hỏi mở → E2, E1.** Đề chỉ một hai câu thì quy trình có bù được không? Giả thuyết (nêu sau khi thấy
-   kết quả chính): giá trị của quy trình tăng khi đề càng ít chi tiết.
-5. **Kết luận:** chưa viết; viết từ E2 đủ dữ liệu.
+   kế hoạch → viết test trước → kiểm lại) hứa bù cho phần đề thiếu. Chưa có thí nghiệm chỉ đổi lời dặn, chấm
+   bằng test ẩn.
+2. **Thiết kế.** 23 nhiệm vụ từ commit thật của ViPharmind, ba tầng; hai cách làm chỉ khác lời dặn; ba nhóm
+   (Sonnet, Opus, Codex), ba lần lặp, 414 lượt; giả thuyết và mã phân tích chốt trước khi mở kết quả.
+3. **Kết quả chính (đề chi tiết).** H1 chưa kết luận (−2,2 đpt, KTC [−6,7; 0,0]): không thấy lợi ích ở tầng
+   nhỏ. Đặc tả tốn ×1,3–2,2 token, nhưng luôn để lại test. Dấu hiệu có ích duy nhất: Codex ở ba nhiệm vụ lớn
+   (44% so với 11%), chỉ ba nhiệm vụ.
+4. **Xem trước.** Phần lớn lượt hỏng do đề không chốt chi tiết hoặc nối sai mã có sẵn, không phải logic sai.
+5. **Câu hỏi mở (đang chạy).** Đề chỉ một hai câu thì quy trình có bù được không? E2 (đề sơ sài, 2 × 2) và
+   E1 (Haiku). Chỉ nói con số gộp sơ bộ trên slide, kèm nhãn SƠ BỘ và thời điểm.
+6. **Lịch.** Đến 20/11 xong E2, E1 và chấm tay mẫu E2; đến 24/11 phân tích đủ và nộp.
 
-## Cái gì đã chốt, cái gì còn sơ bộ
+## Giữ lại cho báo cáo cuối
 
-| Phần | Trạng thái |
-| --- | --- |
-| Hồi cứu (RQ1, RQ2) | xong |
-| Thí nghiệm chính, 414 lượt, H1–H5 | xong, phân tích chốt trước khi mở kết quả |
-| Nhãn nguyên nhân thất bại (vòng 2), kiểm tra 20 lượt đạt | xong |
-| E2 đề sơ sài | **sơ bộ**: lúc 16/11 16:31 mới chấm 324/552 lượt, chỉ tầng nhỏ. Gộp +5,2 đpt [0,8; 10,4]; Sonnet +13,3 [2,6; 28,3]; Opus +3,1, Haiku +0,2, Codex +4,3, cả ba có KTC chứa 0. Đề chi tiết: −0,2. Tương tác chi tiết × cách làm +5,8 [1,0; 11,2]. Đọc: xu hướng sơ bộ ủng hộ giả thuyết ở tầng nhỏ, chưa kết luận |
-| E1 Haiku | đang chạy tầng lớn; số liệu chưa có |
-| Chấm tay mẫu E2 (Lợi, Bảo) | chưa làm |
+- Số liệu nhãn lỗi (số lượt mỗi nhãn, kappa, chia theo cách làm, nhóm, tầng), người chấm thứ ba.
+- Số E2 theo từng nhóm và từng tầng, tương tác 2 × 2, độ tin cậy của người chấm máy.
+- Phần hồi cứu (RQ1, RQ2), ca nghiên cứu f15, mối đe dọa đến tính hợp lệ chi tiết.
+- Kết luận chính: chưa có, viết từ E2 đủ dữ liệu.
 
 ## Câu thầy có thể hỏi
 
-**E2 thêm sau khi thấy kết quả chính, vậy có phải "câu cá" không?** Có nguy cơ đó, và nhóm nói rõ: E2 nằm trong
+**E2 thêm sau khi thấy kết quả chính, có phải "câu cá" không?** Có nguy cơ đó, và nhóm nói rõ: E2 nằm trong
 bản bổ sung `prereg-v1.2`, viết sau khi xem kết quả chính, nhưng đề sơ sài, danh sách hành vi, cách chấm và
-mã phân tích được chốt bằng thẻ git trước lượt E2 đầu tiên. Kết quả E2 chỉ gọi là thăm dò, đọc theo dấu và độ
-lớn, không dùng để xác nhận H1–H5.
+mã phân tích được chốt bằng thẻ git trước lượt E2 đầu tiên. E2 chỉ gọi là thăm dò, không dùng để xác nhận
+H1–H5.
 
-**Người chấm E2 là Fable, cùng họ Claude với ba nhóm; có thiên vị không?** Có thể, nhất là so với Codex. Giảm
-bằng ba cách: Fable không biết lượt thuộc cách làm nào; kiểm trên 456 lượt đề chi tiết, nơi có test ẩn làm
-thước đo: khớp 85% [77; 92], kappa 0,43, và khi test ẩn đạt hết thì Fable cho đạt mọi mục ở 92%; Lợi và Bảo
-chấm tay một mẫu (chưa xong). Riêng với Codex, kappa giữa Fable và test ẩn (0,54) không thấp hơn ở các nhóm Claude (0,12–0,33).
+**Người chấm E2 là Fable, cùng họ Claude với ba nhóm; có thiên vị không?** Có thể, nhất là so với Codex. Nhóm
+giảm bằng cách: Fable không biết lượt thuộc cách làm nào; đối chiếu Fable với test ẩn trên các lượt đề chi
+tiết, nơi test ẩn là thước đo; và Lợi, Bảo chấm tay một mẫu. Số liệu kiểm tra này ở báo cáo cuối.
 
-**Test ẩn khắt khe hơn đề bài, vậy tỉ lệ đạt có công bằng không?** Không công bằng tuyệt đối: 14/30 lượt hỏng
-là do test kiểm chi tiết đề không chốt (list hay tuple, trả về mã hay đối tượng). Điều này hạ tỉ lệ đạt của
-cả hai cách làm với tỉ lệ gần nhau, nên ảnh hưởng tới hiệu số ít hơn tới tỉ lệ tuyệt đối. Đây cũng là lý do E2
-chấm bằng danh sách hành vi thay cho test ẩn.
+**Test ẩn khắt khe hơn đề bài, tỉ lệ đạt có công bằng không?** Không tuyệt đối: test ẩn kiểm cả chi tiết đề
+không chốt (ví dụ list hay tuple). Điều đó hạ tỉ lệ đạt của cả hai cách làm như nhau, nên ảnh hưởng tới hiệu
+số ít hơn tới tỉ lệ tuyệt đối, và là một lý do E2 chấm bằng danh sách hành vi.
 
-**Sao gán nhãn hai vòng?** Vòng 1 Lợi và Bảo tự đề nghị bỏ vì điền chưa kỹ. Vòng 2 gán lại cả 30 lượt với
-mã lượt mới, kèm mã nguồn test ẩn và một thứ tự quyết định cố định trong hướng dẫn (bảng nhãn không đổi),
-quyết định trước khi có phiếu vòng 2. Báo cáo chỉ dùng vòng 2; việc đổi ghi ở phụ lục sai lệch.
+**Gán nhãn lỗi làm thế nào, có khách quan không?** Lợi và Bảo gán độc lập, không biết lượt thuộc cách làm
+nào, theo bảng nhãn chốt trước. Vòng đầu được hai bạn đề nghị bỏ vì điền chưa kỹ; vòng hai gán lại mọi lượt
+với mã mới, kèm mã test ẩn và thứ tự quyết định cố định, và hai người gần như hoàn toàn đồng ý. Chi tiết ở
+báo cáo cuối.

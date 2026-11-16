@@ -1,4 +1,4 @@
-\section{Giới thiệu}\label{sec:introduction}
+\section{Vấn đề và động lực}\label{sec:introduction}
 
 Trợ lý lập trình AI dạng tác tử (\emph{coding agent}) như Claude Code, Codex hay Antigravity tự đọc
 mã, sửa file và chạy test trong kho mã của người dùng. Cách giao việc phổ biến nhất là \emph{vibe
@@ -6,50 +6,15 @@ coding}: mô tả việc cần làm trong vài câu rồi để tác tử viết
 như vậy bỏ ngỏ nhiều chi tiết, và tác tử phải tự đoán. Phát triển theo đặc tả hứa bù cho chỗ đó: tác tử
 viết tài liệu thiết kế và kế hoạch trước, viết test trước khi viết mã, rồi kiểm lại cả bộ test
 \cite{agarwal_2026,diaz_2026}; bộ skill Superpowers mà An dùng khi làm ViPharmind là một quy trình như vậy.
-Taghavi và cộng sự đánh giá một quy trình tác tử theo đặc tả bằng mô hình chấm điểm \cite{taghavi_2026}.
 
-Bằng chứng định lượng so sánh hai cách này còn ít. Nghiên cứu về vibe coding chủ yếu là định tính
-\cite{chou_2025,fawzy_2026}; nghiên cứu về đặc tả dựa trên phỏng vấn \cite{agarwal_2026}, chấm bằng mô
-hình ngôn ngữ \cite{taghavi_2026}, hoặc quan sát pull request mã nguồn mở, và nghiên cứu quan sát lớn nhất
-không thấy pull request có đặc tả ít lỗi hơn \cite{hill_2026}. Các bộ đo cho tác tử như
-SWE-bench và FeatBench so sánh mô hình hoặc tác tử với nhau trên cùng nhiệm vụ
-\cite{jimenez_2024,chen_2025}; chúng không so sánh hai quy trình làm việc. Trong các nguồn nhóm đã tìm
-(mục~\ref{sec:related-work}), chưa có thí nghiệm nào giữ nguyên đề bài, công cụ và mô hình, chỉ đổi
-lời dặn về quy trình, rồi chấm bằng test mà tác tử không thấy.
+Bằng chứng định lượng cho lời hứa này còn ít. Nghiên cứu về vibe coding chủ yếu là định tính
+\cite{chou_2025,fawzy_2026}; nghiên cứu về đặc tả dựa trên phỏng vấn \cite{agarwal_2026}, chấm bằng mô hình
+ngôn ngữ \cite{taghavi_2026}, hoặc quan sát pull request, và nghiên cứu quan sát lớn nhất không thấy pull
+request có đặc tả ít lỗi hơn \cite{hill_2026}. Các bộ đo như SWE-bench và FeatBench so sánh mô hình với
+nhau, không so sánh quy trình làm việc \cite{jimenez_2024,chen_2025}. Chưa có thí nghiệm nào giữ nguyên đề
+bài, công cụ và mô hình, chỉ đổi lời dặn về quy trình, rồi chấm bằng test mà tác tử không thấy.
 
-Đề tài này làm thí nghiệm đó trên một dự án thật. ViPharmind là trợ lý AI tra cứu thuốc cho người
-Việt, gồm một backend tác tử AI viết bằng Python, một ứng dụng web và bộ công cụ dựng kho tri thức từ
-Dược thư Quốc gia và tờ hướng dẫn sử dụng thuốc. Doãn Văn An xây dựng và triển khai hệ thống này; theo lời
-tác giả, trợ lý lập trình AI tham gia mọi khâu, từ nghiên cứu, dữ liệu, mã, kiểm thử đến triển khai. Kho mã có
-\NumCommits{} commit từ \mbox{\NumFirstDate{}} đến \mbox{\NumLastDate{}}. Chất lượng trả lời của ViPharmind là nội
-dung của một bài báo khác (SoICT 2026) và không được đánh giá lại ở đây. Đối tượng đo của đề tài là
-\emph{quá trình phát triển có AI tham gia}.
-
-Đề tài có hai phần. Phần hồi cứu phân tích lịch sử git của ViPharmind: AI tham gia từng khâu ở mức
-nào, quy trình đặc tả để lại dấu vết gì, và mã phải sửa lại bao nhiêu. Phần thực nghiệm lấy nhiệm vụ
-từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi giao cùng một đề bài cho tác tử
-theo hai cách làm chỉ khác nhau ở lời dặn về quy trình. Để test ẩn chấm được, đề của thí nghiệm chính
-phải nêu đủ tên và chữ ký, nên nó trả lời câu hỏi hẹp hơn: khi đề đã chi tiết, quy trình còn thêm được gì.
-Kết quả của nó, cùng việc gán nhãn nguyên nhân thất bại, dẫn tới câu hỏi chính mà hai thí nghiệm thăm dò
-nhắm tới: khi người dùng chỉ đưa một hai câu, quy trình có bù được không (mục~\ref{sec:questions}).
-
-Đóng góp của đề tài gồm:
-\begin{itemize}
-\item Bản đồ vòng đời của một dự án phần mềm AI làm với trợ lý lập trình, kèm dấu vết của
-\NumSpecPlanFiles{} file spec và plan nối với các commit cài đặt (RQ1, RQ2).
-\item Một bộ \NumTasksMain{} nhiệm vụ lấy từ commit thật, chia ba tầng kích thước (\NumTasks{} nhiệm vụ
-một commit, \NumMediumTasks{} nhiệm vụ hai đến ba commit, \NumFeatureTasks{} nhiệm vụ cỡ một tính năng), có
-test ẩn và quy tắc chọn ghi lại từng bước.
-\item Thực nghiệm đối chứng giữa làm theo đặc tả và vibe coding, thiết kế cho bốn nhóm chạy (ba công cụ
-của ba hãng, và hai mô hình Claude trong cùng một công cụ; RQ3 đến RQ6, \NumRunsTotal{} lượt); ba nhóm
-chạy đủ và được phân tích trên \NumResRuns{} lượt. Nhiệm vụ,
-đề bài, giả thuyết, kế hoạch phân tích và mã phân tích được chốt bằng thẻ git trước khi mở kết quả.
-\item Bộ chạy, bộ chấm, gói phân tích, đề bài, lời dặn và kết quả thô được công bố để người khác chạy lại.
-\end{itemize}
-
-AI cũng tham gia vào chính nghiên cứu này: tìm tài liệu, soạn nháp đề bài, phản biện độc lập đề bài,
-bản đăng ký trước và mã phân tích, dựng bộ chạy và viết nháp báo cáo. Mục~\ref{sec:ai-role} ghi rõ
-từng việc và phần người đã kiểm. Mục~\ref{sec:related-work} tổng quan tài liệu, mục~\ref{sec:questions}
-nêu câu hỏi và giả thuyết, mục~\ref{sec:method} trình bày phương pháp, mục~\ref{sec:retrospective} và
-mục~\ref{sec:results} báo cáo kết quả, mục~\ref{sec:discussion} và mục~\ref{sec:conclusion} thảo luận
-và kết luận.
+Đề tài làm thí nghiệm đó trên ViPharmind, trợ lý AI tra cứu thuốc cho người Việt do Doãn Văn An xây dựng với
+trợ lý lập trình AI ở mọi khâu (\NumCommits{} commit). Đề tài có hai phần: phần hồi cứu phân tích lịch sử git
+của dự án, và phần thực nghiệm giao cùng một nhiệm vụ cho tác tử theo hai cách làm. Báo cáo lần 1 tập trung
+vào phần thực nghiệm; phần hồi cứu và tổng quan tài liệu đầy đủ ở báo cáo cuối kỳ.

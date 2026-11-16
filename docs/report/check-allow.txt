@@ -31,3 +31,5 @@
 0,30        # ngưỡng suy biến của mô hình hỗn hợp (prereg-v1 mục 11)
 272.000     # ngưỡng token theo lời gọi của bảng giá gpt-6-luna (prereg-v1 mục 7)
 1.2         # thẻ prereg-v1.2
+11          # tháng 11 trong lịch (17/11, 20/11, 24/11), chỉ ở báo cáo lần 1
+17          # ngày 17/11 (báo cáo lần 1)

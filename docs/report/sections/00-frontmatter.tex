@@ -10,7 +10,8 @@
 {\large ĐẠI HỌC BÁCH KHOA HÀ NỘI}\\[4pt]
 {\large\bfseries TRƯỜNG CÔNG NGHỆ THÔNG TIN VÀ TRUYỀN THÔNG}\\[1.2cm]
 \includegraphics[height=4cm]{images/logo-hust.png}\\[1.2cm]
-{\LARGE\bfseries Báo Cáo Chuyên Đề Nghiên Cứu}\\[1cm]
+{\LARGE\bfseries Báo Cáo Chuyên Đề Nghiên Cứu}\\[6pt]
+{\Large Báo cáo lần 1 (giữa kỳ)}\\[1cm]
 \begin{minipage}{0.88\textwidth}\centering\large
 \textbf{\textit{\underline{Đề tài}:}} \textbf{Phát triển theo đặc tả so với vibe coding: nghiên cứu tình huống và thực nghiệm đối chứng trên một dự án phần mềm AI cho ngành dược Việt Nam}\\[10pt]
 \textbf{\textit{\underline{Học phần}:}} \textbf{Chuyên đề nghiên cứu 1 (IT5421)}
@@ -32,20 +33,14 @@
 \section*{Tóm tắt}\zlabel{chk:abstract}
 Người dùng thường giao việc cho trợ lý lập trình AI bằng vài câu ngắn (vibe coding); phát triển theo đặc
 tả, theo kiểu Superpowers (thiết kế, kế hoạch, viết test trước, kiểm lại), hứa bù cho phần đề bài thiếu.
-Đề tài kiểm lời hứa đó trên ViPharmind, một dự án phần mềm AI cho ngành dược Việt Nam: phần hồi cứu phân
-tích \NumCommits{} commit của dự án, phần thực nghiệm dựng \NumTasksMain{} nhiệm vụ từ commit thật, chia ba
-tầng kích thước, chấm bằng test ẩn, và cho Claude Code (Sonnet 5.5, Opus 5.5) và Codex làm theo hai cách,
-mỗi (nhiệm vụ, cách làm) ba lần; giả thuyết, đề bài và mã phân tích được chốt bằng thẻ git trước khi mở
-kết quả. Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc nhỏ: trên \NumResRuns{} lượt, nó không
-đạt test ẩn nhiều hơn (phép thử xác nhận, Sonnet tầng nhỏ: \NumResHOneEstPp{} điểm phần trăm, khoảng tin
-cậy 95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]) và tốn gấp \NumResTokenRatioMin{} đến
-\NumResTokenRatioMax{} lần token; dấu hiệu có ích duy nhất là Codex ở ba nhiệm vụ lớn nhất, và quy trình
-luôn để lại test do tác tử tự viết. Gán nhãn nguyên nhân cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
-Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau. Câu hỏi
-còn lại là khi đề chỉ một hai câu, việc bắt tác tử tự viết thiết kế, kế hoạch và test có bù được không;
-thí nghiệm thăm dò E2 (đề sơ sài) cho kết quả \NumETwoStatus{} (\NumETwoScope{}, tới \NumETwoCutoff{}): đặc tả
-hơn vibe \NumETwoPooledAllPp{} điểm phần trăm điểm danh sách hành vi [\NumETwoPooledAllLowPp{};
-\NumETwoPooledAllHighPp{}], tức \NumETwoReading{}. E1 (Haiku): \pending{E1: một câu}.
+Đề tài kiểm lời hứa đó bằng thực nghiệm đối chứng trên ViPharmind, một dự án phần mềm AI cho ngành dược
+Việt Nam: \NumTasksMain{} nhiệm vụ lấy từ commit thật, ba tầng kích thước, chấm bằng test ẩn, ba nhóm chạy
+(Claude Code với Sonnet 5.5 và Opus 5.5, Codex), giả thuyết và mã phân tích chốt trước khi mở kết quả.
+Báo cáo lần 1 này trình bày vấn đề, thiết kế và kết quả chính của thí nghiệm với đề bài chi tiết: trên
+\NumResRuns{} lượt, làm theo đặc tả không đạt test ẩn nhiều hơn và tốn gấp \NumResTokenRatioMin{} đến
+\NumResTokenRatioMax{} lần token, nhưng luôn để lại test do tác tử tự viết, và có một dấu hiệu có ích ở
+Codex trên các nhiệm vụ lớn nhất. Câu hỏi chính còn lại, khi đề chỉ một hai câu thì quy trình có bù được
+không, đang được kiểm bằng hai thí nghiệm thăm dò; kết quả đầy đủ và phần hồi cứu ở báo cáo cuối kỳ.
 
 \clearpage
 \tableofcontents

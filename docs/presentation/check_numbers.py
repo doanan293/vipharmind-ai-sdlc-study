@@ -36,7 +36,9 @@ ALLOW = {
     "20251227": "student ID",
     "1.2": "tag name prereg-v1.2",
     "306": "E2 checklist items (prereg-v1.2)", "30": "E2 brief prompt word limit (prereg-v1.2)",
-    "24": "E2 human-check sample (prereg-v1.2)",
+    "24": "E2 human-check sample (prereg-v1.2); also 24/11 final deadline",
+    "11": "month in the timeline (17/11, 20/11, 24/11), interim deck only",
+    "17": "17/11 interim report date", "20": "20/11 timeline date",
 }
 TOKEN = re.compile(r"\d+(?:[.,]\d+)*")
 # Numbers in the report's generated tables (cost per pass and the like), built from the same summary.json.

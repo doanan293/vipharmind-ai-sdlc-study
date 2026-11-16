@@ -1,45 +1,26 @@
-# Tập dượt
+# Tập dượt (báo cáo lần 1, 17/11)
 
 Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.
 
-Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05); phần còn lại của 15 phút dành cho chuyển slide và chuyển người nói. Hỏi đáp 5 phút sau đó.
+Tổng thời gian nói: 6:50; An trình bày, hỏi đáp sau đó.
 
 | Slide | Trang | Người nói | Thời lượng | Cộng dồn |
 | --- | --- | --- | --- | --- |
-| 1 | `p01_title` | Lê Xuân Lợi | 0:20 | 0:20 |
-| 2 | `p02_part1` | Lê Xuân Lợi | 0:10 | 0:30 |
-| 3 | `p03_motivation` | Lê Xuân Lợi | 0:45 | 1:15 |
-| 4 | `p04_rq` | Lê Xuân Lợi | 0:40 | 1:55 |
-| 5 | `p05_hypotheses` | Lê Xuân Lợi | 0:40 | 2:35 |
-| 6 | `p06_vipharmind` | Lê Xuân Lợi | 0:30 | 3:05 |
-| 7 | `p07_retro` | Lê Xuân Lợi | 0:45 | 3:50 |
-| 8 | `p08_arms` | Lê Xuân Lợi | 0:35 | 4:25 |
-| 9 | `p09_cohorts` | Lê Xuân Lợi | 0:35 | 5:00 |
-| 10 | `p10_tiers` | Lê Xuân Lợi | 0:35 | 5:35 |
-| 11 | `p11_grading` | Lê Xuân Lợi | 0:30 | 6:05 |
-| 12 | `p12_prereg` | Lê Xuân Lợi | 0:30 | 6:35 |
-| 13 | `p13_threats` | Lê Xuân Lợi | 0:30 | 7:05 |
-| 14 | `p14_results` | Trần Ngọc Bảo | 0:10 | 7:15 |
-| 15 | `p15_h1` | Trần Ngọc Bảo | 0:50 | 8:05 |
-| 16 | `p16_rq4` | Trần Ngọc Bảo | 0:35 | 8:40 |
-| 17 | `p17_h2h3` | Trần Ngọc Bảo | 0:40 | 9:20 |
-| 18 | `p18_h4` | Trần Ngọc Bảo | 0:45 | 10:05 |
-| 19 | `p19_h5` | Trần Ngọc Bảo | 0:35 | 10:40 |
-| 20 | `p20_cost` | Trần Ngọc Bảo | 0:25 | 11:05 |
-| 21 | `p21_case` | Trần Ngọc Bảo | 0:35 | 11:40 |
-| 22 | `p22_labels` | Trần Ngọc Bảo | 0:30 | 12:10 |
-| 23 | `p23_explore` | Trần Ngọc Bảo | 0:30 | 12:40 |
-| 24 | `p24_limits` | Trần Ngọc Bảo | 0:40 | 13:20 |
-| 25 | `p25_conclusion` | Trần Ngọc Bảo | 0:40 | 14:00 |
-| 26 | `p26_thanks` | Trần Ngọc Bảo | 0:10 | 14:10 |
-| 27 | `p27_bk_funnel` | Dự phòng | – | – |
-| 28 | `p28_bk_reading` | Dự phòng | – | – |
-| 29 | `p29_bk_labels` | Dự phòng | – | – |
-| 30 | `p30_attribution` | Dự phòng | – | – |
+| 1 | `p01_title` | Doãn Văn An | 0:20 | 0:20 |
+| 2 | `p03_motivation` | Doãn Văn An | 0:45 | 1:05 |
+| 3 | `p04_rq` | Doãn Văn An | 0:40 | 1:45 |
+| 4 | `p08_arms` | Doãn Văn An | 0:35 | 2:20 |
+| 5 | `p10_tiers` | Doãn Văn An | 0:35 | 2:55 |
+| 6 | `p15_h1` | Doãn Văn An | 0:50 | 3:45 |
+| 7 | `p16_rq4` | Doãn Văn An | 0:35 | 4:20 |
+| 8 | `p17_h2h3` | Doãn Văn An | 0:40 | 5:00 |
+| 9 | `p22_labels` | Doãn Văn An | 0:30 | 5:30 |
+| 10 | `p23_explore` | Doãn Văn An | 0:40 | 6:10 |
+| 11 | `p24_next` | Doãn Văn An | 0:30 | 6:40 |
+| 12 | `p26_thanks` | Doãn Văn An | 0:10 | 6:50 |
 
 ## Chỗ chờ kết quả
 
 Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) có số sơ bộ, làm mới bằng refresh-interim.sh; E1 (Haiku) chưa xong. Các slide sau còn `[CHỜ KẾT QUẢ]`:
 
-- `p25_conclusion`: main conclusion, written from the complete E2 (and E1) results; E2 line is interim
-- `p23_explore`: E1: Haiku pass rate spec / vibe (until results/analysis/e1 exists); E2 values are interim
+- `p23_explore`: teaser: E2 pooled interim value only (SƠ BỘ); E1 running

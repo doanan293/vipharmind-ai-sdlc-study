@@ -1,189 +1,20 @@
-\section{Phương pháp}\label{sec:method}
+\section{Phương pháp (tóm tắt)}\label{sec:method}
 
-Phần chính là thực nghiệm đối chứng: mỗi nhiệm vụ được giao cho bốn nhóm chạy theo hai cách làm, lặp ba
-lần, chấm bằng test mà tác tử không thấy, với thiết kế chốt trước khi chạy (mục~\ref{sec:prereg}).
+\textit{Nhiệm vụ.} \NumTasksMain{} nhiệm vụ lấy từ commit thật của backend ViPharmind, chia ba tầng: \NumTasks{}
+nhiệm vụ một commit (tầng nhỏ), \NumMediumTasks{} nhiệm vụ hai đến ba commit (tầng vừa) và \NumFeatureTasks{}
+nhiệm vụ cỡ một tính năng (tầng lớn). Mã nền là trạng thái trước commit; test mà commit gốc thêm vào được
+giấu đi làm \emph{test ẩn}. Đề bài nêu việc cần làm và các tên, chữ ký mà test ẩn gọi, để test chấm được.
 
-\subsection{Dữ liệu hồi cứu}
+\textit{Hai cách làm.} Cùng đề bài, công cụ, mô hình và giới hạn thời gian; chỉ khác lời dặn. Vibe coding:
+một câu ``cài đặt thay đổi sau đây''. Theo đặc tả: viết \texttt{docs/design.md}, viết \texttt{docs/plan.md},
+cài đặt từng phần theo kiểu viết test trước, rồi chạy cả bộ test, theo quy trình của Superpowers rút gọn cho
+chạy không người.
 
-Kho mã ViPharmind được đọc ở hai mốc cố định, nhánh \texttt{main} tại \texttt{3baae61d764f} (sản phẩm) và
-nhánh \texttt{camera-ready} tại \texttt{61d10db85f0f} (nghiên cứu, viết bài); tập commit là hợp của hai
-mốc, gồm \NumCommits{} commit (\NumCommitsFeat{} \texttt{feat}, \NumCommitsFix{} \texttt{fix},
-\NumCommitsRefactor{} \texttt{refactor}). Mỗi commit được gán vào khâu có nhiều dòng thay đổi nhất theo
-luật đường dẫn file. \NumSpecPlanFiles{} file spec và plan được lấy lại từ lịch sử git. Một commit
-\texttt{feat} ``có plan đi trước'' khi nó chạm một file mã được nêu trong một plan thêm vào trước nó không
-quá 14 ngày; An kiểm tra quy tắc trên \NumLinkChecked{} commit ngẫu nhiên, với gợi ý của trợ lý AI cho từng
-cặp. Mức sửa lại (RQ2) là số commit \texttt{fix} hoặc \texttt{refactor} chạm cùng file trong 14 ngày sau mỗi
-commit \texttt{feat}. Nhật ký phiên còn giữ được không đầy đủ và chỉ dùng để mô tả.
+\textit{Nhóm chạy.} Claude Code với Claude Sonnet 5.5 và Claude Opus 5.5, và Codex CLI; mỗi (nhiệm vụ, cách
+làm) ba lần lặp, tổng \NumResRuns{} lượt hợp lệ. Nhóm thứ tư (Antigravity với Gemini) bị bỏ vì hết hạn mức.
+Mỗi lượt chạy trong một cây mã không lịch sử git, không spec hay plan cũ.
 
-\subsection{Bộ nhiệm vụ ba tầng}\label{sec:tasks}
-
-Mỗi nhiệm vụ gồm mã nền, đề bài và test ẩn. Ở tầng nhỏ, nhiệm vụ là một commit, mã nền là commit cha, test
-ẩn là file test mà commit thêm hoặc sửa. Ở tầng vừa và tầng lớn, nhiệm vụ là một đoạn commit liền nhau
-\texttt{base..end} của cùng một plan, test ẩn là mọi file \texttt{test\_*.py} thêm hoặc sửa trong đoạn. Tác
-tử không thấy file test mới và chỉ thấy bản cũ của file bị sửa. Phụ lục~\ref{app:tasks} liệt kê đủ
-\NumTasksMain{} nhiệm vụ.
-
-\textit{Tầng nhỏ.} Ứng viên là mọi commit \texttt{feat} trên \texttt{main} chạm cả \texttt{backend/src} và
-\texttt{backend/tests}. Bộ chạy áp tự động các tiêu chí 1, 4, 5 và 2 (Bảng~\ref{tab:funnel}); tiêu chí 2 được
-kiểm bằng cách chạy test thật ở hai commit. Tiêu chí 3 đòi test ẩn kiểm hành vi qua giao diện mà đề bài nêu
-được, nên cần người đọc mã: trợ lý AI đề xuất đạt hay không và soạn nháp đề bài tiếng Anh từ năm đến mười
-câu, nêu việc cần làm và giao diện phải giữ, không nêu cách cài đặt và không nhắc tới test; An duyệt gộp,
-không sửa từng mục. Một lượt đối chiếu mọi tên công khai mà test ẩn dùng với mã nền và đề bài sau đó tìm ra
-tên thiếu ở \texttt{t05}, \texttt{t07}, \texttt{t13}; ba đề được bổ sung tên và An duyệt lại trước khi chốt.
-Thứ tự duyệt \NumEligibleStratifiable{} commit qua sàng lọc và có lớp mã được xáo ngẫu nhiên (hạt giống 20261115) với hạn mức tỉ
-lệ theo lớp mã (\texttt{api} \NumTasksApi{}, \texttt{application} \NumTasksApplication{}, \texttt{domain}
-\NumTasksDomain{}, \texttt{infrastructure} \NumTasksInfrastructure{}); hai commit được duyệt đạt đầu tiên không vào
-được hạn mức nào thành \NumPilotTasks{} nhiệm vụ thử. Phần thay đổi ở \texttt{backend/src} từ
-\NumTaskSrcLinesMin{} đến \NumTaskSrcLinesMax{} dòng.
-
-\textit{Tầng lớn và tầng vừa.} Chạy thử cho thấy Claude gần đạt trần ở đề một commit với cả hai cách làm,
-nên đề tài thêm hai tầng lớn hơn, cắt từ 16 đoạn commit liền nhau của các plan backend: tầng lớn
-\texttt{f08}, \texttt{f14}, \texttt{f15} (\NumFeatureSrcLinesMin{} đến \NumFeatureSrcLinesMax{} dòng) và tầng
-vừa \texttt{m01} đến \texttt{m05} (\NumMediumSrcLinesMin{} đến \NumMediumSrcLinesMax{} dòng), theo tiêu chí
-và quy tắc chọn cố định. Đề hai tầng này có thêm mục ``giao diện bắt buộc'' liệt kê các tên test ẩn cần, và
-được Fable 5.2 phản biện độc lập trước khi An duyệt. Tiêu chí, quy tắc chọn, số dòng được chấm và chỗ chồng
-lấn giữa các tầng ở Phụ lục~\ref{app:tasks}.
-
-\subsection{Hai cách làm}
-
-Hai cách làm nhận cùng đề bài, mô hình, công cụ và giới hạn thời gian; chỉ khác lời dặn đặt trước đề bài
-(Phụ lục~\ref{app:prompts}). Lời dặn vibe coding chỉ có một câu: cài đặt thay đổi sau đây. Lời dặn theo đặc
-tả yêu cầu, trong cùng một phiên, viết \texttt{docs/design.md} (mục tiêu, phạm vi, giao diện, cách làm, cách
-kiểm thử), viết \texttt{docs/plan.md} chia việc thành các phần trọn vẹn, rồi cài đặt từng phần theo kiểu
-viết test trước và chạy cả bộ test backend trước khi dừng. Lời dặn không quy định số phần, giống các plan
-cũ của ViPharmind, và không chép skill nào. Can thiệp vì vậy là một gói, và nhánh này là ``quy trình đặc
-tả tự động'': không có người duyệt như khi An làm ViPharmind. Lượt theo đặc tả không để lại cả hai file
-được ghi là không tuân thủ; phép thử chính vẫn tính các lượt này (phân tích theo phân bổ).
-
-Lời dặn theo đặc tả đi theo quy trình của bộ skill Superpowers mà An dùng khi làm ViPharmind, nhưng viết
-lại thành một khối chữ duy nhất thay vì nạp skill (Bảng~\ref{tab:superpowers}). Có hai lý do. Các lượt
-chạy không có người ngồi trả lời, nên những bước cần hỏi đáp với người dùng không làm được. Và cùng một
-quy trình phải chạy y hệt trên Claude Code và Codex, trong khi skill là cơ chế riêng của từng công cụ và
-có thể không được nạp.
-
-\begin{table}[H]
-\centering\footnotesize
-\caption{Lời dặn theo đặc tả so với quy trình Superpowers}
-\label{tab:superpowers}
-\begin{tabular}{>{\raggedright\arraybackslash}p{0.36\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.29\linewidth}}
-\toprule
-Bước của Superpowers & Trong lời dặn & Khác biệt \\
-\midrule
-\texttt{brainstorming} & viết \texttt{docs/design.md} & giữ bản thiết kế đầu ra, bỏ phần hỏi đáp với người
-dùng (chạy không người) \\
-\texttt{writing-plans} & viết \texttt{docs/plan.md} & cùng cấu trúc (ràng buộc chung, từng task có file,
-giao diện, test); Superpowers chia task 2--5 phút kèm mã, lời dặn để tác tử tự định cỡ task \\
-\texttt{test-driven-development} & viết test, thấy test trượt, rồi viết mã & giống \\
-\texttt{verification-before-completion} & chạy cả bộ \texttt{uv run pytest} trước khi dừng & giống \\
-\texttt{executing-plans},\newline \texttt{subagent-driven-development} & một tác tử làm lần lượt từng task & khác:
-không có tác tử con, không có bước duyệt giữa các task \\
-commit thường xuyên, \texttt{git worktree} & không yêu cầu & bộ chạy tự lấy bản vá cuối \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Nhóm chạy và điều kiện chạy}\label{sec:conditions}
-
-Bốn nhóm chạy (Bảng~\ref{tab:cohorts}) đều ở mức effort hoặc suy luận medium. Ba lần lặp, hai cách làm và
-bốn nhóm cho \NumRunsSmallTotal{} lượt ở tầng nhỏ, \NumRunsMediumTotal{} ở tầng vừa và \NumRunsLargeTotal{}
-ở tầng lớn, tổng \NumRunsTotal{} lượt.
-
-\begin{table}[H]
-\centering\small
-\caption{Các nhóm chạy}\label{tab:cohorts}
-\begin{tabularx}{\linewidth}{@{}lllX@{}}
-\toprule
-Nhóm & Công cụ (phiên bản lúc chốt) & Mô hình & Tài khoản; vai trò \\
-\midrule
-\texttt{claude-sonnet} & Claude Code 2.1.325 & Claude Sonnet 5.5 & một; H1, RQ3, RQ5 \\
-\texttt{claude-opus} & Claude Code 2.1.325 & Claude Opus 5.5 & một; RQ3, RQ5 \\
-\texttt{agy-gemini} & Antigravity CLI 1.5.9 & Gemini 3.8 Flash Medium & bốn, đổi khi hết hạn mức; RQ4 \\
-\texttt{codex-luna} & Codex CLI 0.162.1 & \texttt{gpt-6-luna} & bốn, đổi khi hết hạn mức; RQ4 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Mỗi công cụ chạy agent mặc định với bộ công cụ mặc định, kể cả công cụ web, gọi thẳng ở chế độ không tương
-tác, không qua proxy. Chỉ phần cài thêm của người dùng bị bỏ: mỗi lần chạy có một \texttt{HOME} mới chỉ chứa
-thông tin đăng nhập của một tài khoản, không skill, plugin, MCP, bộ nhớ hay file hướng dẫn riêng
-(Phụ lục~\ref{app:conditions}). Mọi tài khoản là của An; hết hạn mức thì bộ chạy chờ rồi đổi tài khoản.
-Phiên bản công cụ được ghi cho từng lượt. Cấu hình này do An chốt sau chạy thử; chạy thử dùng cấu hình cũ
-(tắt web, Antigravity chạy agent tối giản, Codex qua proxy) nên chỉ dùng để kiểm bộ chạy.
-
-\textit{Chống rò rỉ.} ViPharmind là repo công khai và lịch sử của nó chứa lời giải. Cây mã giao cho tác tử
-không có lịch sử git, đã bỏ mọi spec, plan cũ và file hướng dẫn cho tác tử; bộ chạy từ chối chạy nếu cây còn
-sót. Mốc dữ liệu huấn luyện công bố của cả bốn mô hình đều trước commit đầu tiên của ViPharmind. Mạng mở là
-hạn chế được chấp nhận: bộ chạy ghi mọi đường dẫn tới repo gốc trong nhật ký (\texttt{upstream\_urls}), một
-cận dưới của việc đọc mã gốc, để phân tích độ nhạy.
-
-\textit{Thông số, kết cục và chấm.} Giới hạn thời gian là 3600 giây ở tầng nhỏ, gấp đôi ở tầng vừa, gấp ba
-ở tầng lớn. Mỗi lệnh chạy tối đa tám lượt song song, thứ tự xáo trộn với hạt giống 20261115 để hai cách làm
-xen kẽ theo thời gian. Lượt hết giờ hoặc thoát lỗi vẫn được chấm và hợp lệ. Lượt bị ngắt vì hạn mức hay
-đăng nhập không phải một lần lặp và được chạy lại từ đầu; lượt lỗi do bộ chạy được chạy lại tối đa hai lần.
-Quyết định chạy lại chỉ dựa trên trạng thái, không dựa trên kết quả đạt. Bộ chấm đo lỗi tĩnh (\texttt{ruff},
-\texttt{pyrefly}, test kiến trúc), chỉ số bảo trì (\texttt{radon}) và test do tác tử viết; rồi trên một bản
-sao đã bỏ hai file đặc tả, nó đưa mọi file test có sẵn về bản của mã nền, chép test ẩn vào và chạy toàn bộ
-test không mang nhãn \texttt{integration}, nên tác tử không ``đạt'' được bằng cách sửa test.
-
-\subsection{Chỉ số và phân tích}\label{sec:analysis}
-
-Chỉ số chính là \emph{đạt nhiệm vụ}: mọi test ẩn đạt và không test cũ nào hỏng. Chỉ số phụ gồm tỉ lệ test
-ẩn đạt, hồi quy, lỗi tĩnh, chỉ số bảo trì so với mã nền, test do tác tử viết, token, thời gian và chi phí
-quy đổi: token của từng lượt, tách vào, đọc cache, ghi cache và ra, nhân với bảng giá API công khai chốt
-ngày \mbox{2026-11-15}, vì mọi lượt chạy bằng gói thuê bao.
-
-Đơn vị phân tích là nhiệm vụ: hiệu số của một nhiệm vụ là tỉ lệ đạt theo đặc tả trừ tỉ lệ đạt vibe trên
-các lần lặp hợp lệ, và ước lượng của một nhóm là trung bình hiệu số trên các nhiệm vụ. Khoảng tin cậy 95\%
-là bootstrap lấy mẫu lại nhiệm vụ (10.000 lần). Một giả thuyết có hướng ``được ủng hộ'' khi khoảng tin cậy
-nằm hẳn về phía giả thuyết, ``trái với giả thuyết'' khi nằm hẳn về phía ngược lại, còn lại là ``chưa kết
-luận được''. Đề tài không dựa vào ngưỡng $p$ và không hiệu chỉnh so sánh nhiều lần, nhưng báo cáo số phép so.
-
-\begin{itemize}
-\item \textbf{H1, RQ4.} Phép thử xác nhận là hiệu số của \texttt{claude-sonnet} ở tầng nhỏ; nhóm và tầng khác
-báo cáo cùng định dạng. Ba công cụ khác hãng và khác hạng mô hình, nên đề tài so hướng và độ lớn của hiệu
-số, không so công cụ với công cụ.
-\item \textbf{H4, RQ5.} Thiết kế $2\times 2$ (cách làm $\times$ Sonnet, Opus): hiệu số ở từng mô hình và hiệu
-của hai hiệu số, cùng tập nhiệm vụ lấy mẫu lại cho hai mô hình; so thêm Sonnet theo đặc tả với Opus vibe.
-\item \textbf{H5, RQ6.} Phép thử chính là hiệu của hai hiệu số (tầng lớn trừ tầng nhỏ), gộp các nhóm đủ ở cả
-ba tầng. Bổ trợ là hồi quy logistic hỗn hợp \texttt{pass \textasciitilde{} arm} $\times$
-\texttt{log(src\_lines) + cohort + (1 + arm | task)} (statsmodels, ước lượng biến phân), khoảng tin cậy
-bằng bootstrap cụm theo nhiệm vụ (999 lần), lùi về mô hình đơn giản hơn theo thứ tự chốt trước khi không hội
-tụ hoặc suy biến. H5 chỉ ``được ủng hộ'' khi khoảng tin cậy của phép thử chính nằm hẳn trên 0 \emph{và} hệ
-số tương tác trên thang logit cùng hướng, để không kết luận chỉ vì tầng nhỏ chạm trần.
-\item \textbf{H2, H3, chi phí.} Hiệu theo cặp cho token, thời gian, lỗi tĩnh, tỉ lệ lượt có hồi quy và chỉ
-số bảo trì (``không kém hơn'': cận dưới lớn hơn $-5$ điểm MI); số lượt đạt trên mỗi đô và chi phí cho một
-lượt đạt.
-\item \textbf{Độ nhạy.} Chạy lại phép thử chính của H1 và H5, mỗi lần bỏ lượt có \texttt{upstream\_urls},
-lượt sửa cấu hình \texttt{pytest}, hoặc lượt theo đặc tả không tuân thủ; riêng H5 bỏ cặp nhiệm vụ chung
-commit (\texttt{f08}, \texttt{t03}) và thay \texttt{src\_lines} bằng \texttt{graded\_src\_lines}.
-\end{itemize}
-
-Lê Xuân Lợi và Trần Ngọc Bảo gán nhãn độc lập nguyên nhân thất bại cho mọi lượt không đạt của hai nhóm
-Claude (chín nhãn, mã ngẫu nhiên, bản vá đã bỏ file đặc tả; làm mù một phần), báo cáo kappa của Cohen; An
-phân xử chỗ lệch. Vòng một bị loại theo đề nghị của hai người gán vì điền chưa kỹ; vòng hai dùng mã mới, kèm mã
-test ẩn và thứ tự quyết định cố định. Hai người cũng đọc mù 20 lượt đạt ngẫu nhiên để tìm lượt đạt test nhưng sai. Ca nghiên cứu định
-tính lấy nhiệm vụ tầng lớn có hiệu số lớn nhất ở \texttt{claude-sonnet}.
-
-\subsection{Chốt trước khi chạy và phản biện độc lập}\label{sec:prereg}
-
-Bản đăng ký trước được gắn thẻ git theo ba bước: \texttt{prereg-v1} chốt tầng nhỏ, giả thuyết, chỉ số, kế
-hoạch phân tích và quy tắc chọn hai tầng còn lại; \texttt{prereg-v1.1} chốt nhiệm vụ và mã băm đề bài tầng
-vừa và tầng lớn, trước mọi lượt AI trên hai tầng này; \texttt{prereg-v1-analysis} chốt gói phân tích
-(\texttt{analysis/}) đã chạy được trên dữ liệu chạy thử. Lượt chạy chính tầng nhỏ bắt đầu trước thẻ
-thứ hai; như bản đăng ký cho phép, không kết quả chính nào được mở, ngoài số lượt theo trạng thái, trước thẻ
-phân tích. Mọi thay đổi sau thẻ được ghi kèm lý do và những gì đã xem (Phụ lục~\ref{app:deviations}).
-Fable 5.2, một tác tử AI chạy tách khỏi phiên soạn thảo và không xem kết quả chính, phản biện bản đăng ký,
-đề bài tầng vừa và tầng lớn, và mã phân tích; mọi điểm chặn được sửa trước thẻ.
-
-Hạn chót thu dữ liệu là \mbox{2026-11-29}. Một (nhóm, tầng) chưa chạy đủ ở hạn chót bị loại khỏi phép thử
-xác nhận và phép thử gộp nhóm, và chỉ được mô tả. Cả bốn tài khoản Antigravity hết hạn mức tuần trước
-khi \texttt{agy-gemini} chạy xong, và nhóm này bị bỏ (mục~\ref{sec:data-collected}). Bản bổ sung
-\texttt{prereg-v1.2}, viết sau khi mở kết quả chính, thêm hai thí nghiệm thăm dò: Claude Haiku 5.5 theo
-thiết kế gốc và đề bài sơ sài cho cả hai cách làm (mục~\ref{sec:explore}).
-
-\subsection{Vai trò của AI trong chính nghiên cứu này}\label{sec:ai-role}
-
-Theo \cite{baltes_2025}, đề tài khai báo mọi việc có AI tham gia (Phụ lục~\ref{app:ai}). Ngoài vai trò
-đối tượng được đo, trợ lý AI tìm tài liệu, soạn nháp đề bài, gợi ý kết luận khi An kiểm quy tắc nối, viết
-phần lớn mã của bộ chạy, bộ chấm, gói phân tích và script số liệu (An duyệt thiết kế), và viết nháp báo cáo
-này; mọi con số trong văn bản được sinh bằng máy từ file kết quả.
+\textit{Chấm và phân tích.} Một lượt \emph{đạt} khi mọi test ẩn đạt và không test cũ nào hỏng. Đơn vị phân
+tích là nhiệm vụ; khoảng tin cậy 95\% là bootstrap lấy mẫu lại nhiệm vụ. Phép thử xác nhận duy nhất là H1
+trên Sonnet ở tầng nhỏ. Nhiệm vụ, đề bài, giả thuyết, kế hoạch phân tích và mã phân tích được chốt bằng thẻ
+git trước khi mở kết quả, và được Fable 5.2 phản biện độc lập; mọi thay đổi sau thẻ được ghi kèm lý do.
