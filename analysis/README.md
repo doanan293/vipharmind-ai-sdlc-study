@@ -275,3 +275,37 @@ not follow it word for word. Each note says what the code does.
 26. **Pilot data** comes from the older harness. Its `meta.json` has no `upstream_urls`, which
     is treated as empty and counted under `descriptives.upstream_urls_field_missing`. Pilot
     tasks have `pilot = true`, so the pilot run names them with `--task-ids p01,p02`.
+
+## Exploratory extensions E1 and E2 (`prereg/prereg-v1.2.md`)
+
+Both are exploratory ("thăm dò, thêm sau khi thấy kết quả chính") and write to their own output
+directories; the confirmatory `sdlc-analysis` above is unchanged.
+
+```
+R=/home/andv/personal
+# E1: the locked analysis with claude-haiku as one more cohort -> results/analysis/e1/
+uv run sdlc-e1 --results $R/vipharmind-ai-sdlc-study-run/results/raw/main \
+    $R/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers \
+    $R/vipharmind-ai-sdlc-study-run3/results/raw/haiku \
+    --seed 20261115 --repo /home/andv/personal/vipharmind --model-bootstrap 999 --jobs 4
+# E2: brief prompt, detail x arm -> results/analysis/e2/
+uv run sdlc-e2 --detailed $R/vipharmind-ai-sdlc-study-run/results/raw/main \
+    $R/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers \
+    $R/vipharmind-ai-sdlc-study-run3/results/raw/haiku \
+    --brief $R/vipharmind-ai-sdlc-study-run3/results/raw/brief
+# judge check (a): draw + packets once all 552 brief units are finished; then agreement
+uv run python scripts/draw_human_check.py draw --brief $R/vipharmind-ai-sdlc-study-run3/results/raw/brief
+uv run python scripts/draw_human_check.py kappa --loi sheet-loi.csv --bao sheet-bao.csv
+```
+
+`sdlc-e1` accepts every `sdlc-analysis` option; it defaults `--cohorts` to
+`claude-sonnet,claude-opus,codex-luna,claude-haiku` and `--out` to `results/analysis/e1`. Haiku has
+no row in the frozen price table, so its converted cost is missing (not imputed).
+
+`sdlc-e2` outputs: `summary.json` (`coverage`, `coverage_totals`, `estimates`, `judge_validity`),
+`coverage.csv` (expected / present / graded / judged per detail x cohort x tier x arm),
+`unjudged_units.csv` (valid units without an accepted judge.json: excluded from score, never
+imputed), `task_cells.csv`, `estimates.csv`, `runs.csv`, `figures/`. Estimate keys:
+`primary.{score,score_core}.<cohort|pooled>.<all|tier>` (brief prompt, spec minus vibe) and
+`x2.<metric>.<cohort|pooled>.{mean.<detail>_<arm>,diff.<detail>,detail_effect.<arm>,interaction}`
+with interaction = (spec - vibe | brief) - (spec - vibe | detailed). B = 9999, seed 20261115.

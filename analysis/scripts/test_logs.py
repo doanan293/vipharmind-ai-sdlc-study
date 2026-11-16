@@ -37,7 +37,7 @@ def one(row: dict) -> str:
         proc = subprocess.run(
             ["uv", "run", "--frozen", "pytest", "-p", "no:cacheprovider", "-q", "--tb=short",
              "-o", "console_output_style=classic", *files],
-            cwd=backend, capture_output=True, text=True, timeout=900,
+            check=False, cwd=backend, capture_output=True, text=True, timeout=900,
         )
         out = (proc.stdout + proc.stderr).splitlines()
         text = "\n".join(out if len(out) <= 400 else out[:60] + ["... (cut) ..."] + out[-330:])
