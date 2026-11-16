@@ -20,7 +20,7 @@ worktree này (`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); khô
 5. **Câu hỏi mở (thăm dò, đã xong).** Đề chỉ một hai câu thì quy trình có bù được không? Chỉ nói headline:
    - E2, tầng nhỏ, gộp bốn nhóm: đặc tả hơn vibe +4,2 đpt điểm danh sách hành vi, KTC [+0,7; +8,1], tức một
      lợi ích nhỏ. Gộp cả ba tầng: +2,5 [−0,1; +5,4], KTC chứa 0.
-   - Riêng việc đề sơ sài làm tỉ lệ test ẩn đạt giảm khoảng 80 đpt ở cả hai cách làm (−78,6 và −81,0):
+   - Riêng việc đề sơ sài làm tỉ lệ lượt đạt hết test ẩn giảm khoảng 80 đpt ở cả hai cách làm (−78,6 và −81,0):
      độ rõ của đề quan trọng hơn quy trình nhiều.
    - E1 (Haiku, đề chi tiết): đặc tả không đạt hơn ở tầng nào (KTC chứa 0), tốn ×1,5 token (×2,1 ở tầng nhỏ).
    - Luôn nói "xu hướng", "gợi ý"; không nói "chứng minh" hay "đặc tả tốt hơn nhiều". E1, E2 thêm sau khi
