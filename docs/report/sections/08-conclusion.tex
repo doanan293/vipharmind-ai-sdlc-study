@@ -4,18 +4,14 @@ Phần hồi cứu cho thấy ViPharmind được làm gần như hoàn toàn v�
 \NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên, vì quy tắc nối nghiêng về nối
 thừa), và mã do AI viết được sửa lại với mức gần như nhau dù có hay không có plan (RQ1, RQ2).
 
-Phần thực nghiệm, trên \NumResRuns{} lượt của ba nhóm, không thấy làm theo đặc tả làm tác tử đạt test ẩn
-nhiều hơn khi đề bài đã chi tiết. Phép thử xác nhận H1 chưa kết luận được, với khoảng tin cậy
-[\NumResHOneLowPp{}; \NumResHOneHighPp{}] đpt không chứa lợi ích dương nào; H5 cũng chưa kết luận được.
-Làm theo đặc tả tốn gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token và
-\NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được ủng hộ), và đổi lại để mã có test do
-chính tác tử viết. Lợi ích về độ đúng và hồi quy chỉ thấy ở công cụ yếu nhất trên ba nhiệm vụ lớn nhất,
-quá ít để kết luận. Với người làm nghề, điều này gợi ý: khi đã viết được yêu cầu rõ đến mức tên và chữ ký,
-phần lớn giá trị của ``đặc tả'' đã nằm trong yêu cầu; quy trình thiết kế và kế hoạch trên đó đáng giá chủ
-yếu vì test nó để lại, không vì nó làm bài đúng hơn ngay.
+Phần thực nghiệm cho hai phát hiện. Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc
+nhỏ: trên \NumResRuns{} lượt của ba nhóm, nó không đạt test ẩn nhiều hơn (H1, H5 chưa kết luận được), tốn
+gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token, chỉ có dấu hiệu có ích ở Codex trên ba
+nhiệm vụ lớn nhất, và luôn để lại test do tác tử tự viết. Và \NumLabOutside{} trên \NumLabRuns{} lượt hỏng
+của Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau.
 
-Hai thí nghiệm thăm dò đang chạy sẽ cho biết kết luận này đổi thế nào khi tác tử yếu hơn (Haiku) và khi đề
-chỉ một hai câu như vibe coding thật: \pending{E1, E2: một câu kết luận mỗi thí nghiệm}.
+Kết luận chính: \pending{viết từ kết quả E2 (và E1): khi đề chỉ một hai câu, quy trình đặc tả có bù được
+phần đề thiếu không}.
 
-Hướng tiếp theo: nhánh đặc tả có người duyệt, đề sơ sài với cách chấm không phụ thuộc tên, thêm dự án,
-ngôn ngữ và nhiệm vụ cỡ tính năng, và đo giá trị về sau của test do tác tử viết.
+Hướng tiếp theo: nhánh đặc tả có người duyệt, thêm dự án, ngôn ngữ và nhiệm vụ cỡ tính năng, và đo giá trị
+về sau của test do tác tử viết.

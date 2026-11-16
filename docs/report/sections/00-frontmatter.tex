@@ -30,20 +30,20 @@
 \end{titlepage}
 
 \section*{Tóm tắt}\zlabel{chk:abstract}
-Đề tài so sánh hai cách giao việc cho trợ lý lập trình AI: làm theo đặc tả (viết thiết kế và kế hoạch,
-viết test trước rồi cài đặt) và vibe coding (giao việc trực tiếp). Phần hồi cứu phân tích \NumCommits{}
-commit của ViPharmind, một dự án phần mềm AI cho ngành dược Việt Nam được làm với trợ lý AI. Phần thực
-nghiệm dựng \NumTasksMain{} nhiệm vụ từ commit thật, chia ba tầng kích thước, chấm bằng test ẩn, và cho
-Claude Code (Sonnet 5.5, Opus 5.5) và Codex làm theo hai cách, mỗi (nhiệm vụ, cách làm) ba lần; giả
-thuyết, đề bài và mã phân tích được chốt bằng thẻ git trước khi mở kết quả. Trên \NumResRuns{} lượt, làm
-theo đặc tả không đạt test ẩn nhiều hơn: ở phép thử xác nhận (Sonnet, tầng nhỏ) hiệu số là
-\NumResHOneEstPp{} điểm phần trăm, khoảng tin cậy 95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]. Hiệu số
-không tăng rõ theo kích thước nhiệm vụ. Làm theo đặc tả tốn gấp \NumResTokenRatioMin{} đến
-\NumResTokenRatioMax{} lần token và \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian, và để
-lại mã có test do tác tử tự viết, điều nhánh vibe của Sonnet và Codex gần như không làm. Lợi ích về độ
-đúng và hồi quy chỉ thấy ở Codex trên ba nhiệm vụ lớn nhất. Đề bài của thí nghiệm nêu đủ tên và chữ ký,
-nên kết quả đo tác dụng của riêng quy trình khi yêu cầu đã rõ; hai thí nghiệm thăm dò (Haiku và đề sơ
-sài) đang chạy.
+Người dùng thường giao việc cho trợ lý lập trình AI bằng vài câu ngắn (vibe coding); phát triển theo đặc
+tả, theo kiểu Superpowers (thiết kế, kế hoạch, viết test trước, kiểm lại), hứa bù cho phần đề bài thiếu.
+Đề tài kiểm lời hứa đó trên ViPharmind, một dự án phần mềm AI cho ngành dược Việt Nam: phần hồi cứu phân
+tích \NumCommits{} commit của dự án, phần thực nghiệm dựng \NumTasksMain{} nhiệm vụ từ commit thật, chia ba
+tầng kích thước, chấm bằng test ẩn, và cho Claude Code (Sonnet 5.5, Opus 5.5) và Codex làm theo hai cách,
+mỗi (nhiệm vụ, cách làm) ba lần; giả thuyết, đề bài và mã phân tích được chốt bằng thẻ git trước khi mở
+kết quả. Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc nhỏ: trên \NumResRuns{} lượt, nó không
+đạt test ẩn nhiều hơn (phép thử xác nhận, Sonnet tầng nhỏ: \NumResHOneEstPp{} điểm phần trăm, khoảng tin
+cậy 95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]) và tốn gấp \NumResTokenRatioMin{} đến
+\NumResTokenRatioMax{} lần token; dấu hiệu có ích duy nhất là Codex ở ba nhiệm vụ lớn nhất, và quy trình
+luôn để lại test do tác tử tự viết. Gán nhãn nguyên nhân cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
+Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau. Câu hỏi
+còn lại là khi đề chỉ một hai câu, việc bắt tác tử tự viết thiết kế, kế hoạch và test có bù được không;
+hai thí nghiệm thăm dò (đề sơ sài, và Haiku) trả lời: \pending{E2, E1: một câu kết quả}.
 
 \clearpage
 \tableofcontents

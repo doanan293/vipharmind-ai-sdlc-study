@@ -24,10 +24,10 @@ Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05);
 | 16 | `p16_rq4` | Trần Ngọc Bảo | 0:35 | 8:40 |
 | 17 | `p17_h2h3` | Trần Ngọc Bảo | 0:40 | 9:20 |
 | 18 | `p18_h4` | Trần Ngọc Bảo | 0:45 | 10:05 |
-| 19 | `p19_h5` | Trần Ngọc Bảo | 0:40 | 10:45 |
-| 20 | `p20_cost` | Trần Ngọc Bảo | 0:35 | 11:20 |
-| 21 | `p21_case` | Trần Ngọc Bảo | 0:35 | 11:55 |
-| 22 | `p22_agy` | Trần Ngọc Bảo | 0:15 | 12:10 |
+| 19 | `p19_h5` | Trần Ngọc Bảo | 0:35 | 10:40 |
+| 20 | `p20_cost` | Trần Ngọc Bảo | 0:25 | 11:05 |
+| 21 | `p21_case` | Trần Ngọc Bảo | 0:35 | 11:40 |
+| 22 | `p22_labels` | Trần Ngọc Bảo | 0:30 | 12:10 |
 | 23 | `p23_explore` | Trần Ngọc Bảo | 0:30 | 12:40 |
 | 24 | `p24_limits` | Trần Ngọc Bảo | 0:40 | 13:20 |
 | 25 | `p25_conclusion` | Trần Ngọc Bảo | 0:40 | 14:00 |
@@ -41,4 +41,5 @@ Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05);
 
 Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; hai thí nghiệm thăm dò E1 (Haiku) và E2 (đề sơ sài) chưa xong. Các slide sau còn `[CHỜ KẾT QUẢ]`:
 
+- `p25_conclusion`: main conclusion, written from the E2 (and E1) results
 - `p23_explore`: E2: checklist score spec − vibe pooled and per cohort (CI); 2 × 2 interaction detail × arm; E1: Haiku pass rate spec / vibe

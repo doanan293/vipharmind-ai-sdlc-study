@@ -1,31 +1,40 @@
 \section{Thảo luận và hạn chế}\label{sec:discussion}
 
-\subsection{Trả lời câu hỏi nghiên cứu}
+\subsection{Khi đề đã chi tiết, quy trình gần như thừa ở việc nhỏ (RQ3--RQ6)}
 
-\textit{RQ3.} Khi đề bài đã nêu đủ tên, chữ ký và quy tắc, làm theo đặc tả không làm tác tử đạt test ẩn
-nhiều hơn. Phép thử xác nhận H1 chưa kết luận được, nhưng khoảng tin cậy của nó nằm hẳn ở phía không có lợi
-ích (cận trên \NumResHOneHighPp{} đpt). Cái giá thì rõ: gấp \NumResTokenRatioMin{} đến
-\NumResTokenRatioMax{} lần token và \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được
-ủng hộ ở mọi ô). Thứ nhánh theo đặc tả để lại là mã có test: khoảng ba phần tư số lượt có test mới, và test
-đó chạy qua khoảng một nửa số dòng mới, trong khi nhánh vibe của Sonnet và Codex gần như không có test.
-Test ẩn không đo giá trị của phần test này; nó chỉ có giá trị ở lần sửa sau, ngoài phạm vi thí nghiệm.
+Khi đề bài đã nêu đủ tên, chữ ký và quy tắc, làm theo đặc tả không làm tác tử đạt test ẩn nhiều hơn. Phép
+thử xác nhận H1 chưa kết luận được, nhưng khoảng tin cậy của nó nằm hẳn ở phía không có lợi ích (cận trên
+\NumResHOneHighPp{} đpt). Cái giá thì rõ: gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token
+và \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được ủng hộ ở mọi ô). Với hai mô hình
+Claude, hiệu số âm hoặc bằng không ở mọi tầng; cả hai gần trần ở tầng nhỏ và vừa, nên đặc tả không có chỗ
+để giúp mô hình yếu hơn (H4 chưa kết luận được), và Sonnet theo đặc tả đạt ngang Opus vibe với khoảng
+\NumResHFourCostRatioPct{}\% chi phí quy đổi.
 
-\textit{RQ4.} Kết luận không giữ nguyên hướng khi đổi công cụ. Với hai mô hình Claude, hiệu số âm hoặc bằng
-không ở mọi tầng. Với Codex, hiệu số dương ở tầng nhỏ và tầng lớn, âm ở tầng vừa; ở tầng lớn, nhánh vibe
-của Codex làm hỏng test cũ ở \NumResCodexLargeRegVibePct{}\% số lượt và có trung bình
-\NumResCodexLargeStaticVibe{} lỗi tĩnh, so với \NumResCodexLargeRegSpecPct{}\% và
-\NumResCodexLargeStaticSpec{} khi theo đặc tả. Đây là dấu hiệu duy nhất trong dữ liệu cho thấy quy trình có
-ích, và nó xuất hiện ở công cụ đạt thấp nhất, trên đúng ba nhiệm vụ lớn nhất. Với ba nhiệm vụ, đây chỉ là
-giả thuyết cho nghiên cứu sau. Mất nhóm \texttt{agy-gemini} làm RQ4 chỉ còn hai công cụ.
+Dấu hiệu có ích duy nhất nằm ở việc lớn và công cụ đạt thấp nhất: ở ba nhiệm vụ tầng lớn, Codex theo đặc
+tả đạt \NumResCodexLargeSpecPct{}\% so với \NumResCodexLargeVibePct{}\%, làm hỏng test cũ ở
+\NumResCodexLargeRegSpecPct{}\% so với \NumResCodexLargeRegVibePct{}\% số lượt. Với ba nhiệm vụ, và với
+H5 chưa kết luận được (hiệu số gộp không tăng rõ theo tầng), đây chỉ là giả thuyết cho nghiên cứu sau, không
+phải bằng chứng rằng đặc tả ``trả vốn'' khi việc đủ lớn. Kết luận vì thế không giữ nguyên hướng khi đổi
+công cụ (RQ4), dù RQ4 chỉ còn hai công cụ sau khi bỏ \texttt{agy-gemini}. Thứ nhánh theo đặc tả luôn để lại
+là test: khoảng ba phần tư số lượt có test mới, chạy qua \NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%
+số dòng mới, trong khi nhánh vibe của Sonnet và Codex gần như không có test. Test ẩn không đo giá trị của
+phần test này; nó chỉ có giá trị ở lần sửa sau, ngoài phạm vi thí nghiệm.
 
-\textit{RQ5.} H4 chưa kết luận được. Cả Sonnet và Opus đều gần trần ở tầng nhỏ và tầng vừa, nên đặc tả
-không có chỗ để giúp mô hình yếu hơn. Điều dữ liệu cho thấy rõ hơn là chi phí: Sonnet theo đặc tả đạt ngang
-Opus vibe với khoảng \NumResHFourCostRatioPct{}\% chi phí quy đổi.
+\subsection{Lỗi nằm ở chỗ đề không chốt, không ở logic}
 
-\textit{RQ6.} H5 chưa kết luận được: hiệu số gộp không tăng rõ theo tầng, và hệ số tương tác theo số dòng
-có khoảng tin cậy chứa 0 ở cả hai cách đo kích thước. Ba nhiệm vụ tầng lớn và năm nhiệm vụ tầng vừa là quá
-ít để thấy một hiệu ứng vừa phải; dữ liệu không ủng hộ lập luận rằng đặc tả ``trả vốn'' khi nhiệm vụ đủ
-lớn, nhưng cũng không bác bỏ được nó.
+Nhãn nguyên nhân thất bại cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của Claude không vì logic
+tác tử tự viết sai, mà vì test ẩn kiểm một chi tiết đề không chốt hoặc vì nối sai với mã có sẵn, và hai
+loại này chiếm tỉ lệ gần như nhau ở hai cách làm. Bước thiết kế không tự biết chi tiết mà đề bỏ ngỏ: nó chỉ
+chốt một cách đoán, như ca \texttt{f15} cho thấy, rồi test viết trước kiểm lại chính cách đoán đó. Dữ liệu
+gợi ý rằng điều quyết định là đặc tả có chốt đủ chi tiết hay không, hơn là tác tử có tự viết thiết kế hay
+không. Đây là diễn giải từ \NumLabRuns{} lượt của hai mô hình, chưa phải kết quả kiểm định.
+
+\subsection{Câu hỏi mở ra: khi đề chỉ một hai câu}
+
+Hai điều trên dẫn tới câu hỏi mà vibe coding thật đặt ra: khi người dùng chỉ đưa một hai câu, bắt tác tử tự
+viết thiết kế, kế hoạch và test có bù được phần đề thiếu không? Giả thuyết đang được kiểm là giá trị của quy
+trình tăng khi đề càng ít chi tiết; E2 kiểm nó bằng thiết kế $2\times 2$, và E1 hỏi mô hình yếu hơn có cần
+quy trình hơn không (mục~\ref{sec:explore}). Kết quả: \pending{E2, E1: trả lời câu hỏi này}.
 
 \subsection{Đối chiếu với tài liệu}
 
@@ -68,14 +77,8 @@ chỉ là một phần.
 \textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt: \NumLabDeBaiThieuTotal{} trên
 \NumLabRuns{} lượt hỏng của Claude mang nhãn đề bài thiếu (\texttt{t07} đòi list chứ không phải tuple;
 \texttt{f15} không nói trả về mã hay đối tượng). Chúng hạ tỉ lệ đạt ở cả hai nhánh với tỉ lệ gần nhau, nên
-ít ảnh hưởng hiệu số; E2 chấm bằng danh sách hành vi một phần vì thế. ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
-Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
-\NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của bản vá gốc, nên
-theo \texttt{task\_pass} hai nhiệm vụ này gần tầng nhỏ hơn số dòng gợi ý; phân tích độ nhạy với
-\texttt{graded\_src\_lines} kiểm điều này. Các tầng khác nhau không chỉ ở số dòng mà còn ở số test, giới
-hạn thời gian và độ chi tiết của đề, nên H5 là bằng chứng về ``nhiệm vụ cỡ tính năng'', không về riêng số
-dòng. Ngưỡng 35 tên của tầng lớn không có đơn vị đếm cố định và được áp bằng phán đoán. Chi phí bằng tiền là số quy đổi theo giá API, không
-phải số tiền đã trả; với \texttt{codex-luna} chỉ có cận dưới và cận trên.
+ít ảnh hưởng hiệu số; E2 chấm bằng danh sách hành vi một phần vì thế. Các giới hạn khác của cách đo (test \texttt{integration} không được chấm, số dòng được
+chấm, khác biệt giữa các tầng, chi phí quy đổi) ở Phụ lục~\ref{app:validity}.
 
 \textit{Tính hợp lệ ngoại.} Một dự án, một ngôn ngữ (Python), \NumTasksMain{} nhiệm vụ backend, và tác
 giả nghiên cứu cũng là tác giả dự án. Ba công cụ dùng mô hình khác hãng và khác hạng. Nhánh theo đặc tả

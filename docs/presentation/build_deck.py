@@ -204,8 +204,8 @@ LOI, BAO = "Lê Xuân Lợi", "Trần Ngọc Bảo"
 
 @page("p01_title", 1, LOI, 20,
       "Người nói: Lợi, khoảng hai mươi giây. Em chào thầy và các bạn. Nhóm em gồm An, Bảo và em, Lợi. "
-      "Đề tài của nhóm so sánh hai cách giao việc cho trợ lý lập trình AI: làm theo đặc tả và vibe coding, "
-      "trên một dự án phần mềm AI thật cho ngành dược. Em trình bày bối cảnh và phương pháp, Bảo trình bày "
+      "Đề tài của nhóm hỏi: khi giao việc cho trợ lý lập trình AI, bắt nó làm theo đặc tả có bù được cho đề "
+      "bài ngắn của vibe coding không; thí nghiệm trên một dự án phần mềm AI thật cho ngành dược. Em trình bày bối cảnh và phương pháp, Bảo trình bày "
       "kết quả và kết luận.")
 def _(r):
     set_text(r, "shape-1431", ["Phát triển theo đặc tả", "so với vibe coding"], size=46, role="title")
@@ -229,34 +229,36 @@ def _(r):
 def _(r):
     set_text(r, "shape-1483", ["01"], role="num")
     set_text(r, "shape-1491", ["Phương pháp"], role="title")
-    set_text(r, "shape-1484", ["Lê Xuân Lợi · bối cảnh, hồi cứu, thiết kế"])
+    set_text(r, "shape-1484", ["Lê Xuân Lợi · vấn đề, hồi cứu, thiết kế"])
 
 
 @page("p03_motivation", 7, LOI, 45,
-      "Người nói: Lợi, khoảng bốn mươi lăm giây. Ngày nay coding agent như Claude Code, Codex hay "
-      "Antigravity tự đọc mã, sửa file và chạy test. Có hai cách giao việc phổ biến. Vibe coding là mô tả "
-      "ngắn rồi để agent viết mã ngay. Làm theo đặc tả là bắt agent viết thiết kế và kế hoạch trước, rồi "
-      "mới cài đặt. Nhiều người khuyên nên viết đặc tả, nhưng bằng chứng định lượng còn ít: nghiên cứu "
-      "quan sát lớn nhất trên pull request mã nguồn mở không thấy đặc tả làm giảm lỗi. Chưa có thí nghiệm "
-      "nào giữ nguyên đề bài, công cụ và mô hình, chỉ đổi lời dặn, rồi chấm bằng test mà agent không thấy. "
-      "Nhóm em làm đúng thí nghiệm đó.")
+      "Người nói: Lợi, khoảng bốn mươi lăm giây. Coding agent như Claude Code, Codex hay Antigravity tự đọc mã, "
+      "sửa file và chạy test. Cách giao việc phổ biến nhất là vibe coding: vài câu ngắn rồi để agent viết mã "
+      "ngay; đề ngắn bỏ ngỏ nhiều chi tiết và agent phải tự đoán. Phát triển theo đặc tả, kiểu bộ skill "
+      "Superpowers, hứa bù cho chỗ đó: agent viết thiết kế, viết kế hoạch, viết test trước rồi mới cài đặt, và "
+      "kiểm lại cả bộ test. Nhưng bằng chứng định lượng còn ít: nghiên cứu quan sát lớn nhất trên pull request "
+      "mã nguồn mở không thấy đặc tả làm giảm lỗi, và chưa có thí nghiệm nào giữ nguyên đề, công cụ và mô hình, "
+      "chỉ đổi lời dặn, rồi chấm bằng test mà agent không thấy. Nhóm em làm thí nghiệm đó.")
 def _(r):
-    set_text(r, "shape-1634", ["Hai cách giao việc cho coding agent"])
+    set_text(r, "shape-1634", ["Đề ngắn, và lời hứa của đặc tả"])
     set_text(r, "shape-1638", ["Vibe coding"])
     set_text(r, "shape-1637", ["Theo đặc tả"])
-    set_text(r, "shape-1636", ["Mô tả ngắn việc cần làm,", "để agent viết mã ngay."], size=17)
-    set_text(r, "shape-1635", ["Agent viết thiết kế và", "kế hoạch trước, rồi", "mới cài đặt."], size=17)
+    set_text(r, "shape-1636", ["Vài câu ngắn; agent", "tự đoán phần đề", "bỏ ngỏ."], size=17)
+    set_text(r, "shape-1635", ["Thiết kế → kế hoạch →", "test trước → kiểm lại", "(kiểu Superpowers)."], size=17)
     add(r, text_block("gap", 189, 405, 600, 60,
-                      ["Khoảng trống: chưa có thí nghiệm chỉ đổi lời dặn,",
-                       "giữ nguyên đề, công cụ, mô hình, chấm bằng test ẩn."],
+                      ["Câu hỏi: quy trình có bù được đề thiếu không?",
+                       "Chưa có thí nghiệm chỉ đổi lời dặn, chấm bằng test ẩn."],
                       size=16, fill=BLUE, bold=True))
 
 
 @page("p04_rq", 11, LOI, 40,
-      "Người nói: Lợi, khoảng bốn mươi giây. Đề tài có sáu câu hỏi. RQ1 và RQ2 là phần hồi cứu: AI đã tham "
+      "Người nói: Lợi, khoảng bốn mươi giây. Đề tài có sáu câu hỏi, chốt trước khi chạy. RQ1 và RQ2 là phần hồi cứu: AI đã tham "
       "gia từng khâu của dự án ra sao, và mã AI viết phải sửa lại bao nhiêu. RQ3 đến RQ6 là phần thực "
       "nghiệm: làm theo đặc tả có đạt hơn vibe coding không và tốn thêm bao nhiêu; kết luận có giữ khi đổi "
-      "công cụ của hãng khác; khi dùng mô hình mạnh hơn; và khi nhiệm vụ lớn dần.")
+      "công cụ của hãng khác; khi dùng mô hình mạnh hơn; và khi nhiệm vụ lớn dần. Để chấm được bằng test ẩn, đề "
+      "của thí nghiệm chính phải nêu đủ tên và chữ ký, nên nó hỏi: khi đề đã chi tiết, quy trình còn thêm được "
+      "gì. Câu hỏi về đề ngắn để dành cho hai thí nghiệm thăm dò ở cuối.")
 def _(r):
     set_text(r, "shape-1762", ["Sáu câu hỏi nghiên cứu"])
     grid = [("shape-1763", "shape-1759", "RQ1", ["AI tham gia từng khâu", "của dự án ra sao?"]),
@@ -460,12 +462,12 @@ def _(r):
 
 
 @page("p14_results", 4, BAO, 10,
-      "Người nói: Bảo, khoảng mười giây. Em là Bảo, em trình bày kết quả thực nghiệm cho RQ3 đến RQ6, rồi "
-      "hạn chế và kết luận.")
+      "Người nói: Bảo, khoảng mười giây. Em là Bảo. Em trình bày hai phát hiện: khi đề đã chi tiết thì quy "
+      "trình đặc tả thêm được gì, và các lượt hỏng vì đâu; rồi câu hỏi mà chúng mở ra, khi đề chỉ một hai câu.")
 def _(r):
     set_text(r, "shape-1483", ["02"], role="num")
     set_text(r, "shape-1491", ["Kết quả"], role="title")
-    set_text(r, "shape-1484", ["Trần Ngọc Bảo · RQ3 đến RQ6"])
+    set_text(r, "shape-1484", ["Trần Ngọc Bảo · hai phát hiện, một câu hỏi mở"])
 
 
 @page("p15_h1", 13, BAO, 50,
@@ -489,7 +491,8 @@ def _(r):
 
 @page("p16_rq4", 12, BAO, 35,
       f"Người nói: Bảo, khoảng ba mươi lăm giây. Hình này cho hiệu số của từng nhóm và từng tầng. Nhóm "
-      f"Antigravity với Gemini bị bỏ, nên RQ4 chỉ còn hai công cụ: Claude Code và Codex. Nhóm chỉ so hướng và "
+      f"Antigravity với Gemini bị bỏ khi mới xong {N['ResAgyDone']} trên {N['ResRunsPerCohort']} lượt vì hết hạn "
+      f"mức; số đếm thô đã được xem trước quyết định, điều này ghi trong phụ lục sai lệch. Vì vậy RQ4 chỉ còn hai công cụ: Claude Code và Codex. Nhóm chỉ so hướng và "
       f"độ lớn, không so công cụ này với công cụ kia. Với hai mô hình Claude, hiệu số âm hoặc bằng không ở mọi "
       f"tầng. Với Codex, hiệu số dương ở tầng nhỏ và tầng lớn, âm ở tầng vừa. Ô duy nhất được ủng hộ là Codex "
       f"tầng lớn: đặc tả đạt {N['ResCodexLargeSpecPct']} phần trăm, vibe {N['ResCodexLargeVibePct']} phần trăm. "
@@ -563,7 +566,7 @@ def _(r):
                       size=14, fill=BLUE, bold=True))
 
 
-@page("p19_h5", 12, BAO, 40,
+@page("p19_h5", 12, BAO, 35,
       f"Người nói: Bảo, khoảng bốn mươi giây. Đây là H5. Mỗi điểm là một nhiệm "
       f"vụ: trục ngang là số dòng của bản vá gốc, trục dọc là hiệu số tỉ lệ đạt. Hiệu số gộp ba nhóm ở tầng "
       f"lớn trừ tầng nhỏ là {N['ResHFiveEstPp']} điểm phần trăm, khoảng tin cậy từ âm "
@@ -582,7 +585,7 @@ def _(r):
     add(r, figure_slot("figure", "slot_effect_vs_size.png"))
 
 
-@page("p20_cost", 20, BAO, 35,
+@page("p20_cost", 20, BAO, 25,
       "Người nói: Bảo, khoảng ba mươi lăm giây. Vì mọi lượt chạy bằng gói thuê bao, chi phí là số quy đổi từ "
       "token theo bảng giá API công khai chốt trước. Bảng này cho chi phí cho một lượt đạt ở tầng nhỏ và tầng "
       "lớn. Với hai mô hình Claude, nhánh đặc tả đắt hơn ở mọi ô, khoảng gấp đôi với Sonnet. Với Codex chỉ có "
@@ -632,26 +635,33 @@ def _(r):
                                "nên đạt; test ẩn trượt, except nuốt lỗi."], size=16)
 
 
-@page("p22_agy", 6, BAO, 15,
-      f"Người nói: Bảo, khoảng mười lăm giây. Nhóm Antigravity với Gemini bị bỏ khi mới xong {N['ResAgyDone']} "
-      f"trên {N['ResRunsPerCohort']} lượt vì hết hạn mức. Số đếm thô đã được xem trước quyết định, nên việc bỏ "
-      f"không hoàn toàn độc lập với kết quả; điều này được ghi trong phụ lục sai lệch.")
+@page("p22_labels", 6, BAO, 30,
+      f"Người nói: Bảo, khoảng ba mươi giây. Phát hiện thứ hai đến từ việc gán nhãn. Lợi và Bảo gán nhãn độc lập "
+      f"nguyên nhân của {N['LabRuns']} lượt hỏng của hai nhóm Claude, đồng ý {N['LabAgree']} trên {N['LabRuns']}, "
+      f"kappa {N['LabKappa']}. {N['LabOutside']} lượt hỏng không vì logic sai: {N['LabDeBaiThieuTotal']} lượt vì test "
+      f"ẩn kiểm một chi tiết đề không chốt, {N['LabSaiApiCoSanTotal']} lượt vì nối sai với mã có sẵn của dự án. "
+      f"Hai loại này chiếm tỉ lệ gần như nhau ở hai cách làm, {N['LabOutsideSpecPct']} và "
+      f"{N['LabOutsideVibePct']} phần trăm: bước thiết kế không tự biết chi tiết đề bỏ ngỏ, nó chỉ chốt một cách "
+      f"đoán, như ca f15. Dữ liệu gợi ý điều quyết định là đặc tả có đủ chi tiết hay không; đây là diễn giải, "
+      f"chưa phải kiểm định.")
 def _(r):
-    set_text(r, "shape-1622", ["agy-gemini: bị bỏ", f"Hết hạn mức ở {N['ResAgyDone']}/{N['ResRunsPerCohort']} lượt;",
-                               "không vào phân tích."], size=32)
+    set_text(r, "shape-1622", [f"{N['LabOutside']}/{N['LabRuns']} lượt hỏng:", "đề không chốt, hoặc",
+                               "nối sai mã có sẵn"], size=32)
     set_text(r, "shape-1621",
-             [f"—Chạy thử: token vào ≈ {N['PilotAgyInputRatio']}× Claude Sonnet"], size=20, role="title")
+             [f"—Như nhau ở hai cách làm: {N['LabOutsideSpecPct']}% / {N['LabOutsideVibePct']}%"],
+             size=20, role="title")
 
 
 @page("p23_explore", 14, BAO, 30,
-      "Người nói: Bảo, khoảng ba mươi giây. Slide này là thăm dò, thêm sau khi thấy kết quả chính theo bản bổ "
-      "sung prereg-v1.2, nên không dùng để xác nhận hay bác bỏ giả thuyết. E2 hỏi: khi đề chỉ một hai câu như "
-      "vibe coding thật, đặc tả có giúp không; đo bằng điểm danh sách hành vi, gộp và theo từng nhóm. Thứ hai là "
-      "tương tác giữa mức chi tiết của đề và cách làm. Thứ ba là E1: Haiku, mô hình yếu hơn, với đề chi tiết. "
-      "Số liệu đang chờ kết quả.")
+      "Người nói: Bảo, khoảng ba mươi giây. Hai phát hiện đó mở ra câu hỏi mà vibe coding thật đặt ra: khi "
+      "người dùng chỉ đưa một hai câu, bắt agent tự viết thiết kế, kế hoạch và test có bù được phần đề thiếu "
+      "không? Giả thuyết đang kiểm, nêu sau khi thấy kết quả chính, là giá trị của quy trình tăng khi đề càng "
+      "ít chi tiết. E2 kiểm nó bằng đề sơ sài và thiết kế hai nhân hai, chấm bằng danh sách hành vi; E1 hỏi "
+      "mô hình yếu hơn, Haiku, có cần quy trình hơn không. Đây là thăm dò theo bản bổ sung prereg-v1.2, không "
+      "dùng để xác nhận hay bác bỏ giả thuyết. Số liệu đang chờ kết quả.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 600, 52,
-                      ["Thăm dò (thêm sau khi thấy kết quả chính)", "E1 Haiku, E2 đề sơ sài · prereg-v1.2"],
+                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", "E2 đề sơ sài, E1 Haiku · thăm dò, prereg-v1.2"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
     set_text(r, "shape-1916", [PENDING], size=40, role="num")
     set_text(r, "shape-1917", ["E2 · điểm hành vi, đặc tả − vibe, gộp (KTC 95%);",
@@ -680,25 +690,24 @@ def _(r):
 
 
 @page("p25_conclusion", 7, BAO, 40,
-      f"Người nói: Bảo, khoảng bốn mươi giây. Tóm lại, phần hồi cứu cho thấy ViPharmind thật sự được làm theo "
-      f"quy trình spec, plan, với {N['FeatWithPlanPct']} phần trăm commit tính năng có plan đi trước, nhưng "
-      f"mức sửa lại không khác nhóm không có plan. Phần thực nghiệm, trên {N['ResRuns']} lượt của ba nhóm, không "
-      f"thấy làm theo đặc tả đạt test ẩn nhiều hơn khi đề bài đã chi tiết: H1 và H5 chưa kết luận được. Đặc tả "
-      f"tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token, đổi lại để mã có test do chính tác "
-      f"tử viết. Khi yêu cầu đã rõ đến mức tên và chữ ký, phần lớn giá trị của đặc tả đã nằm trong yêu cầu. "
-      f"Hướng tiếp theo là nhánh đặc tả có người duyệt, đề sơ sài, thêm dự án và thêm nhiệm vụ cỡ tính năng.")
+      f"Người nói: Bảo, khoảng bốn mươi giây. Tóm lại hai phát hiện. Một: khi đề đã nêu đủ tên và chữ ký, quy "
+      f"trình đặc tả gần như thừa ở việc nhỏ: trên {N['ResRuns']} lượt, nó không đạt test ẩn nhiều hơn, tốn gấp "
+      f"{N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token; dấu hiệu có ích duy nhất là Codex ở ba "
+      f"nhiệm vụ lớn nhất, và nó luôn để lại test do agent tự viết. Hai: {N['LabOutside']} trên {N['LabRuns']} "
+      f"lượt hỏng của Claude đến từ chi tiết đề không chốt hoặc nối với mã có sẵn, ở cả hai cách làm. Kết luận "
+      f"chính phụ thuộc vào câu hỏi mở, khi đề chỉ một hai câu, và đang chờ kết quả E2.")
 def _(r):
     set_text(r, "shape-1634", ["Kết luận"])
-    set_text(r, "shape-1638", ["Hồi cứu"])
-    set_text(r, "shape-1636", [f"{N['FeatWithPlanPct']}% commit feat", "có plan; sửa lại",
-                               "như nhau."], size=17)
-    set_text(r, "shape-1637", ["Thực nghiệm"])
-    set_text(r, "shape-1635", ["H1, H5: chưa kết luận", "được. Đặc tả tốn",
-                               f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token, đổi lại",
-                               "có test tự viết."], size=17)
+    set_text(r, "shape-1638", ["Đề chi tiết"])
+    set_text(r, "shape-1636", ["Đặc tả gần như thừa", "ở việc nhỏ, tốn",
+                               f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token; luôn để", "lại test."],
+             size=17)
+    set_text(r, "shape-1637", ["Lượt hỏng"])
+    set_text(r, "shape-1635", [f"{N['LabOutside']}/{N['LabRuns']}: đề không chốt", "hoặc nối mã có sẵn;",
+                               "như nhau ở hai cách."], size=17)
     add(r, text_block("next", 189, 405, 600, 60,
-                      ["Hướng tiếp: đặc tả có người duyệt, đề sơ sài,",
-                       "thêm dự án, thêm nhiệm vụ cỡ tính năng."], size=16, fill=BLUE, bold=True))
+                      [f"Đề chỉ một hai câu: {PENDING}", "(kết luận chính, viết từ kết quả E2)"],
+                      size=16, fill=BLUE, bold=True))
 
 
 @page("p26_thanks", 15, BAO, 10,
@@ -776,6 +785,7 @@ def _(r):
 # Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
 # rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are not finished.
 RESULT_SLOTS = {
+    "p25_conclusion": "main conclusion, written from the E2 (and E1) results",
     "p23_explore": "E2: checklist score spec − vibe pooled and per cohort (CI); 2 × 2 interaction detail × arm; "
                    "E1: Haiku pass rate spec / vibe",
 }

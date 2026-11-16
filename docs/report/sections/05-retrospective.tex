@@ -28,7 +28,7 @@ kiểm thử tốn nhiều công nhất. Theo số dòng, dữ liệu (\NumStage
 \end{figure}
 
 Lịch sử git không cho biết dòng nào do AI viết. Kết luận ``AI tham gia mọi khâu'' dựa trên lời khai
-của tác giả và phần nhật ký phiên còn lại (mục~\ref{sec:sessions}); git chỉ cho thấy mọi khâu đều có
+của tác giả và phần nhật ký phiên còn lại (Phụ lục~\ref{sec:sessions}); git chỉ cho thấy mọi khâu đều có
 commit và quy trình spec, plan để lại dấu vết rõ.
 
 \subsection{Dấu vết quy trình theo đặc tả (RQ1)}
@@ -71,15 +71,3 @@ quy tắc nối có sai số, và commit sửa lại chạm cùng file chưa ch�
 sát, không phải quan hệ nhân quả; câu hỏi nhân quả do thực nghiệm trả lời. Kết quả quan sát này phù hợp với
 \cite{hill_2026}: ở đó pull request có đặc tả không ít lỗi hơn, và chất lượng đặc tả không dự báo việc
 phải sửa lại.
-
-\subsection{Nhật ký phiên}\label{sec:sessions}
-
-Nhật ký còn lại gồm \NumSessionsMain{} phiên chính và \NumSessionsSub{} nhật ký tác tử con, bắt đầu từ
-\mbox{\NumSessionFirstDate{}} đến \mbox{\NumSessionLastDate{}}, tức chỉ phủ vài tuần cuối của dự án. Trong các phiên
-chính, người dùng gửi \NumSessionUserMessages{} tin nhắn. Tính cả tác tử con, mô hình trả lời
-\NumSessionAssistantTurns{} lượt và gọi công cụ \NumSessionToolCalls{} lần, trong đó lệnh shell
-(\texttt{Bash}) chiếm \NumToolBashPct{}\%.
-
-Số lần người dùng ngắt ngang tác tử, số đo thay thế cho việc người sửa hướng, là
-\NumSessionInterrupts{}; đây chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Các con
-số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộng ra toàn dự án.

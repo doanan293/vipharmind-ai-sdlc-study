@@ -1,12 +1,12 @@
 \section{Giới thiệu}\label{sec:introduction}
 
 Trợ lý lập trình AI dạng tác tử (\emph{coding agent}) như Claude Code, Codex hay Antigravity tự đọc
-mã, sửa file và chạy test trong kho mã của người dùng. Người dùng giao việc cho chúng theo hai cách
-phổ biến. Cách thứ nhất là \emph{vibe coding}: mô tả ngắn việc cần làm rồi để tác tử viết mã ngay
-\cite{chou_2025,fawzy_2026}. Cách thứ hai là phát triển theo đặc
-tả: yêu cầu tác tử viết tài liệu thiết kế và kế hoạch trước, rồi mới cài đặt theo kế hoạch
-\cite{agarwal_2026,diaz_2026}. Taghavi và cộng sự đánh giá một quy trình tác tử
-theo đặc tả như vậy bằng mô hình chấm điểm \cite{taghavi_2026}.
+mã, sửa file và chạy test trong kho mã của người dùng. Cách giao việc phổ biến nhất là \emph{vibe
+coding}: mô tả việc cần làm trong vài câu rồi để tác tử viết mã ngay \cite{chou_2025,fawzy_2026}. Đề ngắn
+như vậy bỏ ngỏ nhiều chi tiết, và tác tử phải tự đoán. Phát triển theo đặc tả hứa bù cho chỗ đó: tác tử
+viết tài liệu thiết kế và kế hoạch trước, viết test trước khi viết mã, rồi kiểm lại cả bộ test
+\cite{agarwal_2026,diaz_2026}; bộ skill Superpowers mà An dùng khi làm ViPharmind là một quy trình như vậy.
+Taghavi và cộng sự đánh giá một quy trình tác tử theo đặc tả bằng mô hình chấm điểm \cite{taghavi_2026}.
 
 Bằng chứng định lượng so sánh hai cách này còn ít. Nghiên cứu về vibe coding chủ yếu là định tính
 \cite{chou_2025,fawzy_2026}; nghiên cứu về đặc tả dựa trên phỏng vấn \cite{agarwal_2026}, chấm bằng mô
@@ -28,7 +28,10 @@ dung của một bài báo khác (SoICT 2026) và không được đánh giá l�
 Đề tài có hai phần. Phần hồi cứu phân tích lịch sử git của ViPharmind: AI tham gia từng khâu ở mức
 nào, quy trình đặc tả để lại dấu vết gì, và mã phải sửa lại bao nhiêu. Phần thực nghiệm lấy nhiệm vụ
 từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi giao cùng một đề bài cho tác tử
-theo hai cách làm chỉ khác nhau ở lời dặn về quy trình.
+theo hai cách làm chỉ khác nhau ở lời dặn về quy trình. Để test ẩn chấm được, đề của thí nghiệm chính
+phải nêu đủ tên và chữ ký, nên nó trả lời câu hỏi hẹp hơn: khi đề đã chi tiết, quy trình còn thêm được gì.
+Kết quả của nó, cùng việc gán nhãn nguyên nhân thất bại, dẫn tới câu hỏi chính mà hai thí nghiệm thăm dò
+nhắm tới: khi người dùng chỉ đưa một hai câu, quy trình có bù được không (mục~\ref{sec:questions}).
 
 Đóng góp của đề tài gồm:
 \begin{itemize}
