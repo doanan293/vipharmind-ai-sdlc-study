@@ -194,9 +194,7 @@ công bố của nhà cung cấp.
 **E4. Có lộ dữ liệu cá nhân hay khóa API không?**
 Đã quét kết quả bằng `gitleaks` và so khớp chính xác khóa proxy, email: không tìm thấy (chạy thử). Email
 trong nhật ký là dữ liệu mẫu của mã ViPharmind. Repo nghiên cứu để riêng tư cho tới khi lọc xong nhật ký.
-[An điền: kết quả quét lại `gitleaks detect --no-git` và so khớp chính xác email tài khoản, email git trên
-`results/raw` của thí nghiệm chính, E1, E2 (ba cây `vipharmind-ai-sdlc-study-run*`); hiện chỉ có kết quả quét
-của chạy thử.]
+Quét lại ngày 2026-11-17 trên `results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
 
 ## F. Phần hồi cứu [L]
 
