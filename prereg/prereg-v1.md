@@ -518,3 +518,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   `p…`, bản vá bỏ design/plan, khóa ở `labeling/passing-key-PRIVATE.csv`) và kèm bản vá gốc chỉ phần mã
   nguồn; dựng bằng `analysis/scripts/passing_packets.py`. Khác bản đăng ký: người kiểm tra mù cách làm, mỗi
   lượt một người chấm.
+- **2026-11-16, nhãn thất bại và kiểm tra lượt đạt.** Lợi và Bảo nộp phiếu (gán tay, không dùng AI). Đồng ý
+  21/30, kappa 0,45. 9 lượt lệch (8 của t12, 1 của m04) do An phân xử theo đề xuất có lý do của trợ lý
+  (`labeling/returned/adjudication-proposal.csv`; nhãn cuối ở `labeling/final-labels.csv`). Thêm, ngoài bản
+  đăng ký: Claude Fable 5.2 gán nhãn độc lập trên cùng gói che cách làm làm người chấm thứ ba (đồng ý với
+  Lợi 6/30, Bảo 7/30, kappa 0,15; gán `de_bai_thieu` cho 22/30 lượt vì test ẩn kiểm chi tiết đề không nêu);
+  chỉ báo cáo mô tả, không thay nhãn người. Kiểm tra 9.10: 20/20 lượt đạt được Lợi và Bảo đánh giá là đúng thật.
