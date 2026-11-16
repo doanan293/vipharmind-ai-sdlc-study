@@ -488,3 +488,8 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (E1) và điều kiện đề sơ sài `brief.md` cho bốn nhóm (E2), theo yêu cầu của An. Toàn bộ là thăm dò, không đổi H1–H5
   hay phân tích xác nhận. Harness thêm cờ `--prompt-file` và nhóm `claude-haiku`; không đổi hành vi khi để mặc định.
 
+- **2026-11-16 10:19, vận hành (E1, E2).** Lần khởi động đầu của hai chuỗi lệnh `prereg-v1.2` lỗi ngay vì cây chạy mới
+  `../vipharmind-ai-sdlc-study-run3` thiếu tệp `harness/accounts.local.toml` (không nằm trong git). Mọi lượt dừng trước
+  khi agent khởi động (`started_at` rỗng, không có `transcript.jsonl`, không `grade.json`). Hai chuỗi được dừng, thư
+  mục `results/raw/haiku` và `results/raw/brief` của lần đó bị xóa để số lần chạy lại vì lỗi không bị tính, tệp tài
+  khoản được chép vào, và hai chuỗi được gọi lại đúng lệnh lúc 10:20. Không lượt AI nào bị bỏ hay chạy lại vì kết quả.
