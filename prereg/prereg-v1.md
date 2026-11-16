@@ -506,3 +506,10 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
 - **2026-11-16, người chấm E2 đổi sang Fable 5.2 (An quyết định).** Trước lượt chấm đầu tiên, người chấm danh sách hành vi đổi
   từ Codex sang Claude Fable 5.2, effort high (thẻ `prereg-v1.2-judge-fable`). Lý do: Fable không phải nhóm được thử,
   và Codex còn ít hạn mức. Hạn chế: cùng họ Claude với ba nhóm.
+- **2026-11-16 11:17, chấm E2 bắt đầu.** Đủ hạn mức Claude, nên theo nhánh "nếu đủ hạn mức" của `prereg-v1.2`, Fable 5.2
+  chấm **mọi** lượt hợp lệ của bốn nhóm E2 ở cả đề chi tiết (thí nghiệm chính, E1) lẫn đề sơ sài (E2), không chỉ mẫu 48
+  lượt. Một vòng lặp gọi lại `sdlc-harness judge` mỗi 20 phút cho tới khi E1, E2 chạy xong. `judge.json` được ghi cạnh
+  `grade.json` trong thư mục kết quả của từng cây chạy (chỉ thêm tệp, không đổi tệp có sẵn).
+- **2026-11-16, gói gán nhãn.** Gói cho Lợi và Bảo (30 lượt hỏng của hai nhóm Claude, mã ngẫu nhiên từ
+  `labeling/key-PRIVATE.csv`) và gói 20 lượt đạt cho An được dựng bằng `analysis/scripts/build_packets.py`; log test
+  đầy đủ của test ẩn (`--tb=short`) dựng lại bằng `analysis/scripts/test_logs.py` từ bản vá đã lưu, đúng như bộ chấm.
