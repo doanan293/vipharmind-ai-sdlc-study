@@ -38,7 +38,7 @@ TIERS = [
 # chỉ số của bảng 2 x 2: khóa, tên khóa macro, nhãn, hệ số nhân, số chữ số
 X2 = [
     ("score", "Score", "Điểm danh sách hành vi (\\%)", 100, 1),
-    ("hidden_pass_rate", "Hidden", "Tỉ lệ test ẩn đạt (\\%)$^\\dagger$", 100, 1),
+    ("task_pass", "Hidden", "Lượt đạt hết test ẩn (\\%)", 100, 1),
     ("regression_any", "Regression", "Lượt có hồi quy (\\%)", 100, 1),
     ("ai_tests_added", "Tests", "Test mới mỗi lượt", 1, 1),
     ("ai_changed_line_coverage", "Coverage", "Phủ dòng mới, lượt có test (\\%)", 100, 1),

@@ -682,7 +682,7 @@ def _(r):
     set_text(r, "shape-1917", ["E2 · đề sơ sài, tầng nhỏ, gộp: đặc tả − vibe",
                                f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}: lợi nhỏ"], size=15)
     set_text(r, "shape-1918", [f"{sg('ETwoXHiddenDetailVibe')} đpt"], size=40, role="num")
-    set_text(r, "shape-1919", ["Test ẩn đạt khi đổi sang đề sơ sài",
+    set_text(r, "shape-1919", ["Lượt đạt hết test ẩn khi đề sơ sài",
                                f"(vibe; đặc tả {sg('ETwoXHiddenDetailSpec')}): đề rõ quan trọng hơn"], size=15)
     set_text(r, "shape-1920", ["E1"], size=40, role="num")
     set_text(r, "shape-1921", ["Haiku, đề chi tiết: không đạt hơn,",
