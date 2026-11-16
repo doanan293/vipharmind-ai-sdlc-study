@@ -460,3 +460,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   `grade.json` giữ nguyên. Ba lệnh được gọi lại đúng như đã chốt lúc 08:13; lượt chưa xong được chạy lại từ đầu
   theo mục 4. Lúc đó: codex-luna xong 138/138, claude-sonnet 137 (1 hoãn vì hạn mức), claude-opus 130 (8 hoãn),
   agy-gemini 53 (hết hạn mức cả 4 tài khoản). Chưa kết quả nào được mở.
+- **2026-11-16, quy tắc đọc bài kiểm tra độ phủ (ghi trước khi thấy kết quả).** Bài kiểm tra độ phủ khoảng tin cậy
+  bootstrap của mô hình hỗn hợp (40 bộ dữ liệu mô phỏng theo thiết kế 23 nhiệm vụ, 99 lần lặp mỗi bộ) đang
+  chạy. Quy tắc chốt trước: ≥ 32/40 lần trúng thì ghi số đó và khóa mã, không chỉnh gì; ≤ 31/40 thì dừng, xem
+  từng dòng và đo lại trên hạt giống mới. Mô phỏng độc lập của Fable cho độ phủ kỳ vọng khoảng 88–90% dù danh
+  nghĩa là 95%; báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng khoảng 88–90%, quan sát k/40". Kết luận H5 chỉ dựa
+  vào dấu của hệ số tương tác ở thang logit nên không đổi vì điểm này.
