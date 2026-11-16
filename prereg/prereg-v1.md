@@ -466,3 +466,10 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   từng dòng và đo lại trên hạt giống mới. Mô phỏng độc lập của Fable cho độ phủ kỳ vọng khoảng 88–90% dù danh
   nghĩa là 95%; báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng khoảng 88–90%, quan sát k/40". Kết luận H5 chỉ dựa
   vào dấu của hệ số tương tác ở thang logit nên không đổi vì điểm này.
+- **2026-11-16, mục 7 (token của mô hình ngoài bảng giá).** Mã mô hình được ghép với bảng giá theo đúng tên, hoặc
+  theo tên trong bảng cộng phần đuôi ngày hay nhãn (`-20…`, `[…]`, `@…`; ví dụ `claude-sonnet-5-5-20261101`,
+  `claude-opus-5-5[1m]`). Token của một mô hình có tên nhưng không khớp dòng nào trong bảng (ví dụ mô hình nhỏ
+  chạy tác vụ phụ) được tính theo giá mô hình của nhóm và được đánh dấu theo từng lượt (`tok_offtable`,
+  `cost_has_offtable_model`, `offtable_models`); số lượt bị đánh dấu được báo cáo theo nhóm và cách làm. Lý do:
+  bảng giá chỉ có bốn mô hình của bốn nhóm, trong khi công cụ có thể gọi mô hình khác cho tác vụ phụ. Chưa xem
+  kết quả chính nào khi đổi.
