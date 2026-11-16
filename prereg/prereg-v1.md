@@ -531,3 +531,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   `het_gio`; dựng bằng `analysis/scripts/relabel_packets.py`. Hai người không được xem nhãn vòng 1 của mình
   hay của người kia, nhãn Fable hay đề xuất phân xử. **Kết quả chính = nhãn vòng 2, chỗ lệch do An phân
   xử**; nhãn vòng 1 và nhãn Fable báo cáo như phân tích độ nhạy, kèm kappa giữa các vòng.
+- **2026-11-16 ~14:30, đính chính vòng 1.** Lợi và Bảo cho biết phiếu nhãn vòng 1 đã được điền có dùng AI
+  (mục ghi "gán tay, không dùng AI" ở trên là sai). Theo yêu cầu của An, phiếu nhãn vòng 1, đề xuất phân xử và
+  nhãn cuối vòng 1 bị xóa và không dùng trong báo cáo; các con số vòng 1 nêu ở hai mục trên (kappa 0,45, phân
+  bố nhãn) không còn hiệu lực.
