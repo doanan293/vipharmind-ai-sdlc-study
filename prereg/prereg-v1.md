@@ -475,3 +475,6 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   kết quả chính nào khi đổi.
 - **2026-11-16 08:58, kết quả bài kiểm tra độ phủ.** 33/40 lần trúng (82,5%), đạt quy tắc ≥ 32/40 đã ghi trước; mã được
   khóa không chỉnh. Báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng 82,5% (33/40)". Kết luận H5 dựa vào dấu hệ số.
+- **2026-11-16, vận hành.** Hai lượt `claude-opus` tầng lớn ở trạng thái `deferred` (f15 vibe-r1, vibe-r2) được chạy lại
+  bằng đúng lệnh tầng lớn, giới hạn `--cohorts claude-opus` và `--work-root /tmp/sdlc-runs-opus` (vì lệnh tầng lớn
+  ban đầu vẫn đang chạy cho agy và giữ khóa thư mục làm việc). Điều kiện chạy không đổi.
