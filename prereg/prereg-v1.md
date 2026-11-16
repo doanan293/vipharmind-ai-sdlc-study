@@ -513,3 +513,8 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
 - **2026-11-16, gói gán nhãn.** Gói cho Lợi và Bảo (30 lượt hỏng của hai nhóm Claude, mã ngẫu nhiên từ
   `labeling/key-PRIVATE.csv`) và gói 20 lượt đạt cho An được dựng bằng `analysis/scripts/build_packets.py`; log test
   đầy đủ của test ẩn (`--tb=short`) dựng lại bằng `analysis/scripts/test_logs.py` từ bản vá đã lưu, đúng như bộ chấm.
+- **2026-11-16, đổi người kiểm tra mục 9.10.** An giao việc đối chiếu 20 lượt đạt cho Lợi và Bảo (mỗi người 10:
+  5 spec, 5 vibe, chia ngẫu nhiên hạt giống 20261115) và chỉ soát lại kết quả. Gói được che cách làm (mã
+  `p…`, bản vá bỏ design/plan, khóa ở `labeling/passing-key-PRIVATE.csv`) và kèm bản vá gốc chỉ phần mã
+  nguồn; dựng bằng `analysis/scripts/passing_packets.py`. Khác bản đăng ký: người kiểm tra mù cách làm, mỗi
+  lượt một người chấm.
