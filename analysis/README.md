@@ -144,7 +144,7 @@ not follow it word for word. Each note says what the code does.
    60 of 60 data sets, which is why the ELBO is not used.
 
    **Coverage of the bootstrap interval:** danh nghĩa 95%, độ phủ mô phỏng khoảng 88–90%, quan
-   sát k/40 (k: to be filled from `calibration/coverage-run.txt`). The within-tier percentile
+   sát 33/40 (82,5%; `calibration/coverage-run.txt`). The within-tier percentile
    bootstrap undercovers by construction on tiers of 15, 5 and 3 tasks (review N1: an ordinary
    linear slope on the same sizes covers 88–89%). The H5 verdict uses only the sign of the
    coefficient, not this interval. The slow test `test_interval_coverage_on_the_23_task_design`
