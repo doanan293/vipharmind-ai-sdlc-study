@@ -540,3 +540,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   Lợi nộp với tên `sheet-claude-vong2.csv`) lưu ở `labeling/returned/labels-{loi,bao}-vong2.csv`. Đồng ý 29/30,
   kappa 0,95; 1 lượt lệch (t07: `de_bai_thieu` / `hieu_sai`) phân xử là `de_bai_thieu` (Lợi chọn, Bảo ghi
   "cũng có thể coi là đề thiếu"). Nhãn cuối: `labeling/final-labels.csv`. Fable đồng ý với Lợi 22/30, Bảo 21/30.
+- **2026-11-16 15:35, phạm vi chấm sau khi hết hạn mức Fable.** Chấm toàn bộ 414 lượt đề chi tiết đã xong (đã
+  dùng ~190 triệu token). Hạn mức Fable hết lúc ~15:30; An reset hạn mức. Từ đây chỉ chấm các lượt **đề sơ sài**
+  (E2, bắt buộc), theo thứ tự tầng nhỏ → vừa → lớn; các lượt E1 (Haiku, đề chi tiết) không chấm thêm (42 lượt đã
+  chấm giữ lại, báo cáo mô tả), vì chỉ số chính của E1 là test ẩn. Người chấm, prompt và effort không đổi.
