@@ -524,3 +524,10 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   đăng ký: Claude Fable 5.2 gán nhãn độc lập trên cùng gói che cách làm làm người chấm thứ ba (đồng ý với
   Lợi 6/30, Bảo 7/30, kappa 0,15; gán `de_bai_thieu` cho 22/30 lượt vì test ẩn kiểm chi tiết đề không nêu);
   chỉ báo cáo mô tả, không thay nhãn người. Kiểm tra 9.10: 20/20 lượt đạt được Lợi và Bảo đánh giá là đúng thật.
+- **2026-11-16 ~14:10, vòng gán nhãn thứ hai (quyết định trước khi có phiếu vòng 2).** Vì Lợi và Bảo lệch
+  có hệ thống ở 8 lượt t12 và Fable đọc mục `de_bai_thieu` khác hẳn, An cho gán nhãn lại cả 30 lượt. Vòng 2:
+  mã lượt mới và thứ tự mới (hạt giống 20261116, khóa `labeling/key-round2-PRIVATE.csv`), thêm mã nguồn test
+  ẩn vào mỗi lượt, thêm mục 3b (thứ tự quyết định cố định; bảng nhãn không đổi) và sửa chỗ ghi nhầm vị trí
+  `het_gio`; dựng bằng `analysis/scripts/relabel_packets.py`. Hai người không được xem nhãn vòng 1 của mình
+  hay của người kia, nhãn Fable hay đề xuất phân xử. **Kết quả chính = nhãn vòng 2, chỗ lệch do An phân
+  xử**; nhãn vòng 1 và nhãn Fable báo cáo như phân tích độ nhạy, kèm kappa giữa các vòng.
