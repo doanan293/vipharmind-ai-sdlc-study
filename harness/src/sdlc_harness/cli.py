@@ -159,7 +159,12 @@ def run(args: argparse.Namespace) -> int:
         quota_backoff_s=args.quota_backoff_s,
         keep_work=args.keep_work,
         max_quota_retries=args.max_quota_retries,
+        prompt_file=args.prompt_file,
     )
+    missing = [t for t in task_ids if not (args.tasks_dir / t / args.prompt_file).is_file()]
+    if missing:
+        print(f"{args.prompt_file} missing for task(s) {missing}")
+        return 2
     units = plan_units(names, task_ids, args.reps, args.seed)
     print(
         f"{len(units)} units: {len(names)} cohort(s) x {len(task_ids)} task(s) x 2 arms x {args.reps}"
@@ -270,6 +275,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     r.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     r.add_argument("--accounts-file", type=Path, default=None)
+    r.add_argument(
+        "--prompt-file",
+        default="prompt.md",
+        help="task text file in each task dir (prompt.md; brief.md = short-prompt condition)",
+    )
     r.add_argument("--keep-work", action="store_true", help="keep workspaces after grading")
     rg = sub.add_parser("regrade", help="grade finished units again from their saved patches")
     rg.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")

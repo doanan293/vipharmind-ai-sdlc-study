@@ -478,3 +478,13 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
 - **2026-11-16, vận hành.** Hai lượt `claude-opus` tầng lớn ở trạng thái `deferred` (f15 vibe-r1, vibe-r2) được chạy lại
   bằng đúng lệnh tầng lớn, giới hạn `--cohorts claude-opus` và `--work-root /tmp/sdlc-runs-opus` (vì lệnh tầng lớn
   ban đầu vẫn đang chạy cho agy và giữ khóa thư mục làm việc). Điều kiện chạy không đổi.
+- **2026-11-16 khoảng 09:30, mở kết quả chính.** Sau khi thẻ `prereg-v1.1` và `prereg-v1-analysis` đã gắn, An và trợ lý
+  AI xem số liệu mô tả (đếm thô từ `grade.json` và `meta.json`): tỉ lệ đạt theo nhóm, tầng và cách làm; trung vị test
+  tự viết, độ phủ, hồi quy, kiến trúc, thời gian, token. Lúc đó claude-sonnet, claude-opus và codex-luna đã xong
+  138/138; **agy-gemini mới xong một phần**, nên số đếm thô của phần agy đã xong cũng đã được xem trước khi nhóm này
+  chạy xong. Các lượt agy còn lại vẫn chạy bằng đúng lệnh đã chốt, không đổi gì; báo cáo nêu điểm này. Chưa chạy
+  phân tích chính thức lúc mở.
+- **2026-11-16, bản bổ sung `prereg-v1.2` (thăm dò, sau khi thấy kết quả).** Thêm nhóm `claude-haiku` theo thiết kế gốc
+  (E1) và điều kiện đề sơ sài `brief.md` cho bốn nhóm (E2), theo yêu cầu của An. Toàn bộ là thăm dò, không đổi H1–H5
+  hay phân tích xác nhận. Harness thêm cờ `--prompt-file` và nhóm `claude-haiku`; không đổi hành vi khi để mặc định.
+
