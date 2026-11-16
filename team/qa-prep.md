@@ -128,9 +128,10 @@ tỉ lệ đạt chính, và giả thuyết, chỉ số chính, phép thử xác
 **C3. Lượt chạy chính tầng nhỏ bắt đầu trước thẻ `prereg-v1.1`. Có vi phạm không?**
 `prereg-v1` đã định sẵn trường hợp này: được chạy trước, nhưng không ai mở `grade.json` hay tính tỉ lệ đạt
 cho tới khi cả `prereg-v1.1` và `prereg-v1-analysis` đã gắn thẻ; chỉ được xem số lượt theo trạng thái. Lượt
-chính bắt đầu khoảng 19:16 ngày 2026-11-15 và điều này được ghi ở mục 11. Ngày mở kết quả: 2026-11-16,
+chính bắt đầu lúc 18:54 ngày 2026-11-15 (15 giây sau thẻ `prereg-v1`; nhật ký ghi nhầm "khoảng 19:16", đã đính chính) và điều này được ghi ở mục 11. Ngày mở kết quả: 2026-11-16,
 khoảng 09:30, sau thẻ `prereg-v1.1` (2026-11-15 19:57) và `prereg-v1-analysis` (2026-11-16 08:59). Lúc mở,
-`agy-gemini` mới chạy xong một phần, và số đếm thô của phần đó cũng đã được xem; báo cáo nêu điều này
+`agy-gemini` mới chạy xong một phần và hai lượt Opus chạy lại (f15 vibe) chưa xong (Opus 136/138), và số đếm thô
+của phần đã xong cũng đã được xem; báo cáo nêu điều này
 (mục 6.1, Phụ lục G).
 
 **C4. Phép thử chính là gì? Sao không gộp mọi nhóm?**
