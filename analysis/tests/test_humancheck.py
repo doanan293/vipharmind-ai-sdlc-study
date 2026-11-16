@@ -117,3 +117,14 @@ def test_script_refuses_unfinished_and_force_builds_packets(brief_study, tmp_pat
                      "--bao", str(tmp_path / "b.csv"), "--out", str(rep_path)]) == 0
     rep = json.loads(rep_path.read_text())
     assert rep["loi~bao"]["agreement"] == 1.0 and rep["loi~judge"]["n_items"] == 4 * (12 - len(rep["units_without_judge"]))
+
+
+def test_finished_check_ignores_only_stopped_cohorts():
+    import pandas as pd
+    cov = pd.DataFrame([
+        {"detail": "brief", "cohort": "a", "expected": 4, "not_finished": 0},
+        {"detail": "brief", "cohort": "b", "expected": 4, "not_finished": 3},
+    ])
+    assert humancheck.finished_check(cov, 8) == ["3 brief units not finished (run, pending or missing)"]
+    assert humancheck.finished_check(cov, 8, frozenset({"b"})) == []
+    assert humancheck.finished_check(cov, 8, frozenset({"a"}))

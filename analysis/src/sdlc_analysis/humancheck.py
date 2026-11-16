@@ -31,15 +31,19 @@ def unit_code(unit: str, seed: int) -> str:
     return "h" + hashlib.sha256(f"{seed}:human-check:{unit}".encode()).hexdigest()[:8]
 
 
-def finished_check(cov: pd.DataFrame, expected_total: int) -> list[str]:
+def finished_check(cov: pd.DataFrame, expected_total: int,
+                   stopped: frozenset[str] = frozenset()) -> list[str]:
     """Reasons the draw must wait: the brief condition is not fully finished (every expected unit
-    graded, or excluded after its system-error reruns). Empty list = ready."""
+    graded, or excluded after its system-error reruns). Empty list = ready.
+
+    `stopped`: cohorts whose data collection was ended for good (logged in prereg-v1 11); their
+    unfinished units no longer block the draw, which then samples from the units they have."""
     b = cov[cov["detail"] == "brief"]
     problems = []
     if int(b["expected"].sum()) != expected_total:
         problems.append(f"design has {int(b['expected'].sum())} brief units, expected "
                         f"{expected_total}")
-    nf = int(b["not_finished"].sum())
+    nf = int(b.loc[~b["cohort"].isin(stopped), "not_finished"].sum())
     if nf:
         problems.append(f"{nf} brief units not finished (run, pending or missing)")
     return problems

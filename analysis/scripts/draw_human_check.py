@@ -6,7 +6,8 @@ blinded packets, and later compute the agreement.
         [--key CSV] [--out JSON]
 
 `draw` refuses unless every one of the 4 x 23 x 2 x 3 = 552 brief units is finished (graded, or
-excluded after its system-error reruns). `--force` skips that check for testing only, and then
+excluded after its system-error reruns), except in cohorts named by --collection-stopped (data
+collection ended for good, logged in prereg-v1 11), whose finished units are sampled as they are. `--force` skips that check for testing only, and then
 needs an explicit --out and --key that are not the real locations. An existing packet directory
 or key is never overwritten.
 
@@ -77,7 +78,12 @@ def cmd_draw(a) -> int:
     runs = runs[runs["cohort"].isin(cohorts) & (runs["rep"] <= a.reps)]
     cov = e2.coverage(runs, tasks, cohorts, a.reps)
     expected = len(tasks) * 2 * a.reps * len(cohorts)
-    problems = humancheck.finished_check(cov, EXPECTED_BRIEF)
+    stopped = frozenset(c for c in a.collection_stopped.split(",") if c)
+    problems = humancheck.finished_check(cov, EXPECTED_BRIEF, stopped)
+    if stopped:
+        b = cov[(cov["detail"] == "brief") & cov["cohort"].isin(stopped)]
+        print(f"collection stopped for {sorted(stopped)}: "
+              f"{int(b['not_finished'].sum())} of their units never finished, sampled from the rest")
     if expected != EXPECTED_BRIEF:
         problems.append(f"design gives {expected} units, prereg-v1.2 says {EXPECTED_BRIEF}")
     if problems and not a.force:
@@ -132,6 +138,9 @@ def parse_args(argv=None):
     d.add_argument("--seed", type=int, default=SEED_DEFAULT)
     d.add_argument("--cohorts", default=",".join(e2.E2_COHORTS))
     d.add_argument("--reps", type=int, default=3)
+    d.add_argument("--collection-stopped", default="",
+                   help="cohorts whose data collection was ended for good (logged in prereg-v1 "
+                        "11); their unfinished units do not block the draw")
     d.add_argument("--force", action="store_true",
                    help="testing only: draw from unfinished data into a scratch --out/--key")
     k = sub.add_parser("kappa")

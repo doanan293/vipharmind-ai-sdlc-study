@@ -550,3 +550,10 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   được chạy bằng một lệnh riêng (`--cohorts claude-sonnet,claude-opus,claude-haiku`, work root riêng), cùng
   tham số `--jobs 8`, hạt giống, giới hạn thời gian và đề `brief.md`; lệnh tầng nhỏ cũ chạy nốt rồi dừng.
   Phân tích E2 báo Codex riêng cho tầng nhỏ và gộp "mọi nhóm" chỉ trên các ô có đủ dữ liệu.
+- **2026-11-16 23:20, E2 xong; rút mẫu chấm tay với Codex đã dừng.** Ba nhóm Claude đủ 414/414 lượt đề sơ sài,
+  chạy và chấm xong (23:18). Codex giữ 78/90 ở tầng nhỏ (An quyết định 16/11 tối không chạy nốt 12 lượt bằng
+  tài khoản API: tốn tiền, và Codex trên máy đã tự cập nhật 0.162.1 → 0.169.0 lúc 18:01, nên 12 lượt chạy thêm
+  sẽ khác phiên bản). `draw_human_check.py` thêm cờ `--collection-stopped`: các lượt chưa xong của nhóm đã dừng
+  thu thập không chặn việc rút mẫu; mẫu rút từ các lượt đã có của nhóm đó, phân tầng và hạt giống không đổi
+  (3 lượt mỗi ô nhóm × cách làm, 24 lượt). Lệnh: `draw --collection-stopped codex-luna`. Kết quả E2 cuối:
+  `results/analysis/e2/`.
