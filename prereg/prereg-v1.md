@@ -544,3 +544,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   dùng ~190 triệu token). Hạn mức Fable hết lúc ~15:30; An reset hạn mức. Từ đây chỉ chấm các lượt **đề sơ sài**
   (E2, bắt buộc), theo thứ tự tầng nhỏ → vừa → lớn; các lượt E1 (Haiku, đề chi tiết) không chấm thêm (42 lượt đã
   chấm giữ lại, báo cáo mô tả), vì chỉ số chính của E1 là test ẩn. Người chấm, prompt và effort không đổi.
+- **2026-11-16 18:00, E2 dừng nhóm Codex vì hết hạn mức.** Bốn tài khoản Codex đều hết hạn mức (reset 5/12 và
+  8/12, sau hạn 24/11); An quyết định không mua thêm. Nhóm `codex-luna` của E2 dừng ở tầng nhỏ (78/90 lượt
+  chấm xong); tầng vừa và lớn của E2 chỉ có ba nhóm Claude. Để không chờ Codex, tầng vừa và lớn của ba nhóm Claude
+  được chạy bằng một lệnh riêng (`--cohorts claude-sonnet,claude-opus,claude-haiku`, work root riêng), cùng
+  tham số `--jobs 8`, hạt giống, giới hạn thời gian và đề `brief.md`; lệnh tầng nhỏ cũ chạy nốt rồi dừng.
+  Phân tích E2 báo Codex riêng cho tầng nhỏ và gộp "mọi nhóm" chỉ trên các ô có đủ dữ liệu.
