@@ -11,7 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from report_data import fmt, passcheck, results
+from report_data import fmt, labels, passcheck, results
 
 Numbers = dict[str, str | None]
 
@@ -464,6 +464,7 @@ def numbers(data: dict[str, Any]) -> Numbers:
     out |= _group(PILOT_KEYS, data.get("pilot_results"), _pilot)
     out |= _group(results.KEYS, data.get("analysis"), results.numbers)
     out |= _group(passcheck.KEYS, data.get("passcheck"), passcheck.numbers)
+    out |= _group(labels.KEYS, data.get("labeling"), labels.numbers)
     return out
 
 
@@ -764,6 +765,7 @@ def write(data: dict[str, Any], out: Path) -> None:
     table("funnel", data.get("screening"), _funnel_table, 3)
     table("literature", data.get("literature"), _literature_table, 2)
     table("pilot", data.get("pilot_results"), _pilot_table, 3)
+    table("labels", data.get("labeling"), labels.table, 7)
     (out / "tables" / "tasks.tex").write_text(
         _tasks_table(
             data.get("tasks"),

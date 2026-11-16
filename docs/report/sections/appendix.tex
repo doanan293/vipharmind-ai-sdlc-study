@@ -53,6 +53,16 @@ cập nhật phiên bản & mô hình được phục vụ không ghi được c
 \end{tabularx}
 \end{table}
 
+Lượng token khác nhau rất xa giữa các công cụ. Ở chạy thử, trung vị token vào mỗi lượt của
+\texttt{agy-gemini} là \NumPilotAgyInputMedianM{} triệu với \NumPilotAgyTurnsMedian{} lượt gọi mô hình
+(\NumPilotAgyRuns{} lượt có nhật ký, gồm cả lượt bị ngắt vì hạn mức), gấp khoảng \NumPilotAgyInputRatio{}
+lần mức \NumPilotSonnetInputMedianM{} triệu với \NumPilotSonnetTurnsMedian{} lượt gọi của
+\texttt{claude-sonnet}; \NumPilotAgyCacheReadPct{}\% token vào của \texttt{agy-gemini} là token đọc cache.
+Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào hạn mức thuê bao; điều này phù hợp với
+việc cả bốn tài khoản Antigravity hết hạn mức tuần trước khi nhóm này chạy xong. Chạy thử dùng cấu hình cũ trên hai nhiệm
+vụ, nên đây chỉ là số mô tả, không phải kết quả. Số lượt gọi mô hình của một số lượt Claude chỉ lấy từ sự kiện kết quả
+cuối, nên bị đếm thiếu khi tác tử chạy nhiều phiên trong một lượt; token thì được cộng đủ.
+
 \section{Thay đổi sau khi chốt}\label{app:deviations}
 
 Chép lại mục 11 của bản đăng ký trước \texttt{prereg-v1}. Mọi thay đổi ghi ngày \mbox{2026-11-15}, trước khi
@@ -95,6 +105,10 @@ thời gian và hạn mức.
 (E1) và đề bài sơ sài cho bốn nhóm (E2), chấm E2 bằng danh sách hành vi rút từ test ẩn; người chấm đổi từ
 Codex sang Fable 5.2 trước lượt chấm đầu tiên. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính; đây là
 lý do thêm, nên mọi kết quả E1, E2 chỉ là thăm dò.
+\item \textbf{Gán nhãn vòng hai.} Vòng một bị loại theo đề nghị của Lợi và Bảo vì điền chưa kỹ, và không
+dùng trong báo cáo. Vòng hai gán lại cả \NumLabRuns{} lượt với mã và thứ tự mới, kèm mã nguồn test ẩn, và
+thêm một thứ tự quyết định cố định vào hướng dẫn (bảng nhãn không đổi); quyết định này có trước khi có phiếu
+vòng hai. Fable 5.2 gán thêm làm người chấm thứ ba, chỉ để mô tả. \textit{Đã xem:} phiếu vòng một.
 \item \textbf{Người kiểm tra lượt đạt.} An giao việc đối chiếu \NumPassCheckRuns{} lượt đạt cho Lợi và Bảo
 (mỗi người \NumPassCheckLoi{}, chia ngẫu nhiên), gói che cách làm; An chỉ soát lại. Khác bản đăng ký: người kiểm tra mù cách
 làm, mỗi lượt một người đọc. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính.
@@ -113,7 +127,8 @@ kết quả, và \texttt{check.sh} chặn số gõ tay.
 
 \textit{Người duyệt độc lập} (Fable 5.2, chạy trong ngữ cảnh riêng, không xem kết quả chính) phản biện bản
 đăng ký, đề bài tầng vừa và tầng lớn, và mã phân tích; trong E2, Fable 5.2 cũng là người chấm danh sách
-hành vi, không biết lượt thuộc cách làm nào.
+hành vi, không biết lượt thuộc cách làm nào, và gán nhãn nguyên nhân thất bại như người chấm thứ ba trên
+cùng gói che cách làm (chỉ để đối chiếu, không thay nhãn của người).
 
 \textit{Đối tượng được đo} là các tổ hợp công cụ và mô hình ở mục~\ref{sec:conditions} (và Claude Haiku 5.5
 trong E1). Trợ lý nghiên cứu cùng mô hình với nhóm \texttt{claude-opus} và đã soạn đề bài mà nhóm này nhận;

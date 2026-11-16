@@ -160,9 +160,23 @@ không ảnh hưởng đến kết cục. Kết luận của H1 và H5 không đ
 
 \subsection{Nguyên nhân thất bại và ca nghiên cứu}
 
-Nhãn nguyên nhân thất bại, kappa và phân xử: \pending{labels; Lợi và Bảo gán lại vòng hai}.
-Kiểm tra mù \NumPassCheckRuns{} lượt đạt (Lợi, Bảo đối chiếu với bản vá gốc): cả
-\NumPassCheckCorrect{} lượt đúng thật.
+Lợi và Bảo gán nhãn độc lập \NumLabRuns{} lượt không đạt của hai nhóm Claude (\NumLabSpecRuns{} theo
+đặc tả, \NumLabVibeRuns{} vibe): đồng ý \NumLabAgree{}/\NumLabRuns{}, kappa \NumLabKappa{}; An phân xử
+\NumLabAdjudicated{} lượt lệch (Bảng~\ref{tab:labels}). \NumLabOutside{} lượt hỏng không vì logic tác tử tự
+viết: \NumLabDeBaiThieuTotal{} vì test ẩn kiểm chi tiết đề không chốt, \NumLabSaiApiCoSanTotal{} vì nối sai
+với mã có sẵn. Hai loại này chiếm tỉ lệ gần như nhau ở hai nhánh
+(\NumLabOutsideSpecPct{}\% và \NumLabOutsideVibePct{}\%): quy trình đặc tả không ngăn được chúng. Cả
+\NumLabHongChucNangCuTotal{} lượt làm hỏng chức năng cũ đều của Opus. Fable 5.2 (người chấm thứ ba ngoài bản
+đăng ký) đồng ý với Lợi \NumLabFableAgreeLoi{} và Bảo \NumLabFableAgreeBao{} lượt (kappa
+\NumLabFableKappaLoi{}, \NumLabFableKappaBao{}), khác chủ yếu ở lượt người gán dùng sai API có sẵn. Kiểm tra mù \NumPassCheckRuns{} lượt
+đạt (Lợi, Bảo đối chiếu với bản vá gốc): cả \NumPassCheckCorrect{} lượt đúng thật.
+
+\begin{table}[H]
+\centering\small
+\caption{Nguyên nhân thất bại: nhãn cuối của Lợi và Bảo; cột cuối là nhãn của Fable 5.2}
+\label{tab:labels}
+\input{generated/tables/labels}
+\end{table}
 
 \textit{Ca nghiên cứu.} Theo quy tắc chọn trước (nhiệm vụ tầng lớn có hiệu số lớn nhất ở
 \texttt{claude-sonnet}), ca được chọn là \texttt{f15}: tập tài liệu có chủ sở hữu và quy tắc hiển thị,
@@ -183,7 +197,7 @@ khối \texttt{except Exception} của chính tác tử nuốt lỗi rồi báo 
 chọn kiểu trả về, và đều chọn danh sách mã. Như vậy bước thiết kế đã biến một chỗ đề bỏ ngỏ thành một
 quyết định cố định, rồi các bước sau kiểm quyết định đó bằng chính giả định của nó. Test thứ hai (tập tài
 liệu hệ thống chỉ đọc với người không phải quản trị) trượt ở cả ba lượt theo đặc tả và hai trong ba lượt
-vibe; nguyên nhân sẽ được xác định trong bước gán nhãn.
+vibe. Mọi lượt hỏng của \texttt{f15} mang nhãn đề bài thiếu.
 
 \subsection{Thí nghiệm thăm dò bổ sung: Haiku và đề sơ sài}\label{sec:explore}
 

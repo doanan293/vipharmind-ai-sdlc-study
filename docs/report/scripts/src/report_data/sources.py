@@ -6,7 +6,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from report_data import passcheck, results
+from report_data import labels, passcheck, results
 
 RETRO = Path("retrospective/out")
 RETRO_CSV = {
@@ -104,4 +104,5 @@ def load(root: Path) -> dict[str, Any]:
     data["pilot_runs"] = _csv(root / PILOT_RUNS)
     data["analysis"] = results.load(root)
     data["passcheck"] = passcheck.load(root)
+    data["labeling"] = labels.load(root)
     return data

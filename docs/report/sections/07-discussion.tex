@@ -61,32 +61,21 @@ tầng lớn, mục giao diện bắt buộc nêu nhiều tên, nên đề càng
 làm theo đặc tả, nên có thể thiên vị nhánh này. Can thiệp là một gói (thiết kế, kế hoạch, viết test
 trước, chạy cả bộ test), nên không tách được phần của tài liệu đặc tả. Tác tử có công cụ web và mạng mở;
 \texttt{upstream\_urls} chỉ bắt đường dẫn hiện ra trong nhật ký, nên là cận dưới của việc đọc mã gốc, và
-phân tích độ nhạy chỉ bỏ được những lượt bị bắt. Từ khi tầng vừa và tầng lớn bắt đầu, ba lệnh chạy cùng lúc
-với tổng tối đa 24 phiên thay vì tám, nên thời gian chạy và số lượt hết giờ trong khoảng đó có thể cao
-hơn; mục~\ref{sec:results} so số lượt hết giờ trong và ngoài khoảng chạy chồng. Việc làm mù khi gán nhãn
-chỉ là một phần, và nhãn sau phân xử của An không mù.
+phân tích độ nhạy chỉ bỏ được những lượt bị bắt. Ba tầng có lúc chạy chồng (tối đa 24 phiên thay vì tám),
+nên thời gian chạy có thể dài hơn; không có lượt nào hết giờ (mục~\ref{sec:results}). Việc làm mù khi gán nhãn
+chỉ là một phần.
 
-\textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt (\texttt{t12} đòi
-\texttt{ValueError} khi đề chỉ nói ``phải báo lỗi''; \texttt{t07} đòi list chứ không phải tuple;
-\texttt{f15} không nói trả về mã hay đối tượng). Chúng hạ tỉ lệ đạt ở cả hai nhánh (ba nhiệm vụ này trượt ở
-cả hai), nên ít ảnh hưởng hiệu số; E2 chấm bằng danh sách hành vi một phần vì thế. ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
+\textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt: \NumLabDeBaiThieuTotal{} trên
+\NumLabRuns{} lượt hỏng của Claude mang nhãn đề bài thiếu (\texttt{t07} đòi list chứ không phải tuple;
+\texttt{f15} không nói trả về mã hay đối tượng). Chúng hạ tỉ lệ đạt ở cả hai nhánh với tỉ lệ gần nhau, nên
+ít ảnh hưởng hiệu số; E2 chấm bằng danh sách hành vi một phần vì thế. ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository
 Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
 \NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của bản vá gốc, nên
 theo \texttt{task\_pass} hai nhiệm vụ này gần tầng nhỏ hơn số dòng gợi ý; phân tích độ nhạy với
 \texttt{graded\_src\_lines} kiểm điều này. Các tầng khác nhau không chỉ ở số dòng mà còn ở số test, giới
 hạn thời gian và độ chi tiết của đề, nên H5 là bằng chứng về ``nhiệm vụ cỡ tính năng'', không về riêng số
-dòng. Ngưỡng 35 tên của tầng lớn không có đơn vị đếm cố định và được áp bằng phán đoán; F09 bị loại theo
-quyết định có trước chạy thử, không theo ngưỡng này. Chi phí bằng tiền là số quy đổi theo giá API, không
+dòng. Ngưỡng 35 tên của tầng lớn không có đơn vị đếm cố định và được áp bằng phán đoán. Chi phí bằng tiền là số quy đổi theo giá API, không
 phải số tiền đã trả; với \texttt{codex-luna} chỉ có cận dưới và cận trên.
-
-Lượng token khác nhau rất xa giữa các công cụ. Ở chạy thử, trung vị token vào mỗi lượt của
-\texttt{agy-gemini} là \NumPilotAgyInputMedianM{} triệu với \NumPilotAgyTurnsMedian{} lượt gọi mô hình
-(\NumPilotAgyRuns{} lượt có nhật ký, gồm cả lượt bị ngắt vì hạn mức), gấp khoảng \NumPilotAgyInputRatio{}
-lần mức \NumPilotSonnetInputMedianM{} triệu với \NumPilotSonnetTurnsMedian{} lượt gọi của
-\texttt{claude-sonnet}; \NumPilotAgyCacheReadPct{}\% token vào của \texttt{agy-gemini} là token đọc cache.
-Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào hạn mức thuê bao; điều này phù hợp với
-việc cả bốn tài khoản Antigravity hết hạn mức tuần trước khi nhóm này chạy xong. Chạy thử dùng cấu hình cũ trên hai nhiệm
-vụ, nên đây chỉ là số mô tả, không phải kết quả.
 
 \textit{Tính hợp lệ ngoại.} Một dự án, một ngôn ngữ (Python), \NumTasksMain{} nhiệm vụ backend, và tác
 giả nghiên cứu cũng là tác giả dự án. Ba công cụ dùng mô hình khác hãng và khác hạng. Nhánh theo đặc tả
@@ -105,5 +94,4 @@ trong nhật ký sai lệch kèm những gì đã xem (Phụ lục~\ref{app:devi
 nhận, nhưng làm phần thăm dò dễ bị chọn theo kết quả hơn. Ba nhóm Claude dùng chung một tài khoản, nên
 hạn mức và tốc độ phản hồi có thể khác giữa các đợt chạy. Trong E2, người chấm máy (Fable 5.2) cùng họ
 Claude với ba nhóm, nên có thể nghiêng về bài của Claude so với Codex; phần chấm tay của Lợi và Bảo dùng
-để kiểm điều này. Số lượt gọi mô hình của một số lượt Claude chỉ lấy từ sự kiện kết quả cuối, nên bị đếm
-thiếu khi tác tử chạy nhiều phiên trong một lượt; token thì được cộng đủ.
+để kiểm điều này.

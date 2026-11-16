@@ -190,3 +190,30 @@ def test_passcheck_counts(tmp_path):
     assert tex["PassCheckCorrect"] == "3"
     assert tex["PassCheckLoi"] == "2"
     assert tex["PassCheckPerArm"] == "1"
+
+
+def test_labels_counts(tmp_path):
+    d = tmp_path / "results" / "analysis" / "main" / "labeling"
+    d.mkdir(parents=True)
+    (d / "final-labels.csv").write_text(
+        "code2,unit_id_r1,label_loi,label_bao,label_final,source,label_fable\n"
+        "v1,u1,de_bai_thieu,de_bai_thieu,de_bai_thieu,agree,de_bai_thieu\n"
+        "v2,u2,loi_logic,hieu_sai,loi_logic,An_adjudicated,de_bai_thieu\n"
+        "v3,u3,sai_api_co_san,sai_api_co_san,sai_api_co_san,agree,loi_logic\n"
+    )
+    (d / "key-round2-PRIVATE.csv").write_text(
+        "code2,unit_id,unit,cohort,task_id,tier,arm,rep,timed_out\n"
+        "v1,u1,x,claude-opus,t01,small,spec,1,False\n"
+        "v2,u2,x,claude-sonnet,t02,small,vibe,1,False\n"
+        "v3,u3,x,claude-opus,f15,large,spec,1,False\n"
+    )
+    data = sources.load(tmp_path)
+    build.write(data, tmp_path / "gen")
+    tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
+    assert tex["LabAgree"] == "2"
+    assert tex["LabAdjudicated"] == "1"
+    assert tex["LabDeBaiThieuSpec"] == "1"
+    assert tex["LabSaiApiCoSanLarge"] == "1"
+    assert tex["LabOutside"] == "2"
+    assert tex["LabFableAgreeLoi"] == "1"
+    assert (tmp_path / "gen" / "tables" / "labels.tex").read_text().startswith("\\begin{tabular}")

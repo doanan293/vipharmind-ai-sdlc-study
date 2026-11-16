@@ -63,7 +63,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 ### Lê Xuân Lợi
 
-- Gán nhãn độc lập [CHỜ KẾT QUẢ: N] lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
+- Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Thuyết trình khoảng 7 phút: vấn đề và câu hỏi nghiên cứu, ViPharmind, tổng quan ngắn, phương pháp
@@ -74,7 +74,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 ### Trần Ngọc Bảo
 
-- Gán nhãn độc lập [CHỜ KẾT QUẢ: N] lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
+- Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
   Lợi.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Thuyết trình khoảng 7 phút: kết quả thí nghiệm, Sonnet so với Opus, ba công cụ, đề nhỏ và đề lớn, phân
@@ -87,12 +87,15 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 | Mục | Giá trị |
 | --- | --- |
-| Số lượt cần gán (lượt hợp lệ không đạt của `claude-sonnet` và `claude-opus`, ba tầng) | [CHỜ KẾT QUẢ] |
-| Số lượt Lợi đã gán | [CHỜ KẾT QUẢ] |
-| Số lượt Bảo đã gán | [CHỜ KẾT QUẢ] |
-| Kappa của Cohen | [CHỜ KẾT QUẢ] |
-| Số lượt lệch nhãn, An phân xử | [CHỜ KẾT QUẢ] |
-| Tỉ lệ lượt ghi "lộ cách làm" | [CHỜ KẾT QUẢ] |
+| Số lượt cần gán (lượt hợp lệ không đạt của `claude-sonnet` và `claude-opus`, ba tầng) | 30 (17 đặc tả, 13 vibe) |
+| Số lượt Lợi đã gán | 30 (vòng 2) |
+| Số lượt Bảo đã gán | 30 (vòng 2) |
+| Kappa của Cohen | 0,95 (đồng ý 29/30) |
+| Số lượt lệch nhãn, An phân xử | 1 (t07, phân xử là `de_bai_thieu`) |
+| Tỉ lệ lượt ghi "lộ cách làm" | 2/30 (Bảo ghi ở 2 lượt f15 vì docstring nhắc "spec"; Lợi không ghi) |
+
+Vòng 1 bị loại theo đề nghị của Lợi và Bảo vì điền chưa kỹ; vòng 2 gán lại cả 30 lượt với mã mới, kèm mã
+nguồn test ẩn và thứ tự quyết định cố định (ghi ở mục 11 của `prereg-v1.md`).
 
 ## 4. Đề xuất về điểm cá nhân
 

@@ -323,11 +323,17 @@ biên "không kém hơn" là −5 điểm. Kết quả: [CHỜ KẾT QUẢ].
 **L3. Gán nhãn lỗi thế nào cho khách quan?**
 Lợi và Bảo gán độc lập mọi lượt hợp lệ không đạt của hai nhóm Claude, theo bảng 9 nhãn khóa tại thẻ
 `prereg-v1`. Mỗi lượt dưới mã ngẫu nhiên, bản vá đã bỏ `design.md`, `plan.md`; làm mù chỉ một phần, nên
-người gán ghi "lộ cách làm" khi nhận ra. Kappa của Cohen: [CHỜ KẾT QUẢ]; An phân xử chỗ lệch.
+người gán ghi "lộ cách làm" khi nhận ra (Bảo ghi ở 2/30 lượt). Vòng 1 bị loại theo đề nghị của hai người vì
+điền chưa kỹ; vòng 2 gán lại cả 30 lượt với mã mới, kèm mã test ẩn và thứ tự quyết định cố định. Kappa của
+Cohen ở vòng 2: 0,95 (đồng ý 29/30); An phân xử 1 lượt lệch (t07).
 
 **L4. Lỗi hay gặp nhất là gì? Khác nhau giữa hai cách không?**
-[CHỜ KẾT QUẢ]. (Chạy thử, nhãn do AI gán thử: hầu hết lỗi ở p01 là do đề thiếu kiểu dữ liệu vào, từ đó thêm
-hai nhãn `de_bai_thieu` và `sai_api_co_san`.)
+Trong 30 lượt hỏng của hai nhóm Claude: đề bài thiếu 14 (test ẩn kiểm chi tiết đề không chốt, ví dụ list
+hay tuple, trả về mã hay đối tượng), dùng sai API có sẵn của dự án 9, làm hỏng chức năng cũ 5 (đều của Opus),
+lỗi logic 1, lỗi môi trường 1. Tức là 23/30 lượt hỏng không vì logic tác tử tự viết. Hai loại đầu chiếm tỉ lệ
+gần như nhau ở hai cách làm (76% đặc tả, 77% vibe), nên quy trình đặc tả không ngăn được chúng. Fable 5.2 gán
+thêm làm người chấm thứ ba (chỉ để đối chiếu): đồng ý với Lợi 22/30, Bảo 21/30, khác chủ yếu ở các lượt t12
+mà người gán là dùng sai API có sẵn còn Fable gán là đề bài thiếu.
 
 ## M. Tái lập [L]
 
@@ -359,7 +365,7 @@ xử lý.
 
 **N3. [B] Lợi và Bảo đã làm gì trong đề tài?**
 Trả lời thật: An làm toàn bộ nghiên cứu, thí nghiệm, báo cáo, slide. Lợi và Bảo thuyết trình, trả lời câu
-hỏi, và gán nhãn mù [CHỜ KẾT QUẢ: N] lượt thất bại. Việc gán nhãn cần đúng người không chạy thí nghiệm, để
+hỏi, và gán nhãn mù 30 lượt thất bại. Việc gán nhãn cần đúng người không chạy thí nghiệm, để
 kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
 
 **N4. [B] Kết luận chính là gì, và nên tin đến đâu?**

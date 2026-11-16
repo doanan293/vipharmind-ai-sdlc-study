@@ -741,15 +741,26 @@ def _(r):
 
 
 @page("p29_bk_labels", 24, "Dự phòng", 0,
-      "Slide dự phòng, dùng khi được hỏi về phân loại lỗi. Lợi và Bảo gán nhãn độc lập nguyên nhân thất bại "
-      "cho mọi lượt không đạt của hai nhóm Claude, An phân xử chỗ lệch. Kappa và phân bố nhãn đang chờ kết quả.")
+      f"Slide dự phòng, dùng khi được hỏi về phân loại lỗi. Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt "
+      f"không đạt của hai nhóm Claude, ở vòng hai với hướng dẫn đã làm rõ thứ tự quyết định; vòng một bị loại "
+      f"theo đề nghị của hai bạn vì điền chưa kỹ. Hai người đồng ý {N['LabAgree']} trên {N['LabRuns']} lượt, "
+      f"kappa {N['LabKappa']}; An phân xử {N['LabAdjudicated']} lượt lệch. {N['LabDeBaiThieuTotal']} lượt hỏng "
+      f"vì test ẩn kiểm chi tiết đề không chốt, {N['LabSaiApiCoSanTotal']} lượt vì nối sai với mã có sẵn của "
+      f"dự án; chỉ {N['LabLoiLogicTotal']} lượt là lỗi logic. Tỉ lệ hai loại đầu gần như nhau ở hai cách làm, "
+      f"{N['LabOutsideSpecPct']} và {N['LabOutsideVibePct']} phần trăm, nên quy trình đặc tả không ngăn được "
+      f"chúng. Cả {N['LabHongChucNangCuTotal']} lượt làm hỏng chức năng cũ đều của Opus. Fable 5.2 gán thêm làm "
+      f"người chấm thứ ba, chỉ để đối chiếu: đồng ý với Lợi {N['LabFableAgreeLoi']} và với Bảo "
+      f"{N['LabFableAgreeBao']} lượt.")
 def _(r):
     set_text(r, "shape-2217", ["Dự phòng: nguyên nhân thất bại"])
     set_text(r, "shape-2220", ["Gán nhãn"])
-    set_text(r, "shape-2218", ["Lợi và Bảo gán độc lập mọi lượt không đạt của hai",
+    set_text(r, "shape-2218", [f"Lợi và Bảo gán độc lập {N['LabRuns']} lượt không đạt của hai",
                                "nhóm Claude; chín nhãn; An phân xử chỗ lệch."], size=17)
     set_text(r, "shape-2221", ["Kết quả"])
-    set_text(r, "shape-2219", [f"Kappa của Cohen: {PENDING}", f"Phân bố nhãn theo cách làm: {PENDING}"],
+    set_text(r, "shape-2219", [f"Kappa của Cohen: {N['LabKappa']} (đồng ý {N['LabAgree']}/{N['LabRuns']})",
+                               f"Đề thiếu {N['LabDeBaiThieuTotal']} · API có sẵn {N['LabSaiApiCoSanTotal']} · "
+                               f"hỏng cũ {N['LabHongChucNangCuTotal']} · khác {N['LabOther']}",
+                               f"Hai loại đầu: đặc tả {N['LabOutsideSpecPct']}%, vibe {N['LabOutsideVibePct']}%"],
              size=17)
 
 
@@ -763,11 +774,10 @@ def _(r):
 
 
 # Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
-# rater labels and the exploratory E1 (Haiku) and E2 (brief prompts) are not finished.
+# rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are not finished.
 RESULT_SLOTS = {
     "p23_explore": "E2: checklist score spec − vibe pooled and per cohort (CI); 2 × 2 interaction detail × arm; "
                    "E1: Haiku pass rate spec / vibe",
-    "p29_bk_labels": "labels: Cohen's kappa, label distribution by arm (Lợi, Bảo gán nhãn; An phân xử)",
 }
 
 
@@ -818,7 +828,7 @@ def main():
         "| Slide | Trang | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Chỗ chờ kết quả\n\n"
         "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. "
-        "Hai thí nghiệm thăm dò E1 (Haiku) và E2 (đề sơ sài) và nhãn của người chấm chưa xong. "
+        "Nhãn nguyên nhân thất bại đã điền; hai thí nghiệm thăm dò E1 (Haiku) và E2 (đề sơ sài) chưa xong. "
         f"Các slide sau còn `{PENDING}`:\n\n"
         + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items()) + "\n", encoding="utf-8")
     print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")
