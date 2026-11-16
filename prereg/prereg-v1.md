@@ -557,3 +557,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   thu thập không chặn việc rút mẫu; mẫu rút từ các lượt đã có của nhóm đó, phân tầng và hạt giống không đổi
   (3 lượt mỗi ô nhóm × cách làm, 24 lượt). Lệnh: `draw --collection-stopped codex-luna`. Kết quả E2 cuối:
   `results/analysis/e2/`.
+- **2026-11-17 (đính chính dòng "2026-11-16 khoảng 09:30, mở kết quả chính").** Đối chiếu `meta.json` khi soạn báo cáo:
+  hai lượt `claude-opus` chạy lại (f15 vibe-r2: 09:15–09:34; f15 vibe-r1: 09:35–09:56, giờ Hà Nội) còn đang chạy
+  lúc mở số mô tả khoảng 09:30, nên lúc đó claude-opus có 136/138 lượt, không phải 138/138 như dòng trên ghi. Hai
+  lượt này chạy bằng đúng lệnh đã chốt (dòng "vận hành" ở trên), không đổi gì sau khi mở; phân tích chính thức
+  (11:15) có đủ 138/138. Ngoài ra lượt chạy chính sớm nhất bắt đầu 18:54 ngày 2026-11-15 theo `meta.json`
+  (15 giây sau thẻ `prereg-v1`), sớm hơn mốc "khoảng 19:16" ghi ở ràng buộc 1; thứ tự thẻ trước, chạy sau không đổi.
