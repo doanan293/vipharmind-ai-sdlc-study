@@ -83,6 +83,7 @@ def _e2_keys() -> list[str]:
         "ETwoCutoff",
         "ETwoStatus",
         "ETwoLabel",
+        "ETwoStoppedUnits",
         "ETwoScope",
         "ETwoBriefExpected",
         "ETwoBriefGraded",
@@ -105,12 +106,15 @@ def _e2_keys() -> list[str]:
         for _, t, _ in TIERS:
             k += [f"ETwo{c}{t}Pp", f"ETwo{c}{t}LowPp", f"ETwo{c}{t}HighPp", f"ETwo{c}{t}Tasks"]
     for _, m, _, _, _ in X2:
-        for part in ("Detailed", "Brief", "Inter"):
+        for part in ("Detailed", "Brief", "Inter", "DetailSpec", "DetailVibe"):
             k += [f"ETwoX{m}{part}", f"ETwoX{m}{part}Low", f"ETwoX{m}{part}High"]
     return k
 
 
 E2_KEYS = _e2_keys()
+
+
+STOPPED_COHORTS = {"codex-luna"}
 
 
 def _cutoff(runs: list[dict[str, str]]) -> str | None:
@@ -137,7 +141,11 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
         cs = [c for c in cov if c["tier"] == tier]
         for k, name in (("expected", "Expected"), ("graded", "Graded"), ("judged", "Judged")):
             out[f"ETwoBrief{t}{name}"] = fmt.number(sum(int(c[k]) for c in cs))
-    complete = ju == exp
+    # nhóm đã dừng thu thập hẳn (prereg-v1 mục 11, 2026-11-16 18:00 và 23:20): lượt chưa chạy của
+    # nhóm đó không còn chờ nữa, nên dữ liệu "đầy đủ" khi mọi lượt đã chạy xong đều đã được chấm
+    stopped_nf = sum(int(c["not_finished"]) for c in cov if c["cohort"] in STOPPED_COHORTS)
+    out["ETwoStoppedUnits"] = fmt.number(stopped_nf)
+    complete = ju == gr and gr + stopped_nf == exp
     cutoff = _cutoff(runs)
     out["ETwoCutoff"] = cutoff
     out["ETwoStatus"] = "đầy đủ" if complete else "sơ bộ"
@@ -159,6 +167,9 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
             ("Detailed", "diff.detailed"),
             ("Brief", "diff.brief"),
             ("Inter", "interaction"),
+            # đề sơ sài trừ đề chi tiết, trong từng cách làm
+            ("DetailSpec", "detail_effect.spec"),
+            ("DetailVibe", "detail_effect.vibe"),
         ):
             e = _est(E, f"x2.{metric}.pooled.{key}")
             v = _ci(e, scale, d)
@@ -178,7 +189,9 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
             out[f"ETwoJudge{k}"] = None
 
     out["ETwoReading"], out["ETwoReadingShort"] = _reading(
-        _est(E, "primary.score.pooled.all"), out["ETwoScope"], complete
+        _est(E, "primary.score.pooled.all"),
+        "gộp mọi tầng" if out["ETwoScope"] is not None else None,
+        complete,
     )
     assert set(out) == set(E2_KEYS), set(out) ^ set(E2_KEYS)
     return out
@@ -285,7 +298,7 @@ E1_TIERS = TIERS[1:]
 
 
 def _e1_keys() -> list[str]:
-    k = ["EOneRuns"]
+    k = ["EOneRuns", "EOneTokenRatio"]
     for _, t, _ in E1_TIERS:
         k += [
             f"EOne{t}SpecPct",
@@ -293,6 +306,7 @@ def _e1_keys() -> list[str]:
             f"EOne{t}DiffPp",
             f"EOne{t}LowPp",
             f"EOne{t}HighPp",
+            f"EOne{t}TokenRatio",
         ]
     return k
 
@@ -300,16 +314,28 @@ def _e1_keys() -> list[str]:
 E1_KEYS = _e1_keys()
 
 
+def _token_ratio(runs: list[dict[str, str]]) -> str | None:
+    """Tổng token nhánh đặc tả chia tổng token nhánh vibe (cùng cách tính với thí nghiệm chính)."""
+
+    def total(arm: str) -> float:
+        return sum(float(r["tokens_total"]) for r in runs if r["arm"] == arm and r.get("tokens_total"))
+
+    sp, vb = total("spec"), total("vibe")
+    return _num(sp / vb, 1, 1) if sp and vb else None
+
+
 def e1_numbers(src: dict[str, Any]) -> Numbers:
     E = src["summary"]["estimates"]
     out: Numbers = {}
     runs = [r for r in src["runs"] if r["cohort"] == "claude-haiku" and r["valid"] == "True"]
     out["EOneRuns"] = fmt.number(len(runs)) if runs else None
+    out["EOneTokenRatio"] = _token_ratio(runs)
     for tier, t, _ in E1_TIERS:
         e = E.get(f"pass_diff.claude-haiku.{tier}") or {}
         out[f"EOne{t}SpecPct"] = _num(e.get("mean_spec"), 100, 0)
         out[f"EOne{t}VibePct"] = _num(e.get("mean_vibe"), 100, 0)
         out[f"EOne{t}DiffPp"], out[f"EOne{t}LowPp"], out[f"EOne{t}HighPp"] = _ci(e)
+        out[f"EOne{t}TokenRatio"] = _token_ratio([r for r in runs if r.get("tier") == tier])
     assert set(out) == set(E1_KEYS), set(out) ^ set(E1_KEYS)
     return out
 

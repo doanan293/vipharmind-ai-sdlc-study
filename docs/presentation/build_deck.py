@@ -399,7 +399,7 @@ def _(r):
       f"phễu sàng lọc và lấy mẫu phân tầng. Tầng vừa có {N['MediumTasks']} nhiệm vụ hai đến ba commit. Tầng "
       f"lớn có {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba nhóm, hai cách làm, ba lần lặp cho "
       f"{N['ResRuns']} lượt của thí nghiệm chính. Hai thí nghiệm thăm dò thêm {N['ResRunsPerCohort']} lượt "
-      f"Haiku và {N['RunsTotal']} lượt đề sơ sài; E2 được chấm bằng 306 mục hành vi, do Claude Fable 5.2 chấm "
+      f"Haiku và {N['ETwoBriefJudged']} lượt đề sơ sài; E2 được chấm bằng 306 mục hành vi, do Claude Fable 5.2 chấm "
       f"khi không biết cách làm, và Lợi, Bảo chấm tay 24 lượt để đo độ khớp.")
 def _(r):
     set_text(r, "shape-2228", [f"Ba tầng nhiệm vụ, {N['ResRuns']} lượt"])
@@ -418,7 +418,7 @@ def _(r):
         set_text(r, head, [h])
         set_text(r, body, b, size=17)
     add(r, text_block("explore", 75, 494, 820, 30,
-                      [f"Thăm dò: E1 Haiku {N['ResRunsPerCohort']} lượt · E2 đề sơ sài {N['RunsTotal']} lượt, "
+                      [f"Thăm dò: E1 Haiku {N['ResRunsPerCohort']} lượt · E2 đề sơ sài {N['ETwoBriefJudged']} lượt, "
                        "chấm 306 mục hành vi (Fable 5.2, che cách làm), kiểm tay 24 lượt"],
                       size=13, fill=BLUE, bold=True))
 
@@ -664,39 +664,42 @@ def _(r):
     set_text(r, "shape-1621", ["—Hiếm khi do logic sai; như nhau ở hai cách làm"], size=20, role="title")
 
 
-@page("p23_explore", 14, BAO, 40,
-      f"Người nói: An, khoảng bốn mươi giây. Đề của thí nghiệm chính phải nêu đủ tên để test ẩn chấm được, nên "
-      f"nó chưa trả lời câu hỏi của vibe coding thật: khi người dùng chỉ đưa một hai câu, bắt agent tự viết thiết "
-      f"kế, kế hoạch và test có bù được không. Hai thí nghiệm thăm dò, thêm sau khi thấy kết quả chính, nhắm vào "
-      f"câu này. E2 cho hai cách làm cùng một đề sơ sài, chấm bằng danh sách hành vi rút từ test ẩn, thiết kế hai "
-      f"nhân hai. E1 chạy thêm Haiku. Cả hai đang chạy. Kết quả sơ bộ của E2, {nv('ETwoLabel')}, chỉ "
-      f"{nv('ETwoScope')}: đặc tả hơn vibe {nv('ETwoPooledAllPp')} điểm khi gộp bốn nhóm, tức xu hướng sơ bộ "
-      f"cho thấy đặc tả có lợi hơn khi đề sơ sài. Chưa kết luận; kết quả đầy đủ ở báo cáo cuối kỳ.")
+@page("p23_explore", 14, BAO, 45,
+      f"Người nói: An, khoảng bốn mươi lăm giây. Đề của thí nghiệm chính phải nêu đủ tên để test ẩn chấm được, "
+      f"nên nó chưa trả lời câu hỏi của vibe coding thật: khi người dùng chỉ đưa một hai câu, bắt agent tự viết "
+      f"thiết kế, kế hoạch và test có bù được không. Hai thí nghiệm thăm dò, thêm sau khi thấy kết quả chính, đã "
+      f"chạy xong. E2 cho hai cách làm cùng một đề sơ sài, chấm bằng danh sách hành vi rút từ test ẩn. Ở tầng "
+      f"nhỏ, gộp bốn nhóm, đặc tả hơn vibe {nv('ETwoPooledSmallPp')} điểm, khoảng tin cậy "
+      f"{ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}: một lợi ích nhỏ. Nhưng chỉ riêng việc đề sơ sài "
+      f"đã làm tỉ lệ test ẩn đạt giảm khoảng tám mươi điểm ở cả hai cách làm, nên độ rõ của đề quan trọng hơn quy "
+      f"trình nhiều. E1 chạy Haiku với đề chi tiết: đặc tả không đạt hơn mà tốn gấp {nv('EOneTokenRatio')} lần "
+      f"token. Vì là thăm dò, nhóm chỉ đọc đây là xu hướng; số theo từng nhóm và tầng để ở báo cáo cuối kỳ.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 600, 52,
-                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", nv("ETwoLabel")],
+                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", f"Thăm dò, đã xong · {nv('ETwoLabel')}"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"{sg('ETwoPooledAllPp')} đpt"], size=40, role="num")
-    set_text(r, "shape-1917", [f"E2 sơ bộ · đề sơ sài, đặc tả − vibe, gộp; {nv('ETwoScope')}",
-                               "điểm danh sách hành vi; chưa kết luận"], size=15)
-    set_text(r, "shape-1918", ["2 × 2"], size=40, role="num")
-    set_text(r, "shape-1919", ["E2 · mức chi tiết của đề × cách làm", "chấm bằng danh sách hành vi, che cách làm"],
-             size=15)
+    set_text(r, "shape-1916", [f"{sg('ETwoPooledSmallPp')} đpt"], size=40, role="num")
+    set_text(r, "shape-1917", ["E2 · đề sơ sài, tầng nhỏ, gộp: đặc tả − vibe",
+                               f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}: lợi nhỏ"], size=15)
+    set_text(r, "shape-1918", [f"{sg('ETwoXHiddenDetailVibe')} đpt"], size=40, role="num")
+    set_text(r, "shape-1919", ["Test ẩn đạt khi đổi sang đề sơ sài",
+                               f"(vibe; đặc tả {sg('ETwoXHiddenDetailSpec')}): đề rõ quan trọng hơn"], size=15)
     set_text(r, "shape-1920", ["E1"], size=40, role="num")
-    set_text(r, "shape-1921", ["Haiku 5.5, đề chi tiết: đang chạy"], size=16)
+    set_text(r, "shape-1921", ["Haiku, đề chi tiết: không đạt hơn,",
+                               f"tốn ×{nv('EOneTokenRatio')} token"], size=16)
 
 
 @page("p24_next", 8, BAO, 30,
-      "Người nói: An, khoảng ba mươi giây. Đến 20/11 nhóm chạy xong E2 ở tầng vừa, tầng lớn và E1, và Lợi, Bảo "
-      "chấm tay một mẫu của E2 để kiểm người chấm máy. Đến 24/11 nhóm phân tích đầy đủ, hoàn thiện phần hồi cứu "
-      "và phân tích nguyên nhân thất bại, viết kết luận chính từ E2, rồi nộp báo cáo cuối và thuyết trình. Hạn "
-      "chế chính đã biết: một dự án, ít nhiệm vụ lớn, và đề chi tiết gần như đã là đặc tả.")
+      "Người nói: An, khoảng ba mươi giây. Thí nghiệm đã chạy xong. Việc còn lại trước 24/11: Lợi và Bảo đang "
+      "chấm tay 24 lượt của E2 để kiểm người chấm máy; nhóm phân tích chi tiết E1, E2, hoàn thiện phần hồi cứu và "
+      "phân tích nguyên nhân thất bại, viết kết luận, rồi nộp báo cáo cuối và thuyết trình. Hạn chế chính đã "
+      "biết: một dự án, ít nhiệm vụ lớn, và đề chi tiết gần như đã là đặc tả.")
 def _(r):
     set_text(r, "shape-1666", ["Việc tiếp theo"])
-    set_text(r, "shape-1671", ["Đến 20/11"])
-    set_text(r, "shape-1668", ["Xong E2 tầng vừa,", "lớn và E1; chấm", "tay mẫu E2"], size=16)
+    set_text(r, "shape-1671", ["Đang làm"])
+    set_text(r, "shape-1668", ["Lợi, Bảo chấm tay", "24 lượt E2, kiểm", "người chấm máy"], size=16)
     set_text(r, "shape-1672", ["Đến 24/11"])
-    set_text(r, "shape-1669", ["Phân tích đủ, hồi", "cứu, kết luận;", "nộp báo cáo cuối"], size=16)
+    set_text(r, "shape-1669", ["Phân tích chi tiết,", "hồi cứu, kết luận;", "nộp báo cáo cuối"], size=16)
     set_text(r, "shape-1667", ["Hạn chế"])
     set_text(r, "shape-1670", ["Một dự án; ít", "nhiệm vụ lớn; đề", "gần như đặc tả"], size=16)
 
@@ -821,13 +824,11 @@ for p in PAGES:
 PAGES[0]["notes"] = ("Người nói: An, khoảng hai mươi giây. Em chào thầy. Đây là báo cáo lần 1 của nhóm em: đề tài "
                      "hỏi khi giao việc cho trợ lý lập trình AI, bắt nó làm theo đặc tả có bù được cho đề bài ngắn "
                      "của vibe coding không. Hôm nay em trình bày vấn đề, thiết kế, kết quả chính với đề chi tiết, "
-                     "và câu hỏi đang chạy; kết quả đầy đủ ở báo cáo cuối ngày 24/11.")
+                     "và xu hướng ban đầu của hai thí nghiệm thăm dò; phân tích đầy đủ ở báo cáo cuối ngày 24/11.")
 
 # Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
-# rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are not finished.
-RESULT_SLOTS = {
-    "p23_explore": "teaser: E2 pooled interim value only (SƠ BỘ); E1 running",
-}
+# rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are complete (teaser: headline only).
+RESULT_SLOTS: dict[str, str] = {}
 
 
 # ---------------------------------------------------------------- build
@@ -876,8 +877,8 @@ def main():
         "| Slide | Trang | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Chỗ chờ kết quả\n\n"
         "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. "
-        "Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) có số sơ bộ, làm mới bằng refresh-interim.sh; E1 (Haiku) chưa xong. "
-        f"Các slide sau còn `{PENDING}`:\n\n"
+        "Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) và E1 (Haiku) đã đủ dữ liệu, làm mới bằng refresh-interim.sh. "
+        + (f"Các slide sau còn `{PENDING}`:\n\n" if RESULT_SLOTS else f"Không slide nào còn `{PENDING}`.\n")
         + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items()) + "\n", encoding="utf-8")
     print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")
 

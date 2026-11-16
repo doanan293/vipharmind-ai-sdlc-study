@@ -2,11 +2,11 @@
 
 Bản nộp lần 1 là bản rút gọn (nhánh `report-lan1`): `docs/report/main.pdf` (9 trang) và
 `docs/presentation/vipharmind-slides.pdf` (12 slide). Báo cáo cuối: 24/11 (nhánh `report`).
-Trước buổi gặp, làm mới số E2 sơ bộ bằng `bash refresh-interim.sh` ngay trong worktree này
-(`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); lệnh chạy lại sdlc-e2, build lại PDF và slide
-và in con số gộp mới cùng thời điểm dữ liệu.
+E1 (Haiku, 138/138 lượt) và E2 (đề sơ sài) đã chạy xong; nhóm Codex của E2 dừng ở 78/90 lượt tầng nhỏ vì
+hết hạn mức, các nhóm Claude đủ. Số trên PDF và slide sinh từ `SKIP_E1=1 bash refresh-interim.sh` trong
+worktree này (`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); không cần chạy lại trước buổi gặp.
 
-## Nói gì (khoảng 8 phút)
+## Nói gì (khoảng 7 phút, 12 slide)
 
 1. **Vấn đề.** Người ta vibe-code bằng vài câu ngắn; phát triển theo đặc tả (kiểu Superpowers: thiết kế →
    kế hoạch → viết test trước → kiểm lại) hứa bù cho phần đề thiếu. Chưa có thí nghiệm chỉ đổi lời dặn, chấm
@@ -17,16 +17,26 @@ và in con số gộp mới cùng thời điểm dữ liệu.
    nhỏ. Đặc tả tốn ×1,3–2,2 token, nhưng luôn để lại test. Dấu hiệu có ích duy nhất: Codex ở ba nhiệm vụ lớn
    (44% so với 11%), chỉ ba nhiệm vụ.
 4. **Xem trước.** Phần lớn lượt hỏng do đề không chốt chi tiết hoặc nối sai mã có sẵn, không phải logic sai.
-5. **Câu hỏi mở (đang chạy).** Đề chỉ một hai câu thì quy trình có bù được không? E2 (đề sơ sài, 2 × 2) và
-   E1 (Haiku). Chỉ nói con số gộp sơ bộ trên slide, kèm nhãn SƠ BỘ và thời điểm.
-6. **Lịch.** Đến 20/11 xong E2, E1 và chấm tay mẫu E2; đến 24/11 phân tích đủ và nộp.
+5. **Câu hỏi mở (thăm dò, đã xong).** Đề chỉ một hai câu thì quy trình có bù được không? Chỉ nói headline:
+   - E2, tầng nhỏ, gộp bốn nhóm: đặc tả hơn vibe +4,2 đpt điểm danh sách hành vi, KTC [+0,7; +8,1], tức một
+     lợi ích nhỏ. Gộp cả ba tầng: +2,5 [−0,1; +5,4], KTC chứa 0.
+   - Riêng việc đề sơ sài làm tỉ lệ test ẩn đạt giảm khoảng 80 đpt ở cả hai cách làm (−81,3 và −82,8):
+     độ rõ của đề quan trọng hơn quy trình nhiều.
+   - E1 (Haiku, đề chi tiết): đặc tả không đạt hơn ở tầng nào (KTC chứa 0), tốn ×1,5 token (×2,1 ở tầng nhỏ).
+   - Luôn nói "xu hướng", "gợi ý"; không nói "chứng minh" hay "đặc tả tốt hơn nhiều". E1, E2 thêm sau khi
+     thấy kết quả chính nên chỉ là thăm dò.
+6. **Lịch.** Đang làm: Lợi và Bảo chấm tay 24 lượt E2 để kiểm người chấm máy. Đến 24/11: phân tích chi tiết,
+   hồi cứu, kết luận; nộp báo cáo cuối và thuyết trình.
 
 ## Giữ lại cho báo cáo cuối
 
 - Số liệu nhãn lỗi (số lượt mỗi nhãn, kappa, chia theo cách làm, nhóm, tầng), người chấm thứ ba.
-- Số E2 theo từng nhóm và từng tầng, tương tác 2 × 2, độ tin cậy của người chấm máy.
+- Số E2 theo từng nhóm và từng tầng (Sonnet tầng nhỏ +9,1 [+2,8; +16,1]; Opus, Haiku, Codex có KTC chứa 0;
+  tầng vừa, lớn chỉ để tham khảo vì ít nhiệm vụ, chưa thấy lợi), tương tác 2 × 2 (+2,8 [−0,1; +5,8]), độ
+  tin cậy của người chấm máy và kết quả chấm tay của Lợi, Bảo.
+- Số E1 theo tầng (nhỏ −4,4, vừa 0, lớn −11,1 đpt; KTC đều chứa 0).
 - Phần hồi cứu (RQ1, RQ2), ca nghiên cứu f15, mối đe dọa đến tính hợp lệ chi tiết.
-- Kết luận chính: chưa có, viết từ E2 đủ dữ liệu.
+- Kết luận chính: viết sau khi có kết quả chấm tay, ở báo cáo cuối.
 
 ## Câu thầy có thể hỏi
 
@@ -47,3 +57,20 @@ số ít hơn tới tỉ lệ tuyệt đối, và là một lý do E2 chấm b�
 nào, theo bảng nhãn chốt trước. Vòng đầu được hai bạn đề nghị bỏ vì điền chưa kỹ; vòng hai gán lại mọi lượt
 với mã mới, kèm mã test ẩn và thứ tự quyết định cố định, và hai người gần như hoàn toàn đồng ý. Chi tiết ở
 báo cáo cuối.
+
+**Lợi ích +4,2 đpt ở tầng nhỏ có đáng kể không, sao không nói đặc tả tốt hơn?** Nhỏ, và chỉ là thăm dò. KTC
+[+0,7; +8,1] không chứa 0 nhưng cận dưới sát 0; gộp cả ba tầng thì KTC chứa 0 (cận dưới −0,1); tách theo nhóm thì chỉ Sonnet
+có KTC dương. Vì E2 thêm sau khi thấy kết quả chính, nhóm đọc là xu hướng, không phải bằng chứng.
+
+**Vậy kết luận thực tế cho người dùng là gì?** Theo xu hướng ban đầu: viết đề rõ (nêu tên, hành vi cần có)
+quan trọng hơn chọn quy trình. Đề sơ sài làm tỉ lệ test ẩn đạt giảm khoảng 80 đpt ở cả hai cách làm, trong khi
+đặc tả chỉ kéo lại vài điểm. Kết luận chính thức ở báo cáo cuối.
+
+**Codex dừng giữa chừng có làm lệch kết quả E2 không?** Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức, ghi
+vào nhật ký của bản đăng ký trước (`prereg/prereg-v1.md`) ngày 16/11.
+Lượt thiếu do hạn mức, không phải do kết quả, và các nhóm Claude đủ lượt. KTC của Codex rộng và chứa 0, nên
+nhóm không dựa vào Codex để đọc xu hướng. Phân tích độ nhạy ở báo cáo cuối.
+
+**Mô hình yếu (Haiku) có cần quy trình hơn không?** Với đề chi tiết thì không thấy: đặc tả không đạt hơn ở tầng
+nào và tốn thêm token. Với đề sơ sài, Haiku cũng có KTC chứa 0. Giả thuyết "mô hình yếu cần quy trình hơn"
+chưa được dữ liệu ủng hộ.

@@ -46,13 +46,18 @@ Nhóm & Token (×) & Thời gian (×) & Đặc tả & Vibe & Đặc tả & Vibe 
 nhóm Claude, và phần lớn lượt hỏng đến từ chi tiết mà đề không chốt hoặc từ việc nối với mã có sẵn của dự
 án, hiếm khi từ logic sai, ở cả hai cách làm; phân tích đầy đủ ở báo cáo cuối kỳ.
 
-\textit{Câu hỏi mở: khi đề chỉ một hai câu (đang chạy).} Đề của thí nghiệm chính phải nêu đủ tên để test ẩn
+\textit{Câu hỏi mở: khi đề chỉ một hai câu (thăm dò).} Đề của thí nghiệm chính phải nêu đủ tên để test ẩn
 chấm được, nên nó chưa trả lời câu hỏi của vibe coding thật: khi người dùng chỉ đưa một hai câu, bắt tác tử
 tự viết thiết kế, kế hoạch và test có bù được phần đề thiếu không? Hai thí nghiệm thăm dò, thêm sau khi đã
 thấy kết quả chính (bản bổ sung \texttt{prereg-v1.2}), nhắm vào câu này. E2 cho cả hai cách làm cùng một đề
 một hai câu và chấm bằng danh sách hành vi rút từ test ẩn (thiết kế $2\times 2$: mức chi tiết của đề
 $\times$ cách làm); E1 chạy thêm Claude Haiku 5.5 để xem mô hình yếu hơn có cần quy trình hơn không. Cả hai
-đang chạy. Kết quả \textbf{sơ bộ} của E2 (\NumETwoLabel{}, chỉ \NumETwoScope{}): với đề sơ sài, điểm của
-nhánh đặc tả hơn nhánh vibe \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}]
-khi gộp bốn nhóm, tức xu hướng sơ bộ cho thấy đặc tả có lợi hơn khi đề sơ sài; chưa kết luận, và kết quả đầy
-đủ ở báo cáo cuối kỳ.
+đã chạy xong; riêng nhóm Codex của E2 dừng giữa tầng nhỏ vì hết hạn mức.
+Với đề sơ sài, điểm của nhánh đặc tả hơn nhánh vibe \NumETwoPooledSmallPp{} đpt
+[\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}] ở tầng nhỏ khi gộp bốn nhóm; gộp cả ba tầng, hiệu số
+còn \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}]. Trong khi đó, chỉ riêng
+việc đổi đề chi tiết sang đề sơ sài làm tỉ lệ test ẩn đạt thay đổi \NumETwoXHiddenDetailSpec{} đpt ở nhánh
+đặc tả và \NumETwoXHiddenDetailVibe{} đpt ở nhánh vibe. Ở E1, với đề chi tiết, Haiku theo đặc tả không đạt
+nhiều hơn ở tầng nào (khoảng tin cậy đều chứa 0) mà tốn gấp \NumEOneTokenRatio{} lần token. Vì là thăm dò,
+nhóm chỉ đọc đây là xu hướng: khi đề sơ sài, đặc tả có lợi nhỏ ở nhiệm vụ nhỏ, còn độ rõ của đề quan trọng
+hơn quy trình nhiều. Số theo từng nhóm, từng tầng và kiểm tra người chấm máy ở báo cáo cuối kỳ.
