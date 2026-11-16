@@ -158,3 +158,17 @@ cáo là thiếu, phân tích chạy trên phần đã có và ghi rõ.
 - Cách làm chỉ được che một phần với người chấm.
 - Claude chỉ có một tài khoản: ba nhóm Claude của E1 và E2 chia nhau hạn mức, nên thời gian chạy có thể
   kéo dài và tốc độ phản hồi có thể khác thí nghiệm chính.
+
+## Chốt danh sách hành vi và người chấm (2026-11-16, trước khi chấm lượt nào)
+
+- `tasks/<id>/checklist.md` của 23 nhiệm vụ (306 mục) do một agent riêng viết chỉ từ các bài kiểm tra mà commit
+  của nhiệm vụ thêm hoặc sửa; agent đó không mở thư mục kết quả nào. Ghi chú từng nhiệm vụ: `tasks/CHECKLIST_NOTES.md`.
+- **Điểm phụ `score_core`** (thêm trước khi chấm): một agent riêng khác gắn ` [exact]` cho mục mà muốn đạt phải có
+  một giá trị chữ cụ thể không xác định được từ `brief.md` cộng cây mã khởi đầu mà agent thấy (sau khi bỏ các thư mục
+  `superpowers` và tệp cấu hình agent) hay từ hợp đồng của dịch vụ bên ngoài được nêu tên. 45/306 mục được gắn, ở 15
+  nhiệm vụ (`tasks/CHECKLIST_EXACT.md`). Điểm chính `score` vẫn tính trên mọi mục; `score_core` bỏ các mục `[exact]`
+  và là phân tích độ nhạy. Người chấm không thấy thẻ `[exact]`.
+- Prompt chấm: `prompts/judge.md`. Mã chấm: `sdlc-harness judge` (`harness/src/sdlc_harness/judge.py`); kết quả
+  mỗi lượt ở `judge.json` cạnh `grade.json`. Mỗi lượt được thử tối đa 4 lần (xoay tài khoản khi hết hạn mức, đăng
+  nhập lỗi hoặc câu trả lời không đúng dạng); lượt vẫn hỏng sau đó được báo cáo là thiếu điểm.
+- Thẻ `prereg-v1.2-judge` chốt các tệp trên trước lượt chấm đầu tiên.

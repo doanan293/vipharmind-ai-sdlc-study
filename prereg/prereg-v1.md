@@ -499,3 +499,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   phân tích với `--cohorts claude-sonnet,claude-opus,codex-luna`); dữ liệu thô giữ nguyên; báo cáo chỉ nêu số lượt đã
   chạy, lý do bỏ và quan sát mô tả về token từ pilot. Lưu ý trung thực: quyết định này đến sau khi số đếm thô của phần
   agy đã xong đã được xem (dòng 09:30); lý do được nêu là thời gian và hạn mức, không phải kết quả.
+- **2026-11-16, chốt danh sách hành vi E2.** Danh sách 23 nhiệm vụ, điểm phụ `score_core` (mục `[exact]`), prompt và mã
+  chấm được chốt bằng thẻ `prereg-v1.2-judge` trước lượt chấm đầu tiên; chi tiết ở cuối `prereg-v1.2.md`. Lần gắn
+  `[exact]` đầu tiên đã coi nhầm tài liệu `superpowers` (bị xóa khỏi cây của agent) là thấy được và được làm lại trước
+  khi chốt. Chưa xem bản vá hay kết quả E2 nào khi viết và gắn.

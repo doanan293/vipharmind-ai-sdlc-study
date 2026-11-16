@@ -9,6 +9,7 @@ It ignores the real CLI flags it receives and acts on environment variables:
   FAKE_AGENT_DELAY   seconds to sleep before finishing (ok mode)
   FAKE_AGENT_ROTATE  claude: rewrite $CLAUDE_CONFIG_DIR/.credentials.json with this text
   FAKE_AGENT_SAY     text emitted in an assistant event (e.g. a URL the agent "fetched")
+  FAKE_AGENT_CODEX_MESSAGE text emitted as a codex agent_message item (judge tests)
   FAKE_AGENT_TIMELOG file to append "<start> <end>" to (CLOCK_MONOTONIC, system-wide on Linux)
 """
 
@@ -41,6 +42,12 @@ def main() -> int:
         )
     if os.environ.get("FAKE_AGENT_SAY"):
         emit({"type": "assistant", "text": os.environ["FAKE_AGENT_SAY"]})
+    if os.environ.get("FAKE_AGENT_CODEX_MESSAGE"):
+        item = {"type": "agent_message", "text": os.environ["FAKE_AGENT_CODEX_MESSAGE"]}
+        emit({"type": "item.completed", "item": item})
+    if os.environ.get("FAKE_AGENT_CWDFILES"):
+        with open(os.environ["FAKE_AGENT_CWDFILES"], "w") as f:
+            f.write("\n".join(sorted(str(p) for p in Path().rglob("*") if ".git" not in p.parts)))
     if mode == "auth_always" or (
         mode == "auth_once" and not Path(os.environ["FAKE_AGENT_STATE"]).exists()
     ):
