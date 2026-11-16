@@ -456,3 +456,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (cùng câu nói không nhiệm vụ tầng vừa nào thuộc loại đó, trong khi m04 ở cùng trường hợp với f14); bỏ cả
   f14 sẽ chỉ còn f15 ở tầng lớn. Đã xem trước khi đổi: chưa xem kết quả chính nào. Commit: commit mang
   thẻ `prereg-v1-analysis`.
+- **2026-11-16 08:13, vận hành.** Máy khởi động lại trong đêm (khoảng 07:59), dừng cả ba lệnh chạy. Các lượt đã có
+  `grade.json` giữ nguyên. Ba lệnh được gọi lại đúng như đã chốt lúc 08:13; lượt chưa xong được chạy lại từ đầu
+  theo mục 4. Lúc đó: codex-luna xong 138/138, claude-sonnet 137 (1 hoãn vì hạn mức), claude-opus 130 (8 hoãn),
+  agy-gemini 53 (hết hạn mức cả 4 tài khoản). Chưa kết quả nào được mở.
