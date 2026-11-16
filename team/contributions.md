@@ -14,8 +14,8 @@ Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần l�
 của Lợi và Bảo tập trung ở thuyết trình, hỏi đáp và gán nhãn. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
 
-Chỗ ghi **[CHỜ KẾT QUẢ]** được điền sau khi chạy chính, gán nhãn và tập dượt xong. Chỗ ghi **[An điền]**
-là số liệu An cung cấp.
+Chỗ ghi **[An điền]**, **[Lợi điền]**, **[Bảo điền]** là thông tin chỉ người đó cung cấp được (số giờ, số
+buổi tập, góp ý). Chỗ ghi **[chờ Lợi, Bảo chấm tay E2]** là việc chưa xong. Số liệu khác lấy từ báo cáo.
 
 ## 1. Đóng góp theo sản phẩm
 
@@ -35,8 +35,9 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Gán nhãn nguyên nhân thất bại (mù) | – | C | C | Hai người làm độc lập; An không gán, chỉ phân xử chỗ lệch |
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
-| Báo cáo viết (`docs/report/`) | C | H | H | Lợi, Bảo đọc bản nháp và góp ý [CHỜ KẾT QUẢ: ghi có hay không] |
-| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi, Bảo góp ý lời nói phần mình [CHỜ KẾT QUẢ] |
+| Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. [chờ Lợi, Bảo chấm tay E2] |
+| Báo cáo viết (`docs/report/`) | C | H | H | Lợi, Bảo đọc bản nháp và góp ý [An điền: có hay không; nếu có, ai góp ý mục nào] |
+| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi, Bảo góp ý lời nói phần mình [An điền: có hay không; nếu có, góp ý gì, slide nào đã sửa] |
 | Tập dượt thuyết trình | H | C | C | |
 | Thuyết trình trên lớp | – | C | C | An không nói trong 15 phút, có mặt để hỗ trợ hỏi đáp [An xác nhận] |
 | Trả lời câu hỏi | H | C | C | Theo phân công trong `qa-prep.md` |
@@ -56,7 +57,10 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Bộ chạy, bộ chấm, chạy thử 2 nhiệm vụ, các quyết định sau chạy thử (ruling R11: không proxy, agent mặc
   định, mạng mở).
 - Đăng ký trước và mọi thay đổi sau thẻ (mục 11 của `prereg-v1.md`).
-- Vận hành lượt chạy chính: [CHỜ KẾT QUẢ: số lượt hợp lệ, số lượt lỗi, ngày kết thúc].
+- Vận hành lượt chạy chính (2026-11-15 đến 2026-11-16): 414 lượt hợp lệ của ba nhóm (138 mỗi nhóm); 0 lượt
+  hết giờ, thoát lỗi hay bị loại vì lỗi bộ chạy. `agy-gemini` bị bỏ ở 73/138 lượt vì cả bốn tài khoản hết hạn
+  mức (báo cáo mục 6.1). Thí nghiệm thăm dò: E1 (Haiku) 138/138 lượt hợp lệ; E2 xong 2026-11-16 23:18, ba
+  nhóm Claude đủ 414 lượt đề sơ sài, Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức (mục 6.9).
 - Gói phân tích, báo cáo, slide, tài liệu nhóm.
 - Phân xử nhãn lệch; dựng gói và soát lại kiểm tra "đạt test nhưng sai".
 - Thời gian ước tính: [An điền] giờ.
@@ -69,7 +73,9 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Thuyết trình khoảng 7 phút: vấn đề và câu hỏi nghiên cứu, ViPharmind, tổng quan ngắn, phương pháp
   (bộ đề, hai cách làm, chống rò rỉ), kết quả hồi cứu.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
-- Số buổi tập dượt: [CHỜ KẾT QUẢ]. Góp ý cho slide hoặc báo cáo: [CHỜ KẾT QUẢ: ghi cụ thể nếu có].
+- Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: [chờ Lợi, Bảo chấm tay E2].
+- Số buổi tập dượt: [An điền: số buổi Lợi tập, ngày tập]. Góp ý cho slide hoặc báo cáo: [An điền: Lợi góp ý
+  gì cho slide hoặc báo cáo, ghi cụ thể; ghi "không" nếu không có].
 - Thời gian ước tính: [Lợi điền] giờ.
 
 ### Trần Ngọc Bảo
@@ -80,10 +86,12 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Thuyết trình khoảng 7 phút: kết quả thí nghiệm, Sonnet so với Opus, ba công cụ, đề nhỏ và đề lớn, phân
   loại lỗi, hạn chế, kết luận.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
-- Số buổi tập dượt: [CHỜ KẾT QUẢ]. Góp ý cho slide hoặc báo cáo: [CHỜ KẾT QUẢ: ghi cụ thể nếu có].
+- Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: [chờ Lợi, Bảo chấm tay E2].
+- Số buổi tập dượt: [An điền: số buổi Bảo tập, ngày tập]. Góp ý cho slide hoặc báo cáo: [An điền: Bảo góp ý
+  gì cho slide hoặc báo cáo, ghi cụ thể; ghi "không" nếu không có].
 - Thời gian ước tính: [Bảo điền] giờ.
 
-## 3. Số liệu gán nhãn (điền sau khi gán)
+## 3. Số liệu gán nhãn (vòng 2)
 
 | Mục | Giá trị |
 | --- | --- |
