@@ -95,7 +95,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 - Đầu vào gửi tới các dịch vụ này: mã ViPharmind (repo công khai) tại commit cha, đề bài, lời dặn. Không có
   dữ liệu cá nhân nào khác. Claude Code tự chèn email tài khoản vào system-reminder; không có cờ tắt. Email
   không xuất hiện trong kết quả đã lưu (kiểm bằng `gitleaks` và so khớp chính xác, `docs/pilot-report.md`
-  mục 8) . Quét lại ngày 2026-11-17 trên `results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô..
+  mục 8). Quét lại ngày 2026-11-17 trên `results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
 
 ## 5. AI trong ViPharmind (đối tượng của phần hồi cứu)
 
