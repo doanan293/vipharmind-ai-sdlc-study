@@ -473,3 +473,5 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   `cost_has_offtable_model`, `offtable_models`); số lượt bị đánh dấu được báo cáo theo nhóm và cách làm. Lý do:
   bảng giá chỉ có bốn mô hình của bốn nhóm, trong khi công cụ có thể gọi mô hình khác cho tác vụ phụ. Chưa xem
   kết quả chính nào khi đổi.
+- **2026-11-16 08:58, kết quả bài kiểm tra độ phủ.** 33/40 lần trúng (82,5%), đạt quy tắc ≥ 32/40 đã ghi trước; mã được
+  khóa không chỉnh. Báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng 82,5% (33/40)". Kết luận H5 dựa vào dấu hệ số.
