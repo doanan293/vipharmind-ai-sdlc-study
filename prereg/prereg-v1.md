@@ -535,3 +535,8 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (mục ghi "gán tay, không dùng AI" ở trên là sai). Theo yêu cầu của An, phiếu nhãn vòng 1, đề xuất phân xử và
   nhãn cuối vòng 1 bị xóa và không dùng trong báo cáo; các con số vòng 1 nêu ở hai mục trên (kappa 0,45, phân
   bố nhãn) không còn hiệu lực.
+- **2026-11-16 ~14:40, nhãn vòng 2 (kết quả chính).** Lợi và Bảo cho biết vòng 1 điền chưa kỹ và nhờ bỏ
+  vòng 1; An chuyển lời là hai người không dùng AI (thay cho mục đính chính ngay trên). Phiếu vòng 2 (tệp của
+  Lợi nộp với tên `sheet-claude-vong2.csv`) lưu ở `labeling/returned/labels-{loi,bao}-vong2.csv`. Đồng ý 29/30,
+  kappa 0,95; 1 lượt lệch (t07: `de_bai_thieu` / `hieu_sai`) phân xử là `de_bai_thieu` (Lợi chọn, Bảo ghi
+  "cũng có thể coi là đề thiếu"). Nhãn cuối: `labeling/final-labels.csv`. Fable đồng ý với Lợi 22/30, Bảo 21/30.
