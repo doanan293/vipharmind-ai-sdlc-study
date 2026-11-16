@@ -217,3 +217,18 @@ def test_labels_counts(tmp_path):
     assert tex["LabOutside"] == "2"
     assert tex["LabFableAgreeLoi"] == "1"
     assert (tmp_path / "gen" / "tables" / "labels.tex").read_text().startswith("\\begin{tabular}")
+
+
+def test_e2_reading_and_pending(tmp_path):
+    from report_data import explore
+
+    e = {"estimate": 0.04, "ci_low": 0.004, "ci_high": 0.09}
+    long, short = explore._reading(e, "tầng nhỏ", complete=False)
+    assert "sơ bộ" in long and "chưa kết luận" in long and "tầng nhỏ" in short
+    long, _ = explore._reading({**e, "ci_low": -0.01}, "cả ba tầng", complete=True)
+    assert "chứa 0" in long and "sơ bộ" not in long
+    data = sources.load(tmp_path)
+    build.write(data, tmp_path / "gen")
+    tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
+    assert tex["ETwoPooledAllPp"] == r"\pending{ETwoPooledAllPp}"
+    assert tex["EOneSmallSpecPct"] == r"\pending{EOneSmallSpecPct}"

@@ -6,7 +6,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from report_data import labels, passcheck, results
+from report_data import explore, labels, passcheck, results
 
 RETRO = Path("retrospective/out")
 RETRO_CSV = {
@@ -105,4 +105,6 @@ def load(root: Path) -> dict[str, Any]:
     data["analysis"] = results.load(root)
     data["passcheck"] = passcheck.load(root)
     data["labeling"] = labels.load(root)
+    data["e2"] = explore.load_e2(root)
+    data["e1"] = explore.load_e1(root)
     return data

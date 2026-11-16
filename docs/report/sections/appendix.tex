@@ -114,6 +114,17 @@ Số lần người dùng ngắt ngang tác tử, số đo thay thế cho việc
 \NumSessionInterrupts{}; đây chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Các con
 số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộng ra toàn dự án.
 
+\section{Số lượt của E2 theo nhóm và tầng}\label{app:e2-coverage}
+
+Số lượt đề sơ sài đã chạy xong / đã được chấm / dự kiến, tính đến \NumETwoCutoff{} (\NumETwoStatus{}).
+Lượt chưa được chấm không vào điểm và không được điền thay.
+
+\begin{table}[H]
+\centering\small
+\caption{E2: lượt đề sơ sài đã chạy / đã chấm / dự kiến}\label{tab:e2-coverage}
+\input{generated/tables/e2_coverage}
+\end{table}
+
 \section{Giới hạn của cách đo}\label{app:validity}
 
 ``Đạt'' là đạt test ẩn không mang nhãn \texttt{integration}; repository

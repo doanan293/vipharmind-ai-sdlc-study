@@ -39,7 +39,7 @@ Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05);
 
 ## Chỗ chờ kết quả
 
-Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; hai thí nghiệm thăm dò E1 (Haiku) và E2 (đề sơ sài) chưa xong. Các slide sau còn `[CHỜ KẾT QUẢ]`:
+Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) có số sơ bộ, làm mới bằng refresh-interim.sh; E1 (Haiku) chưa xong. Các slide sau còn `[CHỜ KẾT QUẢ]`:
 
-- `p25_conclusion`: main conclusion, written from the E2 (and E1) results
-- `p23_explore`: E2: checklist score spec − vibe pooled and per cohort (CI); 2 × 2 interaction detail × arm; E1: Haiku pass rate spec / vibe
+- `p25_conclusion`: main conclusion, written from the complete E2 (and E1) results; E2 line is interim
+- `p23_explore`: E1: Haiku pass rate spec / vibe (until results/analysis/e1 exists); E2 values are interim

@@ -199,17 +199,59 @@ quyết định cố định, rồi các bước sau kiểm quyết định đó
 liệu hệ thống chỉ đọc với người không phải quản trị) trượt ở cả ba lượt theo đặc tả và hai trong ba lượt
 vibe. Mọi lượt hỏng của \texttt{f15} mang nhãn đề bài thiếu.
 
-\subsection{Thí nghiệm thăm dò bổ sung: Haiku và đề sơ sài}\label{sec:explore}
+\subsection{Thí nghiệm thăm dò: đề sơ sài (E2) và Haiku (E1)}\label{sec:explore}
 
-Hai thí nghiệm dưới đây được thêm \textbf{sau khi đã xem kết quả chính}, theo bản bổ sung
-\texttt{prereg-v1.2}; chúng là thăm dò và không dùng để xác nhận hay bác bỏ H1--H5.
+Hai thí nghiệm dưới đây được thêm \textbf{sau khi đã xem kết quả chính} (bản bổ sung
+\texttt{prereg-v1.2}); chúng là thăm dò, không dùng để xác nhận hay bác bỏ H1--H5, và chỉ đọc theo dấu và
+độ lớn, không theo ngưỡng.
 
-\textit{E1: Claude Haiku 5.5 theo thiết kế gốc.} Cùng \NumTasksMain{} nhiệm vụ, hai cách làm, ba lần lặp.
-Tỉ lệ đạt và hiệu số theo tầng: \pending{E1: pass\_diff.claude-haiku.*}. So với Sonnet và Opus:
-\pending{E1: mô tả}.
+\textit{E2: đề sơ sài.} Mỗi nhiệm vụ có thêm một đề một hai câu, không nêu tên hàm hay chữ ký; bốn nhóm
+(thêm Haiku) làm theo hai cách với đề đó. Vì test ẩn gọi đúng tên mà đề không nêu, độ đúng được chấm bằng
+danh sách hành vi rút từ test ẩn, do Fable 5.2 chấm khi không biết cách làm; điểm là tỉ lệ mục đạt.
+\textbf{Kết quả E2 là \NumETwoStatus{}}: tính đến \NumETwoCutoff{}, \NumETwoBriefJudged{} trên
+\NumETwoBriefExpected{} lượt đề sơ sài đã được chấm (tầng nhỏ \NumETwoBriefSmallJudged{}/\NumETwoBriefSmallExpected{},
+tầng vừa \NumETwoBriefMediumJudged{}/\NumETwoBriefMediumExpected{}, tầng lớn
+\NumETwoBriefLargeJudged{}/\NumETwoBriefLargeExpected{}; Bảng~\ref{tab:e2-coverage}), nên mọi ước lượng
+dưới đây chỉ gồm \NumETwoScope{}.
 
-\textit{E2: đề sơ sài.} Mỗi nhiệm vụ có thêm một đề chỉ một hoặc hai câu, không nêu tên hàm hay chữ
-ký; cả hai cách làm nhận cùng đề đó. Vì test ẩn gọi đúng tên, độ đúng được chấm bằng danh sách
-hành vi rút từ test ẩn, do Claude Fable 5.2 chấm khi không biết cách làm. Điểm danh sách hành vi theo nhóm
-và cách làm: \pending{E2: score}. Chỉ số tự động so với đề chi tiết (thiết kế 2 × 2): \pending{E2: hồi quy,
-test tự viết, token}. Mức khớp giữa người chấm máy và Lợi, Bảo: \pending{E2: kappa}.
+Với đề sơ sài, điểm của nhánh đặc tả trừ nhánh vibe, gộp bốn nhóm, là \NumETwoPooledAllPp{} đpt
+[\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}] (Bảng~\ref{tab:e2-primary}): Sonnet
+\NumETwoSonnetAllPp{} [\NumETwoSonnetAllLowPp{}; \NumETwoSonnetAllHighPp{}], Opus \NumETwoOpusAllPp{}
+[\NumETwoOpusAllLowPp{}; \NumETwoOpusAllHighPp{}], Haiku \NumETwoHaikuAllPp{} [\NumETwoHaikuAllLowPp{};
+\NumETwoHaikuAllHighPp{}], Codex \NumETwoCodexAllPp{} [\NumETwoCodexAllLowPp{}; \NumETwoCodexAllHighPp{}].
+Bỏ các mục kiểm chi tiết đúng từng chữ, hiệu số gộp là \NumETwoCorePp{} [\NumETwoCoreLowPp{};
+\NumETwoCoreHighPp{}]. Với đề chi tiết, cùng hiệu số là \NumETwoXScoreDetailed{} [\NumETwoXScoreDetailedLow{};
+\NumETwoXScoreDetailedHigh{}], nên tương tác mức chi tiết $\times$ cách làm là \NumETwoXScoreInter{}
+[\NumETwoXScoreInterLow{}; \NumETwoXScoreInterHigh{}] đpt (Bảng~\ref{tab:e2-x2}). Đọc chung:
+\NumETwoReading{}. Ở các chỉ số tự động, nhánh đặc tả viết thêm \NumETwoXTestsDetailed{} test mỗi lượt với đề
+chi tiết và \NumETwoXTestsBrief{} với đề sơ sài, và tốn thêm \NumETwoXWallDetailed{} và \NumETwoXWallBrief{}
+phút.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{E2 (\NumETwoStatus{}, tới \NumETwoCutoff{}): điểm danh sách hành vi với đề sơ sài, đặc tả trừ vibe
+(đpt, KTC 95\%); ``--'' là tầng chưa có dữ liệu}
+\label{tab:e2-primary}
+\input{generated/tables/e2_primary}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{E2, thiết kế $2\times 2$ (\NumETwoStatus{}): trung bình gộp bốn nhóm và tương tác
+(đặc tả $-$ vibe khi đề sơ sài) $-$ (đặc tả $-$ vibe khi đề chi tiết). $^\dagger$Không đo độ đúng khi đề
+sơ sài, vì test ẩn gọi tên mà đề không nêu.}
+\label{tab:e2-x2}
+\input{generated/tables/e2_x2}
+\end{table}
+
+Người chấm máy được kiểm trên \NumETwoJudgeN{} lượt đề chi tiết, nơi test ẩn là thước đo: hai bên khớp ở
+\NumETwoJudgeAgreePct{}\% [\NumETwoJudgeAgreeLowPct{}; \NumETwoJudgeAgreeHighPct{}] số lượt, kappa
+\NumETwoJudgeKappa{}; khi test ẩn đạt hết, người chấm cho đạt mọi mục ở \NumETwoJudgeAllMetGivenPassPct{}\%
+số lượt. Mức khớp với Lợi, Bảo trên mẫu chấm tay: \pending{E2: kappa}.
+
+\textit{E1: Claude Haiku 5.5 theo thiết kế gốc} (đề chi tiết, \NumEOneRuns{} lượt hợp lệ). Tỉ lệ đạt đặc
+tả/vibe và hiệu số: tầng nhỏ \NumEOneSmallSpecPct{}/\NumEOneSmallVibePct{}\%, \NumEOneSmallDiffPp{} đpt
+[\NumEOneSmallLowPp{}; \NumEOneSmallHighPp{}]; tầng vừa \NumEOneMediumSpecPct{}/\NumEOneMediumVibePct{}\%,
+\NumEOneMediumDiffPp{} [\NumEOneMediumLowPp{}; \NumEOneMediumHighPp{}]; tầng lớn
+\NumEOneLargeSpecPct{}/\NumEOneLargeVibePct{}\%, \NumEOneLargeDiffPp{} [\NumEOneLargeLowPp{};
+\NumEOneLargeHighPp{}].

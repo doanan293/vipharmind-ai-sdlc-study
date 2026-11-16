@@ -41,7 +41,7 @@ ALLOW = {
 TOKEN = re.compile(r"\d+(?:[.,]\d+)*")
 # Numbers in the report's generated tables (cost per pass and the like), built from the same summary.json.
 TABLES = HERE.parent / "report" / "generated" / "tables"
-VALUES = set(NUMBERS.values()) | {t for f in TABLES.glob("results_*.tex") for t in TOKEN.findall(f.read_text("utf-8"))}
+VALUES = {v for v in NUMBERS.values() if v is not None} | {t for f in TABLES.glob("results_*.tex") for t in TOKEN.findall(f.read_text("utf-8"))}
 
 
 def slide_text(slide) -> str:
