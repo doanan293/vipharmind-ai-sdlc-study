@@ -1,10 +1,10 @@
-"""Check that every number on the slides comes from docs/report/generated/numbers.json.
+"""Check that every number on the slides comes from docs/report/generated/numbers.json (or its tables).
 
 Usage: python3 check_numbers.py vipharmind-slides.pptx [--final]
 
 Reads the text of every slide (not the notes) and reports each number that is neither a value in
-numbers.json nor a fixed design constant listed in ALLOW. Also counts the [CHỜ KẾT QUẢ] placeholders per
-slide; with --final any placeholder is an error (deck ready to present only when this passes).
+numbers.json, nor a number in the generated results_*.tex tables, nor a fixed design constant listed in
+ALLOW. Also counts the [CHỜ KẾT QUẢ] placeholders per slide; with --final any placeholder is an error (deck ready to present only when this passes).
 """
 
 from __future__ import annotations
@@ -34,9 +34,14 @@ ALLOW = {
     "0.162.1": "tool version Codex CLI", "1.1": "tag name prereg-v1.1",
     "5421": "course code IT5421", "20252778": "student ID", "20252781": "student ID",
     "20251227": "student ID",
+    "1.2": "tag name prereg-v1.2",
+    "306": "E2 checklist items (prereg-v1.2)", "30": "E2 brief prompt word limit (prereg-v1.2)",
+    "24": "E2 human-check sample (prereg-v1.2)",
 }
-VALUES = set(NUMBERS.values())
 TOKEN = re.compile(r"\d+(?:[.,]\d+)*")
+# Numbers in the report's generated tables (cost per pass and the like), built from the same summary.json.
+TABLES = HERE.parent / "report" / "generated" / "tables"
+VALUES = set(NUMBERS.values()) | {t for f in TABLES.glob("results_*.tex") for t in TOKEN.findall(f.read_text("utf-8"))}
 
 
 def slide_text(slide) -> str:
