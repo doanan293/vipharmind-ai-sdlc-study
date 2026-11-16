@@ -493,3 +493,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   khi agent khởi động (`started_at` rỗng, không có `transcript.jsonl`, không `grade.json`). Hai chuỗi được dừng, thư
   mục `results/raw/haiku` và `results/raw/brief` của lần đó bị xóa để số lần chạy lại vì lỗi không bị tính, tệp tài
   khoản được chép vào, và hai chuỗi được gọi lại đúng lệnh lúc 10:20. Không lượt AI nào bị bỏ hay chạy lại vì kết quả.
+- **2026-11-16 10:35, bỏ agy-gemini (quyết định của An).** agy-gemini hết hạn mức cả bốn tài khoản và không kịp chạy
+  đủ; An quyết định bỏ nhóm này. Ba lệnh chạy chính bị dừng lúc agy mới có 73/138 lượt chấm xong (nhỏ 59/90, vừa
+  12/30, lớn 2/18); ba nhóm còn lại đã xong 138/138 từ trước. Hệ quả: agy-gemini bị loại khỏi mọi phân tích (chạy mã
+  phân tích với `--cohorts claude-sonnet,claude-opus,codex-luna`); dữ liệu thô giữ nguyên; báo cáo chỉ nêu số lượt đã
+  chạy, lý do bỏ và quan sát mô tả về token từ pilot. Lưu ý trung thực: quyết định này đến sau khi số đếm thô của phần
+  agy đã xong đã được xem (dòng 09:30); lý do được nêu là thời gian và hạn mức, không phải kết quả.
