@@ -1,4 +1,4 @@
-"""Checklist judge (prereg-v1.2, E2): a fixed agent scores a finished unit against tasks/<id>/checklist.md.
+"""Checklist judge (prereg-v1.2, E2): a fixed agent (Claude Fable 5.2) scores a finished unit against tasks/<id>/checklist.md.
 
 The unit's saved patch.diff is applied to a fresh export of the task's start tree, docs/design.md and
 docs/plan.md are deleted (partial arm blinding), and the judge agent runs in a directory named by a
@@ -36,7 +36,8 @@ from sdlc_harness.workspace import Agent, write_back_credentials
 
 log = logging.getLogger(__name__)
 
-JUDGE = Cohort("judge", "codex", "gpt-6-luna", "medium", (1, 2, 3, 4))
+# Claude Fable 5.2: not one of the tested agents; high effort for careful checking.
+JUDGE = Cohort("judge", "claude", "claude-fable-5-2", "high", (1,))
 JUDGE_FILE = "judge.json"
 VERDICTS = ("met", "not_met", "unclear")
 _ITEM = re.compile(r"^\s*(\d+)\.\s+\S", re.MULTILINE)
@@ -71,14 +72,19 @@ def judge_prompt(checklist: str, prompts_dir: Path = PROMPTS_DIR) -> str:
 
 
 def _final_message(transcript: str) -> str:
-    """Text of the last codex agent_message event."""
+    """The judge's final answer: claude's result event text, or codex's last agent_message."""
     text = ""
     for line in transcript.splitlines():
         try:
             e = json.loads(line)
         except ValueError:
             continue
-        item = e.get("item") if isinstance(e, dict) else None
+        if not isinstance(e, dict):
+            continue
+        if e.get("type") == "result" and isinstance(e.get("result"), str):
+            text = e["result"]
+            continue
+        item = e.get("item")
         if (
             e.get("type") == "item.completed"
             and isinstance(item, dict)

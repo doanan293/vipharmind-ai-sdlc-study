@@ -94,7 +94,7 @@ Mỗi nhiệm vụ có thêm `tasks/<id>/brief.md`. Quy tắc viết (chốt tr�
   dụ "xóa tổ chức đòi nhập lại đúng tên tổ chức"). Danh sách được viết và chốt bằng một commit **trước khi
   chấm** lượt E2 nào, và không sửa sau khi đã thấy một kết quả chấm nào. Người viết không xem bản vá của
   lượt E2 nào khi viết.
-- **Người chấm máy**: một agent cố định, `codex` với `gpt-6-luna`, effort medium, prompt chấm cố định
+- **Người chấm máy**: một agent cố định, Claude Code với `claude-fable-5-2` (Fable 5.2), effort high, prompt chấm cố định
   (`prompts/judge.md`, chốt cùng danh sách), chạy trong thư mục sạch chứa cây mã cuối của lượt. Trước khi
   chấm, `docs/design.md` và `docs/plan.md` bị xóa và thư mục không mang tên nhóm, cách làm hay lần lặp.
   Người chấm được đọc và chạy mã; mỗi mục cho một nhãn `met`, `not_met` hoặc `unclear` cùng lý do ngắn.
@@ -153,8 +153,8 @@ cáo là thiếu, phân tích chạy trên phần đã có và ghi rõ.
 
 - Thêm sau khi thấy kết quả chính; thăm dò.
 - Đề sơ sài do trợ lý AI viết theo quy tắc; một người dùng thật có thể viết khác.
-- Người chấm máy là một mô hình cũng có trong các nhóm (Codex), có thể thiên vị bài của chính nó; báo cáo
-  điểm theo nhóm và mức khớp với người chấm.
+- Người chấm máy (Fable 5.2) không nằm trong các nhóm được thử, nhưng cùng họ Claude với ba nhóm, nên có thể thiên
+  vị bài của các agent Claude so với Codex; báo cáo điểm theo nhóm và mức khớp với người chấm.
 - Cách làm chỉ được che một phần với người chấm.
 - Claude chỉ có một tài khoản: ba nhóm Claude của E1 và E2 chia nhau hạn mức, nên thời gian chạy có thể
   kéo dài và tốc độ phản hồi có thể khác thí nghiệm chính.
@@ -172,3 +172,7 @@ cáo là thiếu, phân tích chạy trên phần đã có và ghi rõ.
   mỗi lượt ở `judge.json` cạnh `grade.json`. Mỗi lượt được thử tối đa 4 lần (xoay tài khoản khi hết hạn mức, đăng
   nhập lỗi hoặc câu trả lời không đúng dạng); lượt vẫn hỏng sau đó được báo cáo là thiếu điểm.
 - Thẻ `prereg-v1.2-judge` chốt các tệp trên trước lượt chấm đầu tiên.
+- **Đổi người chấm sang Fable 5.2 (2026-11-16, theo An, trước lượt chấm đầu tiên).** Thẻ `prereg-v1.2-judge` ghi
+  người chấm là Codex (`gpt-6-luna`, medium). An đổi sang Claude Fable 5.2 (effort high) vì nó không phải một nhóm
+  được thử (tránh Codex tự chấm bài của chính nó) và vì Codex chỉ còn hai tài khoản có hạn mức. Danh sách, prompt và
+  quy tắc điểm không đổi. Thẻ `prereg-v1.2-judge-fable` chốt thay đổi này; chưa lượt nào được chấm.

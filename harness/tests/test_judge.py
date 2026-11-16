@@ -58,11 +58,6 @@ def test_final_message_takes_the_last_agent_message():
 def _judge_world(world, fake, tmp_path):  # noqa: F811
     repo, tasks, accounts, cache = world
     (tasks / "t01" / "checklist.md").write_text(CHECKLIST)
-    creds = tmp_path / "codex1"
-    creds.mkdir()
-    (creds / "auth.json").write_text("{}")
-    codex_accounts = tmp_path / "accounts.toml"
-    codex_accounts.write_text(accounts.read_text() + f'\n[codex]\n1 = "{creds}"\n')
     fake.setenv(
         "FAKE_AGENT_WRITE",
         json.dumps(
@@ -79,7 +74,7 @@ def _judge_world(world, fake, tmp_path):  # noqa: F811
             tasks_dir=tasks,
             cohorts={},
             work_root=tmp_path / "judge-work",
-            accounts_file=codex_accounts,
+            accounts_file=accounts,
             cache_dir=cache,
             grade_timeout_s=120,
         ),
@@ -101,13 +96,15 @@ def test_judge_writes_scored_record_and_blinds_process_docs(world, fake, tmp_pat
     seen = tmp_path / "seen.txt"
     fake.setenv("FAKE_AGENT_CWDFILES", str(seen))
     fake.setenv(
-        "FAKE_AGENT_CODEX_MESSAGE",
+        "FAKE_AGENT_RESULT",
         '{"items": [{"n": 1, "verdict": "met", "reason": "ok"},'
         ' {"n": 2, "verdict": "unclear", "reason": "?"}]}',
     )
     assert judge_all([unit], jcfg, jobs=1) == {"done": 1, "skipped": 0, "failed": 0}
     rec = json.loads((unit / "judge.json").read_text())
-    assert rec["score"] == 0.5 and rec["n_unclear"] == 1 and rec["judge_model"] == "gpt-6-luna"
+    assert (
+        rec["score"] == 0.5 and rec["n_unclear"] == 1 and rec["judge_model"] == "claude-fable-5-2"
+    )
     files = seen.read_text().splitlines()
     assert "CHANGE.diff" in files and "docs/plan.md" not in files
     assert not any(x in str(p) for p in files for x in ("claude-sonnet", "vibe", "t01"))
@@ -117,7 +114,7 @@ def test_judge_writes_scored_record_and_blinds_process_docs(world, fake, tmp_pat
 
 def test_judge_bad_answer_is_a_failure_without_record(world, fake, tmp_path):  # noqa: F811
     unit, jcfg = _judge_world(world, fake, tmp_path)
-    fake.setenv("FAKE_AGENT_CODEX_MESSAGE", "I could not decide.")
+    fake.setenv("FAKE_AGENT_RESULT", "I could not decide.")
     assert judge_all([unit], jcfg, jobs=1, max_tries=2)["failed"] == 1
     assert not (unit / "judge.json").exists()
     assert not list((tmp_path / "judge-work").iterdir())
@@ -129,3 +126,10 @@ def test_exact_tags_are_counted_and_hidden_from_the_judge(tmp_path):
     (tmp_path / "judge.md").write_text("PROMPT\n")
     shown = judge_prompt(text, tmp_path)
     assert "[exact]" not in shown and "1. behaves\n" in shown and "3. named x\n" in shown
+
+
+def test_final_message_reads_claude_result_and_codex_message():
+    claude = json.dumps({"type": "result", "result": "answer"})
+    assert _final_message("x\n" + claude) == "answer"
+    codex = json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "c"}})
+    assert _final_message(codex) == "c"

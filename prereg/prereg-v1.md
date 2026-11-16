@@ -503,3 +503,6 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   chấm được chốt bằng thẻ `prereg-v1.2-judge` trước lượt chấm đầu tiên; chi tiết ở cuối `prereg-v1.2.md`. Lần gắn
   `[exact]` đầu tiên đã coi nhầm tài liệu `superpowers` (bị xóa khỏi cây của agent) là thấy được và được làm lại trước
   khi chốt. Chưa xem bản vá hay kết quả E2 nào khi viết và gắn.
+- **2026-11-16, người chấm E2 đổi sang Fable 5.2 (An quyết định).** Trước lượt chấm đầu tiên, người chấm danh sách hành vi đổi
+  từ Codex sang Claude Fable 5.2, effort high (thẻ `prereg-v1.2-judge-fable`). Lý do: Fable không phải nhóm được thử,
+  và Codex còn ít hạn mức. Hạn chế: cùng họ Claude với ba nhóm.

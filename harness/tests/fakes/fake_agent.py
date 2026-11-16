@@ -10,6 +10,7 @@ It ignores the real CLI flags it receives and acts on environment variables:
   FAKE_AGENT_ROTATE  claude: rewrite $CLAUDE_CONFIG_DIR/.credentials.json with this text
   FAKE_AGENT_SAY     text emitted in an assistant event (e.g. a URL the agent "fetched")
   FAKE_AGENT_CODEX_MESSAGE text emitted as a codex agent_message item (judge tests)
+  FAKE_AGENT_RESULT  text put in the final claude result event's `result` field (judge tests)
   FAKE_AGENT_TIMELOG file to append "<start> <end>" to (CLOCK_MONOTONIC, system-wide on Linux)
 """
 
@@ -81,6 +82,7 @@ def main() -> int:
         {
             "type": "result",
             "is_error": False,
+            "result": os.environ.get("FAKE_AGENT_RESULT", ""),
             "num_turns": 3,
             "usage": {
                 "input_tokens": 10,
