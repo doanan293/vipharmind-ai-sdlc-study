@@ -1,8 +1,22 @@
 \section{Kết luận và hướng tiếp}\label{sec:conclusion}
 
-\pending{Kết luận: một đoạn cho phần hồi cứu (RQ1, RQ2), một đoạn cho H1 và H5, một câu cho chi phí; mỗi
-câu ghi đúng kết cục đọc theo bản đăng ký trước.}
+Phần hồi cứu cho thấy ViPharmind được làm gần như hoàn toàn với trợ lý AI và theo nếp spec, plan:
+\NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên, vì quy tắc nối nghiêng về nối
+thừa), và mã do AI viết được sửa lại với mức gần như nhau dù có hay không có plan (RQ1, RQ2).
 
-Hướng tiếp theo nằm ở những gì thiết kế này không đo được: một nhánh đặc tả có người duyệt, nhiều dự án và
-ngôn ngữ hơn, nhiều nhiệm vụ cỡ tính năng hơn để ước lượng H5 chặt hơn, và chấm cả các test cần cơ sở dữ
-liệu thật. \pending{điều chỉnh theo kết quả}
+Phần thực nghiệm, trên \NumResRuns{} lượt của ba nhóm, không thấy làm theo đặc tả làm tác tử đạt test ẩn
+nhiều hơn khi đề bài đã chi tiết. Phép thử xác nhận H1 chưa kết luận được, với khoảng tin cậy
+[\NumResHOneLowPp{}; \NumResHOneHighPp{}] đpt không chứa lợi ích dương nào; H5 cũng chưa kết luận được.
+Làm theo đặc tả tốn gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token và
+\NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được ủng hộ), và đổi lại để mã có test do
+chính tác tử viết. Lợi ích về độ đúng và hồi quy chỉ thấy ở công cụ yếu nhất trên ba nhiệm vụ lớn nhất,
+quá ít để kết luận. Với người làm nghề, điều này gợi ý: khi đã viết được yêu cầu rõ đến mức tên và chữ ký,
+phần lớn giá trị của ``đặc tả'' đã nằm trong yêu cầu; quy trình thiết kế và kế hoạch trên đó đáng giá chủ
+yếu vì test nó để lại, không vì nó làm bài đúng hơn ngay.
+
+Hai thí nghiệm thăm dò đang chạy sẽ cho biết kết luận này đổi thế nào khi tác tử yếu hơn (Haiku) và khi đề
+chỉ một hai câu như vibe coding thật: \pending{E1, E2: một câu kết luận mỗi thí nghiệm}.
+
+Hướng tiếp theo nằm ở những gì thiết kế này không đo được: một nhánh đặc tả có người duyệt, đề bài sơ sài
+với cách chấm không phụ thuộc tên, nhiều dự án và ngôn ngữ hơn, nhiều nhiệm vụ cỡ tính năng hơn để ước
+lượng H5 chặt hơn, và đo giá trị của test do tác tử để lại ở những lần sửa sau.

@@ -1,94 +1,201 @@
 \section{Kết quả thí nghiệm}\label{sec:results}
-% Khung mục 6. Mỗi \pending{...} ghi khóa của results/analysis/summary.json (analysis/README.md) sẽ
-% điền vào chỗ đó. Văn bản viết sau khi thẻ prereg-v1-analysis đã gắn và kết quả chính được mở.
+% Mọi con số lấy từ results/analysis/main (gói analysis/ tại thẻ prereg-v1-analysis) qua report-data
+% build. Kết cục ghi đúng như gói phân tích đọc theo bản đăng ký: ủng hộ (supported), trái (contrary),
+% chưa rõ (inconclusive).
 
 \subsection{Dữ liệu thu được}\label{sec:data-collected}
 
-Số lượt theo trạng thái, số lượt hết giờ, thoát lỗi và bị loại, theo nhóm, tầng và cách làm:
-\pending{descriptives.status\_counts, timeouts, nonzero\_exit, excluded\_runs}. Các (nhóm, tầng) đủ và
-chưa đủ theo mục~\ref{sec:prereg}: \pending{completeness, not\_run\_units}. Kiểm tra mỗi (nhiệm vụ, cách
-làm) có đúng một mã băm đề bài: \pending{descriptives.prompt\_hash\_check}. Phiên bản công cụ đã gặp và
-số lượt mỗi phiên bản: \pending{descriptives.tool\_versions}. Tỉ lệ lượt theo đặc tả tuân thủ quy trình và
-số lượt vibe tự viết file thiết kế hay kế hoạch: \pending{descriptives.compliance\_spec,
-vibe\_wrote\_design\_or\_plan}. Nhóm \texttt{agy-gemini}: \pending{descriptive\_incomplete.agy-gemini.*
-hoặc pass\_diff.agy-gemini.*, tùy trạng thái đủ ở hạn chót}.
+Ba nhóm \texttt{claude-sonnet}, \texttt{claude-opus} và \texttt{codex-luna} chạy đủ
+\NumResRunsPerCohort{} lượt mỗi nhóm, tổng \NumResRuns{} lượt hợp lệ. Không lượt nào hết giờ, thoát lỗi,
+hay bị loại vì lỗi bộ chạy, nên mọi (nhóm, tầng) đều đủ theo quy tắc ở mục~\ref{sec:prereg}. Mỗi
+(nhiệm vụ, cách làm) có đúng một mã băm đề bài ở cả \NumResPromptCells{} ô. Mỗi nhóm chỉ gặp một phiên bản
+công cụ (Claude Code 2.1.325, Codex CLI 0.162.1). Mọi lượt theo đặc tả để lại cả \texttt{docs/design.md}
+lẫn \texttt{docs/plan.md}; không lượt vibe nào viết hai file này.
+
+Nhóm \texttt{agy-gemini} bị bỏ. Cả bốn tài khoản Antigravity hết hạn mức tuần khi nhóm này mới chấm xong
+\NumResAgyDone{} trên \NumResRunsPerCohort{} lượt, và An quyết định không chờ hạn mức hồi. Số đếm thô
+của phần agy đã xong đã được xem trước quyết định này (Phụ lục~\ref{app:deviations}), nên việc bỏ nhóm
+không hoàn toàn độc lập với kết quả, dù lý do nêu ra là thời gian và hạn mức. Các lượt agy không đi vào
+phân tích nào dưới đây. Vì vậy RQ4 chỉ còn hai công cụ: Claude Code và Codex.
 
 \subsection{Làm theo đặc tả có đạt nhiều hơn không (RQ3, H1)}
 
 \begin{table}[H]
 \centering\small
-\caption{Tỉ lệ đạt theo nhóm, tầng và cách làm, hiệu số (đặc tả trừ vibe) và khoảng tin cậy 95\%}
+\caption{Tỉ lệ đạt theo nhóm, tầng và cách làm. Hiệu số là đặc tả trừ vibe, tính bằng điểm phần trăm
+(đpt), khoảng tin cậy 95\% bootstrap theo nhiệm vụ. Tầng vừa và tầng lớn dưới sáu nhiệm vụ nên khoảng
+tin cậy chỉ để tham khảo. ``Ủng hộ'', ``trái'', ``chưa rõ'' là kết cục đọc theo bản đăng ký.}
 \label{tab:main}
-\pending{bảng sinh từ pass\_diff.<cohort>.<tier> (mean\_spec, mean\_vibe, estimate, ci\_low,
-ci\_high, n\_tasks) và descriptive\_incomplete.<cohort>.<tier>}
+\input{generated/tables/results_main}
 \end{table}
 
-Phép thử xác nhận H1 (\texttt{claude-sonnet}, tầng nhỏ): \pending{h1.primary; verdicts.H1}. Độ dao động
-giữa ba lần lặp: \pending{variability.claude-sonnet.small, variability.all\_complete}.
+Phép thử xác nhận H1 (\texttt{claude-sonnet}, tầng nhỏ): nhánh theo đặc tả đạt \NumResHOneSpecPct{}\%,
+nhánh vibe đạt \NumResHOneVibePct{}\%, hiệu số \NumResHOneEstPp{} đpt, khoảng tin cậy
+[\NumResHOneLowPp{}; \NumResHOneHighPp{}]. Khoảng tin cậy chứa 0 nên H1 \textbf{chưa kết luận được}
+theo quy tắc đọc. Nhưng cận trên của khoảng là \NumResHOneHighPp{}: dữ liệu không để chỗ cho một lợi ích
+dương nào của làm theo đặc tả trên tầng nhỏ với nhóm này. Ba lần lặp của cùng một (nhiệm vụ, cách làm)
+cho kết quả khác nhau ở \NumResVarDisagree{} trên \NumResVarCells{} ô (\NumResVarDisagreePct{}\%) của
+\texttt{claude-sonnet} tầng nhỏ, và ở \NumResVarAllDisagree{} trên \NumResVarAllCells{} ô
+(\NumResVarAllPct{}\%) khi tính mọi nhóm và tầng.
 
-\subsection{Ba công cụ (RQ4)}
+\subsection{Hai công cụ (RQ4)}
 
-Hiệu số của từng nhóm, so hướng và độ lớn: \pending{pass\_diff.<cohort>.small; verdicts.pass\_diff.*}
-(Hình~\ref{fig:by-cohort}). Số phép so phụ đã làm: \pending{meta.n\_secondary\_comparisons}.
+Ở tầng nhỏ, hiệu số của \texttt{claude-opus} là \NumResOpusSmallDiffPp{} đpt và của \texttt{codex-luna}
+là \NumResCodexSmallDiffPp{} đpt; cả hai khoảng tin cậy đều chứa 0 (Bảng~\ref{tab:main},
+Hình~\ref{fig:by-cohort}). Hướng của hiệu số khác nhau giữa hai công cụ: âm với hai mô hình Claude, dương
+với Codex. Ô duy nhất có kết cục ``ủng hộ'' là \texttt{codex-luna} tầng lớn: đặc tả
+\NumResCodexLargeSpecPct{}\%, vibe \NumResCodexLargeVibePct{}\%. Khoảng tin cậy của ô này suy biến thành
+một điểm vì cả ba nhiệm vụ đều cho cùng hiệu số, nên nó không nói gì về độ bất định thật với ba nhiệm vụ.
+Gói phân tích đếm \NumResSecondaryComparisons{} phép so phụ, không hiệu chỉnh so sánh nhiều lần, nên một
+ô ``ủng hộ'' đơn lẻ cũng có thể là ngẫu nhiên.
 
 \begin{figure}[H]
 \centering
-\fbox{\parbox[c][3cm][c]{0.8\linewidth}{\centering\pending{figures/pass\_diff\_by\_cohort.pdf}}}
+\includegraphics[width=0.68\linewidth]{generated/figures/pass_diff_by_cohort.pdf}
 \caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo nhóm và tầng, kèm khoảng tin cậy 95\%}
 \label{fig:by-cohort}
 \end{figure}
 
 \subsection{Sonnet và Opus (RQ5, H4)}
 
-Bốn tỉ lệ đạt, hiệu số ở từng mô hình và hiệu của hai hiệu số: \pending{h4.small.rate.*, h4.small.diff.*,
-h4.small.diff\_of\_diffs; verdicts.H4.small}. Sonnet theo đặc tả so với Opus vibe về tỉ lệ đạt và chi phí:
-\pending{h4.small.sonnet\_spec\_minus\_opus\_vibe.\{pass, cost\_usd\},
-h4.small.sonnet\_spec\_over\_opus\_vibe.cost\_ratio}. Tầng vừa và tầng lớn, nếu cả hai nhóm Claude đủ:
-\pending{h4.medium.*, h4.large.*}.
+Ở tầng nhỏ, hiệu số của hai mô hình Claude đều âm, và hiệu của hai hiệu số (Sonnet trừ Opus) là
+\NumResHFourDiffOfDiffsPp{} đpt, khoảng tin cậy [\NumResHFourDiffOfDiffsLowPp{};
+\NumResHFourDiffOfDiffsHighPp{}]: H4 \textbf{chưa kết luận được} ở cả ba tầng. Sonnet theo đặc tả đạt
+ngang Opus vibe (hiệu \NumResHFourSonnetSpecOpusVibePp{} đpt, khoảng
+[\NumResHFourSonnetSpecOpusVibeLowPp{}; \NumResHFourSonnetSpecOpusVibeHighPp{}]) với chi phí quy đổi bằng
+\NumResHFourCostRatioPct{}\% (khoảng \NumResHFourCostRatioLowPct{}--\NumResHFourCostRatioHighPct{}\%).
+Điều này không cho thấy đặc tả nâng mô hình yếu lên; nó chỉ cho thấy Sonnet đã đạt gần trần ở tầng nhỏ dù
+làm theo cách nào.
 
 \subsection{Hiệu số theo kích thước nhiệm vụ (RQ6, H5)}
 
-Phép thử chính của H5 (tầng lớn trừ tầng nhỏ, các nhóm được gộp): \pending{h5.primary; verdicts.H5}. Hệ số
-tương tác của mô hình logistic hỗn hợp, mức mô hình đã dùng và lý do: \pending{h5.mixed\_model}. Cùng
-phép thử trên tỉ lệ test ẩn đạt: \pending{h5.hidden\_pass\_rate}. Hiệu số của từng nhiệm vụ tầng vừa và
-tầng lớn (tầng dưới sáu nhiệm vụ, khoảng tin cậy chỉ để tham khảo): \pending{task\_diffs.csv,
-pooled\_task\_diffs.csv}. Nhóm kích thước trong tầng nhỏ, khám phá: \pending{exploratory.size\_group.*}.
+Phép thử chính của H5 (hiệu số gộp ba nhóm ở tầng lớn trừ ở tầng nhỏ) cho \NumResHFiveEstPp{} đpt,
+khoảng tin cậy [\NumResHFiveLowPp{}; \NumResHFiveHighPp{}]; hiệu số gộp là \NumResHFiveLargePp{} đpt ở
+tầng lớn và \NumResHFiveSmallPp{} đpt ở tầng nhỏ. Hệ số tương tác (cách làm × log số dòng) của mô hình
+logistic hỗn hợp là \NumResHFiveCoef{} trên thang logit, khoảng tin cậy bootstrap cụm
+[\NumResHFiveCoefLow{}; \NumResHFiveCoefHigh{}] (\NumResModelBootstrapB{} lần lấy mẫu lại). Mô hình dùng
+mức dự phòng thứ nhất của bản đăng ký, hiệu ứng ngẫu nhiên chặn và dốc theo nhiệm vụ không tương quan, vì
+statsmodels không ước lượng được hiệu ứng tương quan; độ lệch chuẩn ước lượng là \NumResHFiveTaskSd{} cho
+chặn và \NumResHFiveArmSd{} cho dốc. H5 \textbf{chưa kết luận được}. Trên tỉ lệ test ẩn đạt, hiệu tầng lớn
+trừ tầng nhỏ là \NumResHFiveHiddenEstPp{} đpt, khoảng [\NumResHFiveHiddenLowPp{};
+\NumResHFiveHiddenHighPp{}]. Trên Hình~\ref{fig:effect-size}, hiệu số của phần lớn nhiệm vụ bằng không; các nhiệm vụ lệch nằm ở cả hai
+phía và ở mọi cỡ, riêng ba nhiệm vụ tầng lớn của Codex đều lệch về phía đặc tả.
 
 \begin{figure}[H]
 \centering
-\fbox{\parbox[c][4cm][c]{0.8\linewidth}{\centering\pending{figures/effect\_vs\_size.pdf}}}
-\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo số dòng của bản vá gốc; mỗi điểm là một nhiệm vụ,
-đường xu hướng kèm dải tin cậy}
+\includegraphics[width=0.62\linewidth]{generated/figures/effect_vs_size.pdf}
+\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo số dòng của bản vá gốc; mỗi điểm là một nhiệm vụ
+của một nhóm}
 \label{fig:effect-size}
 \end{figure}
 
-\subsection{Chi phí, chất lượng và hiệu quả chi phí (H2, H3)}
+\subsection{Chi phí, chất lượng và test (H2, H3)}
 
-Token và thời gian: \pending{secondary.tokens\_total.*, secondary.wall\_s.*; verdicts.H2.*}. Lỗi tĩnh, hồi
-quy, chỉ số bảo trì: \pending{secondary.static\_errors.*, secondary.regression\_any.*,
-secondary.radon\_mi\_delta.*; verdicts.H3a.*, H3b.*, H3c.*}. Test do tác tử viết và lượt có chạy
-\texttt{pytest}: \pending{secondary.ai\_tests\_added.*, descriptives}. Hiệu quả chi phí theo nhóm, tầng và
-cách làm, kèm cận trên của \texttt{codex-luna}: \pending{cost\_eff.<cohort>.<tier>.<arm>.\{passes\_per\_usd,
-cost\_per\_pass\}, cost\_eff\_upper.codex-luna.*} (Hình~\ref{fig:cost}).
+H2 \textbf{được ủng hộ} ở mọi nhóm và tầng (Bảng~\ref{tab:secondary}). Tính trên cả
+\NumResRunsPerCohort{} lượt mỗi nhóm, nhánh theo đặc tả dùng gấp \NumResTokenRatioMin{} đến
+\NumResTokenRatioMax{} lần token và gấp \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian của
+nhánh vibe. Mức thêm thấp nhất ở Opus (\NumResOpusTokenRatio{} lần token), cao nhất ở Codex
+(\NumResCodexTokenRatio{} lần token, \NumResCodexWallRatio{} lần thời gian).
 
-\begin{figure}[H]
-\centering
-\fbox{\parbox[c][3cm][c]{0.8\linewidth}{\centering\pending{figures/cost\_per\_pass.pdf}}}
-\caption{Chi phí quy đổi cho một lượt đạt theo nhóm, tầng và cách làm}
-\label{fig:cost}
-\end{figure}
+H3 cho kết quả lẫn lộn. Về lỗi tĩnh (ruff cộng pyrefly), hai ô có kết cục ``trái'': nhánh theo đặc tả có
+nhiều lỗi hơn ở \texttt{claude-sonnet} tầng vừa và \texttt{codex-luna} tầng nhỏ. Ở \texttt{codex-luna}
+tầng lớn thì ngược lại: trung bình \NumResCodexLargeStaticSpec{} lỗi tĩnh mỗi lượt theo đặc tả so với
+\NumResCodexLargeStaticVibe{} lượt vibe, và \NumResCodexLargeRegSpecPct{}\% lượt theo đặc tả làm hỏng test
+cũ so với \NumResCodexLargeRegVibePct{}\% lượt vibe. Hai mô hình Claude gần như không làm hỏng test cũ ở
+cách làm nào. Về chỉ số bảo trì, nhánh theo đặc tả không kém hơn quá 5 điểm MI ở hầu hết các ô.
+
+\begin{table}[H]
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\caption{Chi phí và chất lượng: mỗi ô là trung bình của nhánh theo đặc tả / nhánh vibe. Token gồm cả
+token đọc cache. Lỗi tĩnh là số lỗi ruff và pyrefly trên các file bị đổi. Hồi quy là tỉ lệ lượt làm hỏng
+ít nhất một test cũ. $\Delta$MI là thay đổi chỉ số bảo trì so với commit cha; H3c đọc ``không kém hơn'' với
+biên 5 điểm.}
+\label{tab:secondary}
+\input{generated/tables/results_secondary}
+\end{table}
+
+Khác biệt rõ nhất giữa hai cách làm nằm ở test do tác tử tự viết (Bảng~\ref{tab:tests}). Nhánh theo đặc tả
+viết test ở \NumResSonnetSpecTestsAnyPct{}--\NumResCodexSpecTestsAnyPct{}\% số lượt, và test của chính tác
+tử chạy qua khoảng một nửa số dòng mới (\NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%, tính 0 cho
+lượt không viết test). Nhánh vibe khác nhau theo công cụ: Codex không viết test nào
+(\NumResCodexVibeTestsAnyPct{}\%) và hầu như không chạy \texttt{pytest} (\NumResCodexVibePytestPct{}\% số
+lượt); Sonnet viết test ở \NumResSonnetVibeTestsAnyPct{}\% số lượt; Opus tự viết test ở
+\NumResOpusVibeTestsAnyPct{}\% số lượt và phủ \NumResOpusVibeCovPct{}\% số dòng mới dù không được yêu cầu.
+Phần chênh này một phần là hệ quả trực tiếp của lời dặn (nhánh theo đặc tả được bảo viết test trước), nên
+nó xác nhận quy trình được làm, không phải một phát hiện bất ngờ. Điều đáng chú ý là test ẩn không thưởng
+cho phần test này: hai nhánh đạt gần như nhau.
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption{Test do tác tử viết, theo nhóm và cách làm (mọi tầng). Độ phủ là tỉ lệ dòng mới ở
+\texttt{backend/src} được test của chính tác tử chạy qua, tính 0 khi lượt không viết test.}
+\label{tab:tests}
+\input{generated/tables/results_tests}
+\end{table}
+
+Chi phí quy đổi cho một lượt đạt (Bảng~\ref{tab:cost}) cao hơn ở nhánh theo đặc tả
+trong mọi ô của hai mô hình Claude. Với Codex, giá quy đổi chỉ có cận dưới và cận trên; ở tầng lớn, nhánh
+theo đặc tả rẻ hơn cho một lượt đạt vì nhánh vibe gần như không đạt.
+
+\begin{table}[H]
+\centering\small
+\caption{Chi phí quy đổi theo giá API cho một lượt đạt (USD). Với \texttt{codex-luna} là khoảng từ cận
+dưới tới cận trên của giá.}
+\label{tab:cost}
+\input{generated/tables/results_cost}
+\end{table}
+
 
 \subsection{Phân tích độ nhạy}
 
-Phép thử chính của H1 và H5 khi bỏ lượt có \texttt{upstream\_urls}, lượt sửa cấu hình \texttt{pytest} và
-lượt theo đặc tả không tuân thủ: \pending{sensitivity.\{upstream\_urls, pytest\_config\_touched,
-spec\_noncompliant\}.\{h1, h5\}}. H5 khi bỏ nhiệm vụ chồng lấn và khi dùng số dòng được chấm:
-\pending{sensitivity.overlap.h5, h5.mixed\_model\_graded}. Lượt hết giờ trong và ngoài khoảng các tầng
-chạy chồng nhau: \pending{descriptives.concurrent\_tiers\_window, shared\_cpu\_window}.
+Bỏ \NumResSensUrlRuns{} lượt của nhiệm vụ có đường dẫn tới mã gốc trong nhật ký, H1 thành
+\NumResSensUrlEstPp{} đpt [\NumResSensUrlLowPp{}; \NumResSensUrlHighPp{}]. Bỏ \NumResSensPytestRuns{} lượt
+sửa cấu hình \texttt{pytest}, hay bỏ lượt theo đặc tả không tuân thủ (không có lượt nào), H1 và H5 không
+đổi. Bỏ cặp nhiệm vụ chồng commit (\texttt{f08} và \texttt{t03}), phép thử chính của H5 thành
+\NumResSensOverlapEstPp{} đpt [\NumResSensOverlapLowPp{}; \NumResSensOverlapHighPp{}]. Dùng số dòng được
+chấm thay cho số dòng của bản vá gốc, hệ số tương tác là \NumResHFiveGradedCoef{}
+[\NumResHFiveGradedLow{}; \NumResHFiveGradedHigh{}]. Không có lượt hết giờ nào, kể cả trong khoảng các
+tầng chạy chồng nhau (\NumResConcurrentWindowRuns{} lượt bắt đầu trong khoảng đó), nên việc chạy chồng
+không ảnh hưởng đến kết cục. Kết luận của H1 và H5 không đổi trong mọi phân tích độ nhạy.
 
 \subsection{Nguyên nhân thất bại và ca nghiên cứu}
 
-Phân bố nhãn theo cách làm, kappa của Cohen, bảng chéo hai người và tỉ lệ lượt bị ghi ``lộ cách làm'':
-\pending{labels}. Lượt đạt test nhưng sai trong mẫu 20 lượt: \pending{passing\_sample.csv, kết luận của An}.
-Ca nghiên cứu: \pending{case\_study: nhiệm vụ, hai lượt, thiết kế và kế hoạch AI viết, chỗ sai, test ẩn
-trượt, chi phí}.
+Gán nhãn nguyên nhân thất bại (Lợi và Bảo, độc lập, mù một phần), kappa của Cohen và phân xử của An:
+\pending{labels; đang chờ Lợi và Bảo gán nhãn, An phân xử}. Lượt đạt test nhưng sai trong mẫu 20 lượt
+đạt đã rút: \pending{passing\_sample.csv; đang chờ An đọc}.
+
+\textit{Ca nghiên cứu.} Theo quy tắc chọn trước (nhiệm vụ tầng lớn có hiệu số lớn nhất ở
+\texttt{claude-sonnet}), ca được chọn là \texttt{f15}: tập tài liệu có chủ sở hữu và quy tắc hiển thị,
+và việc tìm kiếm trong chat chỉ đọc các tập người dùng được xem. Hiệu số là \NumResCaseDiffPp{} đpt:
+không lượt nào trong \NumResCaseReps{} lượt theo đặc tả đạt (\NumResCaseSpecPassed{}), một lượt vibe
+đạt (\NumResCaseVibePassed{}). Lượt theo đặc tả được chọn viết bản thiết kế \NumResCaseDesignLines{}
+dòng và kế hoạch \NumResCasePlanLines{} dòng với \NumResCasePlanTasks{} task, viết \NumResCaseSpecTests{}
+test mới, và đạt \NumResCaseSpecHidden{} trên \NumResCaseHiddenTotal{} test ẩn, sau
+\NumResCaseSpecMin{} phút và \NumResCaseSpecTokensM{} triệu token. Lượt vibe được chọn đạt mọi test ẩn
+sau \NumResCaseVibeMin{} phút và \NumResCaseVibeTokensM{} triệu token, không viết test nào.
+
+Cả ba lượt theo đặc tả trượt cùng hai test. Test thứ nhất kiểm việc dọn tập tài liệu của một tổ chức đã
+bị xóa. Đề bài nêu tên phương thức kho \texttt{deleted\_with\_releases()} nhưng không nói nó trả về gì.
+Bản thiết kế của tác tử chốt kiểu trả về là danh sách đối tượng tập tài liệu, trong khi bản cài đặt gốc
+(và bản giả trong test ẩn) trả về danh sách mã. Kế hoạch và test của tác tử đều dựa trên quyết định đó
+nên đều đạt; còn trên bản giả của test ẩn, hàm dọn đọc thuộc tính \texttt{.id} của một mã, gặp lỗi, và
+khối \texttt{except Exception} của chính tác tử nuốt lỗi rồi báo không dọn được tập nào. Hai lượt vibe cũng phải tự
+chọn kiểu trả về, và đều chọn danh sách mã. Như vậy bước thiết kế đã biến một chỗ đề bỏ ngỏ thành một
+quyết định cố định, rồi các bước sau kiểm quyết định đó bằng chính giả định của nó. Test thứ hai (tập tài
+liệu hệ thống chỉ đọc với người không phải quản trị) trượt ở cả ba lượt theo đặc tả và hai trong ba lượt
+vibe; nguyên nhân sẽ được xác định trong bước gán nhãn.
+
+\subsection{Thí nghiệm thăm dò bổ sung: Haiku và đề sơ sài}\label{sec:explore}
+
+Hai thí nghiệm dưới đây được thêm \textbf{sau khi đã xem kết quả chính}, theo bản bổ sung
+\texttt{prereg-v1.2}; chúng là thăm dò và không dùng để xác nhận hay bác bỏ H1--H5.
+
+\textit{E1: Claude Haiku 5.5 theo thiết kế gốc.} Cùng \NumTasksMain{} nhiệm vụ, hai cách làm, ba lần lặp.
+Tỉ lệ đạt và hiệu số theo tầng: \pending{E1: pass\_diff.claude-haiku.*}. So với Sonnet và Opus:
+\pending{E1: mô tả}.
+
+\textit{E2: đề sơ sài.} Mỗi nhiệm vụ có thêm một đề chỉ một hoặc hai câu, không nêu tên hàm hay chữ
+ký; cả hai cách làm nhận cùng đề đó. Vì test ẩn gọi đúng tên, độ đúng được chấm bằng danh sách
+hành vi rút từ test ẩn, do Claude Fable 5.2 chấm khi không biết cách làm. Điểm danh sách hành vi theo nhóm
+và cách làm: \pending{E2: score}. Chỉ số tự động so với đề chi tiết (thiết kế 2 × 2): \pending{E2: hồi quy,
+test tự viết, token}. Mức khớp giữa người chấm máy và Lợi, Bảo: \pending{E2: kappa}.

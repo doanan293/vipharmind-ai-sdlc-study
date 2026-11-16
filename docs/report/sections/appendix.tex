@@ -82,7 +82,45 @@ xét được theo lời gọi: báo cáo chi phí cận dưới và cận trên
 (cận trên). \textit{Đã xem:} chưa kết quả chính nào.
 \item \textbf{Chồng lấn (làm rõ).} Hai nhiệm vụ chồng lấn khi tập commit \texttt{base..end} giao nhau; chỉ
 có cặp \texttt{f08}--\texttt{t03}. \textit{Đã xem:} chưa kết quả chính nào.
+\item \textbf{Độ phủ của khoảng bootstrap.} Quy tắc đọc bài kiểm tra mô phỏng được ghi trước khi có kết quả;
+kết quả \NumResCoverageHits{}/\NumResCoverageSets{} đạt ngưỡng đã ghi và mã được khóa không chỉnh.
+\textit{Đã xem:} chưa kết quả chính nào.
+\item \textbf{Mở kết quả chính.} Sau khi có thẻ \texttt{prereg-v1-analysis}, An và trợ lý xem số đếm thô
+theo nhóm, tầng và cách làm, khi \texttt{agy-gemini} mới chạy xong một phần. \textit{Đã xem:} số đếm thô của
+ba nhóm đã xong và phần agy đã xong.
+\item \textbf{Bỏ \texttt{agy-gemini}.} An quyết định bỏ nhóm này vì cả bốn tài khoản hết hạn mức và không kịp
+chạy đủ; dữ liệu thô giữ nguyên, phân tích chạy với ba nhóm. \textit{Đã xem:} như mục trên; lý do nêu ra là
+thời gian và hạn mức.
+\item \textbf{Bản bổ sung \texttt{prereg-v1.2} (thăm dò).} Thêm nhóm Claude Haiku 5.5 theo thiết kế gốc
+(E1) và đề bài sơ sài cho bốn nhóm (E2), chấm E2 bằng danh sách hành vi rút từ test ẩn; người chấm đổi từ
+Codex sang Fable 5.2 trước lượt chấm đầu tiên. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính; đây là
+lý do thêm, nên mọi kết quả E1, E2 chỉ là thăm dò.
 \end{itemize}
 
 \section{Khai báo sử dụng AI và bản kê đóng góp}\label{app:ai}
-\pending{khai báo sử dụng AI và bản kê đóng góp, dạng cuối}
+Đề tài có AI ở bốn vai trò, được tách riêng: trợ lý nghiên cứu, người duyệt độc lập, đối tượng được đo, và
+công cụ đã làm ra ViPharmind (đối tượng của phần hồi cứu). Bản khai đầy đủ theo từng việc nằm ở
+\texttt{team/ai-use.md}; dưới đây là phần chính.
+
+\textit{Trợ lý nghiên cứu} (Claude Code với Claude Opus 5.5) tìm tài liệu theo quy trình ghi lại được, soạn
+nháp đề bài và hai lời dặn, viết toàn bộ mã của bộ chạy, bộ chấm, gói phân tích và script sinh số liệu cho
+báo cáo, viết nháp các mục của báo cáo và dựng slide. An quyết định thiết kế, phạm vi, tiêu chí và mọi thay
+đổi so với bản đăng ký; An duyệt gộp đề bài do AI soạn. Mọi con số trong báo cáo được sinh bằng máy từ file
+kết quả, và \texttt{check.sh} chặn số gõ tay.
+
+\textit{Người duyệt độc lập} (Fable 5.2, chạy trong ngữ cảnh riêng, không xem kết quả chính) phản biện bản
+đăng ký, đề bài tầng vừa và tầng lớn, và mã phân tích; trong E2, Fable 5.2 cũng là người chấm danh sách
+hành vi, không biết lượt thuộc cách làm nào.
+
+\textit{Đối tượng được đo} là các tổ hợp công cụ và mô hình ở mục~\ref{sec:conditions} (và Claude Haiku 5.5
+trong E1). Trợ lý nghiên cứu cùng mô hình với nhóm \texttt{claude-opus} và đã soạn đề bài mà nhóm này nhận;
+đây là một xung đột lợi ích được nêu ở mục~\ref{sec:threats}.
+
+\textit{Không dùng AI} ở: gán nhãn nguyên nhân thất bại (Lợi, Bảo), phân xử nhãn (An), và phiếu đánh giá
+chéo trong nhóm. Commit trong các repo không có dòng ghi công AI theo quy ước của An; bản khai này thay
+cho dòng đó.
+
+\textit{Đóng góp.} An làm toàn bộ nghiên cứu (thiết kế, bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích,
+báo cáo, slide) với trợ lý AI như trên. Lê Xuân Lợi và Trần Ngọc Bảo gán nhãn mù nguyên nhân thất bại,
+chấm tay mẫu kiểm tra của E2, thuyết trình và trả lời câu hỏi. Bản kê chi tiết ở
+\texttt{team/contributions.md}.

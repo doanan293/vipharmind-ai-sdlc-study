@@ -147,3 +147,28 @@ def test_tiers_real():
     assert (n["Tasks"], n["MediumTasks"], n["FeatureTasks"]) == ("15", "5", "3")
     assert n["RunsTotal"] == "552"
     assert n["GradedMediumMin"] == "46"
+
+
+@pytest.mark.skipif(
+    not (REPO / "results" / "analysis" / "main" / "summary.json").exists(),
+    reason="chưa có kết quả phân tích chính",
+)
+def test_main_results_numbers_and_tables(tmp_path):
+    data = sources.load(REPO)
+    build.write(data, tmp_path)
+    tex = read_numbers_tex(tmp_path / "numbers.tex")
+    assert not any(v.startswith(r"\pending") for k, v in tex.items() if k.startswith("Res"))
+    s = json.loads((REPO / "results/analysis/main/summary.json").read_text())
+    h1 = s["estimates"]["h1.primary"]
+    assert tex["ResHOneEstPp"] == build.fmt.number(h1["estimate"] * 100, 1)
+    assert "-0,0" not in (tmp_path / "tables" / "results_main.tex").read_text()
+    for name in ("results_main", "results_secondary", "results_tests", "results_cost"):
+        assert (tmp_path / "tables" / f"{name}.tex").read_text().startswith("\\begin{tabular}")
+
+
+def test_missing_analysis_gives_pending_result_tables(tmp_path):
+    data = sources.load(tmp_path)
+    build.write(data, tmp_path / "gen")
+    tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
+    assert tex["ResHOneEstPp"] == r"\pending{ResHOneEstPp}"
+    assert "pending" in (tmp_path / "gen" / "tables" / "results_main.tex").read_text()

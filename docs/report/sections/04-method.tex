@@ -80,6 +80,33 @@ cũ của ViPharmind, và không chép skill nào. Can thiệp vì vậy là m�
 tả tự động'': không có người duyệt như khi An làm ViPharmind. Lượt theo đặc tả không để lại cả hai file
 được ghi là không tuân thủ; phép thử chính vẫn tính các lượt này (phân tích theo phân bổ).
 
+Lời dặn theo đặc tả đi theo quy trình của bộ skill Superpowers mà An dùng khi làm ViPharmind, nhưng viết
+lại thành một khối chữ duy nhất thay vì nạp skill (Bảng~\ref{tab:superpowers}). Có hai lý do. Các lượt
+chạy không có người ngồi trả lời, nên những bước cần hỏi đáp với người dùng không làm được. Và cùng một
+quy trình phải chạy y hệt trên Claude Code và Codex, trong khi skill là cơ chế riêng của từng công cụ và
+có thể không được nạp.
+
+\begin{table}[H]
+\centering\footnotesize
+\caption{Lời dặn theo đặc tả so với quy trình Superpowers}
+\label{tab:superpowers}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.36\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.29\linewidth}}
+\toprule
+Bước của Superpowers & Trong lời dặn & Khác biệt \\
+\midrule
+\texttt{brainstorming} & viết \texttt{docs/design.md} & giữ bản thiết kế đầu ra, bỏ phần hỏi đáp với người
+dùng (chạy không người) \\
+\texttt{writing-plans} & viết \texttt{docs/plan.md} & cùng cấu trúc (ràng buộc chung, từng task có file,
+giao diện, test); Superpowers chia task 2--5 phút kèm mã, lời dặn để tác tử tự định cỡ task \\
+\texttt{test-driven-development} & viết test, thấy test trượt, rồi viết mã & giống \\
+\texttt{verification-before-completion} & chạy cả bộ \texttt{uv run pytest} trước khi dừng & giống \\
+\texttt{executing-plans},\newline \texttt{subagent-driven-development} & một tác tử làm lần lượt từng task & khác:
+không có tác tử con, không có bước duyệt giữa các task \\
+commit thường xuyên, \texttt{git worktree} & không yêu cầu & bộ chạy tự lấy bản vá cuối \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Nhóm chạy và điều kiện chạy}\label{sec:conditions}
 
 Bốn nhóm chạy (Bảng~\ref{tab:cohorts}) đều ở mức effort hoặc suy luận medium. Ba lần lặp, hai cách làm và
@@ -166,15 +193,17 @@ tính lấy nhiệm vụ tầng lớn có hiệu số lớn nhất ở \texttt{c
 Bản đăng ký trước được gắn thẻ git theo ba bước: \texttt{prereg-v1} chốt tầng nhỏ, giả thuyết, chỉ số, kế
 hoạch phân tích và quy tắc chọn hai tầng còn lại; \texttt{prereg-v1.1} chốt nhiệm vụ và mã băm đề bài tầng
 vừa và tầng lớn, trước mọi lượt AI trên hai tầng này; \texttt{prereg-v1-analysis} chốt gói phân tích
-(\texttt{analysis/}) đã chạy được trên dữ liệu chạy thử; tại thời điểm viết, thẻ này chưa được gắn. Lượt chạy chính tầng nhỏ bắt đầu trước thẻ
+(\texttt{analysis/}) đã chạy được trên dữ liệu chạy thử. Lượt chạy chính tầng nhỏ bắt đầu trước thẻ
 thứ hai; như bản đăng ký cho phép, không kết quả chính nào được mở, ngoài số lượt theo trạng thái, trước thẻ
 phân tích. Mọi thay đổi sau thẻ được ghi kèm lý do và những gì đã xem (Phụ lục~\ref{app:deviations}).
 Fable 5.2, một tác tử AI chạy tách khỏi phiên soạn thảo và không xem kết quả chính, phản biện bản đăng ký,
 đề bài tầng vừa và tầng lớn, và mã phân tích; mọi điểm chặn được sửa trước thẻ.
 
 Hạn chót thu dữ liệu là \mbox{2026-11-29}. Một (nhóm, tầng) chưa chạy đủ ở hạn chót bị loại khỏi phép thử
-xác nhận và phép thử gộp nhóm, và chỉ được mô tả. Tại thời điểm viết, cả bốn tài khoản Antigravity đã hết
-hạn mức tuần; các lượt còn lại của \texttt{agy-gemini} chờ hạn mức hồi (khoảng \mbox{2026-11-22}).
+xác nhận và phép thử gộp nhóm, và chỉ được mô tả. Cả bốn tài khoản Antigravity hết hạn mức tuần trước
+khi \texttt{agy-gemini} chạy xong, và nhóm này bị bỏ (mục~\ref{sec:data-collected}). Bản bổ sung
+\texttt{prereg-v1.2}, viết sau khi mở kết quả chính, thêm hai thí nghiệm thăm dò: Claude Haiku 5.5 theo
+thiết kế gốc và đề bài sơ sài cho cả hai cách làm (mục~\ref{sec:explore}).
 
 \subsection{Vai trò của AI trong chính nghiên cứu này}\label{sec:ai-role}
 

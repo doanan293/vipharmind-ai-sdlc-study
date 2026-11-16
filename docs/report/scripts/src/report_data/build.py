@@ -11,7 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from report_data import fmt
+from report_data import fmt, results
 
 Numbers = dict[str, str | None]
 
@@ -462,6 +462,7 @@ def numbers(data: dict[str, Any]) -> Numbers:
     out |= _group(PILOT_RUN_KEYS, data.get("pilot_runs"), _pilot_runs)
     out |= _group(LIT_KEYS, data.get("literature"), _literature)
     out |= _group(PILOT_KEYS, data.get("pilot_results"), _pilot)
+    out |= _group(results.KEYS, data.get("analysis"), results.numbers)
     return out
 
 
@@ -772,6 +773,14 @@ def write(data: dict[str, Any], out: Path) -> None:
         ),
         encoding="utf-8",
     )
+
+    if data.get("analysis") is not None:
+        results.write_tables(data["analysis"], out)
+        results.copy_figures(data["analysis"], out)
+    else:
+        results.pending_tables(out, _pending_table)
+        for name in results.FIGURES:
+            _pending_figure(out / "figures" / f"{name}.pdf")
 
     for name, source, render in (
         ("lifecycle_by_week", data.get("lifecycle_week"), _lifecycle_figure),

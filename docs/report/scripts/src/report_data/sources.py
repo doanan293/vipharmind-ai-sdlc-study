@@ -6,6 +6,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from report_data import results
+
 RETRO = Path("retrospective/out")
 RETRO_CSV = {
     "commits": "commits.csv",
@@ -100,4 +102,5 @@ def load(root: Path) -> dict[str, Any]:
     data["literature"] = tomllib.loads(lit.read_text(encoding="utf-8")) if lit.exists() else None
     data["pilot_results"] = _pilot_results(root)
     data["pilot_runs"] = _csv(root / PILOT_RUNS)
+    data["analysis"] = results.load(root)
     return data
