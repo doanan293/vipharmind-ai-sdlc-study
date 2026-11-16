@@ -2,16 +2,21 @@
 
 Phần hồi cứu cho thấy ViPharmind được làm gần như hoàn toàn với trợ lý AI và theo nếp spec, plan:
 \NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên, vì quy tắc nối nghiêng về nối
-thừa), và mã do AI viết được sửa lại với mức gần như nhau dù có hay không có plan (RQ1, RQ2).
+thừa), và mã AI viết được sửa lại gần như ngang nhau dù có hay không có plan (RQ1, RQ2).
 
-Phần thực nghiệm cho hai phát hiện. Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc
-nhỏ: trên \NumResRuns{} lượt của ba nhóm, nó không đạt test ẩn nhiều hơn (H1, H5 chưa kết luận được), tốn
+Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả gần như thừa ở việc nhỏ: trên \NumResRuns{} lượt của ba nhóm, nó không đạt test ẩn nhiều hơn (H1, H5 chưa kết luận được), tốn
 gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token, chỉ có dấu hiệu có ích ở Codex trên ba
 nhiệm vụ lớn nhất, và luôn để lại test do tác tử tự viết. Và \NumLabOutside{} trên \NumLabRuns{} lượt hỏng
 của Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau.
 
-Kết quả \NumETwoStatus{} của E2 (tới \NumETwoCutoff{}): \NumETwoReading{}. Kết luận chính: \pending{viết từ kết quả E2 (và E1): khi đề chỉ một hai câu, quy trình đặc tả có bù được
-phần đề thiếu không}.
-
-Hướng tiếp theo: nhánh đặc tả có người duyệt, thêm dự án, ngôn ngữ và nhiệm vụ cỡ tính năng, và đo giá trị
+Với đề chỉ một hai câu, thí nghiệm thăm dò E2 gợi ý rằng đề rõ quan trọng hơn quy
+trình: bỏ tên và chữ ký làm tỉ lệ lượt đạt hết test ẩn giảm \NumETwoXPassShiftSpec{} đến
+\NumETwoXPassShiftVibe{} đpt ở cả hai cách. Khi đề sơ sài, quy trình đặc tả bù được một phần: điểm hành vi
+cao hơn vibe \NumETwoPooledSmallPp{} đpt ở tầng nhỏ [\NumETwoPooledSmallLowPp{};
+\NumETwoPooledSmallHighPp{}], rõ nhất với Sonnet; gộp mọi tầng là \NumETwoPooledAllPp{} đpt, khoảng tin cậy
+chạm 0, và không thấy lợi ích ở tầng vừa, tầng lớn. E1 (Haiku) lặp lại kết quả chính.
+\textbf{Kết luận chính:} quy trình đặc tả tự động bù một phần cho đề sơ sài nhưng không thay được thông tin
+đề thiếu. Nên viết đề rõ trước; quy trình đặc tả đáng thêm chủ yếu khi yêu cầu ngắn, việc nhỏ, rủi ro thấp
+hoặc vừa, và với mô hình hạng giữa như Sonnet. Đây là xu hướng thăm dò, cần thí nghiệm đăng ký trước để
+kiểm lại. Hướng tiếp theo: nhánh đặc tả có người duyệt, thêm dự án, ngôn ngữ và nhiệm vụ cỡ tính năng, và đo giá trị
 về sau của test do tác tử viết.

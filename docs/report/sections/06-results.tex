@@ -208,50 +208,48 @@ Hai thí nghiệm dưới đây được thêm \textbf{sau khi đã xem kết qu
 \textit{E2: đề sơ sài.} Mỗi nhiệm vụ có thêm một đề một hai câu, không nêu tên hàm hay chữ ký; bốn nhóm
 (thêm Haiku) làm theo hai cách với đề đó. Vì test ẩn gọi đúng tên mà đề không nêu, độ đúng được chấm bằng
 danh sách hành vi rút từ test ẩn, do Fable 5.2 chấm khi không biết cách làm; điểm là tỉ lệ mục đạt.
-\textbf{Kết quả E2 là \NumETwoStatus{}}: tính đến \NumETwoCutoff{}, \NumETwoBriefJudged{} trên
-\NumETwoBriefExpected{} lượt đề sơ sài đã được chấm (tầng nhỏ \NumETwoBriefSmallJudged{}/\NumETwoBriefSmallExpected{},
-tầng vừa \NumETwoBriefMediumJudged{}/\NumETwoBriefMediumExpected{}, tầng lớn
-\NumETwoBriefLargeJudged{}/\NumETwoBriefLargeExpected{}; Bảng~\ref{tab:e2-coverage}), nên mọi ước lượng
-dưới đây chỉ gồm \NumETwoScope{}.
+Dữ liệu E2 là \textbf{\NumETwoStatus{}}: ba nhóm Claude đủ \NumETwoClaudeBriefJudged{} lượt đề sơ sài. Codex hết hạn mức sau \NumETwoCodexSmallJudged{} trên
+\NumETwoCodexSmallExpected{} lượt tầng nhỏ và dừng hẳn (Phụ lục~\ref{app:deviations}), thiếu
+\NumETwoStoppedUnits{} lượt (Bảng~\ref{tab:e2-coverage}). Tầng vừa và tầng lớn chỉ để tham khảo (ít nhiệm vụ).
 
-Với đề sơ sài, điểm của nhánh đặc tả trừ nhánh vibe, gộp bốn nhóm, là \NumETwoPooledAllPp{} đpt
-[\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}] (Bảng~\ref{tab:e2-primary}): Sonnet
-\NumETwoSonnetAllPp{} [\NumETwoSonnetAllLowPp{}; \NumETwoSonnetAllHighPp{}], Opus \NumETwoOpusAllPp{}
-[\NumETwoOpusAllLowPp{}; \NumETwoOpusAllHighPp{}], Haiku \NumETwoHaikuAllPp{} [\NumETwoHaikuAllLowPp{};
-\NumETwoHaikuAllHighPp{}], Codex \NumETwoCodexAllPp{} [\NumETwoCodexAllLowPp{}; \NumETwoCodexAllHighPp{}].
-Bỏ các mục kiểm chi tiết đúng từng chữ, hiệu số gộp là \NumETwoCorePp{} [\NumETwoCoreLowPp{};
-\NumETwoCoreHighPp{}]. Với đề chi tiết, cùng hiệu số là \NumETwoXScoreDetailed{} [\NumETwoXScoreDetailedLow{};
-\NumETwoXScoreDetailedHigh{}], nên tương tác mức chi tiết $\times$ cách làm là \NumETwoXScoreInter{}
-[\NumETwoXScoreInterLow{}; \NumETwoXScoreInterHigh{}] đpt (Bảng~\ref{tab:e2-x2}). Đọc chung:
-\NumETwoReading{}. Ở các chỉ số tự động, nhánh đặc tả viết thêm \NumETwoXTestsDetailed{} test mỗi lượt với đề
-chi tiết và \NumETwoXTestsBrief{} với đề sơ sài, và tốn thêm \NumETwoXWallDetailed{} và \NumETwoXWallBrief{}
-phút.
+Mức chi tiết của đề tác động lớn hơn nhiều so với cách làm (Bảng~\ref{tab:e2-x2}, Phụ lục~\ref{app:e2-coverage}). Bỏ chi tiết, tỉ lệ
+lượt đạt hết test ẩn giảm \NumETwoXPassShiftSpec{} đpt ở nhánh đặc tả và \NumETwoXPassShiftVibe{} đpt ở
+nhánh vibe (vì đề không nêu tên mà test ẩn gọi), điểm danh sách hành vi giảm \NumETwoXScoreShiftSpec{} và \NumETwoXScoreShiftVibe{} đpt, còn tỉ lệ
+lượt làm hỏng test cũ tăng \NumETwoXRegressionShiftSpec{} và \NumETwoXRegressionShiftVibe{} đpt.
+
+So với khoảng cách đó, phần quy trình bù lại nhỏ. Với đề sơ sài, điểm của nhánh đặc tả trừ nhánh vibe,
+gộp bốn nhóm và mọi tầng, là \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{};
+\NumETwoPooledAllHighPp{}] (Bảng~\ref{tab:e2-primary}): \NumETwoReading{}. Ở tầng nhỏ hiệu số gộp là
+\NumETwoPooledSmallPp{} [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}], rõ nhất ở Sonnet
+(\NumETwoSonnetSmallPp{} [\NumETwoSonnetSmallLowPp{}; \NumETwoSonnetSmallHighPp{}]). Opus \NumETwoOpusAllPp{},
+Haiku \NumETwoHaikuAllPp{} và Codex (chỉ tầng nhỏ) \NumETwoCodexAllPp{} đều có khoảng tin cậy chứa 0. Ở
+tầng vừa và tầng lớn hiệu số gộp là \NumETwoPooledMediumRefPp{} và \NumETwoPooledLargeRefPp{} đpt, tức không
+thấy lợi ích; Haiku tầng lớn còn nghiêng về vibe (\NumETwoHaikuLargeRefPp{}). Với đề chi tiết, cùng
+hiệu số là \NumETwoXScoreDetailed{} [\NumETwoXScoreDetailedLow{}; \NumETwoXScoreDetailedHigh{}], nên tương
+tác mức chi tiết $\times$ cách làm là \NumETwoXScoreInter{} [\NumETwoXScoreInterLow{};
+\NumETwoXScoreInterHigh{}] đpt: cùng chiều giả thuyết thăm dò nhưng khoảng tin cậy chạm 0. Chi phí và test
+thêm của nhánh đặc tả gần như không đổi theo mức chi tiết của đề.
 
 \begin{table}[H]
 \centering\footnotesize
-\caption{E2 (\NumETwoStatus{}, tới \NumETwoCutoff{}): điểm danh sách hành vi với đề sơ sài, đặc tả trừ vibe
-(đpt, KTC 95\%); ``--'' là tầng chưa có dữ liệu}
+\caption{E2: điểm danh sách hành vi với đề sơ sài, đặc tả trừ vibe
+(đpt, KTC 95\%); trong ngoặc: chỉ tham khảo (dưới sáu nhiệm vụ); ``--'': không chạy}
 \label{tab:e2-primary}
 \input{generated/tables/e2_primary}
 \end{table}
 
-\begin{table}[H]
-\centering\footnotesize
-\caption{E2, thiết kế $2\times 2$ (\NumETwoStatus{}): trung bình gộp bốn nhóm và tương tác
-(đặc tả $-$ vibe khi đề sơ sài) $-$ (đặc tả $-$ vibe khi đề chi tiết). $^\dagger$Không đo độ đúng khi đề
-sơ sài, vì test ẩn gọi tên mà đề không nêu.}
-\label{tab:e2-x2}
-\input{generated/tables/e2_x2}
-\end{table}
 
 Người chấm máy được kiểm trên \NumETwoJudgeN{} lượt đề chi tiết, nơi test ẩn là thước đo: hai bên khớp ở
 \NumETwoJudgeAgreePct{}\% [\NumETwoJudgeAgreeLowPct{}; \NumETwoJudgeAgreeHighPct{}] số lượt, kappa
 \NumETwoJudgeKappa{}; khi test ẩn đạt hết, người chấm cho đạt mọi mục ở \NumETwoJudgeAllMetGivenPassPct{}\%
-số lượt. Mức khớp với Lợi, Bảo trên mẫu chấm tay: \pending{E2: kappa}.
+số lượt (kappa mức vừa: điểm từng lượt có nhiễu). Mẫu chấm tay đề sơ sài (ba lượt mỗi nhóm và cách
+làm) đang được Lợi và Bảo chấm; mức khớp với người chấm máy sẽ bổ sung trước hạn nộp bản cuối.
+% CHỜ: kappa người--máy của mẫu chấm tay E2 (Lợi, Bảo)
 
-\textit{E1: Claude Haiku 5.5 theo thiết kế gốc} (đề chi tiết, \NumEOneRuns{} lượt hợp lệ). Tỉ lệ đạt đặc
-tả/vibe và hiệu số: tầng nhỏ \NumEOneSmallSpecPct{}/\NumEOneSmallVibePct{}\%, \NumEOneSmallDiffPp{} đpt
-[\NumEOneSmallLowPp{}; \NumEOneSmallHighPp{}]; tầng vừa \NumEOneMediumSpecPct{}/\NumEOneMediumVibePct{}\%,
+\textit{E1: Claude Haiku 5.5 theo thiết kế gốc} (đề chi tiết, \NumEOneRuns{} lượt hợp lệ, đủ). Tỉ lệ
+đạt đặc tả/vibe và hiệu số: tầng nhỏ \NumEOneSmallSpecPct{}/\NumEOneSmallVibePct{}\%, \NumEOneSmallDiffPp{}
+đpt [\NumEOneSmallLowPp{}; \NumEOneSmallHighPp{}]; tầng vừa \NumEOneMediumSpecPct{}/\NumEOneMediumVibePct{}\%,
 \NumEOneMediumDiffPp{} [\NumEOneMediumLowPp{}; \NumEOneMediumHighPp{}]; tầng lớn
 \NumEOneLargeSpecPct{}/\NumEOneLargeVibePct{}\%, \NumEOneLargeDiffPp{} [\NumEOneLargeLowPp{};
-\NumEOneLargeHighPp{}].
+\NumEOneLargeHighPp{}]. Ở tầng nhỏ, một lượt đặc tả tốn trung bình \NumEOneSmallSpecTokensM{} triệu token so
+với \NumEOneSmallVibeTokensM{} triệu của vibe. Kết quả cùng hướng với thí nghiệm chính.

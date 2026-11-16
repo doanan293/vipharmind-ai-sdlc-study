@@ -114,10 +114,19 @@ Số lần người dùng ngắt ngang tác tử, số đo thay thế cho việc
 \NumSessionInterrupts{}; đây chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Các con
 số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộng ra toàn dự án.
 
-\section{Số lượt của E2 theo nhóm và tầng}\label{app:e2-coverage}
+\section{E2: thiết kế \texorpdfstring{$2\times 2$}{2 x 2} và số lượt}\label{app:e2-coverage}
 
-Số lượt đề sơ sài đã chạy xong / đã được chấm / dự kiến, tính đến \NumETwoCutoff{} (\NumETwoStatus{}).
-Lượt chưa được chấm không vào điểm và không được điền thay.
+\begin{table}[H]
+\centering\small
+\caption{E2, thiết kế $2\times 2$: trung bình gộp bốn nhóm và tương tác
+(đặc tả $-$ vibe khi đề sơ sài) $-$ (đặc tả $-$ vibe khi đề chi tiết). $^\dagger$Không đo độ đúng khi đề
+sơ sài, vì test ẩn gọi tên mà đề không nêu.}
+\label{tab:e2-x2}
+\input{generated/tables/e2_x2}
+\end{table}
+
+Bảng~\ref{tab:e2-coverage} cho số lượt đề sơ sài đã chạy xong / đã được chấm / dự kiến, tính đến
+\NumETwoCutoff{} (\NumETwoStatus{}). Lượt chưa được chấm không vào điểm và không được điền thay.
 
 \begin{table}[H]
 \centering\small
@@ -178,6 +187,14 @@ thời gian và hạn mức.
 (E1) và đề bài sơ sài cho bốn nhóm (E2), chấm E2 bằng danh sách hành vi rút từ test ẩn; người chấm đổi từ
 Codex sang Fable 5.2 trước lượt chấm đầu tiên. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính; đây là
 lý do thêm, nên mọi kết quả E1, E2 chỉ là thăm dò.
+\item \textbf{Phạm vi chấm của E1.} Khi hết hạn mức Fable, An cắt phạm vi chấm: chỉ chấm tiếp lượt đề sơ sài;
+lượt đề chi tiết của Haiku dừng ở \NumETwoHaikuDetailedJudged{} trên \NumETwoHaikuDetailedExpected{} lượt đã
+chấm, vì chỉ số chính của E1 là test ẩn. \textit{Đã xem:} số lượt đã chấm.
+\item \textbf{Dừng Codex trong E2.} Mọi tài khoản Codex hết hạn mức tới sau hạn nộp; An quyết định không mua
+thêm và không chạy nốt các lượt dở bằng khóa API, vì tốn tiền và Codex CLI trên máy đã tự cập nhật phiên
+bản, nên lượt chạy thêm sẽ khác phiên bản. Codex dừng ở \NumETwoCodexSmallJudged{} trên
+\NumETwoCodexSmallExpected{} lượt tầng nhỏ; tầng vừa và tầng lớn của E2 chỉ có ba nhóm Claude. Mẫu chấm tay
+rút từ các lượt đã có. \textit{Đã xem:} số lượt theo trạng thái và kết quả E2 tạm thời.
 \item \textbf{Gán nhãn vòng hai.} Vòng một bị loại theo đề nghị của Lợi và Bảo vì điền chưa kỹ, và không
 dùng trong báo cáo. Vòng hai gán lại cả \NumLabRuns{} lượt với mã và thứ tự mới, kèm mã nguồn test ẩn, và
 thêm một thứ tự quyết định cố định vào hướng dẫn (bảng nhãn không đổi); quyết định này có trước khi có phiếu

@@ -42,10 +42,15 @@ cậy 95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]) và tốn gấp \NumResTok
 \NumResTokenRatioMax{} lần token; dấu hiệu có ích duy nhất là Codex ở ba nhiệm vụ lớn nhất, và quy trình
 luôn để lại test do tác tử tự viết. Gán nhãn nguyên nhân cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
 Claude đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau. Câu hỏi
-còn lại là khi đề chỉ một hai câu, việc bắt tác tử tự viết thiết kế, kế hoạch và test có bù được không;
-thí nghiệm thăm dò E2 (đề sơ sài) cho kết quả \NumETwoStatus{} (\NumETwoScope{}, tới \NumETwoCutoff{}): đặc tả
-hơn vibe \NumETwoPooledAllPp{} điểm phần trăm điểm danh sách hành vi [\NumETwoPooledAllLowPp{};
-\NumETwoPooledAllHighPp{}], tức \NumETwoReading{}. E1 (Haiku): \pending{E1: một câu}.
+còn lại là khi đề chỉ một hai câu, việc bắt tác tử tự viết thiết kế, kế hoạch và test có bù được không.
+Thí nghiệm thăm dò E2 (đề sơ sài, thêm sau khi thấy kết quả chính) gợi ý rằng mức chi tiết của đề quan
+trọng hơn nhiều so với cách làm: bỏ chi tiết, tỉ lệ lượt đạt hết test ẩn giảm \NumETwoXPassShiftSpec{} và
+\NumETwoXPassShiftVibe{} điểm phần trăm ở hai cách. Với đề sơ sài, đặc tả hơn vibe \NumETwoPooledSmallPp{}
+điểm phần trăm điểm danh sách hành vi ở tầng nhỏ [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}],
+rõ nhất ở Sonnet; gộp mọi tầng là \NumETwoPooledAllPp{} [\NumETwoPooledAllLowPp{};
+\NumETwoPooledAllHighPp{}], và không thấy lợi ích ở tầng vừa, tầng lớn. Quy trình bù một phần cho đề sơ
+sài nhưng không thay được thông tin đề thiếu. E1 (Haiku, đề chi tiết) cùng hướng với kết quả chính:
+đặc tả không đạt nhiều hơn và tốn nhiều token hơn.
 
 \clearpage
 \tableofcontents

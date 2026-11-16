@@ -2,7 +2,7 @@
 
 Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.
 
-Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05); phần còn lại của 15 phút dành cho chuyển slide và chuyển người nói. Hỏi đáp 5 phút sau đó.
+Tổng thời gian nói: 14:15 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:10); phần còn lại của 15 phút dành cho chuyển slide và chuyển người nói. Hỏi đáp 5 phút sau đó.
 
 | Slide | Trang | Người nói | Thời lượng | Cộng dồn |
 | --- | --- | --- | --- | --- |
@@ -28,18 +28,15 @@ Tổng thời gian nói: 14:10 (Lê Xuân Lợi 7:05, Trần Ngọc Bảo 7:05);
 | 20 | `p20_cost` | Trần Ngọc Bảo | 0:25 | 11:05 |
 | 21 | `p21_case` | Trần Ngọc Bảo | 0:35 | 11:40 |
 | 22 | `p22_labels` | Trần Ngọc Bảo | 0:30 | 12:10 |
-| 23 | `p23_explore` | Trần Ngọc Bảo | 0:30 | 12:40 |
-| 24 | `p24_limits` | Trần Ngọc Bảo | 0:40 | 13:20 |
-| 25 | `p25_conclusion` | Trần Ngọc Bảo | 0:40 | 14:00 |
-| 26 | `p26_thanks` | Trần Ngọc Bảo | 0:10 | 14:10 |
+| 23 | `p23_explore` | Trần Ngọc Bảo | 0:35 | 12:45 |
+| 24 | `p24_limits` | Trần Ngọc Bảo | 0:40 | 13:25 |
+| 25 | `p25_conclusion` | Trần Ngọc Bảo | 0:40 | 14:05 |
+| 26 | `p26_thanks` | Trần Ngọc Bảo | 0:10 | 14:15 |
 | 27 | `p27_bk_funnel` | Dự phòng | – | – |
 | 28 | `p28_bk_reading` | Dự phòng | – | – |
 | 29 | `p29_bk_labels` | Dự phòng | – | – |
 | 30 | `p30_attribution` | Dự phòng | – | – |
 
-## Chỗ chờ kết quả
+## Số liệu
 
-Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) có số sơ bộ, làm mới bằng refresh-interim.sh; E1 (Haiku) chưa xong. Các slide sau còn `[CHỜ KẾT QUẢ]`:
-
-- `p25_conclusion`: main conclusion, written from the complete E2 (and E1) results; E2 line is interim
-- `p23_explore`: E1: Haiku pass rate spec / vibe (until results/analysis/e1 exists); E2 values are interim
+Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài, dữ liệu đầy đủ) và E1 (Haiku). Làm mới bằng `refresh-interim.sh`. Không còn chỗ chờ kết quả.

@@ -232,3 +232,14 @@ def test_e2_reading_and_pending(tmp_path):
     tex = read_numbers_tex(tmp_path / "gen" / "numbers.tex")
     assert tex["ETwoPooledAllPp"] == r"\pending{ETwoPooledAllPp}"
     assert tex["EOneSmallSpecPct"] == r"\pending{EOneSmallSpecPct}"
+
+
+def test_e2_primary_table_marks_reference_only():
+    from report_data import explore
+
+    ref = {"estimate": -0.011, "ci_low": -0.037, "ci_high": 0.004, "reference_only": True}
+    main = {"estimate": 0.042, "ci_low": 0.007, "ci_high": 0.081, "reference_only": False}
+    E = {"primary.score.pooled.small": main, "primary.score.pooled.large": ref}
+    tex = explore.e2_primary_table({"summary": {"estimates": E}})
+    row = next(line for line in tex.splitlines() if line.startswith("gộp"))
+    assert "4,2 [0,7; 8,1]" in row and "(-1,1 [-3,7; 0,4])" in row

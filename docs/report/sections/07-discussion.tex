@@ -29,13 +29,15 @@ chốt một cách đoán, như ca \texttt{f15} cho thấy, rồi test viết tr
 gợi ý rằng điều quyết định là đặc tả có chốt đủ chi tiết hay không, hơn là tác tử có tự viết thiết kế hay
 không. Đây là diễn giải từ \NumLabRuns{} lượt của hai mô hình, chưa phải kết quả kiểm định.
 
-\subsection{Câu hỏi mở ra: khi đề chỉ một hai câu}
+\subsection{Khi đề chỉ một hai câu: đề rõ quan trọng hơn quy trình}
 
-Hai điều trên dẫn tới câu hỏi mà vibe coding thật đặt ra: khi người dùng chỉ đưa một hai câu, bắt tác tử tự
-viết thiết kế, kế hoạch và test có bù được phần đề thiếu không? Giả thuyết đang được kiểm là giá trị của quy
-trình tăng khi đề càng ít chi tiết; E2 kiểm nó bằng thiết kế $2\times 2$, và E1 hỏi mô hình yếu hơn có cần
-quy trình hơn không (mục~\ref{sec:explore}). Kết quả \NumETwoStatus{} của E2 (tới \NumETwoCutoff{}): \NumETwoReading{}, với tương tác
-\NumETwoXScoreInter{} đpt [\NumETwoXScoreInterLow{}; \NumETwoXScoreInterHigh{}].
+E2 (mục~\ref{sec:explore}) gợi ý rằng mức chi tiết của đề lấn át cách làm: bỏ tên và chữ ký làm tỉ lệ lượt
+đạt hết test ẩn giảm khoảng \NumETwoXPassShiftSpec{}--\NumETwoXPassShiftVibe{} đpt ở cả hai cách, lớn hơn
+mọi khác biệt giữa hai cách trong cả nghiên cứu. Phần quy trình bù lại nhỏ và chỉ thấy ở tầng nhỏ, rõ nhất
+ở Sonnet; Opus mạnh hơn và Haiku yếu hơn gần như không được lợi (với bốn nhóm, chỉ là quan sát). Cách đọc
+hợp lý: bước thiết kế buộc tác tử tự nêu điều đề không nói nên bù được vài mục hành vi, nhưng không tạo ra
+thông tin chỉ người giao việc có; nó chốt một cách đoán, như ca \texttt{f15}. E1, E2 thêm sau khi thấy kết
+quả chính, nên đây là xu hướng gợi ý, chưa phải kết luận đã kiểm.
 
 \subsection{Đối chiếu với tài liệu}
 
@@ -48,8 +50,7 @@ nhánh theo đặc tả ở đây cũng viết nhiều mã hơn và ở hai ô c
 sự \cite{jiang_2024} về lập kế hoạch ở mức hàm không lặp lại ở mức tính năng khi đề đã chi tiết: phần lợi
 của kế hoạch có lẽ đã nằm sẵn trong đề. Ca nghiên cứu \texttt{f15} cho một cơ chế cụ thể theo chiều ngược
 lại: bước thiết kế chốt một chỗ đề bỏ ngỏ thành quyết định cố định, rồi test viết trước kiểm quyết định đó
-bằng chính giả định của nó. Ở phần hồi cứu (RQ2), mã do AI viết trong ViPharmind cũng được sửa lại dù có
-hay không có plan; thí nghiệm cho cùng hướng đó trong điều kiện có đối chứng.
+bằng chính giả định của nó. Phần hồi cứu (RQ2) cho cùng hướng: mã AI viết được sửa lại dù có hay không có plan.
 
 \subsection{Mối đe dọa đến tính hợp lệ}\label{sec:threats}
 
@@ -97,5 +98,5 @@ nhóm này bị bỏ sau đó. Hai thí nghiệm E1 và E2 được thêm sau kh
 trong nhật ký sai lệch kèm những gì đã xem (Phụ lục~\ref{app:deviations}); chúng không đổi phép thử xác
 nhận, nhưng làm phần thăm dò dễ bị chọn theo kết quả hơn. Ba nhóm Claude dùng chung một tài khoản, nên
 hạn mức và tốc độ phản hồi có thể khác giữa các đợt chạy. Trong E2, người chấm máy (Fable 5.2) cùng họ
-Claude với ba nhóm, nên có thể nghiêng về bài của Claude so với Codex; phần chấm tay của Lợi và Bảo dùng
-để kiểm điều này.
+Claude với ba nhóm, nên có thể nghiêng về bài của Claude, và chỉ khớp vừa phải với test ẩn
+(kappa \NumETwoJudgeKappa{}); chấm tay của Lợi và Bảo (đang làm) sẽ kiểm việc này.

@@ -38,12 +38,26 @@ TIERS = [
 # chỉ số của bảng 2 x 2: khóa, tên khóa macro, nhãn, hệ số nhân, số chữ số
 X2 = [
     ("score", "Score", "Điểm danh sách hành vi (\\%)", 100, 1),
-    ("hidden_pass_rate", "Hidden", "Tỉ lệ test ẩn đạt (\\%)$^\\dagger$", 100, 1),
+    ("task_pass", "Pass", "Lượt đạt hết test ẩn (\\%)$^\\dagger$", 100, 1),
     ("regression_any", "Regression", "Lượt có hồi quy (\\%)", 100, 1),
     ("ai_tests_added", "Tests", "Test mới mỗi lượt", 1, 1),
     ("ai_changed_line_coverage", "Coverage", "Phủ dòng mới, lượt có test (\\%)", 100, 1),
     ("tokens_total", "Tokens", "Token (triệu)", 1e-6, 2),
     ("wall_s", "Wall", "Thời gian (phút)", 1 / 60, 1),
+]
+# chỉ số có thêm macro trung bình bốn ô và tác động của đề sơ sài trong từng nhánh (sơ sài trừ chi tiết,
+# lấy trị tuyệt đối: văn bản tự nói giảm hay tăng)
+X2_DETAIL = [
+    ("score", "Score"),
+    ("task_pass", "Pass"),
+    ("hidden_pass_rate", "Hidden"),
+    ("regression_any", "Regression"),
+]
+X2_CELLS = [
+    ("detailed_spec", "DetailedSpec"),
+    ("detailed_vibe", "DetailedVibe"),
+    ("brief_spec", "BriefSpec"),
+    ("brief_vibe", "BriefVibe"),
 ]
 
 
@@ -83,6 +97,7 @@ def _e2_keys() -> list[str]:
         "ETwoCutoff",
         "ETwoStatus",
         "ETwoLabel",
+        "ETwoStoppedUnits",
         "ETwoScope",
         "ETwoBriefExpected",
         "ETwoBriefGraded",
@@ -107,10 +122,27 @@ def _e2_keys() -> list[str]:
     for _, m, _, _, _ in X2:
         for part in ("Detailed", "Brief", "Inter"):
             k += [f"ETwoX{m}{part}", f"ETwoX{m}{part}Low", f"ETwoX{m}{part}High"]
+    # tầng vừa, tầng lớn: ước lượng chỉ để tham khảo (dưới sáu nhiệm vụ), vẫn xuất để mô tả
+    for _, c, _ in COHORTS:
+        for _, t, _ in TIERS[2:]:
+            k += [f"ETwo{c}{t}RefPp", f"ETwo{c}{t}RefLowPp", f"ETwo{c}{t}RefHighPp"]
+    for _, m in X2_DETAIL:
+        k += [f"ETwoX{m}Shift{a}" for a in ("Spec", "Vibe")]
+        k += [f"ETwoX{m}Mean{cell}" for _, cell in X2_CELLS]
+    k += [
+        "ETwoClaudeBriefJudged",
+        "ETwoCodexSmallJudged",
+        "ETwoCodexSmallExpected",
+        "ETwoHaikuDetailedJudged",
+        "ETwoHaikuDetailedExpected",
+    ]
     return k
 
 
 E2_KEYS = _e2_keys()
+
+
+STOPPED_COHORTS = {"codex-luna"}
 
 
 def _cutoff(runs: list[dict[str, str]]) -> str | None:
@@ -137,7 +169,11 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
         cs = [c for c in cov if c["tier"] == tier]
         for k, name in (("expected", "Expected"), ("graded", "Graded"), ("judged", "Judged")):
             out[f"ETwoBrief{t}{name}"] = fmt.number(sum(int(c[k]) for c in cs))
-    complete = ju == exp
+    # nhóm đã dừng thu thập hẳn (prereg-v1 mục 11, 2026-11-16 18:00 và 23:20): lượt chưa chạy của
+    # nhóm đó không còn chờ nữa, nên dữ liệu "đầy đủ" khi mọi lượt đã chạy xong đều đã được chấm
+    stopped_nf = sum(int(c["not_finished"]) for c in cov if c["cohort"] in STOPPED_COHORTS)
+    out["ETwoStoppedUnits"] = fmt.number(stopped_nf)
+    complete = ju == gr and gr + stopped_nf == exp
     cutoff = _cutoff(runs)
     out["ETwoCutoff"] = cutoff
     out["ETwoStatus"] = "đầy đủ" if complete else "sơ bộ"
@@ -164,6 +200,34 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
             v = _ci(e, scale, d)
             out[f"ETwoX{m}{part}"], out[f"ETwoX{m}{part}Low"], out[f"ETwoX{m}{part}High"] = v
 
+    for cohort, c, _ in COHORTS:
+        for tier, t, _ in TIERS[2:]:
+            e = E.get(f"primary.score.{cohort}.{tier}") or {}
+            e = e if e.get("estimate") is not None else {}
+            out[f"ETwo{c}{t}RefPp"], out[f"ETwo{c}{t}RefLowPp"], out[f"ETwo{c}{t}RefHighPp"] = _ci(e)
+    for metric, m in X2_DETAIL:
+        for arm, a in (("spec", "Spec"), ("vibe", "Vibe")):
+            e = _est(E, f"x2.{metric}.pooled.detail_effect.{arm}")
+            out[f"ETwoX{m}Shift{a}"] = _num(abs(e["estimate"])) if e else None
+        for cell, name in X2_CELLS:
+            e = _est(E, f"x2.{metric}.pooled.mean.{cell}")
+            out[f"ETwoX{m}Mean{name}"] = _num(e.get("estimate"), 100, 0)
+
+    def _count(detail: str, cohorts: set[str], key: str, tier: str | None = None) -> str:
+        cs = [
+            c
+            for c in s["coverage"]
+            if c["detail"] == detail and c["cohort"] in cohorts and (tier is None or c["tier"] == tier)
+        ]
+        return fmt.number(sum(int(c[key]) for c in cs))
+
+    claude = {"claude-sonnet", "claude-opus", "claude-haiku"}
+    out["ETwoClaudeBriefJudged"] = _count("brief", claude, "judged")
+    out["ETwoCodexSmallJudged"] = _count("brief", {"codex-luna"}, "judged", "small")
+    out["ETwoCodexSmallExpected"] = _count("brief", {"codex-luna"}, "expected", "small")
+    out["ETwoHaikuDetailedJudged"] = _count("detailed", {"claude-haiku"}, "judged")
+    out["ETwoHaikuDetailedExpected"] = _count("detailed", {"claude-haiku"}, "expected")
+
     jv = (s.get("judge_validity") or {}).get("hidden_all_pass") or {}
     if jv:
         ag = jv["agreement"]
@@ -178,7 +242,9 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
             out[f"ETwoJudge{k}"] = None
 
     out["ETwoReading"], out["ETwoReadingShort"] = _reading(
-        _est(E, "primary.score.pooled.all"), out["ETwoScope"], complete
+        _est(E, "primary.score.pooled.all"),
+        "mức gộp mọi tầng" if out["ETwoScope"] is not None else None,
+        complete,
     )
     assert set(out) == set(E2_KEYS), set(out) ^ set(E2_KEYS)
     return out
@@ -210,17 +276,18 @@ def e2_primary_table(src: dict[str, Any]) -> str:
     for cohort, _, name in COHORTS:
         cells = []
         for tier, _, _ in TIERS:
-            e = _est(E, f"primary.score.{cohort}.{tier}")
-            if not e:
+            e = E.get(f"primary.score.{cohort}.{tier}") or {}
+            if e.get("estimate") is None:
                 cells.append("--")
                 continue
             est, lo, hi = _ci(e)
-            cells.append(f"{est} [{lo}; {hi}]")
+            cell = f"{est} [{lo}; {hi}]"
+            cells.append(f"({cell})" if e.get("reference_only") else cell)
         rows.append([name] + cells)
     lines = [
         "\\begin{tabular}{lllll}",
         "\\toprule",
-        "Nhóm & Mọi tầng có dữ liệu & Tầng nhỏ & Tầng vừa & Tầng lớn \\\\",
+        "Nhóm & Mọi tầng & Tầng nhỏ & Tầng vừa & Tầng lớn \\\\",
         "\\midrule",
     ]
     lines += [" & ".join(r) + " \\\\" for r in rows]
@@ -285,7 +352,7 @@ E1_TIERS = TIERS[1:]
 
 
 def _e1_keys() -> list[str]:
-    k = ["EOneRuns"]
+    k = ["EOneRuns", "EOneSmallSpecTokensM", "EOneSmallVibeTokensM"]
     for _, t, _ in E1_TIERS:
         k += [
             f"EOne{t}SpecPct",
@@ -305,6 +372,9 @@ def e1_numbers(src: dict[str, Any]) -> Numbers:
     out: Numbers = {}
     runs = [r for r in src["runs"] if r["cohort"] == "claude-haiku" and r["valid"] == "True"]
     out["EOneRuns"] = fmt.number(len(runs)) if runs else None
+    tok = E.get("secondary.tokens_total.claude-haiku.small") or {}
+    out["EOneSmallSpecTokensM"] = _num(tok.get("mean_spec"), 1e-6, 1)
+    out["EOneSmallVibeTokensM"] = _num(tok.get("mean_vibe"), 1e-6, 1)
     for tier, t, _ in E1_TIERS:
         e = E.get(f"pass_diff.claude-haiku.{tier}") or {}
         out[f"EOne{t}SpecPct"] = _num(e.get("mean_spec"), 100, 0)

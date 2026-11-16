@@ -670,32 +670,36 @@ def _(r):
              size=20, role="title")
 
 
-@page("p23_explore", 14, BAO, 30,
-      f"Người nói: Bảo, khoảng ba mươi giây. Hai phát hiện đó mở ra câu hỏi mà vibe coding thật đặt ra: khi "
+@page("p23_explore", 14, BAO, 35,
+      f"Người nói: Bảo, khoảng ba mươi lăm giây. Hai phát hiện đó mở ra câu hỏi mà vibe coding thật đặt ra: khi "
       f"người dùng chỉ đưa một hai câu, bắt agent tự viết thiết kế, kế hoạch và test có bù được phần đề thiếu "
-      f"không? Giả thuyết đang kiểm, nêu sau khi thấy kết quả chính, là giá trị của quy trình tăng khi đề càng "
-      f"ít chi tiết. E2 kiểm nó bằng đề sơ sài, chấm bằng danh sách hành vi. Đây là thăm dò, và số liệu là "
-      f"{nv('ETwoStatus')}: {nv('ETwoLabel')}, chỉ gồm {nv('ETwoScope')}. Với đề sơ sài, điểm của nhánh đặc tả "
-      f"hơn vibe {nv('ETwoPooledAllPp')} điểm phần trăm khi gộp bốn nhóm, rõ nhất ở Sonnet; với đề chi tiết, "
-      f"hiệu số gần không, nên tương tác là {nv('ETwoXScoreInter')} điểm. Đọc chung: {nv('ETwoReading')}. E1, "
-      f"Haiku với đề chi tiết, hỏi mô hình yếu hơn có cần quy trình hơn không.")
+      f"không? E2 trả lời bằng đề sơ sài, chấm bằng danh sách hành vi; đây là thí nghiệm thăm dò, thêm sau khi "
+      f"thấy kết quả chính, và {nv('ETwoLabel')}. Điều nổi bật nhất là mức chi tiết của đề: bỏ tên và chữ ký, "
+      f"tỉ lệ lượt đạt hết test ẩn giảm {nv('ETwoXPassShiftSpec')} điểm ở nhánh đặc tả và "
+      f"{nv('ETwoXPassShiftVibe')} điểm ở nhánh vibe. So với khoảng đó, quy trình bù lại nhỏ: ở tầng nhỏ, "
+      f"điểm hành vi của nhánh đặc tả hơn vibe {nv('ETwoPooledSmallPp')} điểm phần trăm, rõ nhất ở Sonnet với "
+      f"{nv('ETwoSonnetSmallPp')}; gộp mọi tầng là {nv('ETwoPooledAllPp')}, khoảng tin cậy chạm không, và ở "
+      f"tầng vừa, tầng lớn không thấy lợi ích. E1, Haiku với đề chi tiết, cùng hướng với kết quả chính.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 600, 52,
                       ["Câu hỏi mở: đề chỉ một hai câu thì sao?", nv("ETwoLabel")],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"{sg('ETwoPooledAllPp')} đpt"], size=40, role="num")
-    set_text(r, "shape-1917", [f"E2 · đề sơ sài: điểm hành vi, đặc tả − vibe, gộp; {nv('ETwoScope')}",
-                               f"KTC 95% {ci_n('ETwoPooledAllLowPp', 'ETwoPooledAllHighPp')} · "
-                               f"Sonnet {sg('ETwoSonnetAllPp')} · Opus {sg('ETwoOpusAllPp')}",
-                               f"Haiku {sg('ETwoHaikuAllPp')} · Codex {sg('ETwoCodexAllPp')}"], size=15)
-    set_text(r, "shape-1918", [f"{sg('ETwoXScoreInter')} đpt"], size=40, role="num")
-    set_text(r, "shape-1919", ["E2 · tương tác mức chi tiết × cách làm (2 × 2)",
-                               f"KTC 95% {ci_n('ETwoXScoreInterLow', 'ETwoXScoreInterHigh')}; "
-                               f"đề chi tiết: {sg('ETwoXScoreDetailed')} đpt"], size=15)
+    set_text(r, "shape-1916", [f"−{nv('ETwoXPassShiftSpec')} / −{nv('ETwoXPassShiftVibe')}"], size=36, role="num")
+    set_text(r, "shape-1917", ["E2 · bỏ chi tiết đề: lượt đạt hết test ẩn giảm (đpt),",
+                               "nhánh đặc tả / vibe: cả hai cùng sụp",
+                               f"Điểm hành vi giảm {nv('ETwoXScoreShiftSpec')} / {nv('ETwoXScoreShiftVibe')} đpt"],
+             size=15)
+    set_text(r, "shape-1918", [f"{sg('ETwoPooledSmallPp')} đpt"], size=40, role="num")
+    set_text(r, "shape-1919", ["E2 · đề sơ sài, tầng nhỏ: điểm hành vi, đặc tả − vibe",
+                               f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')} · Sonnet "
+                               f"{sg('ETwoSonnetSmallPp')} · gộp mọi tầng {sg('ETwoPooledAllPp')} "
+                               f"{ci_n('ETwoPooledAllLowPp', 'ETwoPooledAllHighPp')}"], size=15)
     e1 = N.get("EOneSmallSpecPct") is not None
     set_text(r, "shape-1920", [f"{nv('EOneSmallSpecPct')}/{nv('EOneSmallVibePct')}%" if e1 else PENDING],
              size=40, role="num")
-    set_text(r, "shape-1921", ["E1 · Haiku, đề chi tiết, tầng nhỏ: tỉ lệ đạt đặc tả / vibe"], size=16)
+    set_text(r, "shape-1921", ["E1 · Haiku, đề chi tiết, tầng nhỏ: tỉ lệ đạt đặc tả / vibe;",
+                               f"token mỗi lượt {nv('EOneSmallSpecTokensM')} / {nv('EOneSmallVibeTokensM')} triệu"],
+             size=16)
 
 
 @page("p24_limits", 8, BAO, 40,
@@ -715,13 +719,16 @@ def _(r):
 
 
 @page("p25_conclusion", 7, BAO, 40,
-      f"Người nói: Bảo, khoảng bốn mươi giây. Tóm lại hai phát hiện. Một: khi đề đã nêu đủ tên và chữ ký, quy "
-      f"trình đặc tả gần như thừa ở việc nhỏ: trên {N['ResRuns']} lượt, nó không đạt test ẩn nhiều hơn, tốn gấp "
+      f"Người nói: Bảo, khoảng bốn mươi giây. Tóm lại. Một: khi đề đã nêu đủ tên và chữ ký, quy trình đặc "
+      f"tả gần như thừa ở việc nhỏ: trên {N['ResRuns']} lượt, nó không đạt test ẩn nhiều hơn, tốn gấp "
       f"{N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token; dấu hiệu có ích duy nhất là Codex ở ba "
       f"nhiệm vụ lớn nhất, và nó luôn để lại test do agent tự viết. Hai: {N['LabOutside']} trên {N['LabRuns']} "
-      f"lượt hỏng của Claude đến từ chi tiết đề không chốt hoặc nối với mã có sẵn, ở cả hai cách làm. Với đề chỉ "
-      f"một hai câu, kết quả {nv('ETwoStatus')} của E2, {nv('ETwoLabel')}: {nv('ETwoReading')}. Kết luận chính "
-      f"sẽ viết khi E2 đủ dữ liệu.")
+      f"lượt hỏng của Claude đến từ chi tiết đề không chốt hoặc nối với mã có sẵn, ở cả hai cách làm. Ba: với "
+      f"đề chỉ một hai câu, đề rõ quan trọng hơn quy trình; quy trình đặc tả bù được một phần ở việc nhỏ, "
+      f"{nv('ETwoPooledSmallPp')} điểm, rõ nhất với Sonnet, nhưng không thay được thông tin đề thiếu. Lời khuyên "
+      f"thực tế: viết đề rõ trước; quy trình đặc tả đáng thêm khi yêu cầu ngắn, việc nhỏ, rủi ro không cao, và "
+      f"với mô hình hạng giữa. Phần đề sơ sài là thăm dò, nên đây là xu hướng gợi ý, chưa phải kết luận đã "
+      f"kiểm.")
 def _(r):
     set_text(r, "shape-1634", ["Kết luận"])
     set_text(r, "shape-1638", ["Đề chi tiết"])
@@ -732,8 +739,10 @@ def _(r):
     set_text(r, "shape-1635", [f"{N['LabOutside']}/{N['LabRuns']}: đề không chốt", "hoặc nối mã có sẵn;",
                                "như nhau ở hai cách."], size=17)
     add(r, text_block("next", 189, 392, 640, 80,
-                      [f"Đề một hai câu: {nv('ETwoReadingShort')}", nv("ETwoLabel"),
-                       f"Kết luận chính: {PENDING}"], size=15, fill=BLUE, bold=True))
+                      [f"Đề một hai câu: đặc tả bù một phần ({sg('ETwoPooledSmallPp')} đpt tầng nhỏ),",
+                       "không thay được đề rõ. Viết đề rõ trước; đặc tả đáng thêm",
+                       "khi yêu cầu ngắn, việc nhỏ, mô hình hạng giữa (thăm dò)."],
+                      size=15, fill=BLUE, bold=True))
 
 
 @page("p26_thanks", 15, BAO, 10,
@@ -810,10 +819,7 @@ def _(r):
 
 # Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
 # rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are not finished.
-RESULT_SLOTS = {
-    "p25_conclusion": "main conclusion, written from the complete E2 (and E1) results; E2 line is interim",
-    "p23_explore": "E1: Haiku pass rate spec / vibe (until results/analysis/e1 exists); E2 values are interim",
-}
+RESULT_SLOTS: dict[str, str] = {}
 
 
 # ---------------------------------------------------------------- build
@@ -861,11 +867,12 @@ def main():
         f"Tổng thời gian nói: {fmt_secs(t)} ({LOI} {fmt_secs(by[LOI])}, {BAO} {fmt_secs(by[BAO])}); "
         "phần còn lại của 15 phút dành cho chuyển slide và chuyển người nói. Hỏi đáp 5 phút sau đó.\n\n"
         "| Slide | Trang | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
-        + "\n".join(rows) + "\n\n## Chỗ chờ kết quả\n\n"
-        "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. "
-        "Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) có số sơ bộ, làm mới bằng refresh-interim.sh; E1 (Haiku) chưa xong. "
-        f"Các slide sau còn `{PENDING}`:\n\n"
-        + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items()) + "\n", encoding="utf-8")
+        + "\n".join(rows) + "\n\n## Số liệu\n\n"
+        "Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; "
+        "đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài, dữ liệu đầy đủ) và E1 (Haiku). Làm mới bằng "
+        "`refresh-interim.sh`. "
+        + (f"Các slide sau còn `{PENDING}`:\n\n" + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items())
+           if RESULT_SLOTS else "Không còn chỗ chờ kết quả.") + "\n", encoding="utf-8")
     print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")
 
 

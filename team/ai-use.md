@@ -76,7 +76,9 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 ## 4. AI là đối tượng được đo
 
 - Bốn nhóm ở bảng mục 1, mỗi nhóm chạy 23 nhiệm vụ × 2 cách làm × 3 lần lặp: tầng nhỏ 360 lượt, tầng vừa
-  120, tầng lớn 72, tổng 552 lượt dự kiến. Số lượt hợp lệ thật: [CHỜ KẾT QUẢ].
+  120, tầng lớn 72, tổng 552 lượt dự kiến. Số lượt hợp lệ thật: thí nghiệm chính 414 (ba nhóm; `agy-gemini` bị bỏ vì hết
+  hạn mức); E1 (Haiku, đề chi tiết) 138/138; E2 (đề sơ sài) 492/552 được chấm: ba nhóm Claude đủ 414, Codex
+  dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức. Chấm tay mẫu kiểm tra E2 (Lợi, Bảo) đang làm.
 - Chạy bằng gói thuê bao của An, không dùng khóa API trả theo lượng. Claude Code dùng 1 tài khoản; agy và
   Codex xoay vòng nhiều tài khoản của An khi hết hạn mức (ruling R11). Chi phí bằng tiền là số **quy đổi**
   từ token theo bảng giá API công khai ngày 2026-11-15, không phải tiền đã trả.

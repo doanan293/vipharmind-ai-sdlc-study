@@ -369,7 +369,13 @@ hỏi, và gán nhãn mù 30 lượt thất bại. Việc gán nhãn cần đún
 kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
 
 **N4. [B] Kết luận chính là gì, và nên tin đến đâu?**
-[CHỜ KẾT QUẢ: một câu cho H1, một câu cho H5, một câu cho chi phí.] Giới hạn: một dự án Python, 23 nhiệm vụ,
+Với đề chi tiết: H1 chưa kết luận được, Sonnet tầng nhỏ đặc tả trừ vibe −2,2 điểm phần trăm, khoảng tin
+cậy [−6,7; 0,0], tức không thấy lợi ích. H5 chưa kết luận được: hiệu số không tăng rõ theo tầng, chỉ Codex ở
+ba nhiệm vụ lớn nghiêng về đặc tả. Chi phí rõ: đặc tả tốn gấp 1,3–2,2 lần token. Với đề sơ sài (E2, thăm
+dò): bỏ chi tiết làm tỉ lệ lượt đạt hết test ẩn giảm khoảng 79–81 điểm ở cả hai cách; đặc tả bù được một phần
+ở tầng nhỏ (+4,2 điểm hành vi [0,7; 8,1], Sonnet +9,1), gộp mọi tầng +2,5 [−0,1; 5,4], không thấy lợi ích ở
+tầng vừa, lớn. Câu chốt: viết đề rõ quan trọng hơn chọn quy trình; đặc tả bù một phần cho đề sơ sài nhưng
+không thay được thông tin đề thiếu. E2 thêm sau khi thấy kết quả chính, nên chỉ là xu hướng gợi ý. Giới hạn: một dự án Python, 23 nhiệm vụ,
 nhánh đặc tả tự động không có người duyệt, mạng mở. Kết luận áp cho quy trình đặc tả tự động trên dự án cỡ
 này, không áp cho mọi cách làm theo đặc tả.
 
