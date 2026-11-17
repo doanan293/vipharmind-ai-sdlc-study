@@ -16,7 +16,7 @@ from report_data import fmt
 
 Numbers = dict[str, str | None]
 
-LABELING = Path("results/analysis/main/labeling")
+LABELING = Path("data/results/analysis/main/labeling")
 
 # Mã nhãn, tên khóa, tên hiển thị (prereg/labeling-guide.md mục 3)
 LABELS = [

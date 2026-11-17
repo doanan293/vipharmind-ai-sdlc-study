@@ -17,7 +17,7 @@
 .claude/skills/
 
 # Account credential sources for harness runs; never commit
-harness/accounts.local.toml
+code/harness/accounts.local.toml
 
 # Harness workspaces and reference-run cache (sdlc-harness run from the repo root)
 /.work/
@@ -30,10 +30,10 @@ docs/report/body.txt
 *.lof
 
 # Run logs are results (the *.log rule above is for LaTeX)
-!results/**/*.log
+!data/results/**/*.log
 
 # Gói việc gửi Lợi, Bảo: sinh lại được bằng analysis/scripts (hạt giống cố định); có khóa làm mù và bản zip trùng
-/results/packets/
+/data/results/packets/
 
 # Khóa làm mù (nối mã lượt với cách làm): chỉ giữ trên máy An, không commit
 *-PRIVATE*.csv

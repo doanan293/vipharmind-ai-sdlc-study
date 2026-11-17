@@ -20,7 +20,7 @@ jobs:
       - name: Lint and test each project
         run: |
           found=0
-          for pyproject in */pyproject.toml; do
+          for pyproject in code/*/pyproject.toml docs/report/scripts/pyproject.toml; do
             [ -e "$pyproject" ] || continue
             dir=$(dirname "$pyproject")
             found=1

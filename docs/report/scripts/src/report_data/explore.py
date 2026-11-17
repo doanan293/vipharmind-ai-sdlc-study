@@ -18,8 +18,8 @@ from report_data import fmt
 
 Numbers = dict[str, str | None]
 
-E2_DIR = Path("results/analysis/e2-interim")
-E1_DIR = Path("results/analysis/e1")
+E2_DIR = Path("data/results/analysis/e2-interim")
+E1_DIR = Path("data/results/analysis/e1")
 HANOI = timezone(timedelta(hours=7))
 
 COHORTS = [

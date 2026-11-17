@@ -8,14 +8,14 @@ fails=0
 fresh() {
   local dir
   dir=$(mktemp -d)
-  # Dựng lại cấu trúc repo tối thiểu: docs/report và prompts/ (phụ lục chép lời dặn từ đó).
+  # Dựng lại cấu trúc repo tối thiểu: docs/report và code/prompts/ (phụ lục chép lời dặn từ đó).
   # Chỉ chép mã nguồn; bỏ file trung gian và PDF để mỗi ca build từ đầu.
   mkdir -p "$dir/docs/report"
   (cd "$here" && tar --exclude='./tests' --exclude='./scripts/.venv' --exclude='*.aux' \
     --exclude='*.log' --exclude='*.fls' --exclude='*.fdb_latexmk' --exclude='*.xdv' \
     --exclude='*.bbl' --exclude='*.blg' --exclude='*.toc' --exclude='main.pdf' -cf - .) |
     (cd "$dir/docs/report" && tar -xf -)
-  cp -r "$here/../../prompts" "$dir/prompts"
+  mkdir -p "$dir/code" && cp -r "$here/../../code/prompts" "$dir/code/prompts"
   echo "$dir/docs/report"
 }
 

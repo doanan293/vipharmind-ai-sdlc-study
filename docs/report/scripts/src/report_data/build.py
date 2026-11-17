@@ -335,7 +335,7 @@ def _medium_candidates(rows: list[dict[str, Any]]) -> Numbers:
 
 
 def _pilot_runs(rows: list[dict[str, str]]) -> Numbers:
-    """Token và số lượt gọi mô hình của lượt chạy thử (analysis/out/pilot/runs.csv).
+    """Token và số lượt gọi mô hình của lượt chạy thử (data/results/analysis/pilot/runs.csv).
 
     Lấy mọi lượt có số token, kể cả lượt agy bị ngắt vì hạn mức (nhật ký vẫn ghi lượng dùng).
     Token vào gồm token đọc và ghi cache."""

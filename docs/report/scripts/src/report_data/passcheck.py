@@ -14,7 +14,7 @@ from report_data import fmt
 
 Numbers = dict[str, str | None]
 
-LABELING = Path("results/analysis/main/labeling")
+LABELING = Path("data/results/analysis/main/labeling")
 RATERS = ("loi", "bao")
 KEYS = ["PassCheckRuns", "PassCheckCorrect", "PassCheckLoi", "PassCheckBao", "PassCheckPerArm"]
 

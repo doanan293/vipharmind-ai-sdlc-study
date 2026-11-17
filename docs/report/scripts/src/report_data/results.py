@@ -510,7 +510,7 @@ def pending_tables(out: Path, pending: Any) -> None:
 
 # ---------- nguồn ----------
 
-ANALYSIS = Path("results/analysis/main")
+ANALYSIS = Path("data/results/analysis/main")
 CASE_FILE = "case_study.csv"
 
 

@@ -27,7 +27,7 @@ PENDING = "[CHỜ KẾT QUẢ]"
 N = json.loads(NUMBERS.read_text(encoding="utf-8"))
 # The main analysis (Sonnet, Opus, Codex; detailed prompts). Values the report did not export to numbers.json
 # (cost per pass, verdict counts) are read here; check_numbers.py also accepts the report's generated tables.
-SUMMARY = json.loads((HERE.parents[1] / "results" / "analysis" / "main" / "summary.json").read_text(encoding="utf-8"))
+SUMMARY = json.loads((HERE.parents[1] / "data" / "results" / "analysis" / "main" / "summary.json").read_text(encoding="utf-8"))
 FIGURES = HERE.parent / "report" / "generated" / "figures"
 
 
