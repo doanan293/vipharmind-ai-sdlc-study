@@ -22,7 +22,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 | Sản phẩm, công việc | An | Lợi | Bảo | Ghi chú |
 | --- | --- | --- | --- | --- |
-| Chọn đề tài, đăng ký nhóm | C | H | H | Lợi, Bảo đồng ý đề tài [An xác nhận mức H] |
+| Chọn đề tài, đăng ký nhóm | C | H | H | Lợi, Bảo đồng ý đề tài |
 | Đề cương 1–2 trang (`proposal/`) | C | – | – | |
 | Tổng quan tài liệu (tìm, mở, kiểm tra 24 nguồn; `docs/report/literature-log.md`) | C | – | – | AI hỗ trợ tìm kiếm; An kiểm tra |
 | Phân tích hồi cứu ViPharmind (RQ1, RQ2; 505 commit, 43 file spec/plan) | C | – | – | Gồm kiểm tra tay 20 commit cho quy tắc nối |
@@ -38,7 +38,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Báo cáo viết (`docs/report/`) | C | H | H | Lợi đọc mục 1–5, Bảo đọc mục 6–8 và góp ý; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
 | Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30, phần mình nói; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
 | Tập dượt thuyết trình | H | C | C | |
-| Thuyết trình trên lớp | – | C | C | An không nói trong 15 phút, có mặt để hỗ trợ hỏi đáp [An xác nhận] |
+| Thuyết trình trên lớp | – | C | C | An không nói trong 15 phút, có mặt để hỗ trợ hỏi đáp |
 | Trả lời câu hỏi | H | C | C | Theo phân công trong `qa-prep.md` |
 | Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
 | Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |

@@ -16,8 +16,7 @@ Hạn 21/11, trừ việc 6.
    - Mỗi khoảng tin cậy chứa 0 có được đọc là "chưa thấy khác biệt" không.
    - Câu "Dừng Codex trong E2 … *Đã xem:* số lượt theo trạng thái và kết quả E2 tạm thời" có đúng với
      điều bạn đã xem lúc quyết định dừng Codex (khoảng 18:00 ngày 16/11) không. Sửa nếu sai.
-4. **Rà các chỗ `[An xác nhận]`** trong `ai-use.md` (dòng 25, 26, 33, 62, 69, 117) và `contributions.md`
-   (dòng 26, 42). Xác nhận xong thì xoá dấu.
+4. ~~Rà các chỗ `[An xác nhận]`~~ — xong 17/11.
 5. **Đọc lướt toàn bộ báo cáo một lượt** (khoảng 1 giờ). Sửa trực tiếp câu nào đọc không tự nhiên hoặc
    khẳng định quá mức. Chỗ nào không chắc, ghi vào bảng mục 4 để trợ lý sửa.
 6. **Gộp góp ý** của Lợi, Bảo (hạn 22/11), giao trợ lý sửa, rồi đồng ý push (23/11).

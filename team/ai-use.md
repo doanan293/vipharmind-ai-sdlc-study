@@ -14,23 +14,22 @@ nhau:
 4. **Công cụ làm ra dự án được nghiên cứu**: ViPharmind được phát triển với trợ lý lập trình AI. Phần hồi
    cứu (RQ1, RQ2) nghiên cứu chính quá trình đó.
 
-Ký hiệu: **[An xác nhận]** là chỗ An phải kiểm lại trước khi nộp. **[An điền: ...]** là chỗ chỉ người
-trong nhóm trả lời được. **[chờ Lợi, Bảo chấm tay E2]** là số chưa có. Số liệu khác lấy từ báo cáo
+Ký hiệu: An đã kiểm lại mọi chỗ cần xác nhận (17/11). **[chờ Lợi, Bảo chấm tay E2]** là số chưa có. Số liệu khác lấy từ báo cáo
 (`docs/report/generated/numbers.json`); "mục 6.1", "Phụ lục G" là mục của báo cáo.
 
 ## 1. Công cụ và mô hình
 
 | Vai trò | Công cụ | Mô hình | Ai dùng |
 | --- | --- | --- | --- |
-| Trợ lý nghiên cứu | Claude Code (CLI), có công cụ tìm kiếm và đọc web, tác tử con | Claude Opus 5.5 (`claude-opus-5-5`) trong các phiên đã ghi nhận [An xác nhận: mô hình của mọi phiên] | An |
-| Người duyệt độc lập | Tác tử duyệt chạy riêng | Fable 5.2 [An xác nhận cách gọi và nhà cung cấp] | An giao việc và đọc kết quả |
+| Trợ lý nghiên cứu | Claude Code (CLI), có công cụ tìm kiếm và đọc web, tác tử con | Claude Opus 5.5 (`claude-opus-5-5`) trong các phiên đã ghi nhận | An |
+| Người duyệt độc lập | Tác tử duyệt chạy riêng | Fable 5.2 | An giao việc và đọc kết quả |
 | Đối tượng được đo | Claude Code 2.1.325 (`claude -p`) | Claude Sonnet 5.5 (`claude-sonnet-5-5`), effort medium | Bộ chạy |
 | Đối tượng được đo | Claude Code 2.1.325 (`claude -p`) | Claude Opus 5.5 (`claude-opus-5-5`), effort medium | Bộ chạy |
 | Đối tượng được đo | Antigravity CLI 1.5.9 (`agy -p`) | Gemini 3.8 Flash Medium (`gemini-3.8-flash-medium`) | Bộ chạy |
 | Đối tượng được đo | Codex CLI 0.162.1 (`codex exec`) | `gpt-6-luna`, suy luận medium | Bộ chạy |
 | Đối tượng được đo (E1, E2, thăm dò) | Claude Code 2.1.325 (`claude -p`) | Claude Haiku 5.5 (`claude-haiku-5-5`), effort medium | Bộ chạy |
 | Người chấm danh sách hành vi E2; người gán nhãn thứ ba (chỉ đối chiếu) | Tác tử chạy riêng | Fable 5.2, effort high | An giao việc |
-| Làm ViPharmind | Trợ lý lập trình AI (chủ yếu Claude Code; nhật ký Codex còn 2 dòng) | [An xác nhận các mô hình đã dùng khi làm ViPharmind] | An |
+| Làm ViPharmind | Trợ lý lập trình AI (chủ yếu Claude Code; nhật ký Codex còn 2 dòng) | An đã xác nhận (17/11) | An |
 
 Phiên bản công cụ thực tế của từng lượt chạy được bộ chạy ghi trong `meta.json`. Mỗi nhóm của thí nghiệm
 chính chỉ gặp một phiên bản: Claude Code 2.1.325 và Codex CLI 0.162.1 (báo cáo mục 6.1). E1, E2 cũng chỉ có
@@ -59,14 +58,14 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 | # | Việc | AI đã làm gì | Người đã làm và quyết gì | Bằng chứng |
 | --- | --- | --- | --- | --- |
 | 3.1 | Chọn đề tài, câu hỏi nghiên cứu | Trợ lý đề xuất ba hướng tiếp cận và phân tích được mất | An chọn cách 2 (hồi cứu cộng thực nghiệm đối chứng), chọn ba công cụ, hai mô hình Claude, mức effort medium | Bản thiết kế nghiên cứu, mục 6 |
-| 3.2 | Tổng quan tài liệu | Trợ lý chạy 10 chuỗi tìm kiếm, mở trang abstract, DOI hoặc trang hội nghị của từng nguồn, chép tên bài, tác giả, năm, nơi đăng, số liệu từ abstract, viết nhật ký tìm kiếm và mục BibTeX | An đọc nhật ký và danh sách 24 nguồn [An xác nhận: đã tự mở và đọc nguồn nào] | `docs/report/literature-log.md`, `docs/report/references.bib` |
+| 3.2 | Tổng quan tài liệu | Trợ lý chạy 10 chuỗi tìm kiếm, mở trang abstract, DOI hoặc trang hội nghị của từng nguồn, chép tên bài, tác giả, năm, nơi đăng, số liệu từ abstract, viết nhật ký tìm kiếm và mục BibTeX | An đọc nhật ký và danh sách 24 nguồn; An đã xác nhận (17/11) | `docs/report/literature-log.md`, `docs/report/references.bib` |
 | 3.3 | Phân tích hồi cứu ViPharmind | Trợ lý viết mã đọc lịch sử git, phân khâu commit, nối commit với plan, đo mức sửa lại; trợ lý gợi ý nhận định cho từng commit trong mẫu kiểm tra | An kiểm tra tay mẫu ngẫu nhiên 20 commit cho quy tắc nối commit với plan (kết quả 15/20) **có tham khảo gợi ý của AI**, nên đây không phải kiểm tra hoàn toàn độc lập | `retrospective/` (nhánh `retrospective`) |
 | 3.4 | Sàng lọc commit | Trợ lý viết lệnh `sdlc-harness screen`, chạy và ghi phễu 110 → 64 → 47 → 47 → 43 | An duyệt tiêu chí sàng lọc (theo bản thiết kế); độ lệch ở tiêu chí 1 (46 thay vì 39) được ghi lại | `tasks/SCREENING.md`, `tasks/screening.json` |
 | 3.5 | Tiêu chí 3 và đề bài tầng nhỏ | Trợ lý đề xuất đạt hoặc không đạt tiêu chí 3 và soạn nháp đề bài tiếng Anh cho 32 commit đầu theo thứ tự duyệt ngẫu nhiên | **An duyệt gộp** ngày 2026-11-15: chấp nhận nguyên văn mọi đề xuất và mọi đề bài, không sửa từng mục. Ba mục (#12, #20, #30) bị loại theo khuyến nghị của trợ lý vì test hành vi chỉ thuộc loại `integration`. Một tác tử duyệt đối chiếu mẫu vài đề với commit gốc | `tasks/REVIEW.md` (dòng "Review record") |
 | 3.6 | Rà đề bài tầng nhỏ | Trợ lý đối chiếu mọi tên công khai mà test ẩn dùng với đề bài; tìm ra chỗ thiếu chặn ở t05, t07, t13 (và p01) | An duyệt lại ba đề đã bổ sung tên giao diện, cùng ngày duyệt `prereg-v1` | `tasks/PROMPT_AUDIT.md`, commit `e92f346` |
 | 3.7 | Tầng lớn (f08, f14, f15) | Trợ lý khảo sát khả thi, cắt 16 đoạn commit, soạn đề bài và bảng đối chiếu tên | Fable 5.2 duyệt độc lập: cả ba APPROVE WITH EDITS, không REJECT; mọi sửa đổi của Fable được áp. An duyệt gộp | `tasks/FEATURE_REVIEW.md`, `tasks/FEATURE_REVIEW_fable.md` |
 | 3.8 | Tầng vừa (m01–m05) | Trợ lý soạn quy tắc chọn, mã chọn, đo số tên và độ phủ, soạn đề bài | Fable 5.2 dựng lại việc chọn bằng mã riêng, ra cùng 21 cửa sổ hợp lệ và cùng 5 cửa sổ được chọn; duyệt đề: không REJECT. An duyệt gộp `prereg-v1.1` và năm đề | `prereg/prereg-v1.1.md`, `tasks/EXTRA_REVIEW.md`, `tasks/EXTRA_REVIEW_fable.md` |
-| 3.9 | Hai lời dặn (`prompts/spec.md`, `prompts/vibe.md`) | Trợ lý soạn lời dặn theo đặc tả dựa trên quy trình spec, plan trong lịch sử ViPharmind, không chép skill nào [An xác nhận] | An duyệt; nội dung chốt bằng mã băm SHA-256 ở `prereg-v1` | `prereg/prereg-v1.md` mục 2 |
+| 3.9 | Hai lời dặn (`prompts/spec.md`, `prompts/vibe.md`) | Trợ lý soạn lời dặn theo đặc tả dựa trên quy trình spec, plan trong lịch sử ViPharmind, không chép skill nào | An duyệt; nội dung chốt bằng mã băm SHA-256 ở `prereg-v1` | `prereg/prereg-v1.md` mục 2 |
 | 3.10 | Bộ chạy và bộ chấm (`harness/`) | Trợ lý viết toàn bộ mã và test theo kế hoạch: xuất cây không lịch sử, lọc file, HOME sạch, danh sách biến môi trường cho phép, xử lý hạn mức, chấm | An duyệt kế hoạch và các quyết định cấu hình. Ruling R11 (không proxy, agent mặc định, mạng mở) là quyết định của An sau khi đọc báo cáo chạy thử | `harness/`, `docs/pilot-report.md` mục 0 |
 | 3.11 | Chạy thử và báo cáo chạy thử | Trợ lý chạy 2 nhiệm vụ thử, viết báo cáo; đọc điều khoản dịch vụ của ba nhà cung cấp và tóm tắt (ghi rõ "không phải ý kiến pháp lý"); gán thử nhãn thất bại cho 6 lượt hỏng | An quyết định cách dùng tài khoản và mạng. Nhãn thử do AI gán, một người, không mù, chỉ dùng để thử bảng nhãn, không dùng làm số liệu | `docs/pilot-report.md` mục 3, 7 |
 | 3.12 | Đăng ký trước | Trợ lý soạn `prereg-v1`, `prereg-v1.1` và mọi dòng ở mục 11; Fable 5.2 phản biện bản nháp `prereg-v1` (4 Blocking, 12 Important, 8 Minor, kết luận FREEZE AFTER EDITS); trợ lý đề xuất cách xử lý từng điểm | An duyệt văn bản và các quyết định ngày 2026-11-15, xác nhận hạn thu dữ liệu 2026-11-29 và ngưỡng −5 điểm MI | `prereg/prereg-v1-review-fable.md`, `prereg/decisions-for-v1.md` |
@@ -114,7 +113,7 @@ viết; nhận định "AI tham gia mọi khâu" dựa trên lời khai của t�
 | Lời dặn theo đặc tả do AI soạn | Dựa trên quy trình spec, plan thật của ViPharmind; chốt bằng mã băm trước khi chạy | Can thiệp là một gói (thiết kế, kế hoạch, test trước, chạy cả bộ test); báo cáo nêu không tách được phần của riêng tài liệu đặc tả |
 | Mã bộ chạy, mã phân tích do AI viết có lỗi | Test tự động; chạy thử 2 nhiệm vụ; `regrade` cho ra kết quả không đổi (38 lượt, 0 thay đổi); Fable duyệt mã phân tích, các lỗi chặn đã sửa trước thẻ `prereg-v1-analysis` | Phép thử độ phủ của khoảng bootstrap cho mô hình hỗn hợp đã chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58): 33/40 (82,5%), thấp hơn danh nghĩa 95%, đạt quy tắc ≥ 32/40 ghi trước. Khoảng của hệ số tương tác vì vậy hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu (báo cáo mục 7.5) |
 | Người duyệt độc lập cũng là AI | Fable chạy trong ngữ cảnh riêng, đọc trực tiếp mã và test, tự dựng lại tính toán; An đọc và quyết từng điểm | Độc lập với người soạn, không độc lập với AI nói chung |
-| Trích dẫn sai do AI | Mọi nguồn được mở trực tiếp, số liệu chỉ lấy từ abstract hoặc trang đã mở; không trích theo trí nhớ | [An xác nhận việc tự kiểm tra] |
+| Trích dẫn sai do AI | Mọi nguồn được mở trực tiếp, số liệu chỉ lấy từ abstract hoặc trang đã mở; không trích theo trí nhớ |; An đã tự kiểm tra |
 | Báo cáo thổi phồng kết luận | Số liệu sinh bằng máy; quy tắc đọc ba kết cục chốt trước; mọi phép thử phụ được báo cáo dù kết quả thế nào | |
 
 ## 7. Những việc không giao cho AI
