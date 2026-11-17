@@ -39,7 +39,7 @@ plan đan xen nhau, phần lõi của từng plan backend được cắt thành 
 chạy ở đầu và cuối mỗi đoạn. Tầng lớn nhận đoạn có từ 750 dòng \texttt{backend/src} trở lên mà đề bài nêu
 được mọi tên test ẩn cần với tối đa 35 tên: \texttt{f08}, \texttt{f14}, \texttt{f15}
 (\NumFeatureCommitsMin{} đến \NumFeatureCommitsMax{} commit, \NumFeatureSrcLinesMin{} đến
-\NumFeatureSrcLinesMax{} dòng). F04 và F07 bị loại vì cần khoảng 60 và 70 tên. F09 giữ quyết định loại có
+\NumFeatureSrcLinesMax{} dòng). Hai đoạn F04 và F07 (mã đoạn viết hoa, mã nhiệm vụ viết thường) bị loại vì cần khoảng 60 và 70 tên. Đoạn F09 giữ quyết định loại có
 từ trước chạy thử, vì đề của nó gần như là một bản thiết kế viết sẵn. Tầng vừa xét
 \NumMediumWindows{} cửa sổ hai đến ba commit trong 16 đoạn theo chín tiêu chí cố định, gồm: chỉ commit
 \texttt{feat}, 300 đến 700 dòng, không chung commit với nhiệm vụ tầng khác, bản vá gốc chấm đạt, ít nhất năm
@@ -118,7 +118,7 @@ số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộ
 
 \begin{table}[H]
 \centering\small
-\caption{E2, thiết kế $2\times 2$: trung bình gộp bốn nhóm và tương tác
+\caption{E2, thiết kế $2\times 2$: trung bình gộp các nhóm có dữ liệu (tầng vừa, tầng lớn chỉ có ba nhóm Claude) và tương tác
 (đặc tả $-$ vibe khi đề sơ sài) $-$ (đặc tả $-$ vibe khi đề chi tiết). $^\dagger$Không đo độ đúng khi đề
 sơ sài, vì test ẩn gọi tên mà đề không nêu.}
 \label{tab:e2-x2}
@@ -147,14 +147,15 @@ phải số tiền đã trả; với \texttt{codex-luna} chỉ có cận dưới
 
 \section{Thay đổi sau khi chốt}\label{app:deviations}
 
-Chép lại mục 11 của bản đăng ký trước \texttt{prereg-v1}. Mọi thay đổi ghi ngày \mbox{2026-11-15}, trước khi
-mở bất kỳ kết quả chính nào.
+Chép lại mục 11 của bản đăng ký trước \texttt{prereg-v1}. Các mục từ đầu đến ``Độ phủ của khoảng bootstrap'' ghi ngày
+\mbox{2026-11-15}, trước khi mở bất kỳ kết quả chính nào; các mục từ ``Mở kết quả chính'' trở đi ghi sau
+đó, kèm những gì đã xem.
 
 \begin{itemize}[leftmargin=*]
 \item \textbf{Quy tắc chọn tầng vừa.} Thay bằng quy tắc của \texttt{prereg-v1.1}: loại ứng viên chung commit
 với nhiệm vụ tầng khác; thêm tiêu chí chỉ commit tính năng, tối thiểu năm test ẩn trượt ở mã nền, tối đa
 50\% dòng chỉ do test \texttt{integration} kiểm; ngưỡng 20 tên đổi đơn vị sang số đếm bằng script; thứ tự
-chọn mới; quy tắc thay thế nhiệm vụ chỉ dùng trước thẻ (không phải dùng). \textit{Đã xem:} số liệu dựng
+chọn mới; quy tắc thay thế nhiệm vụ chỉ dùng trước thẻ (thực tế không phải dùng). \textit{Đã xem:} số liệu dựng
 nhiệm vụ của ứng viên và một danh sách chọn tay đầu tiên; chưa kết quả AI nào.
 \item \textbf{Thời điểm thẻ \texttt{prereg-v1.1}.} Lượt chạy chính tầng nhỏ bắt đầu trước thẻ; theo trường
 hợp dự phòng, kết quả tầng nhỏ bị che tới khi có thẻ phân tích. \textit{Đã xem:} nhiều nhất là số lượt theo
@@ -189,8 +190,8 @@ thời gian và hạn mức.
 Codex sang Fable 5.2 trước lượt chấm đầu tiên. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính; đây là
 lý do thêm, nên mọi kết quả E1, E2 chỉ là thăm dò.
 \item \textbf{Phạm vi chấm của E1.} Khi hết hạn mức Fable, An cắt phạm vi chấm: chỉ chấm tiếp lượt đề sơ sài;
-lượt đề chi tiết của Haiku dừng ở \NumETwoHaikuDetailedJudged{} trên \NumETwoHaikuDetailedExpected{} lượt đã
-chấm, vì chỉ số chính của E1 là test ẩn. \textit{Đã xem:} số lượt đã chấm.
+với lượt đề chi tiết của Haiku, chỉ \NumETwoHaikuDetailedJudged{} trên \NumETwoHaikuDetailedExpected{} lượt
+được chấm, vì chỉ số chính của E1 là test ẩn. \textit{Đã xem:} số lượt đã chấm.
 \item \textbf{Dừng Codex trong E2.} Mọi tài khoản Codex hết hạn mức tới sau hạn nộp; An quyết định không mua
 thêm và không chạy nốt các lượt dở bằng khóa API, vì tốn tiền và Codex CLI trên máy đã tự cập nhật phiên
 bản, nên lượt chạy thêm sẽ khác phiên bản. Codex dừng ở \NumETwoCodexSmallJudged{} trên
@@ -216,8 +217,8 @@ báo cáo, viết nháp các mục của báo cáo và dựng slide. An quyết 
 đổi so với bản đăng ký; An duyệt gộp đề bài do AI soạn. Mọi con số trong báo cáo được sinh bằng máy từ file
 kết quả, và \texttt{check.sh} chặn số gõ tay.
 
-\textit{Người duyệt độc lập} (Fable 5.2, chạy trong ngữ cảnh riêng, không xem kết quả chính) phản biện bản
-đăng ký, đề bài tầng vừa và tầng lớn, và mã phân tích; trong E2, Fable 5.2 cũng là người chấm danh sách
+\textit{Người duyệt độc lập} (Fable 5.2, chạy trong ngữ cảnh riêng) phản biện bản đăng ký, đề
+bài tầng vừa và tầng lớn, và mã phân tích khi chưa có kết quả chính; trong E2, Fable 5.2 cũng là người chấm danh sách
 hành vi, không biết lượt thuộc cách làm nào, và gán nhãn nguyên nhân thất bại như người chấm thứ ba trên
 cùng gói che cách làm (chỉ để đối chiếu, không thay nhãn của người).
 
@@ -225,8 +226,8 @@ cùng gói che cách làm (chỉ để đối chiếu, không thay nhãn của n
 trong E1). Trợ lý nghiên cứu cùng mô hình với nhóm \texttt{claude-opus} và đã soạn đề bài mà nhóm này nhận;
 đây là một xung đột lợi ích được nêu ở mục~\ref{sec:threats}.
 
-\textit{Không dùng AI} ở: gán nhãn nguyên nhân thất bại (Lợi, Bảo), phân xử nhãn (An), và phiếu đánh giá
-chéo trong nhóm. Commit trong các repo không có dòng ghi công AI theo quy ước của An; bản khai này thay
+Nhãn dùng trong phân tích do người gán (Lợi, Bảo; An phân xử); nhãn của Fable chỉ để đối chiếu.
+\textit{Không dùng AI} ở chấm tay mẫu kiểm tra E2 (Lợi, Bảo) và phiếu đánh giá chéo trong nhóm. Commit trong các repo không có dòng ghi công AI theo quy ước của An; bản khai này thay
 cho dòng đó.
 
 \textit{Đóng góp.} An làm toàn bộ nghiên cứu (thiết kế, bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích,

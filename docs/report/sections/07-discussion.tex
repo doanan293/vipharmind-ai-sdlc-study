@@ -1,22 +1,23 @@
 \section{Thảo luận và hạn chế}\label{sec:discussion}
 
-\subsection{Khi đề đã chi tiết, quy trình gần như thừa ở việc nhỏ (RQ3--RQ6)}
+\subsection{Khi đề đã chi tiết, quy trình chưa cho thấy lợi ích ở việc nhỏ (RQ3--RQ6)}
 
 Khi đề bài đã nêu đủ tên, chữ ký và quy tắc, làm theo đặc tả không làm tác tử đạt test ẩn nhiều hơn. Phép
-thử xác nhận H1 chưa kết luận được, nhưng khoảng tin cậy của nó nằm hẳn ở phía không có lợi ích (cận trên
-\NumResHOneHighPp{} đpt). Cái giá thì rõ: gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token
+thử xác nhận H1 chưa kết luận được, nhưng khoảng tin cậy không chứa giá trị dương nào (cận trên
+\NumResHOneHighPp{} đpt), dù chưa loại được một lợi ích nhỏ. Cái giá thì rõ: gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token
 và \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được ủng hộ ở mọi ô). Với hai mô hình
-Claude, hiệu số âm hoặc bằng không ở mọi tầng; cả hai gần trần ở tầng nhỏ và vừa, nên đặc tả không có chỗ
-để giúp mô hình yếu hơn (H4 chưa kết luận được), và Sonnet theo đặc tả đạt ngang Opus vibe với khoảng
+Claude, hiệu số âm hoặc bằng không ở mọi tầng, trừ Sonnet tầng vừa
+(\NumResSonnetMediumDiffPp{} đpt, chỉ tham khảo); cả hai gần trần ở tầng nhỏ và vừa, nên đặc tả không có chỗ
+để giúp mô hình yếu hơn (H4 chưa kết luận được), và Sonnet theo đặc tả cùng ước lượng điểm với Opus vibe (khoảng rộng), với
 \NumResHFourCostRatioPct{}\% chi phí quy đổi.
 
 Dấu hiệu có ích duy nhất nằm ở việc lớn và công cụ đạt thấp nhất: ở ba nhiệm vụ tầng lớn, Codex theo đặc
 tả đạt \NumResCodexLargeSpecPct{}\% so với \NumResCodexLargeVibePct{}\%, làm hỏng test cũ ở
 \NumResCodexLargeRegSpecPct{}\% so với \NumResCodexLargeRegVibePct{}\% số lượt. Với ba nhiệm vụ, và với
 H5 chưa kết luận được (hiệu số gộp không tăng rõ theo tầng), đây chỉ là giả thuyết cho nghiên cứu sau, không
-phải bằng chứng rằng đặc tả ``trả vốn'' khi việc đủ lớn. Kết luận vì thế không giữ nguyên hướng khi đổi
-công cụ (RQ4), dù RQ4 chỉ còn hai công cụ sau khi bỏ \texttt{agy-gemini}. Thứ nhánh theo đặc tả luôn để lại
-là test: khoảng ba phần tư số lượt có test mới, chạy qua \NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%
+phải bằng chứng rằng đặc tả ``trả vốn'' khi việc đủ lớn. Hướng hiệu số khác nhau giữa hai công cụ,
+nhưng mọi khoảng tin cậy ở tầng nhỏ đều chứa 0, nên chưa thể nói kết luận đổi theo công cụ (RQ4, chỉ còn
+hai công cụ). Thứ nhánh theo đặc tả thường để lại là test: khoảng ba phần tư số lượt có test mới, chạy qua \NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%
 số dòng mới, trong khi nhánh vibe của Sonnet và Codex gần như không có test. Test ẩn không đo giá trị của
 phần test này; nó chỉ có giá trị ở lần sửa sau, ngoài phạm vi thí nghiệm.
 
@@ -33,8 +34,8 @@ không. Đây là diễn giải từ \NumLabRuns{} lượt của hai mô hình, 
 
 E2 (mục~\ref{sec:explore}) gợi ý rằng mức chi tiết của đề lấn át cách làm: bỏ tên và chữ ký làm tỉ lệ lượt
 đạt hết test ẩn giảm khoảng \NumETwoXPassShiftSpec{}--\NumETwoXPassShiftVibe{} đpt ở cả hai cách, lớn hơn
-mọi khác biệt giữa hai cách trong cả nghiên cứu. Phần quy trình bù lại nhỏ và chỉ thấy ở tầng nhỏ, rõ nhất
-ở Sonnet; Opus mạnh hơn và Haiku yếu hơn gần như không được lợi (với bốn nhóm, chỉ là quan sát). Cách đọc
+mọi khác biệt giữa hai cách. Phần quy trình bù lại nhỏ và chỉ thấy ở tầng nhỏ, rõ nhất
+ở Sonnet. Với Opus (mạnh hơn) và Haiku (yếu hơn), quy trình gần như không giúp gì; với bốn nhóm, đây chỉ là quan sát. Cách đọc
 hợp lý: bước thiết kế buộc tác tử tự nêu điều đề không nói nên bù được vài mục hành vi, nhưng không tạo ra
 thông tin chỉ người giao việc có; nó chốt một cách đoán, như ca \texttt{f15}. E1, E2 thêm sau khi thấy kết
 quả chính, nên đây là xu hướng gợi ý, chưa phải kết luận đã kiểm.
@@ -46,11 +47,11 @@ Kết quả khớp với nghiên cứu quan sát lớn nhất: Hill \cite{hill_2
 hơn với hai mô hình Claude. Đánh đổi mà Agarwal và cộng sự \cite{agarwal_2026} mô tả qua phỏng vấn (đáng
 tin hơn, đổi lại tốn công) hiện ra ở đây chủ yếu ở vế chi phí; vế ``đáng tin hơn'' chỉ thấy ở Codex tầng
 lớn. Mock và Russo \cite{mock_2026} thấy quy trình tác tử có thể thêm độ phức tạp không được yêu cầu;
-nhánh theo đặc tả ở đây cũng viết nhiều mã hơn và ở hai ô có nhiều lỗi tĩnh hơn. Kết quả của Jiang và cộng
+nhánh theo đặc tả có nhiều lỗi tĩnh hơn ở hai ô. Kết quả của Jiang và cộng
 sự \cite{jiang_2024} về lập kế hoạch ở mức hàm không lặp lại ở mức tính năng khi đề đã chi tiết: phần lợi
-của kế hoạch có lẽ đã nằm sẵn trong đề. Ca nghiên cứu \texttt{f15} cho một cơ chế cụ thể theo chiều ngược
+của kế hoạch có lẽ đã nằm sẵn trong đề. Ca \texttt{f15} cho một cơ chế cụ thể theo chiều ngược
 lại: bước thiết kế chốt một chỗ đề bỏ ngỏ thành quyết định cố định, rồi test viết trước kiểm quyết định đó
-bằng chính giả định của nó. Phần hồi cứu (RQ2) cho cùng hướng: mã AI viết được sửa lại dù có hay không có plan.
+bằng chính giả định của nó. Phần hồi cứu (RQ2) cùng hướng: mã AI viết bị sửa lại dù có plan hay không.
 
 \subsection{Mối đe dọa đến tính hợp lệ}\label{sec:threats}
 
@@ -69,11 +70,10 @@ chỗ đề bỏ ngỏ như trong ca \texttt{f15}; khi chạy không người, t
 \textit{Tính hợp lệ nội.} Đề bài do AI soạn sau khi đã biết lời giải và được An duyệt gộp; ở tầng vừa và
 tầng lớn, mục giao diện bắt buộc nêu nhiều tên, nên đề càng gần một bản đặc tả (rõ nhất ở
 \texttt{m01}) thì nhánh theo đặc tả càng ít điều để thêm. Test ẩn được viết cho bản cài đặt gốc, vốn được
-làm theo đặc tả, nên có thể thiên vị nhánh này. Can thiệp là một gói (thiết kế, kế hoạch, viết test
-trước, chạy cả bộ test), nên không tách được phần của tài liệu đặc tả. Tác tử có công cụ web và mạng mở;
+làm theo đặc tả, nên có thể thiên vị nhánh này. Can thiệp là một gói nên không tách được phần của tài liệu đặc tả. Tác tử có công cụ web và mạng mở;
 \texttt{upstream\_urls} chỉ bắt đường dẫn hiện ra trong nhật ký, nên là cận dưới của việc đọc mã gốc, và
 phân tích độ nhạy chỉ bỏ được những lượt bị bắt. Ba tầng có lúc chạy chồng (tối đa 24 phiên thay vì tám),
-nên thời gian chạy có thể dài hơn; không có lượt nào hết giờ (mục~\ref{sec:results}). Việc làm mù khi gán nhãn
+nên thời gian chạy có thể dài hơn (không lượt nào hết giờ). Việc làm mù khi gán nhãn
 chỉ là một phần.
 
 \textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt: \NumLabDeBaiThieuTotal{} trên
@@ -90,8 +90,8 @@ vụ ở các tầng khác nhau chung commit hoặc chung file test ẩn.
 \textit{Tính hợp lệ kết luận.} Tầng vừa có \NumMediumTasks{} và tầng lớn có \NumFeatureTasks{} nhiệm vụ,
 nên khoảng tin cậy ở hai tầng này chỉ có giá trị tham khảo. Các phép thử phụ không được hiệu chỉnh so sánh
 nhiều lần. Bài kiểm tra mô phỏng cho độ phủ thật của khoảng bootstrap cụm là \NumResCoverageHits{} trên
-\NumResCoverageSets{} bộ dữ liệu (\NumResCoveragePct{}\%), thấp hơn mức danh nghĩa 95\%; kết luận H5 chỉ
-dựa vào dấu của hệ số nên không đổi, nhưng khoảng của hệ số tương tác hẹp hơn thực tế.
+\NumResCoverageSets{} bộ dữ liệu (\NumResCoveragePct{}\%), thấp hơn mức danh nghĩa 95\%; H5 đọc theo khoảng
+tin cậy vốn đã chứa 0 nên kết cục không đổi; khoảng của H1 cũng có thể hẹp hơn thực tế.
 
 \textit{Mở kết quả và bỏ nhóm.} Kết quả chính được mở khi \texttt{agy-gemini} mới chạy xong một phần, và
 nhóm này bị bỏ sau đó. Hai thí nghiệm E1 và E2 được thêm sau khi đã thấy kết quả chính. Cả ba việc được ghi

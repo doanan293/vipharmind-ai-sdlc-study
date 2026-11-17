@@ -32,8 +32,9 @@ tin cậy chỉ để tham khảo. ``Ủng hộ'', ``trái'', ``chưa rõ'' là 
 Phép thử xác nhận H1 (\texttt{claude-sonnet}, tầng nhỏ): nhánh theo đặc tả đạt \NumResHOneSpecPct{}\%,
 nhánh vibe đạt \NumResHOneVibePct{}\%, hiệu số \NumResHOneEstPp{} đpt, khoảng tin cậy
 [\NumResHOneLowPp{}; \NumResHOneHighPp{}]. Khoảng tin cậy chứa 0 nên H1 \textbf{chưa kết luận được}
-theo quy tắc đọc. Nhưng cận trên của khoảng là \NumResHOneHighPp{}: dữ liệu không để chỗ cho một lợi ích
-dương nào của làm theo đặc tả trên tầng nhỏ với nhóm này. Ba lần lặp của cùng một (nhiệm vụ, cách làm)
+theo quy tắc đọc. Khoảng không chứa giá trị dương (cận trên \NumResHOneHighPp{}): dữ liệu không ủng hộ một lợi
+ích đáng kể, nhưng với \NumTasks{} nhiệm vụ và khoảng bootstrap có thể hẹp hơn thực tế, chưa loại được
+một lợi ích nhỏ. Ba lần lặp của cùng một (nhiệm vụ, cách làm)
 cho kết quả khác nhau ở \NumResVarDisagree{} trên \NumResVarCells{} ô (\NumResVarDisagreePct{}\%) của
 \texttt{claude-sonnet} tầng nhỏ, và ở \NumResVarAllDisagree{} trên \NumResVarAllCells{} ô
 (\NumResVarAllPct{}\%) khi tính mọi nhóm và tầng.
@@ -60,9 +61,9 @@ Gói phân tích đếm \NumResSecondaryComparisons{} phép so phụ, không hi�
 
 Ở tầng nhỏ, hiệu số của hai mô hình Claude đều âm, và hiệu của hai hiệu số (Sonnet trừ Opus) là
 \NumResHFourDiffOfDiffsPp{} đpt, khoảng tin cậy [\NumResHFourDiffOfDiffsLowPp{};
-\NumResHFourDiffOfDiffsHighPp{}]: H4 \textbf{chưa kết luận được} ở cả ba tầng. Sonnet theo đặc tả đạt
-ngang Opus vibe (hiệu \NumResHFourSonnetSpecOpusVibePp{} đpt, khoảng
-[\NumResHFourSonnetSpecOpusVibeLowPp{}; \NumResHFourSonnetSpecOpusVibeHighPp{}]) với chi phí quy đổi bằng
+\NumResHFourDiffOfDiffsHighPp{}]; H4 \textbf{chưa kết luận được} ở tầng này, và ở tầng vừa, tầng lớn cũng vậy. Sonnet theo đặc tả và Opus
+vibe có cùng ước lượng điểm (hiệu \NumResHFourSonnetSpecOpusVibePp{} đpt) nhưng khoảng rộng
+([\NumResHFourSonnetSpecOpusVibeLowPp{}; \NumResHFourSonnetSpecOpusVibeHighPp{}]), với chi phí quy đổi bằng
 \NumResHFourCostRatioPct{}\% (khoảng \NumResHFourCostRatioLowPct{}--\NumResHFourCostRatioHighPct{}\%).
 Điều này không cho thấy đặc tả nâng mô hình yếu lên; nó chỉ cho thấy Sonnet đã đạt gần trần ở tầng nhỏ dù
 làm theo cách nào.
@@ -100,7 +101,7 @@ nhánh vibe. Mức thêm thấp nhất ở Opus (\NumResOpusTokenRatio{} lần t
 H3 cho kết quả lẫn lộn. Về lỗi tĩnh (ruff cộng pyrefly), hai ô có kết cục ``trái'': nhánh theo đặc tả có
 nhiều lỗi hơn ở \texttt{claude-sonnet} tầng vừa và \texttt{codex-luna} tầng nhỏ. Ở \texttt{codex-luna}
 tầng lớn thì ngược lại: trung bình \NumResCodexLargeStaticSpec{} lỗi tĩnh mỗi lượt theo đặc tả so với
-\NumResCodexLargeStaticVibe{} lượt vibe, và \NumResCodexLargeRegSpecPct{}\% lượt theo đặc tả làm hỏng test
+\NumResCodexLargeStaticVibe{} lỗi mỗi lượt vibe, và \NumResCodexLargeRegSpecPct{}\% lượt theo đặc tả làm hỏng test
 cũ so với \NumResCodexLargeRegVibePct{}\% lượt vibe. Hai mô hình Claude gần như không làm hỏng test cũ ở
 cách làm nào. Về chỉ số bảo trì, nhánh theo đặc tả không kém hơn quá 5 điểm MI ở hầu hết các ô.
 
@@ -155,8 +156,8 @@ sửa cấu hình \texttt{pytest}, hay bỏ lượt theo đặc tả không tuâ
 \NumResSensOverlapEstPp{} đpt [\NumResSensOverlapLowPp{}; \NumResSensOverlapHighPp{}]. Dùng số dòng được
 chấm thay cho số dòng của bản vá gốc, hệ số tương tác là \NumResHFiveGradedCoef{}
 [\NumResHFiveGradedLow{}; \NumResHFiveGradedHigh{}]. Không có lượt hết giờ nào, kể cả trong khoảng các
-tầng chạy chồng nhau (\NumResConcurrentWindowRuns{} lượt bắt đầu trong khoảng đó), nên việc chạy chồng
-không ảnh hưởng đến kết cục. Kết luận của H1 và H5 không đổi trong mọi phân tích độ nhạy.
+tầng chạy chồng nhau (\NumResConcurrentWindowRuns{} lượt bắt đầu trong khoảng đó); ảnh hưởng của việc chạy
+chồng tới thời gian chạy thì không loại trừ được. Kết luận của H1 và H5 không đổi trong mọi phân tích độ nhạy.
 
 \subsection{Nguyên nhân thất bại và ca nghiên cứu}
 
@@ -167,7 +168,7 @@ viết: \NumLabDeBaiThieuTotal{} vì test ẩn kiểm chi tiết đề không ch
 với mã có sẵn. Hai loại này chiếm tỉ lệ gần như nhau ở hai nhánh
 (\NumLabOutsideSpecPct{}\% và \NumLabOutsideVibePct{}\%): quy trình đặc tả không ngăn được chúng. Cả
 \NumLabHongChucNangCuTotal{} lượt làm hỏng chức năng cũ đều của Opus. Fable 5.2 (người chấm thứ ba ngoài bản
-đăng ký) đồng ý với Lợi \NumLabFableAgreeLoi{} và Bảo \NumLabFableAgreeBao{} lượt (kappa
+đăng ký) đồng ý với Lợi \NumLabFableAgreeLoi{} và Bảo \NumLabFableAgreeBao{} trên \NumLabRuns{} lượt (kappa
 \NumLabFableKappaLoi{}, \NumLabFableKappaBao{}), khác chủ yếu ở lượt người gán dùng sai API có sẵn. Kiểm tra mù \NumPassCheckRuns{} lượt
 đạt (Lợi, Bảo đối chiếu với bản vá gốc): cả \NumPassCheckCorrect{} lượt đúng thật.
 
@@ -178,7 +179,7 @@ với mã có sẵn. Hai loại này chiếm tỉ lệ gần như nhau ở hai n
 \input{generated/tables/labels}
 \end{table}
 
-\textit{Ca nghiên cứu.} Theo quy tắc chọn trước (nhiệm vụ tầng lớn có hiệu số lớn nhất ở
+\textit{Ca nghiên cứu.} Theo quy tắc chọn trước (nhiệm vụ tầng lớn có hiệu số có trị tuyệt đối lớn nhất ở
 \texttt{claude-sonnet}), ca được chọn là \texttt{f15}: tập tài liệu có chủ sở hữu và quy tắc hiển thị,
 và việc tìm kiếm trong chat chỉ đọc các tập người dùng được xem. Hiệu số là \NumResCaseDiffPp{} đpt:
 không lượt nào trong \NumResCaseReps{} lượt theo đặc tả đạt (\NumResCaseSpecPassed{}), một lượt vibe
@@ -193,41 +194,39 @@ bị xóa. Đề bài nêu tên phương thức kho \texttt{deleted\_with\_relea
 Bản thiết kế của tác tử chốt kiểu trả về là danh sách đối tượng tập tài liệu, trong khi bản cài đặt gốc
 (và bản giả trong test ẩn) trả về danh sách mã. Kế hoạch và test của tác tử đều dựa trên quyết định đó
 nên đều đạt; còn trên bản giả của test ẩn, hàm dọn đọc thuộc tính \texttt{.id} của một mã, gặp lỗi, và
-khối \texttt{except Exception} của chính tác tử nuốt lỗi rồi báo không dọn được tập nào. Hai lượt vibe cũng phải tự
-chọn kiểu trả về, và đều chọn danh sách mã. Như vậy bước thiết kế đã biến một chỗ đề bỏ ngỏ thành một
+khối \texttt{except Exception} của chính tác tử nuốt lỗi rồi báo không dọn được tập nào. Cả \NumResCaseReps{} lượt vibe
+cũng phải tự chọn kiểu trả về, và đều chọn danh sách mã. Như vậy bước thiết kế biến chỗ đề bỏ ngỏ thành
 quyết định cố định, rồi các bước sau kiểm quyết định đó bằng chính giả định của nó. Test thứ hai (tập tài
 liệu hệ thống chỉ đọc với người không phải quản trị) trượt ở cả ba lượt theo đặc tả và hai trong ba lượt
 vibe. Mọi lượt hỏng của \texttt{f15} mang nhãn đề bài thiếu.
 
 \subsection{Thí nghiệm thăm dò: đề sơ sài (E2) và Haiku (E1)}\label{sec:explore}
 
-Hai thí nghiệm dưới đây được thêm \textbf{sau khi đã xem kết quả chính} (bản bổ sung
+Hai thí nghiệm này được thêm \textbf{sau khi xem kết quả chính} (bản bổ sung
 \texttt{prereg-v1.2}); chúng là thăm dò, không dùng để xác nhận hay bác bỏ H1--H5, và chỉ đọc theo dấu và
 độ lớn, không theo ngưỡng.
 
 \textit{E2: đề sơ sài.} Mỗi nhiệm vụ có thêm một đề một hai câu, không nêu tên hàm hay chữ ký; bốn nhóm
 (thêm Haiku) làm theo hai cách với đề đó. Vì test ẩn gọi đúng tên mà đề không nêu, độ đúng được chấm bằng
 danh sách hành vi rút từ test ẩn, do Fable 5.2 chấm khi không biết cách làm; điểm là tỉ lệ mục đạt.
-Dữ liệu E2 là \textbf{\NumETwoStatus{}}: ba nhóm Claude đủ \NumETwoClaudeBriefJudged{} lượt đề sơ sài. Codex hết hạn mức sau \NumETwoCodexSmallJudged{} trên
-\NumETwoCodexSmallExpected{} lượt tầng nhỏ và dừng hẳn (Phụ lục~\ref{app:deviations}), thiếu
-\NumETwoStoppedUnits{} lượt (Bảng~\ref{tab:e2-coverage}). Tầng vừa và tầng lớn chỉ để tham khảo (ít nhiệm vụ).
+Trạng thái E2: \textbf{\NumETwoStatus{}}. Ba nhóm Claude đủ \NumETwoClaudeBriefJudged{} lượt; Codex hết hạn mức sau \NumETwoCodexSmallJudged{} trên \NumETwoCodexSmallExpected{} lượt tầng nhỏ rồi dừng, thiếu \NumETwoStoppedUnits{} lượt (Bảng~\ref{tab:e2-coverage}).
 
 Mức chi tiết của đề tác động lớn hơn nhiều so với cách làm (Bảng~\ref{tab:e2-x2}, Phụ lục~\ref{app:e2-coverage}). Bỏ chi tiết, tỉ lệ
-lượt đạt hết test ẩn giảm \NumETwoXPassShiftSpec{} đpt ở nhánh đặc tả và \NumETwoXPassShiftVibe{} đpt ở
-nhánh vibe (vì đề không nêu tên mà test ẩn gọi), điểm danh sách hành vi giảm \NumETwoXScoreShiftSpec{} và \NumETwoXScoreShiftVibe{} đpt, còn tỉ lệ
+lượt đạt hết test ẩn giảm \NumETwoXPassShiftSpec{} và \NumETwoXPassShiftVibe{} đpt ở nhánh đặc tả và vibe (vì đề không nêu tên mà test ẩn gọi), điểm danh sách hành vi giảm \NumETwoXScoreShiftSpec{} và \NumETwoXScoreShiftVibe{} đpt, còn tỉ lệ
 lượt làm hỏng test cũ tăng \NumETwoXRegressionShiftSpec{} và \NumETwoXRegressionShiftVibe{} đpt.
 
 So với khoảng cách đó, phần quy trình bù lại nhỏ. Với đề sơ sài, điểm của nhánh đặc tả trừ nhánh vibe,
-gộp bốn nhóm và mọi tầng, là \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{};
+gộp mọi nhóm có dữ liệu và mọi tầng, là \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{};
 \NumETwoPooledAllHighPp{}] (Bảng~\ref{tab:e2-primary}): \NumETwoReading{}. Ở tầng nhỏ hiệu số gộp là
-\NumETwoPooledSmallPp{} [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}], rõ nhất ở Sonnet
-(\NumETwoSonnetSmallPp{} [\NumETwoSonnetSmallLowPp{}; \NumETwoSonnetSmallHighPp{}]). Opus \NumETwoOpusAllPp{},
-Haiku \NumETwoHaikuAllPp{} và Codex (chỉ tầng nhỏ) \NumETwoCodexAllPp{} đều có khoảng tin cậy chứa 0. Ở
-tầng vừa và tầng lớn hiệu số gộp là \NumETwoPooledMediumRefPp{} và \NumETwoPooledLargeRefPp{} đpt, tức không
-thấy lợi ích; Haiku tầng lớn còn nghiêng về vibe (\NumETwoHaikuLargeRefPp{}). Với đề chi tiết, cùng
-hiệu số là \NumETwoXScoreDetailed{} [\NumETwoXScoreDetailedLow{}; \NumETwoXScoreDetailedHigh{}], nên tương
-tác mức chi tiết $\times$ cách làm là \NumETwoXScoreInter{} [\NumETwoXScoreInterLow{};
-\NumETwoXScoreInterHigh{}] đpt: cùng chiều giả thuyết thăm dò nhưng khoảng tin cậy chạm 0. Chi phí và test
+\NumETwoPooledSmallPp{} đpt [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}], rõ nhất ở Sonnet
+(\NumETwoSonnetSmallPp{} đpt [\NumETwoSonnetSmallLowPp{}; \NumETwoSonnetSmallHighPp{}]). Opus \NumETwoOpusAllPp{},
+Haiku \NumETwoHaikuAllPp{} và Codex (chỉ tầng nhỏ) \NumETwoCodexAllPp{} đpt đều có khoảng tin cậy chứa 0. Ở
+tầng vừa và tầng lớn (chỉ tham khảo, \NumMediumTasks{} và \NumFeatureTasks{} nhiệm vụ) hiệu số gộp là
+\NumETwoPooledMediumRefPp{} và \NumETwoPooledLargeRefPp{} đpt, tức không thấy lợi ích; Haiku tầng lớn còn
+nghiêng về vibe (\NumETwoHaikuLargeRefPp{} đpt). Trong Bảng~\ref{tab:e2-x2}, cùng hiệu số là
+\NumETwoXScoreBrief{} đpt khi đề sơ sài và \NumETwoXScoreDetailed{} đpt khi đề chi tiết, nên tương tác mức chi tiết $\times$ cách làm là
+\NumETwoXScoreInter{} đpt [\NumETwoXScoreInterLow{}; \NumETwoXScoreInterHigh{}]: cùng chiều giả thuyết
+thăm dò nhưng khoảng tin cậy chứa 0. Chi phí và test
 thêm của nhánh đặc tả gần như không đổi theo mức chi tiết của đề.
 
 \begin{table}[H]

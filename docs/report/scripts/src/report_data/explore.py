@@ -190,9 +190,12 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
     complete = ju == gr and gr + stopped_nf == exp
     cutoff = _cutoff(runs)
     out["ETwoCutoff"] = cutoff
-    out["ETwoStatus"] = "đầy đủ" if complete else "sơ bộ"
+    # "đầy đủ" dễ đọc thành mọi lượt dự kiến đều có; khi Codex đã dừng thì nói thẳng ra
+    done = "thu thập đã kết thúc" + ("; Codex dừng ở tầng nhỏ" if stopped_nf else "")
+    out["ETwoStatus"] = done if complete else "sơ bộ"
     out["ETwoLabel"] = (
-        f"dữ liệu đầy đủ (tới {cutoff})" if complete else f"SƠ BỘ — dữ liệu tính đến {cutoff}"
+        f"thu thập xong (tới {cutoff}){'; Codex dừng ở tầng nhỏ' if stopped_nf else ''}"
+        if complete else f"SƠ BỘ — dữ liệu tính đến {cutoff}"
     )
     tiers = [vn for tier, _, vn in TIERS[1:] if _est(E, f"primary.score.pooled.{tier}")]
     out["ETwoScope"] = _tier_list(tiers) if tiers else None

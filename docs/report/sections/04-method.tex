@@ -1,6 +1,6 @@
 \section{Phương pháp}\label{sec:method}
 
-Phần chính là thực nghiệm đối chứng: mỗi nhiệm vụ được giao cho bốn nhóm chạy theo hai cách làm, lặp ba
+Phần chính là thực nghiệm đối chứng: mỗi nhiệm vụ được giao cho bốn nhóm chạy (ba nhóm chạy đủ) theo hai cách làm, lặp ba
 lần, chấm bằng test mà tác tử không thấy, với thiết kế chốt trước khi chạy (mục~\ref{sec:prereg}).
 
 \subsection{Dữ liệu hồi cứu}
@@ -41,7 +41,7 @@ nên đề tài thêm hai tầng lớn hơn, cắt từ 16 đoạn commit liền
 \texttt{f08}, \texttt{f14}, \texttt{f15} (\NumFeatureSrcLinesMin{} đến \NumFeatureSrcLinesMax{} dòng) và tầng
 vừa \texttt{m01} đến \texttt{m05} (\NumMediumSrcLinesMin{} đến \NumMediumSrcLinesMax{} dòng), theo tiêu chí
 và quy tắc chọn cố định. Đề hai tầng này có thêm mục ``giao diện bắt buộc'' liệt kê các tên test ẩn cần, và
-được Fable 5.2 phản biện độc lập trước khi An duyệt. Tiêu chí, quy tắc chọn, số dòng được chấm và chỗ chồng
+được Fable 5.2 (một tác tử AI, mục~\ref{sec:prereg}) phản biện độc lập trước khi An duyệt. Tiêu chí, quy tắc chọn, số dòng được chấm và chỗ chồng
 lấn giữa các tầng ở Phụ lục~\ref{app:tasks}.
 
 \subsection{Hai cách làm}
@@ -53,7 +53,7 @@ kiểm thử), viết \texttt{docs/plan.md} chia việc thành các phần trọ
 viết test trước và chạy cả bộ test backend trước khi dừng. Lời dặn không quy định số phần, giống các plan
 cũ của ViPharmind, và không chép skill nào. Can thiệp vì vậy là một gói, và nhánh này là ``quy trình đặc
 tả tự động'': không có người duyệt như khi An làm ViPharmind. Lượt theo đặc tả không để lại cả hai file
-được ghi là không tuân thủ; phép thử chính vẫn tính các lượt này (phân tích theo phân bổ).
+được ghi là không tuân thủ; phép thử chính vẫn tính các lượt này (phân tích theo phân bổ, \emph{intention-to-treat}).
 
 Lời dặn theo đặc tả đi theo quy trình của bộ skill Superpowers mà An dùng khi làm ViPharmind, nhưng viết
 lại thành một khối chữ duy nhất thay vì nạp skill (Bảng~\ref{tab:superpowers}). Có hai lý do. Các lượt
@@ -84,7 +84,7 @@ commit thường xuyên, \texttt{git worktree} & không yêu cầu & bộ chạy
 
 \subsection{Nhóm chạy và điều kiện chạy}\label{sec:conditions}
 
-Bốn nhóm chạy (Bảng~\ref{tab:cohorts}) đều ở mức effort hoặc suy luận medium. Ba lần lặp, hai cách làm và
+Bốn nhóm chạy (Bảng~\ref{tab:cohorts}) đều ở mức suy luận (effort/reasoning) medium. Ba lần lặp, hai cách làm và
 bốn nhóm cho \NumRunsSmallTotal{} lượt ở tầng nhỏ, \NumRunsMediumTotal{} ở tầng vừa và \NumRunsLargeTotal{}
 ở tầng lớn, tổng \NumRunsTotal{} lượt.
 
@@ -161,7 +161,8 @@ commit (\texttt{f08}, \texttt{t03}) và thay \texttt{src\_lines} bằng \texttt{
 Lê Xuân Lợi và Trần Ngọc Bảo gán nhãn độc lập nguyên nhân thất bại cho mọi lượt không đạt của hai nhóm
 Claude (chín nhãn, mã ngẫu nhiên, bản vá đã bỏ file đặc tả; làm mù một phần), báo cáo kappa của Cohen; An
 phân xử chỗ lệch. Vòng một bị loại theo đề nghị của hai người gán vì điền chưa kỹ; vòng hai dùng mã mới, kèm mã
-test ẩn và thứ tự quyết định cố định. Hai người cũng đọc mù 20 lượt đạt ngẫu nhiên để tìm lượt đạt test nhưng sai. Ca nghiên cứu định
+test ẩn và thứ tự quyết định cố định. Hai người cũng đọc mù \NumPassCheckRuns{} lượt đạt ngẫu nhiên, mỗi người \NumPassCheckLoi{}
+lượt, để tìm lượt đạt test nhưng sai. Ca nghiên cứu định
 tính lấy nhiệm vụ tầng lớn có hiệu số lớn nhất ở \texttt{claude-sonnet}.
 
 \subsection{Chốt trước khi chạy và phản biện độc lập}\label{sec:prereg}
@@ -170,16 +171,16 @@ Bản đăng ký trước được gắn thẻ git theo ba bước: \texttt{prer
 hoạch phân tích và quy tắc chọn hai tầng còn lại; \texttt{prereg-v1.1} chốt nhiệm vụ và mã băm đề bài tầng
 vừa và tầng lớn, trước mọi lượt AI trên hai tầng này; \texttt{prereg-v1-analysis} chốt gói phân tích
 (\texttt{analysis/}) đã chạy được trên dữ liệu chạy thử. Lượt chạy chính tầng nhỏ bắt đầu trước thẻ
-thứ hai; như bản đăng ký cho phép, không kết quả chính nào được mở, ngoài số lượt theo trạng thái, trước thẻ
-phân tích. Mọi thay đổi sau thẻ được ghi kèm lý do và những gì đã xem (Phụ lục~\ref{app:deviations}).
-Fable 5.2, một tác tử AI chạy tách khỏi phiên soạn thảo và không xem kết quả chính, phản biện bản đăng ký,
-đề bài tầng vừa và tầng lớn, và mã phân tích; mọi điểm chặn được sửa trước thẻ.
+thứ hai. Như bản đăng ký cho phép, trước thẻ phân tích không có kết quả chính nào được mở; chỉ xem
+số lượt theo trạng thái. Mọi thay đổi sau thẻ được ghi kèm lý do và những gì đã xem (Phụ lục~\ref{app:deviations}).
+Fable 5.2, một tác tử AI chạy tách khỏi phiên soạn thảo, phản biện bản đăng ký, đề bài tầng vừa và tầng
+lớn, và mã phân tích khi chưa có kết quả chính; mọi điểm chặn được sửa trước thẻ.
 
 Hạn chót thu dữ liệu là \mbox{2026-11-29}. Một (nhóm, tầng) chưa chạy đủ ở hạn chót bị loại khỏi phép thử
 xác nhận và phép thử gộp nhóm, và chỉ được mô tả. Cả bốn tài khoản Antigravity hết hạn mức tuần trước
 khi \texttt{agy-gemini} chạy xong, và nhóm này bị bỏ (mục~\ref{sec:data-collected}). Bản bổ sung
-\texttt{prereg-v1.2}, viết sau khi mở kết quả chính, thêm hai thí nghiệm thăm dò: Claude Haiku 5.5 theo
-thiết kế gốc và đề bài sơ sài cho cả hai cách làm (mục~\ref{sec:explore}).
+\texttt{prereg-v1.2}, viết sau khi mở kết quả chính, thêm hai thí nghiệm thăm dò: E1 (Claude Haiku 5.5, thiết kế
+gốc) và E2 (đề sơ sài cho Sonnet, Opus, Haiku, Codex; mục~\ref{sec:explore}).
 
 \subsection{Vai trò của AI trong chính nghiên cứu này}\label{sec:ai-role}
 
