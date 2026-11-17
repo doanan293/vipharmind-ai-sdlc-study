@@ -6,12 +6,12 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
-| Doãn Văn An | 20252778M | Thực hiện toàn bộ nghiên cứu: thiết kế, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | Thuyết trình phần bối cảnh, phương pháp, hồi cứu (khoảng 7 phút); trả lời câu hỏi; gán nhãn mù nguyên nhân thất bại |
-| Trần Ngọc Bảo | 20251227M | Thuyết trình phần kết quả, kết luận (khoảng 7 phút); trả lời câu hỏi; gán nhãn mù nguyên nhân thất bại |
+| Doãn Văn An | 20252778M | Nhóm trưởng, điều phối và giao việc; thực hiện phần lớn nghiên cứu: thiết kế, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
+| Lê Xuân Lợi | 20252781M | Phần bối cảnh và phương pháp: kiểm tra trích dẫn; gán nhãn mù nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2; trả lời câu hỏi |
+| Trần Ngọc Bảo | 20251227M | Phần kết quả: tính lại độc lập số liệu chính; gán nhãn mù nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2; trả lời câu hỏi |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
-của Lợi và Bảo tập trung ở thuyết trình, hỏi đáp và gán nhãn. Gán nhãn là một bước đo của nghiên cứu: nó
+của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay), kiểm tra độc lập và hỏi đáp. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
 
 Chỗ ghi **[CHỜ KẾT QUẢ]** được điền sau khi chạy chính, gán nhãn và tập dượt xong. Chỗ ghi **[An điền]**
