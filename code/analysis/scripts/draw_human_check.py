@@ -59,7 +59,7 @@ def readme(judge_md: str) -> str:
         "Với mỗi mục, ghi vào bảng `sheet-<tên>.csv` cột `verdict` một trong: `met`, `not_met`, "
         "`unclear`; cột `note` ghi lý do ngắn. Chấm độc lập, không trao đổi với người chấm kia. "
         "Nếu đoán được cách làm (spec/vibe), ghi `lộ cách làm` vào note.\n\n"
-        "Tiêu chí (giống hệt người chấm máy, `prompts/judge.md`):\n\n" + crit + "\n"
+        "Tiêu chí (giống hệt người chấm máy, `code/prompts/judge.md`):\n\n" + crit + "\n"
     )
 
 

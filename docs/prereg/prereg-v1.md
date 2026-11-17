@@ -22,9 +22,9 @@ Ràng buộc cho `prereg-v1.1`:
    hay tính tỉ lệ đạt của tầng nhỏ cho tới khi `prereg-v1.1` đã gắn thẻ; trong lúc chờ chỉ được xem số
    lượt theo trạng thái. Mục 11 ghi ngày gắn thẻ và ngày mở kết quả.
 2. **Tập ứng viên.** Ứng viên tầng lớn là 16 đoạn trong `sub_ranges` của
-   `tasks/feature-feasibility/ranges.json` tại thẻ `prereg-v1`. Ứng viên tầng vừa là mọi đoạn 2–3 commit
+   `data/tasks/feature-feasibility/ranges.json` tại thẻ `prereg-v1`. Ứng viên tầng vừa là mọi đoạn 2–3 commit
    liền nhau nằm trong 16 đoạn đó. Mọi ứng viên, kết quả từng tiêu chí và lý do loại được ghi ở
-   `tasks/feature-feasibility/medium_candidates.json` và commit cùng `prereg-v1.1`.
+   `data/tasks/feature-feasibility/medium_candidates.json` và commit cùng `prereg-v1.1`.
 3. **Tiêu chí, áp dụng như nhau cho mọi ứng viên:**
    - Chung cho hai tầng: các commit liền nhau của cùng một plan; chỉ đổi `backend/`; có test ẩn trượt ở
      `base` và đạt ở `end`; bản vá gốc (`git diff base end`) chấm `task_pass = true`, không hồi quy.
@@ -50,9 +50,9 @@ Ràng buộc cho `prereg-v1.1`:
 ## 1. Nhiệm vụ tầng nhỏ
 
 Mã ViPharmind cố định ở commit `3baae61d764f6d83f7205d0d4d97ee52dd8e0dbe` (nhánh main). Mỗi nhiệm vụ là
-một commit; mã nền là commit cha; test ẩn là test do commit đó thêm hoặc sửa. Đề bài: `tasks/<id>/prompt.md`
+một commit; mã nền là commit cha; test ẩn là test do commit đó thêm hoặc sửa. Đề bài: `data/tasks/<id>/prompt.md`
 (do AI soạn, An duyệt gộp; t05, t07, t13 được bổ sung tên giao diện sau khi đối chiếu với test ẩn,
-`tasks/PROMPT_AUDIT.md`, commit `e92f346`). An duyệt lại ba đề đã sửa cùng ngày duyệt văn bản này (dòng
+`data/tasks/PROMPT_AUDIT.md`, commit `e92f346`). An duyệt lại ba đề đã sửa cùng ngày duyệt văn bản này (dòng
 duyệt ở đầu văn bản).
 
 | Id | Commit | Lớp | Dòng `backend/src` | Nhóm kích thước |
@@ -78,8 +78,8 @@ tính vào kết quả.
 
 Số test ẩn của từng nhiệm vụ được báo cáo trong bảng nhiệm vụ của báo cáo; t06 và t13 chỉ có 2 test ẩn.
 
-Thẻ `prereg-v1` chốt toàn bộ cây tại commit mang thẻ: `tasks/t01`–`t15` (`task.toml`, `prompt.md`),
-`prompts/`, `harness/` (mã, `cohorts.toml`, `uv.lock`), `prereg/labeling-guide.md`. Mọi lượt chính chạy
+Thẻ `prereg-v1` chốt toàn bộ cây tại commit mang thẻ: `data/tasks/t01`–`t15` (`task.toml`, `prompt.md`),
+`code/prompts/`, `code/harness/` (mã, `cohorts.toml`, `uv.lock`), `docs/prereg/labeling-guide.md`. Mọi lượt chính chạy
 từ đúng commit này. Sau khi chạy, kiểm tra mỗi (nhiệm vụ, cách làm) có đúng một giá trị `prompt_sha256`
 trên mọi lượt và báo cáo kết quả kiểm tra.
 
@@ -87,8 +87,8 @@ trên mọi lượt và báo cáo kết quả kiểm tra.
 
 Lời dặn nguyên văn, chốt bằng mã băm SHA-256:
 
-- Vibe: `prompts/vibe.md` (`17a6ec6245602f789ab7283bd5cd64f11fb563aab09a85fb60ea6ca4a9d034fe`).
-- Theo đặc tả: `prompts/spec.md` (`e6171cac3f2b43831f93aefdef355c40b2ce9562e6f345211b9a5e9031cd9a35`).
+- Vibe: `code/prompts/vibe.md` (`17a6ec6245602f789ab7283bd5cd64f11fb563aab09a85fb60ea6ca4a9d034fe`).
+- Theo đặc tả: `code/prompts/spec.md` (`e6171cac3f2b43831f93aefdef355c40b2ce9562e6f345211b9a5e9031cd9a35`).
 
 Can thiệp là **một gói**: viết thiết kế, viết kế hoạch, viết test trước cho từng phần việc, và chạy cả
 bộ test backend trước khi dừng (lời dặn nêu cả lệnh `uv run pytest`). Lời dặn vibe không nêu điều nào
@@ -173,7 +173,7 @@ lệnh (bốn nhóm có hạn mức riêng nên chạy song song với nhau):
 
 ```
 cd /home/andv/personal/vipharmind-ai-sdlc-study
-harness/.venv/bin/sdlc-harness run \
+code/harness/.venv/bin/sdlc-harness run \
   --repo /home/andv/personal/vipharmind \
   --cohorts claude-sonnet,claude-opus,agy-gemini,codex-luna \
   --tasks t01,t02,t03,t04,t05,t06,t07,t08,t09,t10,t11,t12,t13,t14,t15 \
@@ -181,7 +181,7 @@ harness/.venv/bin/sdlc-harness run \
   --jobs 8 \
   --seed 20261115 \
   --timeout-s 3600 \
-  --out results/raw/main
+  --out data/results/raw/main
 ```
 
 - Danh sách nhiệm vụ ghi rõ 15 mã thay cho `--tasks main`: tại thẻ, `main` chọn mọi nhiệm vụ có
@@ -329,7 +329,7 @@ lần, và báo cáo nói rõ số phép so đã làm. Không chỉ số nào b�
    - các lượt theo đặc tả không tuân thủ quy trình (mục 2);
    - riêng H5: các nhiệm vụ có commit nằm trong một nhiệm vụ của tầng khác (ràng buộc 7 ở đầu văn bản).
 8. **Phân tích lỗi.** Lợi và Bảo gán nhãn độc lập mọi lượt hợp lệ không đạt của hai nhóm Claude ở cả ba
-   tầng, mỗi lượt một nhãn, theo `prereg/labeling-guide.md`. Bảng nhãn khóa tại thẻ này: 7 nhãn khởi đầu
+   tầng, mỗi lượt một nhãn, theo `docs/prereg/labeling-guide.md`. Bảng nhãn khóa tại thẻ này: 7 nhãn khởi đầu
    cộng hai nhãn chạy thử đề xuất (`de_bai_thieu`, `sai_api_co_san`; `docs/pilot-report.md` mục 7). Mỗi
    lượt được trao dưới một mã ngẫu nhiên không chứa nhóm, cách làm hay số lần lặp, theo thứ tự xáo trộn;
    gói gồm đề bài, bản vá đã bỏ `docs/design.md`, `docs/plan.md` và log test. Việc làm mù là **một
@@ -345,8 +345,8 @@ lần, và báo cáo nói rõ số phép so đã làm. Không chỉ số nào b�
     sai hoặc thiếu hành vi đề bài nêu. An không mù cách làm; báo cáo ghi rõ. Kết quả là mô tả, không sửa
     `task_pass`.
 
-**Mã phân tích.** Mã tính mọi bảng và hình của mục này (gói `analysis/`) được commit, có test, và chạy
-thử trên dữ liệu `results/raw/pilot`, rồi gắn thẻ `prereg-v1-analysis`. Lượt chạy chính được phép bắt
+**Mã phân tích.** Mã tính mọi bảng và hình của mục này (gói `code/analysis/`) được commit, có test, và chạy
+thử trên dữ liệu `data/results/raw/pilot`, rồi gắn thẻ `prereg-v1-analysis`. Lượt chạy chính được phép bắt
 đầu trước thẻ này, nhưng không kết quả chính nào được mở để phân tích (ngoài số lượt theo trạng thái)
 cho tới khi thẻ `prereg-v1-analysis` đã gắn. Commit của mã và mọi lần sửa sau đó được ghi ở mục 11. Phân
 tích nào không nằm trong mục 9 thì được ghi nhãn "khám phá, thêm sau khi thấy số liệu" trong báo cáo.
@@ -381,13 +381,13 @@ Mỗi thay đổi là một dòng: ngày; mục bị đổi; nội dung cũ và 
 sửa: thay đổi được thêm vào mục này và gắn thẻ mới (`prereg-v1.1`, `prereg-v1.2`, …). Báo cáo chép lại
 toàn bộ bảng này.
 
-Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa04b793366f1d191e943288e4e0897950900e8f87c199b62df` (tính lại nếu file còn đổi trước thẻ).
+Mã băm SHA-256 của `docs/prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa04b793366f1d191e943288e4e0897950900e8f87c199b62df` (tính lại nếu file còn đổi trước thẻ).
 
 1. **2026-11-15; ràng buộc 3 (gạch đầu dòng "Tầng vừa") và ràng buộc 4 của mục "Phạm vi và bản bổ sung
    `prereg-v1.1`".** Cũ: tầng vừa gồm ứng viên 2–3 commit, 300–700 dòng, đề nêu được mọi tên cần với tối
    đa 20 tên (đếm trên đề); hơn 5 ứng viên thì giữ theo thứ tự "không chứa commit của t01–t15 trước, rồi
    số tên trong đề, rồi `end`"; hai nhiệm vụ tầng vừa không chung commit. Mới (văn bản ràng buộc:
-   `prereg/prereg-v1.1.md`, mục "Quy tắc chọn tầng vừa" và "Nhiệm vụ không qua duyệt đề bài"):
+   `docs/prereg/prereg-v1.1.md`, mục "Quy tắc chọn tầng vừa" và "Nhiệm vụ không qua duyệt đề bài"):
    (a) ứng viên chung commit với t01–t15, p01, p02 bị **loại** thay vì xếp sau, và điều này mở rộng sang
    f08, f14, f15; (b) thêm tiêu chí 2 (không commit `test`, `refactor`, `chore`, `docs`), tiêu chí 7 (ít
    nhất 5 test ẩn được chấm trượt ở `base`) và tiêu chí 8 (tối đa 50% dòng được thực thi chỉ do test
@@ -398,7 +398,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
    api, lượt 2 điền chỗ còn lại; (e) quy tắc thay thế mới: chỉ trước thẻ `prereg-v1.1`, bỏ khi REJECT, GAP
    không đóng được hoặc `--original-patch` lỗi, thay bằng cửa sổ hợp lệ kế tiếp không chung commit với
    nhiệm vụ đang giữ hay đã bỏ. Lý do: độc lập giữa các tầng, đủ tín hiệu chấm, chỉ commit tính năng, đếm
-   tên được trước khi có đề (chi tiết ở `prereg/prereg-v1.1.md`). Đã xem trước khi đổi: số liệu dựng nhiệm
+   tên được trước khi có đề (chi tiết ở `docs/prereg/prereg-v1.1.md`). Đã xem trước khi đổi: số liệu dựng nhiệm
    vụ của các ứng viên (số dòng, kết quả chấm bản vá gốc, số tên, độ phủ) và một danh sách m01–m05 chọn
    tay đầu tiên; **chưa xem kết quả AI nào** (chưa lượt AI nào chạy trên ứng viên tầng vừa hay tầng lớn;
    chưa mở kết quả nào của tầng nhỏ). Commit: commit mang thẻ `prereg-v1.1`.
@@ -425,12 +425,12 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   trong từng tầng, giữ mọi lượt của nhiệm vụ được chọn, ước lượng lại mô hình đã chọn trên mỗi mẫu (mặc
   định 999 lần, hạt giống `20261115`), khoảng phân vị 2,5%–97,5%; "sai số chuẩn" là độ lệch chuẩn của các
   hệ số bootstrap. "Suy biến" là khi độ lệch chuẩn ước lượng của một thành phần ngẫu nhiên dưới 0,30, ngưỡng
-  hiệu chỉnh bằng mô phỏng trên thiết kế 23 nhiệm vụ (`analysis/calibration/singular_sd.py`). Bước lùi
+  hiệu chỉnh bằng mô phỏng trên thiết kế 23 nhiệm vụ (`code/analysis/calibration/singular_sd.py`). Bước lùi
   (3) cho độ dốc trên thang hiệu số, không phải thang logit, nên nếu phải lùi tới đó thì H5 không thể
   "được ủng hộ". Lý do: máy không có R; độ lệch chuẩn hậu nghiệm biến phân hẹp hơn độ dao động thật của
   ước lượng khoảng một phần ba (mô phỏng của Fable 5.2: khoảng ±1,96 độ lệch chuẩn chỉ phủ 65–87%), và
   ngưỡng suy biến cũ (1e-3) không bao giờ đạt được vì phân phối tiên nghiệm của log độ lệch chuẩn. Chi
-  tiết: `analysis/README.md`, ghi chú 1–4. Đã xem trước khi đổi: chưa xem kết quả chính nào (chỉ dữ liệu
+  tiết: `code/analysis/README.md`, ghi chú 1–4. Đã xem trước khi đổi: chưa xem kết quả chính nào (chỉ dữ liệu
   chạy thử và dữ liệu mô phỏng). Commit: commit mang thẻ `prereg-v1-analysis`.
 - **2026-11-15, mục 9 điểm 4 (dữ liệu của mô hình hỗn hợp).** Cũ: "mọi lượt hợp lệ của ba tầng". Mới: mọi
   lượt hợp lệ của ba tầng thuộc các nhóm đủ ở cả ba tầng, tức đúng các nhóm của phép thử chính H5 (mục
@@ -489,9 +489,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   hay phân tích xác nhận. Harness thêm cờ `--prompt-file` và nhóm `claude-haiku`; không đổi hành vi khi để mặc định.
 
 - **2026-11-16 10:19, vận hành (E1, E2).** Lần khởi động đầu của hai chuỗi lệnh `prereg-v1.2` lỗi ngay vì cây chạy mới
-  `../vipharmind-ai-sdlc-study-run3` thiếu tệp `harness/accounts.local.toml` (không nằm trong git). Mọi lượt dừng trước
+  `../vipharmind-ai-sdlc-study-run3` thiếu tệp `code/harness/accounts.local.toml` (không nằm trong git). Mọi lượt dừng trước
   khi agent khởi động (`started_at` rỗng, không có `transcript.jsonl`, không `grade.json`). Hai chuỗi được dừng, thư
-  mục `results/raw/haiku` và `results/raw/brief` của lần đó bị xóa để số lần chạy lại vì lỗi không bị tính, tệp tài
+  mục `data/results/raw/haiku` và `data/results/raw/brief` của lần đó bị xóa để số lần chạy lại vì lỗi không bị tính, tệp tài
   khoản được chép vào, và hai chuỗi được gọi lại đúng lệnh lúc 10:20. Không lượt AI nào bị bỏ hay chạy lại vì kết quả.
 - **2026-11-16 10:35, bỏ agy-gemini (quyết định của An).** agy-gemini hết hạn mức cả bốn tài khoản và không kịp chạy
   đủ; An quyết định bỏ nhóm này. Ba lệnh chạy chính bị dừng lúc agy mới có 73/138 lượt chấm xong (nhỏ 59/90, vừa
@@ -511,12 +511,12 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   lượt. Một vòng lặp gọi lại `sdlc-harness judge` mỗi 20 phút cho tới khi E1, E2 chạy xong. `judge.json` được ghi cạnh
   `grade.json` trong thư mục kết quả của từng cây chạy (chỉ thêm tệp, không đổi tệp có sẵn).
 - **2026-11-16, gói gán nhãn.** Gói cho Lợi và Bảo (30 lượt hỏng của hai nhóm Claude, mã ngẫu nhiên từ
-  `labeling/key-PRIVATE.csv`) và gói 20 lượt đạt cho An được dựng bằng `analysis/scripts/build_packets.py`; log test
-  đầy đủ của test ẩn (`--tb=short`) dựng lại bằng `analysis/scripts/test_logs.py` từ bản vá đã lưu, đúng như bộ chấm.
+  `labeling/key-PRIVATE.csv`) và gói 20 lượt đạt cho An được dựng bằng `code/analysis/scripts/build_packets.py`; log test
+  đầy đủ của test ẩn (`--tb=short`) dựng lại bằng `code/analysis/scripts/test_logs.py` từ bản vá đã lưu, đúng như bộ chấm.
 - **2026-11-16, đổi người kiểm tra mục 9.10.** An giao việc đối chiếu 20 lượt đạt cho Lợi và Bảo (mỗi người 10:
   5 spec, 5 vibe, chia ngẫu nhiên hạt giống 20261115) và chỉ soát lại kết quả. Gói được che cách làm (mã
   `p…`, bản vá bỏ design/plan, khóa ở `labeling/passing-key-PRIVATE.csv`) và kèm bản vá gốc chỉ phần mã
-  nguồn; dựng bằng `analysis/scripts/passing_packets.py`. Khác bản đăng ký: người kiểm tra mù cách làm, mỗi
+  nguồn; dựng bằng `code/analysis/scripts/passing_packets.py`. Khác bản đăng ký: người kiểm tra mù cách làm, mỗi
   lượt một người chấm.
 - **2026-11-16, nhãn thất bại và kiểm tra lượt đạt.** Lợi và Bảo nộp phiếu (gán tay, không dùng AI). Đồng ý
   21/30, kappa 0,45. 9 lượt lệch (8 của t12, 1 của m04) do An phân xử theo đề xuất có lý do của trợ lý
@@ -528,7 +528,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   có hệ thống ở 8 lượt t12 và Fable đọc mục `de_bai_thieu` khác hẳn, An cho gán nhãn lại cả 30 lượt. Vòng 2:
   mã lượt mới và thứ tự mới (hạt giống 20261116, khóa `labeling/key-round2-PRIVATE.csv`), thêm mã nguồn test
   ẩn vào mỗi lượt, thêm mục 3b (thứ tự quyết định cố định; bảng nhãn không đổi) và sửa chỗ ghi nhầm vị trí
-  `het_gio`; dựng bằng `analysis/scripts/relabel_packets.py`. Hai người không được xem nhãn vòng 1 của mình
+  `het_gio`; dựng bằng `code/analysis/scripts/relabel_packets.py`. Hai người không được xem nhãn vòng 1 của mình
   hay của người kia, nhãn Fable hay đề xuất phân xử. **Kết quả chính = nhãn vòng 2, chỗ lệch do An phân
   xử**; nhãn vòng 1 và nhãn Fable báo cáo như phân tích độ nhạy, kèm kappa giữa các vòng.
 - **2026-11-16 ~14:30, đính chính vòng 1.** Lợi và Bảo cho biết phiếu nhãn vòng 1 đã được điền có dùng AI
@@ -556,7 +556,7 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   sẽ khác phiên bản). `draw_human_check.py` thêm cờ `--collection-stopped`: các lượt chưa xong của nhóm đã dừng
   thu thập không chặn việc rút mẫu; mẫu rút từ các lượt đã có của nhóm đó, phân tầng và hạt giống không đổi
   (3 lượt mỗi ô nhóm × cách làm, 24 lượt). Lệnh: `draw --collection-stopped codex-luna`. Kết quả E2 cuối:
-  `results/analysis/e2/`.
+  `data/results/analysis/e2/`.
 - **2026-11-17 (đính chính dòng "2026-11-16 khoảng 09:30, mở kết quả chính").** Đối chiếu `meta.json` khi soạn báo cáo:
   hai lượt `claude-opus` chạy lại (f15 vibe-r2: 09:15–09:34; f15 vibe-r1: 09:35–09:56, giờ Hà Nội) còn đang chạy
   lúc mở số mô tả khoảng 09:30, nên lúc đó claude-opus có 136/138 lượt, không phải 138/138 như dòng trên ghi. Hai
@@ -565,14 +565,14 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (15 giây sau thẻ `prereg-v1`), sớm hơn mốc "khoảng 19:16" ghi ở ràng buộc 1; thứ tự thẻ trước, chạy sau không đổi.
 
 - **2026-11-17 (chấm tay E2 xong).** Lợi và Bảo trả phiếu chấm tay 24 lượt đề sơ sài (282 mục; Bảo lúc 09:41,
-  Lợi lúc 10:46), không ô nào trống hay sai giá trị. Phiếu gốc chép vào `results/human-check-returned/`. Không
+  Lợi lúc 10:46), không ô nào trống hay sai giá trị. Phiếu gốc chép vào `data/results/human-check-returned/`. Không
   ghi chú nào trùng nguyên văn giữa hai người. `draw_human_check.py kappa`: Lợi–Bảo khớp 96,5% (kappa 0,93);
   Lợi–người chấm máy 94,3% (0,88); Bảo–người chấm máy 95,4% (0,90). Lệch chủ yếu ở mục người cho `met`, máy cho
   `not_met`. Mô tả, không có ngưỡng đặt trước.
 - **2026-11-17 (việc thêm cho Lợi, Bảo; mô tả, sau kappa).** Ba việc kiểm tra thêm, không đổi phân tích nào:
   (1) Lợi, Bảo xem lại độc lập 19 mục mà ít nhất một người chấm khác máy chấm, chọn một nguyên nhân mỗi mục
-  (`analysis/scripts/disagreement_packets.py`; lý do của máy đã che từ chỉ cách làm); (2) Lợi mở lại 24 nguồn
+  (`code/analysis/scripts/disagreement_packets.py`; lý do của máy đã che từ chỉ cách làm); (2) Lợi mở lại 24 nguồn
   và đối chiếu số liệu trích; (3) Bảo tính lại tỉ lệ đạt theo nhóm × tầng × cách làm bằng bảng tính từ
   `runs.csv`, không dùng mã của nhóm. Kết quả chỉ để mô tả, ghi vào phụ lục.
 - **2026-11-17 (bỏ việc (1)).** An bỏ việc xem lại 19 mục lệch người–máy (và không giao kiểm thứ hai quy tắc
-  nối commit–plan); chỉ giữ việc (2) và (3). Gói đã dựng ở `results/packets/lech-nguoi-may` không dùng.
+  nối commit–plan); chỉ giữ việc (2) và (3). Gói đã dựng ở `data/results/packets/lech-nguoi-may` không dùng.

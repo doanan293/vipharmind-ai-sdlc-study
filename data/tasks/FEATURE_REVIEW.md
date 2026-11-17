@@ -10,8 +10,8 @@ This file is the draft for An's review (feature-tier plan, Task 2). For each ran
    tests, test files or grading.
 
 How the drafts were made: from the commit messages, `git diff base end -- backend/src`, the hidden
-tests at `end`, the support files restored from `end`, and `tasks/feature-feasibility/coupling.json` /
-`fakes_contract.json`. Each draft was then audited in the same way as `tasks/PROMPT_AUDIT.md`. Every GAP
+tests at `end`, the support files restored from `end`, and `data/tasks/feature-feasibility/coupling.json` /
+`fakes_contract.json`. Each draft was then audited in the same way as `data/tasks/PROMPT_AUDIT.md`. Every GAP
 the audit found was fixed in the draft before it was written here, so the audit tables show the final
 state: no GAP remains.
 

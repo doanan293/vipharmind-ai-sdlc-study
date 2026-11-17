@@ -1,8 +1,8 @@
-"""Checklist judge (prereg-v1.2, E2): a fixed agent (Claude Fable 5.2) scores a finished unit against tasks/<id>/checklist.md.
+"""Checklist judge (prereg-v1.2, E2): a fixed agent (Claude Fable 5.2) scores a finished unit against data/tasks/<id>/checklist.md.
 
 The unit's saved patch.diff is applied to a fresh export of the task's start tree, docs/design.md and
 docs/plan.md are deleted (partial arm blinding), and the judge agent runs in a directory named by a
-random id, with prompts/judge.md + the checklist on stdin. It writes <unit>/judge.json.
+random id, with code/prompts/judge.md + the checklist on stdin. It writes <unit>/judge.json.
 """
 
 import hashlib
@@ -61,7 +61,7 @@ def exact_items(text: str) -> list[int]:
 
 
 def judge_prompt(checklist: str, prompts_dir: Path = PROMPTS_DIR) -> str:
-    """prompts/judge.md + the checklist without its [exact] tags (the judge never sees them)."""
+    """code/prompts/judge.md + the checklist without its [exact] tags (the judge never sees them)."""
     shown = "\n".join(
         line.rstrip()[: -len(EXACT_TAG.strip())].rstrip()
         if line.rstrip().endswith(EXACT_TAG.strip())

@@ -39,4 +39,4 @@ Tổng thời gian nói: 13:55 (Mở đầu 0:20, Phương pháp 6:20, Kết qu�
 
 ## Số liệu
 
-Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) và E1 (Haiku). Làm mới bằng `refresh-interim.sh`. Không còn chỗ chờ kết quả.
+Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) và E1 (Haiku). Làm mới bằng `code/refresh-interim.sh`. Không còn chỗ chờ kết quả.

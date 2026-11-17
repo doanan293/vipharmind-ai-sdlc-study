@@ -20,7 +20,7 @@ that a test pins exactly and the prompt leaves open, or states in a way that poi
 the test accepts. All proposed edits are insertions inside existing sentences, so every prompt stays
 at 12 sentences.
 
-Facts about grading that change how the drafter's audit should be read (`harness/src/sdlc_harness/grade.py`):
+Facts about grading that change how the drafter's audit should be read (`code/harness/src/sdlc_harness/grade.py`):
 
 - Hidden ids come from the reference run at `end`, and `backend/pyproject.toml` has
   `addopts = ["-m", "not integration"]`. Integration tests are therefore never in the hidden set, and

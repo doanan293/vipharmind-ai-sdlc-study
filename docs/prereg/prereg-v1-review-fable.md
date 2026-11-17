@@ -1,8 +1,8 @@
 # Phản biện độc lập `prereg-v1` (Fable 5.2)
 
-Ngày: 2026-11-15. Đối tượng: `prereg/prereg-v1.md` (128 dòng, chưa commit, chưa gắn thẻ) tại HEAD
-`38b7e83` của nhánh `harness`. Đối chiếu với bản thiết kế, `tasks/`, `prompts/`, `harness/`,
-`docs/pilot-report.md`, `tasks/PROMPT_AUDIT.md`, `team/labeling/guide.md` (chỉ có trên nhánh `report`) và
+Ngày: 2026-11-15. Đối tượng: `docs/prereg/prereg-v1.md` (128 dòng, chưa commit, chưa gắn thẻ) tại HEAD
+`38b7e83` của nhánh `harness`. Đối chiếu với bản thiết kế, `data/tasks/`, `code/prompts/`, `code/harness/`,
+`docs/pilot-report.md`, `data/tasks/PROMPT_AUDIT.md`, `docs/team/labeling/guide.md` (chỉ có trên nhánh `report`) và
 hai sổ ghi SDD. Người phản biện chỉ đọc, không chạy lượt AI nào.
 
 ## Kết luận
@@ -14,7 +14,7 @@ khi thấy số liệu, nên phải sửa trước khi gắn thẻ. Không đi�
 
 Số phát hiện: 4 Blocking, 12 Important, 8 Minor.
 
-Quy ước: `P:n` là dòng n của `prereg/prereg-v1.md`; `D:n` là dòng n của bản thiết kế
+Quy ước: `P:n` là dòng n của `docs/prereg/prereg-v1.md`; `D:n` là dòng n của bản thiết kế
 `docs/superpowers/specs/2026-11-15-spec-vs-vibe-study-design.md`.
 
 ---
@@ -57,12 +57,12 @@ Nếu An muốn phép thử chính là gộp hai nhóm Claude thì đổi đúng
   không phải quy tắc loại.
 - Ngưỡng tên đã đổi sau chạy thử: D:216 loại F04 và F09 vì đề phải nêu 30–35 tên, "gần như là một bản thiết
   kế viết sẵn"; D:232 lại cho F04 vào nếu "tối đa 35 tên". F09 cùng lý do loại nhưng không được xét lại.
-- `tasks/feature-feasibility/medium_candidates.json` mà D:237 dẫn tới chưa tồn tại (thư mục chỉ có
+- `data/tasks/feature-feasibility/medium_candidates.json` mà D:237 dẫn tới chưa tồn tại (thư mục chỉ có
   `ranges.json`, `coupling.json`, `fakes_contract.json` và mã).
 - Kế hoạch `docs/superpowers/plans/2026-11-15-feature-tier.md:48` định chạy thử chính `f08` (một nhiệm vụ
   chính) × 2 cách làm × 4 nhóm rồi "chốt `timeout_s` của tầng này". Việc này trái với P:11–12 ("không dùng
   kết quả của bất kỳ lượt chạy AI nào") và với P:70 (giới hạn đã chốt là 2 lần và 3 lần).
-- Các tầng không độc lập: `f14.base` là commit của `t01` (`tasks/f14/task.toml`, `c2935909a101`),
+- Các tầng không độc lập: `f14.base` là commit của `t01` (`data/tasks/f14/task.toml`, `c2935909a101`),
   `f15.base` là `f14.commit`, F08 chứa commit của t03 và p02 (D:217); test ẩn của f14 gồm
   `test_account_settings_service.py` (test ẩn của t02), của f15 gồm `test_retrieval_service.py` (của t11).
 
@@ -82,10 +82,10 @@ Nhưng chỉ chấp nhận được khi v1 khóa luôn quy tắc mà v1.1 phải
 >    không kịp, lượt chạy chính tầng nhỏ được phép bắt đầu trước, nhưng khi đó không ai mở `grade.json`
 >    hay tính tỉ lệ đạt của tầng nhỏ cho tới khi `prereg-v1.1` đã gắn thẻ; mục 9 ghi ngày gắn thẻ và ngày
 >    mở kết quả.
-> 2. **Tập ứng viên.** Ứng viên tầng lớn là 16 đoạn trong `tasks/feature-feasibility/ranges.json` tại thẻ
+> 2. **Tập ứng viên.** Ứng viên tầng lớn là 16 đoạn trong `data/tasks/feature-feasibility/ranges.json` tại thẻ
 >    `prereg-v1`. Ứng viên tầng vừa là mọi đoạn 2–3 commit liền nhau nằm trong 16 đoạn đó, có 300–700 dòng
 >    `backend/src`. Mọi ứng viên, kết quả từng tiêu chí và lý do loại được ghi ở
->    `tasks/feature-feasibility/medium_candidates.json` và commit cùng `prereg-v1.1`.
+>    `data/tasks/feature-feasibility/medium_candidates.json` và commit cùng `prereg-v1.1`.
 > 3. **Tiêu chí, áp dụng như nhau cho mọi ứng viên:** chỉ đổi `backend/`; có test ẩn trượt ở `base` và đạt
 >    ở `end`; bản vá gốc chấm đạt, không hồi quy; đề bài nêu được mọi tên test ẩn cần với **tối đa 20 tên**
 >    (tầng vừa) và **tối đa 35 tên** (tầng lớn). F09 được xét lại theo cùng ngưỡng 35 như F04 và F07.
@@ -108,7 +108,7 @@ Nhưng chỉ chấp nhận được khi v1 khóa luôn quy tắc mà v1.1 phải
 
 **Bằng chứng.** D:265–266: lượt như vậy "được đánh dấu không tuân thủ quy trình, vẫn chấm và báo cáo
 riêng". "Báo cáo riêng" có thể hiểu là loại khỏi phép thử chính hoặc chỉ thêm một bảng. Bộ chấm đã ghi
-`process_artifacts` (`harness/src/sdlc_harness/grade.py:551–554`). Bản đăng ký trước không nhắc tới quy tắc
+`process_artifacts` (`code/harness/src/sdlc_harness/grade.py:551–554`). Bản đăng ký trước không nhắc tới quy tắc
 này ở mục 2, 4, 5 hay 7. Lượt chạm giới hạn thời gian ở cách theo đặc tả là lượt dễ thiếu file nhất, nên
 loại chúng sẽ làm lệch kết quả về phía có lợi cho đặc tả.
 
@@ -185,7 +185,7 @@ dùng 4; số phiên song song ảnh hưởng thời gian từng lượt nên �
 >   **không tính lại** sau thẻ, kể cả khi có lượt chạy lâu hơn. Giới hạn của bộ chấm: `--grade-timeout-s 900`.
 > - Lệnh chạy chính, chạy từ thư mục gốc repo tại commit mang thẻ:
 >   `sdlc-harness run --repo <ViPharmind> --cohorts <nhóm> --tasks main --reps 3 --jobs 4 --timeout-s 2400
->   --seed 20261115 --out results/raw/main`. Các cờ khác để mặc định. `--timeout-s` luôn ghi rõ vì mặc định
+>   --seed 20261115 --out data/results/raw/main`. Các cờ khác để mặc định. `--timeout-s` luôn ghi rõ vì mặc định
 >   của CLI là 3600.
 
 Nên chạy thêm vài lượt p01, p02 ở cấu hình R11 trước thẻ (được phép theo D:196) để biết cấu hình mới chạy
@@ -304,7 +304,7 @@ làm chi phí lệch cỡ một bậc độ lớn, và ảnh hưởng trực ti�
 >   - Token vào và ra, thời gian (`wall_s`), số lượt gọi. Chi phí quy đổi: tách token của từng lượt từ
 >     `transcript.jsonl` thành bốn loại (vào không cache, ghi cache, đọc cache, ra; token suy luận tính
 >     theo cách nhà cung cấp tính tiền), nhân với giá API công khai của đúng mô hình đó. Dùng **một** bảng
->     giá cho mọi lượt, chụp ngày gắn thẻ và commit ở `prereg/prices.toml` kèm đường dẫn nguồn. Công cụ nào
+>     giá cho mọi lượt, chụp ngày gắn thẻ và commit ở `docs/prereg/prices.toml` kèm đường dẫn nguồn. Công cụ nào
 >     không tách được loại token thì tính mọi token vào theo giá vào thường và ghi rõ là cận trên. Số lượt
 >     gọi không so được giữa các công cụ, chỉ so giữa hai cách làm trong cùng nhóm.
 
@@ -315,13 +315,13 @@ lượt đạt ghi là không xác định, không ghi 0."
 
 **Bằng chứng.**
 
-- P:117 dẫn `team/labeling/guide.md`, file này không có trên nhánh `harness` (chỉ có ở
-  `report:team/labeling/guide.md`), nên thẻ `prereg-v1` không chứa nó.
+- P:117 dẫn `docs/team/labeling/guide.md`, file này không có trên nhánh `harness` (chỉ có ở
+  `report:docs/team/labeling/guide.md`), nên thẻ `prereg-v1` không chứa nó.
 - Hướng dẫn tự ghi là "bảng khởi đầu", sẽ chỉnh sau gán thử rồi mới khóa (guide dòng 27–28). Chạy thử đã
   đề xuất thêm hai nhãn (`docs/pilot-report.md:373–386`) chưa có trong bảng.
 - P:117–118 khẳng định người gán nhãn "không biết lượt đó thuộc cách làm nào, vì file thiết kế và kế
   hoạch đã bị bỏ". Bộ chấm chỉ bỏ 4 đường dẫn (`grade.py:29–33`, `:492–493`). Lời dặn theo đặc tả còn yêu
-  cầu viết test trước cho từng phần việc (`prompts/spec.md`, bước 3), nên bản vá theo đặc tả thường có
+  cầu viết test trước cho từng phần việc (`code/prompts/spec.md`, bước 3), nên bản vá theo đặc tả thường có
   nhiều test hơn và có thể nhắc tới "plan", "task". Hướng dẫn đã lường trước ("lộ cách làm", guide dòng
   22–23) nhưng bản đăng ký trước không đo mức lộ.
 - Không nói gán nhãn tầng nào, kappa tính trên gì, mã lượt có ẩn cách làm hay không (thư mục kết quả tên
@@ -330,9 +330,9 @@ lượt đạt ghi là không xác định, không ghi 0."
 **Sửa.** Thay điểm 8 của mục 7 (P:116–118) bằng:
 
 > 8. **Phân tích lỗi.** Lợi và Bảo gán nhãn độc lập mọi lượt hợp lệ không đạt của hai nhóm Claude ở cả ba
->    tầng, mỗi lượt một nhãn, theo `team/labeling/guide.md`. Bảng nhãn được khóa sau khi gán thử trên các
+>    tầng, mỗi lượt một nhãn, theo `docs/team/labeling/guide.md`. Bảng nhãn được khóa sau khi gán thử trên các
 >    lượt của p01, p02 và **trước khi** hai người nhận lượt chính nào; bản đã khóa được chép vào
->    `prereg/labeling-guide.md` và ghi mã băm SHA-256 ở mục 9. Mỗi lượt được trao dưới một mã ngẫu nhiên
+>    `docs/prereg/labeling-guide.md` và ghi mã băm SHA-256 ở mục 9. Mỗi lượt được trao dưới một mã ngẫu nhiên
 >    không chứa nhóm, cách làm hay số lần lặp, theo thứ tự xáo trộn; gói gồm đề bài, bản vá đã bỏ
 >    `docs/design.md`, `docs/plan.md` và log test. Việc làm mù là **một phần**: bản vá có thể để lộ cách
 >    làm (ví dụ số test AI viết). Người gán nhãn ghi "lộ cách làm" khi nhận ra; báo cáo nêu tỉ lệ lượt bị
@@ -373,7 +373,7 @@ Sổ ghi nói "analysis reports such runs" nhưng mục 5 và 7 không có. Ở 
 
 ### I11. Hai lời dặn khác nhau nhiều hơn "viết đặc tả trước": phải nói rõ can thiệp là một gói
 
-**Bằng chứng.** `prompts/vibe.md` là một câu. `prompts/spec.md` ngoài thiết kế và kế hoạch còn yêu cầu:
+**Bằng chứng.** `code/prompts/vibe.md` là một câu. `code/prompts/spec.md` ngoài thiết kế và kế hoạch còn yêu cầu:
 viết test trước cho từng phần việc, chạy để thấy trượt, và cuối cùng chạy cả bộ test backend "(from
 `backend/`, `uv run pytest`) and fix any failures". Cách vibe không được bảo chạy test và không được cho
 biết lệnh chạy test. D:259 nói "khác biệt duy nhất là lời dặn về quy trình", đúng về hình thức, nhưng một
@@ -390,14 +390,14 @@ lời dặn; đề nghị ghi đúng thứ được so.
 
 ### I12. Mã phân tích chưa tồn tại lúc gắn thẻ
 
-**Bằng chứng.** Repo không có `results/analysis/` hay mã phân tích nào; D:455 dự kiến có. Bản đăng ký
+**Bằng chứng.** Repo không có `data/results/analysis/` hay mã phân tích nào; D:455 dự kiến có. Bản đăng ký
 trước mô tả phân tích bằng lời, nên các lựa chọn nhỏ (làm tròn, cách xử lý ô trống, cách gộp) vẫn được
 quyết khi đã có số liệu chính.
 
 **Sửa.** Thêm vào cuối mục 7:
 
 > **Mã phân tích.** Mã tính mọi bảng và hình của mục này được commit trước khi mở kết quả chính đầu tiên
-> và được chạy thử trên dữ liệu `results/raw/pilot`. Commit của mã và mọi lần sửa sau đó được ghi ở mục 9.
+> và được chạy thử trên dữ liệu `data/results/raw/pilot`. Commit của mã và mọi lần sửa sau đó được ghi ở mục 9.
 > Phân tích nào không nằm trong mục 7 thì được ghi nhãn "khám phá, thêm sau khi thấy số liệu" trong báo cáo.
 
 ---
@@ -436,12 +436,12 @@ Thay P:126–128 bằng:
 
 ### M3. Thẻ phải phủ đúng những gì bản đăng ký trước nói là đã chốt
 
-`prereg/` hiện chưa được commit (`git status`: `?? prereg/`). Đề bài của 15 nhiệm vụ không có mã băm trong
+`docs/prereg/` hiện chưa được commit (`git status`: `?? docs/prereg/`). Đề bài của 15 nhiệm vụ không có mã băm trong
 văn bản; chúng chỉ được chốt nhờ nằm trong commit mang thẻ. Bộ chạy không lưu kiểm tra lệch đề bài qua các
 lần chạy tiếp (ruling parked M6, sổ ghi `harness-and-pilot`). Thêm vào cuối mục 1:
 
-> Thẻ `prereg-v1` chốt toàn bộ cây tại commit mang thẻ: `tasks/t01`–`t15` (`task.toml`, `prompt.md`),
-> `prompts/`, `harness/` (mã, `cohorts.toml`, `uv.lock`). Mọi lượt chính chạy từ đúng commit này. Sau khi
+> Thẻ `prereg-v1` chốt toàn bộ cây tại commit mang thẻ: `data/tasks/t01`–`t15` (`task.toml`, `prompt.md`),
+> `code/prompts/`, `code/harness/` (mã, `cohorts.toml`, `uv.lock`). Mọi lượt chính chạy từ đúng commit này. Sau khi
 > chạy, kiểm tra mỗi (nhiệm vụ, cách làm) có đúng một giá trị `prompt_sha256` trên mọi lượt và báo cáo kết
 > quả kiểm tra.
 
@@ -472,8 +472,8 @@ t13 chỉ có 2 test ẩn."
 ### M8. Câu về lịch sử duyệt đề bài
 
 P:18–19 nói "An duyệt gộp" và t05, t07, t13 được bổ sung sau. Ruling R12 ghi "Prompt edits need An's
-re-approval at prereg-v1". Chưa thấy bản ghi nào về lần duyệt lại này (`tasks/REVIEW.md` chỉ có duyệt gộp
-ngày 2026-11-15 cho bản nháp đầu). Thêm một câu xác nhận, hoặc ghi vào `tasks/REVIEW.md` trước thẻ: "An
+re-approval at prereg-v1". Chưa thấy bản ghi nào về lần duyệt lại này (`data/tasks/REVIEW.md` chỉ có duyệt gộp
+ngày 2026-11-15 cho bản nháp đầu). Thêm một câu xác nhận, hoặc ghi vào `data/tasks/REVIEW.md` trước thẻ: "An
 duyệt lại ba đề đã sửa (commit `e92f346`) ngày <ngày>."
 
 ---
@@ -482,11 +482,11 @@ duyệt lại ba đề đã sửa (commit `e92f346`) ngày <ngày>."
 
 - Mã commit ViPharmind `3baae61d…` (P:16) khớp D:81.
 - 15 dòng của bảng nhiệm vụ (P:23–37): mã commit (12 ký tự đầu), lớp và `src_lines` khớp
-  `tasks/t01`–`t15/task.toml`; cả 15 có `pilot = false`.
+  `data/tasks/t01`–`t15/task.toml`; cả 15 có `pilot = false`.
 - Ngưỡng ≤ 82, 83–173, ≥ 174 (P:39) khớp tam phân vị 82,7 và 173,3 của 15 kích thước
   (`pilot-report.md:349–355`); mỗi nhóm đúng 5 nhiệm vụ như bảng.
-- SHA-256 của `prompts/vibe.md` và `prompts/spec.md` (P:46–47) khớp `sha256sum`.
-- Bảng nhóm (P:53–56) khớp `harness/cohorts.toml` (mô hình, effort, số tài khoản) và phiên bản công cụ lúc
+- SHA-256 của `code/prompts/vibe.md` và `code/prompts/spec.md` (P:46–47) khớp `sha256sum`.
+- Bảng nhóm (P:53–56) khớp `code/harness/cohorts.toml` (mô hình, effort, số tài khoản) và phiên bản công cụ lúc
   chạy thử.
 - 15 × 2 × 3 × 4 = 360 (P:69) khớp D:305–306; hạt giống `20261115` khớp `runner.py:56` và `cli.py:237`;
   mặc định `--reps 3`, `--max-quota-retries 20` khớp.

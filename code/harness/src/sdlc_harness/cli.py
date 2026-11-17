@@ -336,7 +336,7 @@ def main(argv: list[str] | None = None) -> int:
     rg.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     st = sub.add_parser("status", help="counts by status per cohort and tier; excluded units")
     st.add_argument("--out", type=Path, default=Path("data/results/raw"))
-    jd = sub.add_parser("judge", help="score finished units against tasks/<id>/checklist.md")
+    jd = sub.add_parser("judge", help="score finished units against data/tasks/<id>/checklist.md")
     jd.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
     jd.add_argument(
         "--results", type=Path, nargs="*", default=[], help="<cohort>/<task>/<unit> roots"

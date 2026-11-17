@@ -65,9 +65,9 @@ def _range_tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
 
 
 def _pilot_results(root: Path) -> list[dict[str, Any]] | None:
-    """results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong.
+    """data/results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong.
 
-    Chỉ đọc thư mục chạy thử; kết quả lượt chạy chính do gói analysis/ tổng hợp."""
+    Chỉ đọc thư mục chạy thử; kết quả lượt chạy chính do gói code/analysis/ tổng hợp."""
     raw = root / "data" / "results" / "raw" / "pilot"
     units = []
     for grade in sorted(raw.glob("*/*/*/grade.json")):

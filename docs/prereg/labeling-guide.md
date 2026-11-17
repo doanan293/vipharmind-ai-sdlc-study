@@ -1,8 +1,8 @@
 # Hướng dẫn gán nhãn nguyên nhân thất bại
 
-Bản khóa theo `prereg-v1` (chép từ `team/labeling/guide.md` của nhánh `report`, thêm hai nhãn mà chạy
+Bản khóa theo `prereg-v1` (chép từ `docs/team/labeling/guide.md` của nhánh `report`, thêm hai nhãn mà chạy
 thử đề xuất ở `docs/pilot-report.md` mục 7). Sau thẻ `prereg-v1`, không thêm hay đổi nhãn; mọi sửa
-đổi đi qua mục 11 của bản đăng ký trước (`prereg/prereg-v1.md`).
+đổi đi qua mục 11 của bản đăng ký trước (`docs/prereg/prereg-v1.md`).
 
 Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn An (có trợ lý AI giúp soạn nháp).
 
@@ -32,7 +32,7 @@ cứ gán nhãn bình thường và ghi "lộ cách làm" vào cột `note`.
 Bảng được khóa tại thẻ `prereg-v1`: bảng khởi đầu 7 nhãn, cộng hai nhãn `de_bai_thieu` và `sai_api_co_san`
 do gán thử trên các lượt chạy thử đề xuất. Từ lúc khóa, không thêm hay đổi nhãn.
 
-Các ví dụ dưới đây được **dựng** từ đề bài thật trong `tasks/` để minh họa, chưa phải lượt chạy thật.
+Các ví dụ dưới đây được **dựng** từ đề bài thật trong `data/tasks/` để minh họa, chưa phải lượt chạy thật.
 
 | Nhãn (ghi vào phiếu) | Định nghĩa | Ví dụ dựng từ một đề thật |
 | --- | --- | --- |

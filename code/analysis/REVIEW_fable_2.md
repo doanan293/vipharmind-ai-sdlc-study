@@ -1,8 +1,8 @@
-# Scoped re-review of `analysis/` before tag `prereg-v1-analysis`
+# Scoped re-review of `code/analysis/` before tag `prereg-v1-analysis`
 
-Reviewer: Fable 5.2, 2026-11-16. Scope: the fixes to `analysis/REVIEW_fable.md` in commits
-`3701bf3`, `f1451b5`, `6ea3b81`, `7cdf1b1` (`analysis/`, `tasks/graded_lines.py`,
-`tasks/graded_lines.json`, `prereg/prereg-v1.md` section 11). Only pilot and simulated data were
+Reviewer: Fable 5.2, 2026-11-16. Scope: the fixes to `code/analysis/REVIEW_fable.md` in commits
+`3701bf3`, `f1451b5`, `6ea3b81`, `7cdf1b1` (`code/analysis/`, `data/tasks/graded_lines.py`,
+`data/tasks/graded_lines.json`, `docs/prereg/prereg-v1.md` section 11). Only pilot and simulated data were
 read. No main result and no `-run*` directory was opened.
 
 ## Verdict: FREEZE AFTER FIXES
@@ -21,7 +21,7 @@ main runs hold the CPU, load average 22–33). Run `uv run pytest -q` once befor
 
 | Finding | Status | Evidence |
 | --- | --- | --- |
-| B1 `graded_src_lines` sensitivity | Fixed | `tasks/graded_lines.py:41-114`, `load.py:63-68, 193`, `mixed.py:254-269`, `report.py:279-280` |
+| B1 `graded_src_lines` sensitivity | Fixed | `data/tasks/graded_lines.py:41-114`, `load.py:63-68, 193`, `mixed.py:254-269`, `report.py:279-280` |
 | B2 model interval and singular test | Fixed in mechanism; coverage not yet measured (N1) | `mixed.py:141-236`, `mixed.py:90-98`, `calibration/singular_sd.csv` |
 | I1 contrary rule, level-3 cap | Fixed | `estimators.py:238-241`, `tests/test_estimators.py:153, 161-163` |
 | I2 overlap reading | Fixed | `prereg-v1.md:450-458` |
@@ -130,7 +130,7 @@ summary["passing_sample"] = {"drawn": sample_path.exists()}
 
 (move the `summary` line after `build_summary`'s result is available; it already is at that
 point). Update `test_passing_sample_is_not_redrawn` and `test_outputs_exist` to pass the flag.
-Delete `analysis/out/pilot/passing_sample.csv` if it is not meant as the final sample.
+Delete `code/analysis/out/pilot/passing_sample.csv` if it is not meant as the final sample.
 
 ### N3. The end-to-end test no longer reaches the "supported" H5 path
 

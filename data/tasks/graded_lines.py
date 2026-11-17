@@ -5,15 +5,15 @@ task, base..end for a range task) adds or changes, that are coverage.py statemen
 inside at least one graded hidden test (a test in one of the task's hidden test files, not marked
 `integration`) when the graded run is made at the original commit with pytest-cov and
 `--cov-context=test`. Lines that only run at import or collection time (empty context) are left
-out. This is G of medium-tier criterion 8 (tasks/feature-feasibility/medium_coverage.py),
+out. This is G of medium-tier criterion 8 (data/tasks/feature-feasibility/medium_coverage.py),
 restricted to the contexts of the task's own hidden tests.
 
 Original code only: `git archive` of the commit, `uv sync --frozen`, then pytest on the hidden test
 files with `-m "not integration"`. No AI run is read.
 
 Usage (from the repo root; one task at a time, low priority):
-  nice -n 19 python3 tasks/graded_lines.py [--repo /home/andv/personal/vipharmind] [--only t01,m02]
-Writes tasks/graded_lines.json (merged with existing entries) and logs to .work/graded-lines/.
+  nice -n 19 python3 data/tasks/graded_lines.py [--repo /home/andv/personal/vipharmind] [--only t01,m02]
+Writes data/tasks/graded_lines.json (merged with existing entries) and logs to .work/graded-lines/.
 """
 
 import argparse

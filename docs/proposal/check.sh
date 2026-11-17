@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Kiểm tra đề cương trước khi nộp: số trang, các con số và tên mô hình, chỗ còn trống.
-# Chạy trong thư mục proposal/ sau khi build. Thoát 0 khi hợp lệ, 1 kèm danh sách lỗi.
+# Chạy trong thư mục docs/proposal/ sau khi build. Thoát 0 khi hợp lệ, 1 kèm danh sách lỗi.
 set -u
 cd "$(dirname "$0")"
 pdf=de-cuong.pdf

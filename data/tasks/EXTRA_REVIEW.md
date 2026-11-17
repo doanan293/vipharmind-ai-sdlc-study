@@ -3,8 +3,8 @@
 This file is the draft for An's review of the medium tier (2-3 consecutive commits, 300-700 lines in
 `backend/src`), which sits between the small single-commit tasks (43-311 lines) and the large ranges
 (764-1,464 lines). It replaces the first draft of 2026-11-15, whose m01-m05 were picked by hand. The
-tier is now the mechanical result of the amended rule in `prereg/prereg-v1.1-draft.md`, applied to every
-candidate in `tasks/feature-feasibility/medium_candidates.json`. For each task:
+tier is now the mechanical result of the amended rule in `docs/prereg/prereg-v1.1-draft.md`, applied to every
+candidate in `data/tasks/feature-feasibility/medium_candidates.json`. For each task:
 
 1. Read the selection data, the draft prompt and the name audit.
 2. Write your verdict on the `An's verdict:` line, as `pass` or `fail` (a short reason is welcome).
@@ -15,7 +15,7 @@ candidate in `tasks/feature-feasibility/medium_candidates.json`. For each task:
 No agent was run on any candidate. Selection used only task-construction data: commits, sizes, the
 original patch graded by the harness, the hidden tests, and coverage of the original code.
 
-## The rule (summary; the binding text is `prereg/prereg-v1.1-draft.md`)
+## The rule (summary; the binding text is `docs/prereg/prereg-v1.1-draft.md`)
 
 A window is eligible when it is 2-3 consecutive first-parent commits of one plan (one of the 16
 sub-ranges), has no `test`/`refactor`/`chore`/`docs` commit, changes only `backend/`, has 300-700
@@ -129,7 +129,7 @@ An's verdict on rejecting F04: approved in bulk 2026-11-15 (reject)
   spec it cites (`backend/docs/superpowers/specs/...`) is stripped from the workspace, so the
   prompt spells out every rule the tests pin.
 
-Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `data/tasks/<id>/prompt.md`):
 
 ```text
 Add reading and writing of `knowledge-bundle/v1` directories to `pharma_agent.domain.corpus.bundle`, with every problem of an invalid bundle reported at once, and deterministic ids for section revisions and chunk versions in a new module `pharma_agent.domain.corpus.identity`.
@@ -212,7 +212,7 @@ An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fab
 - The queries and summary sentences are the approved wording of the old draft's m01 (F03_43-44),
   unchanged; the hidden `test_queries.py` and `test_summarize.py` are byte-identical to that draft's.
 
-Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `data/tasks/<id>/prompt.md`):
 
 ```text
 Add the use cases that read, rename and delete a user's conversations, a background job that folds finished turns into a rolling conversation summary, a LangGraph checkpointer stored in Postgres, and a service container that owns the long-lived resources of the HTTP service and wires these use cases with the existing chat service.
@@ -290,7 +290,7 @@ An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fab
   of restored fakes. Those fakes implement ports that already exist at base, so under the
   amended rule's name count they add no name.
 
-Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `data/tasks/<id>/prompt.md`):
 
 ```text
 Make `POST /api/v1/chat/stream` speak the AI SDK UI Message Stream v1 instead of named server-sent events, and store the citations of assistant messages in a new `message_citations` table that references corpus chunk versions and releases instead of a JSON column on `messages`.
@@ -369,7 +369,7 @@ An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fab
   2026-11-15 with the task directory and the unmodified diff: clean.
 - Unchanged from the old draft's m02 (draft prompt and audit).
 
-Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `data/tasks/<id>/prompt.md`):
 
 ```text
 Expose the chat and conversation use cases over HTTP with a FastAPI application under `/api/v1`, stream chat turns as server-sent events, report service health, and add `serve` and `migrate` commands to the `pharma-agent` CLI.
@@ -447,7 +447,7 @@ An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fab
   restored fakes). The ports those fakes implement are all in `domain/corpus/ports.py` at base,
   with docstrings, so they add no name the prompt has to give.
 
-Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `tasks/<id>/prompt.md`):
+Final prompt (the draft with every edit of `EXTRA_REVIEW_fable.md` applied; identical to `data/tasks/<id>/prompt.md`):
 
 ```text
 Add the application services that import a knowledge bundle into a new corpus release and manage releases (list, publish, rollback, garbage collection, reindex), built only on the existing corpus ports `CorpusRepository`, `EmbeddingCache`, `Embedder` and `VectorIndex` and the existing corpus domain models.

@@ -186,7 +186,7 @@ cách làm nhận **cùng một đề bài**.
 **Ai viết.** AI soạn nháp đề bài và đề xuất đánh giá tiêu chí 3 cho từng commit; An đọc, sửa và duyệt
 từng nhiệm vụ trước thẻ `prereg-v1`. Khai báo sử dụng AI ghi rõ việc này.
 
-**Thực tế (2026-11-15).** An duyệt gộp `tasks/REVIEW.md`: chấp nhận nguyên văn mọi đề xuất tiêu chí 3 và
+**Thực tế (2026-11-15).** An duyệt gộp `data/tasks/REVIEW.md`: chấp nhận nguyên văn mọi đề xuất tiêu chí 3 và
 mọi nháp đề bài của AI, không sửa từng mục; ba mục có test hành vi chỉ thuộc loại `integration`
 (#12, #20, #30) bị loại theo khuyến nghị của trợ lý. Một tác tử duyệt độc lập đã đối chiếu mẫu vài đề bài
 với commit gốc. Báo cáo và khai báo sử dụng AI phải ghi đúng như vậy, và nêu ở phần hạn chế rằng đề bài
@@ -202,7 +202,7 @@ phép trước thẻ này. Mọi thay đổi sau thẻ phải ghi lại trong b�
 việc (khoảng 11 commit). Đề nhỏ có thể làm lợi ích của làm theo đặc tả không lộ ra (quyết định của An,
 2026-11-15).
 
-**Cách chọn.** Khảo sát khả thi ngày 2026-11-15 (`tasks/feature-feasibility/`): gom nguyên plan không
+**Cách chọn.** Khảo sát khả thi ngày 2026-11-15 (`data/tasks/feature-feasibility/`): gom nguyên plan không
 dùng được vì commit của các plan đan xen (dải dài tới 286 commit). Cắt phần lõi của từng plan backend
 thành 16 đoạn commit liền nhau (4–12 commit) và chạy bộ test thật ở đầu và cuối mỗi đoạn. Chọn 3 đoạn
 mà test ẩn chỉ cần đề bài nêu ít tên (6–25) và collect được độc lập:
@@ -220,9 +220,9 @@ tách riêng.
 **Khác với tầng nhỏ.** Mã nền là commit `base`; test ẩn là mọi `test_*.py` thêm hoặc sửa trong đoạn;
 khi chấm khôi phục mọi file `backend/tests` đổi trong đoạn và `pyproject.toml`/`uv.lock` từ `end`, rồi
 chạy toàn bộ test không mang nhãn `integration`. Đề bài có thêm mục "giao diện bắt buộc" sinh từ
-`coupling.json` và `fakes_contract.json`, được Fable 5.2 duyệt độc lập (`tasks/FEATURE_REVIEW_fable.md`)
+`coupling.json` và `fakes_contract.json`, được Fable 5.2 duyệt độc lập (`data/tasks/FEATURE_REVIEW_fable.md`)
 rồi An duyệt. Chạy trên cả 4 nhóm với 3 lần lặp như tầng nhỏ. Giới hạn thời gian đặt theo quy tắc:
-tầng nhỏ 3600 s, tầng vừa gấp 2 (7200 s), tầng lớn gấp 3 (10800 s) (`prereg/prereg-v1.md` mục 4).
+tầng nhỏ 3600 s, tầng vừa gấp 2 (7200 s), tầng lớn gấp 3 (10800 s) (`docs/prereg/prereg-v1.md` mục 4).
 
 **Ba tầng kích thước (quyết định của An 2026-11-15, trước thẻ `prereg-v1`).** Phân tích lấy mẫu lại theo
 nhiệm vụ, nên số nhiệm vụ quan trọng hơn số lần lặp. Vì vậy giữ 3 lần lặp và tăng số nhiệm vụ:
@@ -237,9 +237,9 @@ Tiêu chí chọn tầng vừa và hai đoạn lớn thêm giống hệt 3 đo�
 backend, test ẩn trượt ở base và đạt ở end, bản vá gốc chấm đạt không hồi quy, đề nêu được mọi tên test
 cần), cộng giới hạn số dòng và số tên ở trên. Mọi ứng viên qua tiêu chí đều được nhận; tầng nào có hơn
 5 ứng viên thì giữ theo thứ tự cố định (không chứa commit của t01–t15 trước, rồi số tên tăng dần, rồi mã
-commit `end`). Mọi ứng viên và lý do loại được ghi ở `tasks/feature-feasibility/medium_candidates.json`;
+commit `end`). Mọi ứng viên và lý do loại được ghi ở `data/tasks/feature-feasibility/medium_candidates.json`;
 việc chọn không dựa trên bất kỳ lượt chạy AI nào, và không lượt AI nào chạy trên một ứng viên trước thẻ
-`prereg-v1.1`. Ràng buộc đầy đủ ở đầu `prereg/prereg-v1.md`. Đề bài qua cùng quy trình: soạn, đối chiếu tên với test ẩn, Fable 5.2 duyệt
+`prereg-v1.1`. Ràng buộc đầy đủ ở đầu `docs/prereg/prereg-v1.md`. Đề bài qua cùng quy trình: soạn, đối chiếu tên với test ẩn, Fable 5.2 duyệt
 độc lập, An duyệt.
 
 **Vì sao mở rộng (quyết định của An, 2026-11-15, sau chạy thử, trước thẻ `prereg-v1`).** Chạy thử cho
@@ -268,7 +268,7 @@ kế hoạch thành file trong thư mục làm việc rồi cài đặt tiếp t
 thời gian tính cho cả phiên. Không chia thành ba lần gọi riêng, để hai cách chỉ khác nhau ở lời dặn.
 Lượt theo đặc tả mà không để lại file thiết kế và kế hoạch được đánh dấu "không tuân thủ quy trình".
 Phép thử chính vẫn tính các lượt này (phân tích theo phân bổ); bỏ chúng chỉ là phân tích độ nhạy
-(`prereg/prereg-v1.md` mục 2).
+(`docs/prereg/prereg-v1.md` mục 2).
 
 **Tái hiện quy trình thật.** Lời dặn của nhánh theo đặc tả mô tả đúng quy trình An dùng khi làm
 ViPharmind: viết spec, viết plan, rồi làm theo plan. Plan chia việc theo kích thước tự nhiên, mỗi phần
@@ -319,7 +319,7 @@ vụ × 2 cách làm × 3 lần lặp × 4 nhóm, thêm tối đa 240 lượt; t
 | 3 | Codex CLI 0.162.1 | `codex exec` | `gpt-6-luna`, mức suy luận medium | Kiểm chứng, RQ4 |
 
 Ba đợt dùng cùng nhiệm vụ, cùng đề bài, cùng lời dặn. Bốn nhóm chạy cùng lúc vì mỗi nhóm có hạn mức
-riêng; hạn chót thu dữ liệu, cách xử lý nhóm chưa chạy đủ và thứ tự ưu tiên ở `prereg/prereg-v1.md`
+riêng; hạn chót thu dữ liệu, cách xử lý nhóm chưa chạy đủ và thứ tự ưu tiên ở `docs/prereg/prereg-v1.md`
 mục 10.
 
 Lý do chọn mô hình:
@@ -338,7 +338,7 @@ Lý do chọn mô hình:
 - Khi chạm hạn mức, bộ chạy tạm dừng và chạy lại đúng lượt đó sau; lượt bị ngắt vì hạn mức không tính
   là thất bại và không tính vào 3 lần lặp.
 - Chi phí bằng tiền là số quy đổi: lượng token thật của mỗi lượt (tách đọc cache, ghi cache) nhân với
-  một bảng giá API công khai chốt ngày 2026-11-15 (`prereg/prereg-v1.md` mục 7), ghi rõ là quy đổi.
+  một bảng giá API công khai chốt ngày 2026-11-15 (`docs/prereg/prereg-v1.md` mục 7), ghi rõ là quy đổi.
 
 **Nhiều tài khoản và proxy.** Theo ruling R11 (sau chạy thử), lượt chính không chạy qua proxy: mọi
 công cụ gọi thẳng CLI của nó, proxy chỉ là nơi lấy token đăng nhập của các tài khoản phụ. Phần dưới
@@ -397,7 +397,7 @@ lớn hơn ở Opus, tức làm theo đặc tả giúp mô hình yếu hơn nhi�
 vibe) tăng theo kích thước nhiệm vụ: ở tầng lớn lớn hơn ở tầng nhỏ, và tăng theo số dòng của bản vá gốc.
 
 **Phân tích.** Phép thử xác nhận duy nhất là H1 trên nhóm `claude-sonnet`, tầng nhỏ; H5 là phép thử
-phụ quan trọng nhất; còn lại là phụ (chi tiết ở `prereg/prereg-v1.md` mục 9). So sánh theo cặp trên
+phụ quan trọng nhất; còn lại là phụ (chi tiết ở `docs/prereg/prereg-v1.md` mục 9). So sánh theo cặp trên
 từng nhiệm vụ. Báo cáo hiệu số kèm khoảng tin cậy bootstrap lấy mẫu lại theo nhiệm vụ. Với 15 nhiệm vụ, báo cáo cỡ hiệu ứng và khoảng tin cậy, không dựa kết luận
 vào ngưỡng p. Báo cáo cả độ dao động giữa 3 lần lặp của cùng một nhiệm vụ.
 
@@ -409,7 +409,7 @@ theo nhiệm vụ. So sánh thêm Sonnet theo đặc tả với Opus vibe coding
 nhỏ) của tỉ lệ đạt đặc tả trừ vibe, gộp các nhóm chạy đủ ở cả ba tầng, kèm khoảng tin cậy bootstrap
 lấy mẫu lại theo nhiệm vụ trong từng tầng. Phân tích bổ trợ trên mọi nhiệm vụ của ba tầng: hồi quy
 logistic hỗn hợp `pass ~ arm × log(src_lines) + cohort + (1 + arm | task)`, có phương án lùi khi không
-hội tụ (`prereg/prereg-v1.md` mục 9, điểm 4); báo cáo hệ số tương tác và hình
+hội tụ (`docs/prereg/prereg-v1.md` mục 9, điểm 4); báo cáo hệ số tương tác và hình
 "hiệu số theo kích thước" (mỗi điểm là một nhiệm vụ, đường xu hướng kèm dải tin cậy). Tầng vừa và tầng lớn mỗi tầng
 chỉ có tối đa 5 nhiệm vụ, nên báo cáo nêu rõ đây là bằng chứng sơ bộ; mọi hướng kết quả (có, không, ngược
 chiều) đều được báo cáo như nhau.
@@ -440,7 +440,7 @@ khám phá vì mỗi nhóm chỉ có khoảng 5 nhiệm vụ, không dùng để
 - **Bảng nhãn:** hiểu sai yêu cầu; làm thiếu; sai giao diện đã nêu trong đề bài; làm hỏng chức năng cũ;
   lỗi logic; không hoàn thành trong giới hạn; lỗi môi trường; cộng hai nhãn từ gán thử: đề bài thiếu
   hoặc mơ hồ; dùng sai kiểu hoặc API có sẵn của dự án. Bảng khóa tại thẻ `prereg-v1`
-  (`prereg/labeling-guide.md`).
+  (`docs/prereg/labeling-guide.md`).
 - **Đạt test nhưng sai.** An đọc một mẫu ngẫu nhiên 20 lượt đạt, đối chiếu với bản vá gốc, ghi lại
   trường hợp mã đạt test nhưng sai hoặc thiếu hành vi.
 
@@ -461,28 +461,28 @@ khám phá vì mỗi nhóm chỉ có khoảng 5 nhiệm vụ, không dùng để
 ```
 docs/superpowers/specs/   đề bài của môn, bản thiết kế này
 docs/superpowers/plans/   kế hoạch thực hiện
-proposal/                 đề cương 1–2 trang
-retrospective/            mã phân tích hồi cứu và kết quả
-tasks/                    15 nhiệm vụ và 2 nhiệm vụ thử: commit, đề bài, danh sách test ẩn
-prompts/                  hai file lời dặn của hai cách làm
-harness/                  bộ chạy và bộ chấm
-results/raw/              kết quả thô từng lượt
-results/analysis/         bảng, hình, mã phân tích
+docs/proposal/                 đề cương 1–2 trang
+code/retrospective/            mã phân tích hồi cứu và kết quả
+data/tasks/                    15 nhiệm vụ và 2 nhiệm vụ thử: commit, đề bài, danh sách test ẩn
+code/prompts/                  hai file lời dặn của hai cách làm
+code/harness/                  bộ chạy và bộ chấm
+data/results/raw/              kết quả thô từng lượt
+data/results/analysis/         bảng, hình, mã phân tích
 labeling/                 bảng nhãn, phiếu gán nhãn của hai người, kết quả phân xử
 docs/report/              báo cáo 15–20 trang
 docs/presentation/        bài thuyết trình 15 phút (template-vi.pptx)
-team/                     bản kê đóng góp, mẫu đánh giá chéo, khai báo sử dụng AI, tài liệu chuẩn bị hỏi đáp
+docs/team/                     bản kê đóng góp, mẫu đánh giá chéo, khai báo sử dụng AI, tài liệu chuẩn bị hỏi đáp
 ```
 
 Sản phẩm theo yêu cầu của thầy:
 
 | Yêu cầu | Ở đâu |
 | --- | --- |
-| Đề cương 1–2 trang | `proposal/`, rút từ mục 1, 3, 5, 7 |
+| Đề cương 1–2 trang | `docs/proposal/`, rút từ mục 1, 3, 5, 7 |
 | Báo cáo viết 15–20 trang | `docs/report/` |
-| Thuyết trình 15 phút, hỏi đáp 5 phút | `docs/presentation/`, `team/` |
-| Kho mã, dữ liệu, nội dung yêu cầu đã dùng, kết quả thô | repo này; đề bài ở `tasks/` và `prompts/`, kết quả thô ở `results/raw/` |
-| Bản kê đóng góp cá nhân và khai báo sử dụng AI | `team/` |
+| Thuyết trình 15 phút, hỏi đáp 5 phút | `docs/presentation/`, `docs/team/` |
+| Kho mã, dữ liệu, nội dung yêu cầu đã dùng, kết quả thô | repo này; đề bài ở `data/tasks/` và `code/prompts/`, kết quả thô ở `data/results/raw/` |
+| Bản kê đóng góp cá nhân và khai báo sử dụng AI | `docs/team/` |
 
 Tổng quan tài liệu trong báo cáo: tìm có quy trình, ghi lại từ khóa, nguồn, tiêu chí chọn, số bài tìm
 được, sàng lọc, giữ lại; khoảng 15–25 nguồn, ưu tiên hội nghị và tạp chí có bình duyệt, 2023–2026.
@@ -516,7 +516,7 @@ với bước 2–3; bốn nhóm chạy cùng lúc với nhau.
 - Ngôn ngữ và thư viện của bộ chạy, bộ phân tích (mặc định: Python với `uv`, giống ViPharmind).
 - Định dạng file nhiệm vụ và file kết quả thô.
 - Cách xuất mã không kèm lịch sử và cách cô lập từng lượt chạy.
-- Giới hạn thời gian cho mỗi lượt: đã chốt theo quy tắc ở `prereg/prereg-v1.md` mục 4.
+- Giới hạn thời gian cho mỗi lượt: đã chốt theo quy tắc ở `docs/prereg/prereg-v1.md` mục 4.
 - Công cụ soạn báo cáo và slide (mặc định: LaTeX cho báo cáo, ppt-master cho slide như bài SoICT).
 - Cách lọc khóa API và dữ liệu riêng khỏi nhật ký phiên.
 - Số bản ghi và cách chọn mẫu khi trích nhật ký phiên làm minh họa.

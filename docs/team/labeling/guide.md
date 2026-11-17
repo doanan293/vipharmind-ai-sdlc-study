@@ -27,7 +27,7 @@ cứ gán nhãn bình thường và ghi "lộ cách làm" vào cột `note`.
 Đây là bảng khởi đầu. Hai bạn gán thử trên các lượt của 2 nhiệm vụ thử; sau đó An chỉnh định nghĩa nếu
 cần rồi khóa bảng. Từ lúc khóa, không thêm hay đổi nhãn.
 
-Các ví dụ dưới đây được **dựng** từ đề bài thật trong `tasks/` để minh họa, chưa phải lượt chạy thật.
+Các ví dụ dưới đây được **dựng** từ đề bài thật trong `data/tasks/` để minh họa, chưa phải lượt chạy thật.
 
 | Nhãn (ghi vào phiếu) | Định nghĩa | Ví dụ dựng từ một đề thật |
 | --- | --- | --- |

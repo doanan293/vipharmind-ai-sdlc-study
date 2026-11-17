@@ -6,7 +6,7 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
-| Doãn Văn An | 20252778M | Nhóm trưởng, điều phối và giao việc; thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
+| Doãn Văn An | 20252778M | Nhóm trưởng, điều phối và giao việc; thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `docs/team/ai-use.md`) |
 | Lê Xuân Lợi | 20252781M | **Phần bối cảnh và phương pháp:** kiểm tra trích dẫn; phản biện báo cáo mục 1–5, slide 1–13. Cùng Bảo: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay kiểm tra đối chứng người – máy trên đề sơ sài) |
 | Trần Ngọc Bảo | 20251227M | **Phần kết quả:** kiểm tra độc lập số liệu chính; phản biện báo cáo mục 6–8, slide 14–30. Cùng Lợi: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay kiểm tra đối chứng người – máy trên đề sơ sài) |
 
@@ -23,14 +23,14 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | --- | --- | --- | --- | --- |
 | Chọn đề tài, đăng ký nhóm | C | H | H | Lợi, Bảo cùng bàn và chọn đề tài |
 | Thiết kế nghiên cứu (câu hỏi, giả thuyết, hai cách làm, tầng kích thước) | C | H | H | An thiết kế chính; Lợi, Bảo góp ý thiết kế |
-| Đề cương 1–2 trang (`proposal/`) | C | – | – | |
+| Đề cương 1–2 trang (`docs/proposal/`) | C | – | – | |
 | Tổng quan tài liệu (tìm, mở, kiểm tra 24 nguồn; `docs/report/literature-log.md`) | C | – | – | AI hỗ trợ tìm kiếm; An kiểm tra |
 | Phân tích hồi cứu ViPharmind (RQ1, RQ2; 505 commit, 43 file spec/plan) | C | – | – | Gồm kiểm tra tay 20 commit cho quy tắc nối |
 | Sàng lọc và dựng bộ nhiệm vụ (110 → 43 commit; 15 + 5 + 3 nhiệm vụ) | C | – | – | Đề bài do AI soạn, An duyệt (xem `ai-use.md`) |
-| Bộ chạy và bộ chấm (`harness/`) | C | – | – | Mã do AI viết theo kế hoạch An duyệt |
+| Bộ chạy và bộ chấm (`code/harness/`) | C | – | – | Mã do AI viết theo kế hoạch An duyệt |
 | Chạy thử, ruling R11, đăng ký trước (`prereg-v1`, `prereg-v1.1`, `prereg-v1-analysis`) | C | – | – | |
 | Chạy chính (552 lượt dự kiến, 4 nhóm) | C | – | – | |
-| Gói phân tích (`analysis/`) | C | – | – | Mã do AI viết; Fable 5.2 duyệt độc lập |
+| Gói phân tích (`code/analysis/`) | C | – | – | Mã do AI viết; Fable 5.2 duyệt độc lập |
 | Gán nhãn nguyên nhân thất bại (mù) | – | C | C | Hai người làm độc lập; An không gán, chỉ phân xử chỗ lệch |
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
@@ -41,8 +41,8 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30; cả ba cùng rà soát nội dung slide (`phan-viec.md` mục 4) |
 | Thuyết trình trên lớp | – | – | – | Chưa phân công người nói; cả ba thành viên cùng nắm toàn bộ nội dung để sẵn sàng trình bày |
 | Chuẩn bị hỏi đáp | C | H | H | An soạn `qa-prep.md`; Lợi ôn nhóm A–F, J, M; Bảo ôn nhóm G–L, N |
-| Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
-| Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |
+| Điều phối, phân việc (`docs/team/phan-viec.md`) | C | – | – | |
+| Tài liệu nhóm (`docs/team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |
 
 ## 2. Chi tiết từng người
 
@@ -71,7 +71,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 ### Lê Xuân Lợi
 
 - Hỗ trợ chọn đề tài và góp ý thiết kế nghiên cứu.
-- Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
+- Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `docs/prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Kiểm tra trích dẫn: đã tự mở từng link của cả 24 tài liệu; đối chiếu tên bài, tác giả, năm và từng con số trích dẫn trong bài (số nhiệm vụ, tỉ lệ giải quyết, mức chênh lệch năng suất). Toàn bộ 24 nguồn đều vào được và số liệu trích dẫn đúng với bài gốc (xong 17/11, xem `kiem-trich-dan.csv`).
@@ -107,7 +107,7 @@ nguồn test ẩn và thứ tự quyết định cố định (ghi ở mục 11 
 ## 4. Đề xuất về điểm cá nhân
 
 Tiêu chí của thầy cho phép điều chỉnh điểm cá nhân. Nhóm không tự đề xuất hệ số; bản kê này và phiếu đánh
-giá chéo (`team/peer-review.md`) là căn cứ để thầy quyết định. [Nhóm thống nhất trước buổi nộp nếu muốn
+giá chéo (`docs/team/peer-review.md`) là căn cứ để thầy quyết định. [Nhóm thống nhất trước buổi nộp nếu muốn
 ghi thêm đề xuất.]
 
 ## 5. Xác nhận

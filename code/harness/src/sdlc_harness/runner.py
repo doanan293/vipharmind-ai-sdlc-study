@@ -445,7 +445,7 @@ def _write_json(path: Path, data: dict) -> None:
 
 
 def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None = None) -> Status:
-    """Run one agent session and grade it into results/raw/<cohort>/<task>/<arm>-r<rep>/."""
+    """Run one agent session and grade it into data/results/raw/<cohort>/<task>/<arm>-r<rep>/."""
     out = unit_dir(out_root, unit)
     if (out / GRADE).is_file():
         return "done"

@@ -16,8 +16,8 @@ Sản phẩm nộp: `docs/report/main.pdf` và `docs/presentation/vipharmind-sli
 nằm ở nhánh `report-lan1`.
 
 Không commit: dữ liệu chạy thô (`.worktrees/run*/results/raw`, khoảng 740 MB), gói việc gửi người chấm
-(`data/results/packets/`) và các khóa làm mù (`*-PRIVATE*.csv`).
+(`data/results/packets/`) và khóa làm mù mới (`*-PRIVATE*.csv`; ba khóa đã commit từ trước vẫn giữ).
 
-Lệnh của từng gói chạy trong thư mục của gói đó (`cd code/harness && uv run pytest`). Các tài liệu cũ trong
-`docs/prereg/` và `docs/superpowers/` được chốt trước khi đổi bố cục, nên còn nhắc đường dẫn cũ
-(`results/`, `tasks/`, `harness/`); nay là `data/results/`, `data/tasks/`, `code/harness/`.
+Lệnh của từng gói chạy trong thư mục của gói đó (`cd code/harness && uv run pytest`). Mọi đường dẫn trong
+tài liệu đã theo bố cục này. Riêng các thẻ git cũ (`prereg-v1`, `prereg-v1.1`, `prereg-v1.2`, ...) giữ nguyên
+bố cục lúc chốt (`results/`, `tasks/`, `harness/` ở gốc), và nhánh `report-lan1` đã chuyển sang bố cục mới.

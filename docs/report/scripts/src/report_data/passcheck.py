@@ -1,6 +1,6 @@
 """Kiểm tra lượt đạt (prereg-v1 mục 9.10): mẫu 20 lượt đạt, Lợi và Bảo đối chiếu mù cách làm.
 
-Nguồn: results/analysis/main/labeling/returned/passcheck-{loi,bao}.csv (cột dung_that(yes/no)) và
+Nguồn: data/results/analysis/main/labeling/returned/passcheck-{loi,bao}.csv (cột dung_that(yes/no)) và
 passing-key-PRIVATE.csv (mã p… -> người kiểm, cách làm; chỉ dùng để đếm). Báo cáo chỉ in số gộp.
 Thiếu nguồn thì mọi khóa là None (\\pending).
 """

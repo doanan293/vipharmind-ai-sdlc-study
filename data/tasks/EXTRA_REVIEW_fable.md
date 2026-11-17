@@ -7,7 +7,7 @@ Method: for each window I read the hidden tests and restored support files at `e
 refer to the file at the range `end`. For part 2 I re-derived the selection with my own script from
 `medium_candidates.json` plus `git` (commit types, sizes, layers and task overlap recomputed, not read
 from the JSON), re-ran `medium_names.py` on ten windows, and enumerated all 188 windows of the 16
-sub-ranges. I did not open anything under `results/` and ran no agent.
+sub-ranges. I did not open anything under `data/results/` and ran no agent.
 
 ## Summary
 

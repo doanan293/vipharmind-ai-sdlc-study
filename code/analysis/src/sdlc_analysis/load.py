@@ -1,4 +1,4 @@
-"""Read task metadata (tasks/*/task.toml) and run units (results/<cohort>/<task>/<arm>-r<rep>/)
+"""Read task metadata (data/tasks/*/task.toml) and run units (data/results/<cohort>/<task>/<arm>-r<rep>/)
 into tidy tables, and work out which (cohort, tier) cells are complete (prereg-v1 section 10)."""
 
 import json
@@ -77,7 +77,7 @@ def load_tasks(tasks_dir: Path, task_ids: list[str] | None = None) -> pd.DataFra
 
 
 def _graded_lines(tasks_dir: Path) -> dict:
-    """graded_src_lines per task from tasks/graded_lines.json (tasks/graded_lines.py), if any."""
+    """graded_src_lines per task from data/tasks/graded_lines.json (data/tasks/graded_lines.py), if any."""
     d = _read_json(tasks_dir / "graded_lines.json") or {}
     return {k: v.get("graded_src_lines") for k, v in d.items() if isinstance(v, dict)}
 

@@ -1,11 +1,11 @@
 """Simulated data sets shaped like the main design (23 tasks with their real `src_lines` and
 tiers, 4 cohorts, 2 arms, 3 reps), from the H5 model with known coefficients. Used by the tests
-and by the calibration scripts in analysis/calibration/."""
+and by the calibration scripts in code/analysis/calibration/."""
 
 import numpy as np
 import pandas as pd
 
-# t01-t15, m01-m05, f08, f14, f15: src_lines from tasks/*/task.toml
+# t01-t15, m01-m05, f08, f14, f15: src_lines from data/tasks/*/task.toml
 MAIN_SRC = [311, 197, 198, 73, 186, 67, 232, 43, 120, 141, 102, 45, 148, 68, 121,
             478, 335, 413, 362, 515, 764, 1464, 1367]
 MAIN_TIER = ["small"] * 15 + ["medium"] * 5 + ["large"] * 3

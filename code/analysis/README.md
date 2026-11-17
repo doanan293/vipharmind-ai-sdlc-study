@@ -1,7 +1,7 @@
 # sdlc-analysis
 
-The preregistered analysis of the spec-vs-vibe experiment: `prereg/prereg-v1.md` sections 6, 7, 9
-and 10, with tiers and the graded-lines sensitivity analysis as in `prereg/prereg-v1.1.md`. It reads the harness's raw results and
+The preregistered analysis of the spec-vs-vibe experiment: `docs/prereg/prereg-v1.md` sections 6, 7, 9
+and 10, with tiers and the graded-lines sensitivity analysis as in `docs/prereg/prereg-v1.1.md`. It reads the harness's raw results and
 writes the numbers the report reads (`summary.json`, see
 `docs/superpowers/specs/2026-11-15-report-and-presentation-design.md` §5.5). The report scripts only
 format these numbers. They do not compute statistics.
@@ -22,8 +22,8 @@ uv run sdlc-analysis --results ../results/raw/pilot --tasks ../tasks --task-ids 
     --out out/pilot --seed 20261115
 ```
 
-`--results` takes several roots: the small tier runs into `results/raw/main`, the medium and large
-tiers into `results/raw/main-tiers` (prereg-v1.1); a unit found in two roots is an error.
+`--results` takes several roots: the small tier runs into `data/results/raw/main`, the medium and large
+tiers into `data/results/raw/main-tiers` (prereg-v1.1); a unit found in two roots is an error.
 
 Options: `--bootstrap B` (default 10000), `--model-bootstrap` (cluster-bootstrap refits of the H5
 mixed model, default 999; each refit takes 1-5 s, so use `--jobs`), `--jobs` (processes for those
@@ -156,8 +156,8 @@ not follow it word for word. Each note says what the code does.
    valid runs of the cohorts used by the H5 primary test (complete in all three tiers), not every
    valid run regardless of completeness, so that both H5 tests use the same cohorts (prereg
    section 11). The `graded_src_lines` sensitivity analysis (prereg-v1.1) fits the same ladder,
-   bootstrap included, with `log(graded_src_lines)` (`tasks/graded_lines.json`, measured by
-   `tasks/graded_lines.py`); tasks without a value are dropped and listed in
+   bootstrap included, with `log(graded_src_lines)` (`data/tasks/graded_lines.json`, measured by
+   `data/tasks/graded_lines.py`); tasks without a value are dropped and listed in
    `tasks_without_size`.
 4. **H5 verdict.** "Supported" requires the primary CI to lie entirely above 0 and the logit-scale
    interaction point estimate to be positive ("cùng hướng" read as the sign of the point
@@ -228,7 +228,7 @@ not follow it word for word. Each note says what the code does.
     `git rev-list base..end`, so its `base` commit is not part of it. Two tasks of different
     tiers overlap when their commit sets intersect, and both are dropped: the relation is
     symmetric, since each has a commit lying in the other. Overlap in hidden-test files does not
-    cause a drop. With the current `tasks/` and the ViPharmind repo, the only overlap is
+    cause a drop. With the current `data/tasks/` and the ViPharmind repo, the only overlap is
     f08–t03 (commit `c3a88b2659`). F14's `base` is t01's commit, so t01's change is not inside
     F14, and m04's `base` is t10's commit in the same way, so neither is dropped. The parenthesis
     "f08 và f14" in prereg-v1.1 is corrected to f08 in section 11. The analysis needs `--repo`; without it, `sensitivity.overlap.h5` is absent and
@@ -276,19 +276,19 @@ not follow it word for word. Each note says what the code does.
     is treated as empty and counted under `descriptives.upstream_urls_field_missing`. Pilot
     tasks have `pilot = true`, so the pilot run names them with `--task-ids p01,p02`.
 
-## Exploratory extensions E1 and E2 (`prereg/prereg-v1.2.md`)
+## Exploratory extensions E1 and E2 (`docs/prereg/prereg-v1.2.md`)
 
 Both are exploratory ("thăm dò, thêm sau khi thấy kết quả chính") and write to their own output
 directories; the confirmatory `sdlc-analysis` above is unchanged.
 
 ```
 R=/home/andv/personal/vipharmind-ai-sdlc-study/.worktrees  # chạy từ code/analysis
-# E1: the locked analysis with claude-haiku as one more cohort -> results/analysis/e1/
+# E1: the locked analysis with claude-haiku as one more cohort -> data/results/analysis/e1/
 uv run sdlc-e1 --results $R/run/results/raw/main \
     $R/run2/results/raw/main-tiers \
     $R/run3/results/raw/haiku \
     --seed 20261115 --repo /home/andv/personal/vipharmind --model-bootstrap 999 --jobs 4
-# E2: brief prompt, detail x arm -> results/analysis/e2/
+# E2: brief prompt, detail x arm -> data/results/analysis/e2/
 uv run sdlc-e2 --detailed $R/run/results/raw/main \
     $R/run2/results/raw/main-tiers \
     $R/run3/results/raw/haiku \
@@ -299,7 +299,7 @@ uv run python scripts/draw_human_check.py kappa --loi sheet-loi.csv --bao sheet-
 ```
 
 `sdlc-e1` accepts every `sdlc-analysis` option; it defaults `--cohorts` to
-`claude-sonnet,claude-opus,codex-luna,claude-haiku` and `--out` to `results/analysis/e1`. Haiku has
+`claude-sonnet,claude-opus,codex-luna,claude-haiku` and `--out` to `data/results/analysis/e1`. Haiku has
 no row in the frozen price table, so its converted cost is missing (not imputed).
 
 `sdlc-e2` outputs: `summary.json` (`coverage`, `coverage_totals`, `estimates`, `judge_validity`),

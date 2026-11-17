@@ -1,7 +1,7 @@
-# Independent review of `analysis/` before tag `prereg-v1-analysis`
+# Independent review of `code/analysis/` before tag `prereg-v1-analysis`
 
-Reviewer: Fable 5.2, 2026-11-15. Scope: `analysis/` (README, `src/sdlc_analysis/`, `tests/`,
-`out/pilot/`) against `prereg/prereg-v1.md` sections 6, 7, 9, 10, 11 and `prereg/prereg-v1.1.md`.
+Reviewer: Fable 5.2, 2026-11-15. Scope: `code/analysis/` (README, `src/sdlc_analysis/`, `tests/`,
+`out/pilot/`) against `docs/prereg/prereg-v1.md` sections 6, 7, 9, 10, 11 and `docs/prereg/prereg-v1.1.md`.
 Only pilot data and synthetic data were read. No main result was opened.
 
 ## Verdict: FREEZE AFTER FIXES
@@ -26,7 +26,7 @@ is not a 95% interval.
 | H5 pools only cohorts complete in all three tiers | 10 | `report.py:236`, correct |
 | Three-way verdicts, strict bounds, MI margin −5 | 9, 9.5 | `bootstrap.py:119-132`, `report.py:26-33`, correct |
 | A task enters only with a valid run in each arm | 10 | `estimators.py:37-44`, correct |
-| Completeness: done, or error with 3 attempts | 4, 10 | `load.py:138-143, 269-294`; same rule as `harness/runner.py:256, 798` |
+| Completeness: done, or error with 3 attempts | 4, 10 | `load.py:138-143, 269-294`; same rule as `code/harness/runner.py:256, 798` |
 | Price table and the four token types | 7 | `prices.py:19-25` equals the table; Claude 5 m / 1 h split priced separately |
 | agy `input_tokens` excludes cache reads | 6 | Confirmed on pilot: cache read > input in 221 of 229 steps |
 | codex `input_tokens` includes cached | 6 | `tokens.py:188-210`, correct |
@@ -39,11 +39,11 @@ is not a 95% interval.
 
 ### B1. The `graded_src_lines` sensitivity analysis of `prereg-v1.1` is not implemented
 
-`prereg/prereg-v1.1.md:327-344` requires the mixed model to be re-run with
+`docs/prereg/prereg-v1.1.md:327-344` requires the mixed model to be re-run with
 `log(graded_src_lines)` in place of `log(src_lines)`, with the same fallback ladder. It also
 requires the measurement and its code to be committed **before** tag `prereg-v1-analysis`.
 `graded_src_lines` appears nowhere in the repo outside that file: not in any `task.toml`, not in
-`tasks/feature-feasibility/`, not in `analysis/`.
+`data/tasks/feature-feasibility/`, not in `code/analysis/`.
 
 Fix:
 1. Measure `graded_src_lines` for the 23 tasks on the original code only, as the text defines it.
@@ -127,7 +127,7 @@ verdict at "inconclusive" for the "supported" branch and say why in `h5`.
 `overlap.py:19-28`, `report.py:267-272`. README note 15.
 
 The code drops f08 and t03 (checked against the ViPharmind repo: the only cross-tier commit
-intersection is `c3a88b2659`). `prereg/prereg-v1.1.md:280-281` says "tầng lớn: f08 và f14 thuộc
+intersection is `c3a88b2659`). `docs/prereg/prereg-v1.1.md:280-281` says "tầng lớn: f08 và f14 thuộc
 loại đó". f14 is not dropped, because its `base` is t01's commit and `base..end` excludes it.
 
 The code's reading is the defensible one. m04's `base` is t10's commit in exactly the same way,
@@ -200,8 +200,8 @@ drawn once, after the collection deadline, and refuse to overwrite an existing
 1. `report.py:287`: `n_secondary_comparisons` counts `pass_diff.claude-sonnet.small`, which is
    H1 itself. Subtract it when H1 is estimable. The count also leaves out `h5.hidden_pass_rate`,
    the sensitivity re-runs and the cost comparisons; say so in the README or count them.
-2. `README.md:4`: refers to `prereg/prereg-v1.1-draft.md`, which no longer exists. Change to
-   `prereg/prereg-v1.1.md`.
+2. `README.md:4`: refers to `docs/prereg/prereg-v1.1-draft.md`, which no longer exists. Change to
+   `docs/prereg/prereg-v1.1.md`.
 3. `mixed.py:103`: only `LinAlgError`, `ValueError` and `FloatingPointError` are caught. Any
    other error stops the whole analysis. Catch `Exception` and record the type in `reason`.
 4. `report.py:144`: a unit with `rep` above `--reps` is outside the design but still analysed.

@@ -1,11 +1,11 @@
 # Đăng ký trước, bản bổ sung `prereg-v1.1`: nhiệm vụ tầng vừa và tầng lớn
 
-Ngày: 2026-11-15. Văn bản này bổ sung `prereg/prereg-v1.md` (thẻ `prereg-v1`). Nó chốt danh sách nhiệm vụ
+Ngày: 2026-11-15. Văn bản này bổ sung `docs/prereg/prereg-v1.md` (thẻ `prereg-v1`). Nó chốt danh sách nhiệm vụ
 tầng vừa và tầng lớn, dữ liệu của từng nhiệm vụ, mã băm đề bài và lệnh chạy chính của hai tầng này. Mọi
 điều `prereg-v1` không nói khác ở đây thì giữ nguyên.
 
 An duyệt văn bản này ngày: **2026-11-15** (duyệt gộp cùng năm đề m01–m05 đã sửa theo
-`tasks/EXTRA_REVIEW_fable.md`; dòng duyệt của từng đề ở `tasks/EXTRA_REVIEW.md`).
+`data/tasks/EXTRA_REVIEW_fable.md`; dòng duyệt của từng đề ở `data/tasks/EXTRA_REVIEW.md`).
 
 ## Vị trí của văn bản này
 
@@ -19,7 +19,7 @@ An duyệt văn bản này ngày: **2026-11-15** (duyệt gộp cùng năm đề
   trên bất kỳ ứng viên hay nhiệm vụ tầng vừa, tầng lớn nào. Người soạn chưa xem kết quả lượt chạy chính
   nào.
 - Người duyệt độc lập (Fable) dựng lại toàn bộ việc chọn bằng mã riêng và ra đúng 21 cửa sổ hợp lệ và
-  đúng năm cửa sổ được chọn, cùng thứ tự (`tasks/EXTRA_REVIEW_fable.md`, phần 2).
+  đúng năm cửa sổ được chọn, cùng thứ tự (`data/tasks/EXTRA_REVIEW_fable.md`, phần 2).
 
 ## Lượt chạy chính tầng nhỏ đã bắt đầu trước thẻ này (ràng buộc 1 của `prereg-v1`)
 
@@ -38,8 +38,8 @@ mở kết quả được thêm thành một dòng khi việc mở xảy ra).
 ## Nhiệm vụ tầng lớn
 
 Quy tắc tầng lớn giữ nguyên (một đoạn liền nhau, từ 750 dòng `backend/src`, tối đa 35 tên). Tầng lớn là
-**f08, f14, f15** (`tasks/<id>/task.toml`, đề bài qua quy trình ở `tasks/FEATURE_REVIEW.md` và
-`tasks/FEATURE_REVIEW_fable.md`).
+**f08, f14, f15** (`data/tasks/<id>/task.toml`, đề bài qua quy trình ở `data/tasks/FEATURE_REVIEW.md` và
+`data/tasks/FEATURE_REVIEW_fable.md`).
 
 | Id | Đoạn | `base` | `end` | Commit | Lớp | Dòng `backend/src` | File test ẩn | Tên nêu trong đề: mục (dòng) | Tên cơ học |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Quy tắc tầng lớn giữ nguyên (một đoạn liền nhau, từ 750 dòng 
 F07 (`adf89a7b62..c36b6e91e9`, 7 commit, 1.364 dòng) và F04 (`432d790170..5445f66dbb`, 7 commit, 1.187
 dòng) được xét lại theo quy tắc tầng lớn và bị loại vì cần khoảng 70 và 60 tên (đếm tay số tên test được
 chấm cần, gồm cả phương thức dịch vụ và phương thức port mà fake được khôi phục cài; chi tiết ở
-`tasks/EXTRA_REVIEW.md` và `large_rechecks` trong `medium_candidates.json`). Bản vá gốc của cả hai chấm
+`data/tasks/EXTRA_REVIEW.md` và `large_rechecks` trong `medium_candidates.json`). Bản vá gốc của cả hai chấm
 sạch. Không lượt AI nào chạy trên hai đoạn này.
 
 **F09 không vào tầng lớn (quyết định 2026-11-15, An ủy quyền).** F09 (`cc0f06a67b..bbeed71482`, 7 commit gồm
@@ -65,8 +65,8 @@ ba commit của m03. F09 không được chấm bản vá gốc và không đư�
   lần xuất hiện một mục (lớp, hàm, phương thức, tham số từ khóa, trường, route, lệnh CLI, mã lỗi, tên
   file, khóa JSON…), không tính đường dẫn module hay lớp đứng ngay trước dấu hai chấm chỉ để định vị.
   Số trong ngoặc là số dòng của phần đó (đơn vị của cột "required-interface entries" trong
-  `tasks/FEATURE_REVIEW.md`). Đây là số đếm theo đề đã soạn; `prereg-v1` yêu cầu báo cáo số này.
-- *Tên cơ học*: số tên N1–N7 của `tasks/feature-feasibility/medium_names.py` (định nghĩa ở mục "Quy
+  `data/tasks/FEATURE_REVIEW.md`). Đây là số đếm theo đề đã soạn; `prereg-v1` yêu cầu báo cáo số này.
+- *Tên cơ học*: số tên N1–N7 của `data/tasks/feature-feasibility/medium_names.py` (định nghĩa ở mục "Quy
   tắc chọn tầng vừa"), chạy trên test ẩn và file hỗ trợ được khôi phục của nhiệm vụ. Với tầng lớn con số
   này chỉ để tham khảo.
 
@@ -102,7 +102,7 @@ cộng các cửa sổ đã xét trước đó.
 (`-m integration`, có Docker). S là các câu lệnh (theo coverage.py) nằm trên dòng mà diff `base..end` thêm
 hoặc sửa trong `backend/src/**.py`, bỏ những dòng chỉ chạy lúc import hay thu thập test ở cả hai lượt
 (ngữ cảnh rỗng). G là phần của S chạy trong một test của lượt chấm, I là phần chạy trong một test của
-lượt integration. Tỉ lệ bằng |I − G| / |S|. Mã: `tasks/feature-feasibility/medium_coverage.py`.
+lượt integration. Tỉ lệ bằng |I − G| / |S|. Mã: `data/tasks/feature-feasibility/medium_coverage.py`.
 
 **Cách đếm tên cơ học (tiêu chí 9 và thứ tự chọn).** Trên các file test ẩn và file hỗ trợ được khôi phục
 từ `end` (cả test được chấm lẫn test `integration`), một tên được đếm khi test cần nó và nó chưa có ở
@@ -123,7 +123,7 @@ từ `end` (cả test được chấm lẫn test `integration`), một tên đư
 (Không có N2: một loại đếm bị bỏ trước khi áp quy tắc lên bất kỳ cửa sổ nào; các mã còn lại giữ số cũ.)
 Trường, tham số từ khóa, phương thức của chính các lớp mới và chuỗi văn bản tự do không được đếm; đề bài
 vẫn phải nêu chúng khi test ghim chúng (kiểm ở bước đối chiếu tên, ràng buộc 6). Mã:
-`tasks/feature-feasibility/medium_names.py`.
+`data/tasks/feature-feasibility/medium_names.py`.
 
 **Đơn vị của ngưỡng 20 tên đã đổi.** Ngưỡng của `prereg-v1` là "đề bài nêu được mọi tên test ẩn cần với
 tối đa 20 tên", tức đếm trên đề. Quy tắc mới giữ con số 20 nhưng áp lên số đếm cơ học, chạy được trước khi
@@ -146,9 +146,9 @@ cơ học tăng dần, rồi số dòng `backend/src` tăng dần, rồi mã com
 
 **Không có quyền chọn.** Kết quả áp quy tắc được nhận nguyên. Mọi ứng viên, giá trị từng tiêu chí, lý
 do loại, lớp, số tên, tỉ lệ integration và lượt chọn được ghi ở
-`tasks/feature-feasibility/medium_candidates.json` (trường `eligible`, `reason`, `selected`,
+`data/tasks/feature-feasibility/medium_candidates.json` (trường `eligible`, `reason`, `selected`,
 `selection_pass`, `selected_as`, `required_names`, `integration_coverage`). Mã áp quy tắc:
-`tasks/feature-feasibility/medium_select.py`; chạy không đối số (`python medium_select.py`) thì nó đọc
+`data/tasks/feature-feasibility/medium_select.py`; chạy không đối số (`python medium_select.py`) thì nó đọc
 số tên và độ phủ đã ghi trong `medium_candidates.json`, nên chạy lại được từ một bản checkout sạch và ra
 đúng 21 cửa sổ hợp lệ và năm cửa sổ dưới đây.
 
@@ -219,15 +219,15 @@ nêu điều này.
 
 ## Đề bài
 
-Đề bài của mỗi nhiệm vụ là `tasks/<id>/prompt.md`, qua đúng quy trình ở ràng buộc 6: soạn, đối chiếu tên
-với test ẩn (`tasks/EXTRA_REVIEW.md`, `tasks/FEATURE_REVIEW.md`), Fable duyệt độc lập
-(`tasks/EXTRA_REVIEW_fable.md`, `tasks/FEATURE_REVIEW_fable.md`), An duyệt. Đề tầng vừa là bản nháp cộng
+Đề bài của mỗi nhiệm vụ là `data/tasks/<id>/prompt.md`, qua đúng quy trình ở ràng buộc 6: soạn, đối chiếu tên
+với test ẩn (`data/tasks/EXTRA_REVIEW.md`, `data/tasks/FEATURE_REVIEW.md`), Fable duyệt độc lập
+(`data/tasks/EXTRA_REVIEW_fable.md`, `data/tasks/FEATURE_REVIEW_fable.md`), An duyệt. Đề tầng vừa là bản nháp cộng
 mọi sửa đổi của Fable (kể cả sửa đổi không bắt buộc M01-4 và gợi ý ở m03); An duyệt gộp ngày 2026-11-15.
 
 Mã băm SHA-256 của `prompt.md` (bộ chạy ghi `prompt_sha256` cho từng lượt; sau khi chạy, kiểm tra mỗi
 (nhiệm vụ, cách làm) có đúng một giá trị trên mọi lượt và giá trị đó khớp bảng này):
 
-| Id | SHA-256 của `tasks/<id>/prompt.md` |
+| Id | SHA-256 của `data/tasks/<id>/prompt.md` |
 | --- | --- |
 | m01 | `02397792c32996a67f1a2ce0962126f3bd2a18e1f9ec1b88b0037a14ebb115e7` |
 | m02 | `956880ec17c2dc3d8122d59dfe952f44fa081515ba27637b1182d60be4126caa` |
@@ -239,8 +239,8 @@ Mã băm SHA-256 của `prompt.md` (bộ chạy ghi `prompt_sha256` cho từng l
 | f15 | `07fec15c17c3b21f8e387d02947a005e550354a5859dbd00f78724d118ac2a21` |
 
 Thẻ `prereg-v1.1` chốt toàn bộ cây tại commit mang thẻ, như thẻ `prereg-v1` chốt tầng nhỏ:
-`tasks/m01`–`m05`, `tasks/f08`, `tasks/f14`, `tasks/f15` (`task.toml`, `prompt.md`), `prompts/`,
-`harness/`.
+`data/tasks/m01`–`m05`, `data/tasks/f08`, `data/tasks/f14`, `data/tasks/f15` (`task.toml`, `prompt.md`), `code/prompts/`,
+`code/harness/`.
 
 ## Kiểm tra bộ chạy (không gọi AI)
 
@@ -291,7 +291,7 @@ gian khác nhau; cả bốn nhóm trong một lệnh. Tầng vừa:
 
 ```
 cd /home/andv/personal/vipharmind-ai-sdlc-study
-harness/.venv/bin/sdlc-harness run \
+code/harness/.venv/bin/sdlc-harness run \
   --repo /home/andv/personal/vipharmind \
   --cohorts claude-sonnet,claude-opus,agy-gemini,codex-luna \
   --tasks m01,m02,m03,m04,m05 \
@@ -299,14 +299,14 @@ harness/.venv/bin/sdlc-harness run \
   --jobs 8 \
   --seed 20261115 \
   --timeout-s 7200 \
-  --out results/raw/main-tiers
+  --out data/results/raw/main-tiers
 ```
 
 Tầng lớn:
 
 ```
 cd /home/andv/personal/vipharmind-ai-sdlc-study
-harness/.venv/bin/sdlc-harness run \
+code/harness/.venv/bin/sdlc-harness run \
   --repo /home/andv/personal/vipharmind \
   --cohorts claude-sonnet,claude-opus,agy-gemini,codex-luna \
   --tasks f08,f14,f15 \
@@ -314,7 +314,7 @@ harness/.venv/bin/sdlc-harness run \
   --jobs 8 \
   --seed 20261115 \
   --timeout-s 10800 \
-  --out results/raw/main-tiers
+  --out data/results/raw/main-tiers
 ```
 
 - Các cờ khác để mặc định như mục 5 của `prereg-v1`. Danh sách nhiệm vụ ghi rõ, không dùng `--tasks main`.
@@ -364,5 +364,5 @@ Lý do (Fable, V-5): ở m02 và m03, phần lớn mã của cửa sổ chỉ do
   tám nhiệm vụ đoạn (mục "Kiểm tra bộ chạy") cũng chạy cùng lúc (tới khoảng 19:52). Điều này có thể ảnh
   hưởng `wall_s` của các lượt tầng nhỏ chạy trong các khoảng đó; báo cáo ghi chú và kiểm tra số lượt hết
   giờ trong các khoảng này.
-- Thư mục nhiệm vụ m01–m05 được bộ chạy nhận là nhiệm vụ đoạn tùy chọn (`harness/src/sdlc_harness/cli.py`,
+- Thư mục nhiệm vụ m01–m05 được bộ chạy nhận là nhiệm vụ đoạn tùy chọn (`code/harness/src/sdlc_harness/cli.py`,
   `FEATURE_TASKS`); thay đổi này chỉ chạm lệnh `tasks validate`, không chạm việc chạy hay chấm.

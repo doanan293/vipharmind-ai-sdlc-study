@@ -854,7 +854,7 @@ def main():
         + "\n".join(rows) + "\n\n## Số liệu\n\n"
         "Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; "
         "đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) "
-        "và E1 (Haiku). Làm mới bằng `refresh-interim.sh`. "
+        "và E1 (Haiku). Làm mới bằng `code/refresh-interim.sh`. "
         + (f"Các slide sau còn `{PENDING}`:\n\n" + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items())
            if RESULT_SLOTS else "Không còn chỗ chờ kết quả.") + "\n", encoding="utf-8")
     print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")

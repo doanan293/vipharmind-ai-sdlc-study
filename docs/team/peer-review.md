@@ -6,7 +6,7 @@ Mỗi thành viên điền **một phiếu riêng**, đánh giá hai thành viê
 Điền độc lập, không xem phiếu của người khác trước khi nộp. Trợ lý AI chỉ soạn mẫu này; không ai dùng AI
 để viết nhận xét hay chọn điểm.
 
-Đánh giá theo việc người đó **được giao** (xem `team/contributions.md`). Ví dụ: Lợi và Bảo không được
+Đánh giá theo việc người đó **được giao** (xem `docs/team/contributions.md`). Ví dụ: Lợi và Bảo không được
 giao viết mã, nên không trừ điểm vì không viết mã.
 
 ## Thang điểm
@@ -76,4 +76,4 @@ Chữ ký: ______________________
 | Lê Xuân Lợi | 4,8 (An) | 4,8 (Bảo) | 4,6 | 4,8 |
 | Trần Ngọc Bảo | 4,8 (An) | 4,8 (Lợi) | 4,8 | 4,8 |
 
-Phiếu gốc của từng thành viên lưu tại `team/peer-review-an.md`, `team/peer-review-loi.md`, `team/peer-review-bao.md`, không sửa. Chênh lệch lớn giữa các phiếu (từ 2 điểm trở lên ở một tiêu chí) được ghi lại, không tự điều chỉnh (ở đây không có chênh lệch lớn giữa các phiếu).
+Phiếu gốc của từng thành viên lưu tại `docs/team/peer-review-an.md`, `docs/team/peer-review-loi.md`, `docs/team/peer-review-bao.md`, không sửa. Chênh lệch lớn giữa các phiếu (từ 2 điểm trở lên ở một tiêu chí) được ghi lại, không tự điều chỉnh (ở đây không có chênh lệch lớn giữa các phiếu).

@@ -105,7 +105,7 @@ def judge_fields(unit_dir: Path, checklist_sha: dict[str, str]) -> dict:
     if j.get("judge_model") != JUDGE_MODEL:
         reasons.append(f"judge_model={j.get('judge_model')}")
     if want is not None and j.get("checklist_sha256") not in (None, want):
-        reasons.append("checklist_sha256 differs from tasks/<id>/checklist.md")
+        reasons.append("checklist_sha256 differs from data/tasks/<id>/checklist.md")
     if reasons:
         row.update(judge_status="rejected", judge_reject_reason="; ".join(reasons))
         return row

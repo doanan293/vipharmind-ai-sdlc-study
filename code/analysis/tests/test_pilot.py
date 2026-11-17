@@ -1,4 +1,4 @@
-"""Checks against the real pilot data (results/raw/pilot), skipped when it is absent."""
+"""Checks against the real pilot data (data/results/raw/pilot), skipped when it is absent."""
 
 import json
 from pathlib import Path

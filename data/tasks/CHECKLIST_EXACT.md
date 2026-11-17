@@ -3,7 +3,7 @@
 An item is tagged when passing it requires a literal value (name, id, string, message, number, route,
 enum value, code, field name, env var) that the coding agent cannot find in `brief.md` or in the product
 repo at the start commit (`parent`/`base`) as the agent sees it. The harness strips contaminant paths
-from the workspace (`harness/src/sdlc_harness/workspace.py`: every directory named `superpowers`,
+from the workspace (`code/harness/src/sdlc_harness/workspace.py`: every directory named `superpowers`,
 `.claude`, `.agents`, `.codex`, `.gemini`, `.cursor`, `.windsurf`, plus `CLAUDE.md`, `GEMINI.md`,
 `skills-lock.json`, `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md` and the root
 `AGENTS.md`). So the design plans under `docs/superpowers/` and `backend/docs/superpowers/` do not count.

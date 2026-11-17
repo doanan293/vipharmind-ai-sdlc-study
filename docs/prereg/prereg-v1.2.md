@@ -1,6 +1,6 @@
 # Bản bổ sung `prereg-v1.2`: Haiku và điều kiện đề sơ sài (thăm dò)
 
-Ngày: 2026-11-16. Văn bản này bổ sung `prereg/prereg-v1.md` và `prereg/prereg-v1.1.md`. Nó thêm hai thí
+Ngày: 2026-11-16. Văn bản này bổ sung `docs/prereg/prereg-v1.md` và `docs/prereg/prereg-v1.1.md`. Nó thêm hai thí
 nghiệm **thăm dò**. Mọi điều hai văn bản trước không nói khác ở đây thì giữ nguyên; văn bản này không đổi
 giả thuyết H1–H5, chỉ số, kế hoạch phân tích hay quy tắc loại của thí nghiệm chính.
 
@@ -25,7 +25,7 @@ An quyết định ngày: **2026-11-16** (yêu cầu thêm đề sơ sài và Ha
 ## Thí nghiệm E1: Haiku theo thiết kế gốc
 
 - Nhóm mới `claude-haiku`: Claude Code, mô hình `claude-haiku-5-5`, effort medium, tài khoản 1 (cùng CLI,
-  cùng tài khoản với hai nhóm Claude kia; `harness/cohorts.toml`).
+  cùng tài khoản với hai nhóm Claude kia; `code/harness/cohorts.toml`).
 - Đúng thiết kế chính: 23 nhiệm vụ (t01–t15, m01–m05, f08, f14, f15), hai cách làm, 3 lần lặp, đề
   `prompt.md`, giới hạn thời gian theo tầng (3600 / 7200 / 10800 s), hạt giống 20261115. 138 lượt.
 - Phân tích bằng đúng mã đã khóa ở thẻ `prereg-v1-analysis`, nhưng là phân tích riêng (thêm Haiku như một
@@ -35,7 +35,7 @@ An quyết định ngày: **2026-11-16** (yêu cầu thêm đề sơ sài và Ha
 
 ### Đề sơ sài
 
-Mỗi nhiệm vụ có thêm `tasks/<id>/brief.md`. Quy tắc viết (chốt trước khi viết, kiểm bằng máy khi lưu):
+Mỗi nhiệm vụ có thêm `data/tasks/<id>/brief.md`. Quy tắc viết (chốt trước khi viết, kiểm bằng máy khi lưu):
 
 - một hoặc hai câu, **không quá 30 từ**, viết như người dùng nhờ agent;
 - nêu mục tiêu của thay đổi, rút từ câu đầu của `prompt.md`; được nêu khái niệm sản phẩm và dịch vụ hay
@@ -73,7 +73,7 @@ Mỗi nhiệm vụ có thêm `tasks/<id>/brief.md`. Quy tắc viết (chốt tr�
 
 ### Các điều kiện
 
-- Hai cách làm giữ nguyên khối hướng dẫn (`prompts/spec.md`, `prompts/vibe.md`); chỉ phần đề đổi từ
+- Hai cách làm giữ nguyên khối hướng dẫn (`code/prompts/spec.md`, `code/prompts/vibe.md`); chỉ phần đề đổi từ
   `prompt.md` sang `brief.md` (cờ `--prompt-file brief.md`, ghi vào `meta.json` trường `prompt_file`).
 - Nhóm: `claude-sonnet`, `claude-opus`, `claude-haiku`, `codex-luna`. agy-gemini không chạy E2 vì hết
   hạn mức. 23 nhiệm vụ × 2 cách làm × 3 lần lặp × 4 nhóm = **552 lượt**.
@@ -89,13 +89,13 @@ Mỗi nhiệm vụ có thêm `tasks/<id>/brief.md`. Quy tắc viết (chốt tr�
 
 ### Danh sách hành vi và cách chấm
 
-- **Danh sách**: mỗi nhiệm vụ một tệp `tasks/<id>/checklist.md`, rút **chỉ từ các bài kiểm tra ẩn** của
+- **Danh sách**: mỗi nhiệm vụ một tệp `data/tasks/<id>/checklist.md`, rút **chỉ từ các bài kiểm tra ẩn** của
   nhiệm vụ: mỗi hành vi mà bài kiểm tra khẳng định thành một mục, viết bằng lời, không đòi đúng tên (ví
   dụ "xóa tổ chức đòi nhập lại đúng tên tổ chức"). Danh sách được viết và chốt bằng một commit **trước khi
   chấm** lượt E2 nào, và không sửa sau khi đã thấy một kết quả chấm nào. Người viết không xem bản vá của
   lượt E2 nào khi viết.
 - **Người chấm máy**: một agent cố định, Claude Code với `claude-fable-5-2` (Fable 5.2), effort high, prompt chấm cố định
-  (`prompts/judge.md`, chốt cùng danh sách), chạy trong thư mục sạch chứa cây mã cuối của lượt. Trước khi
+  (`code/prompts/judge.md`, chốt cùng danh sách), chạy trong thư mục sạch chứa cây mã cuối của lượt. Trước khi
   chấm, `docs/design.md` và `docs/plan.md` bị xóa và thư mục không mang tên nhóm, cách làm hay lần lặp.
   Người chấm được đọc và chạy mã; mỗi mục cho một nhãn `met`, `not_met` hoặc `unclear` cùng lý do ngắn.
   Điểm của lượt = số `met` / số mục; `unclear` tính là không đạt và được đếm riêng.
@@ -128,21 +128,21 @@ Chạy từ một cây làm việc riêng tại commit mang thẻ `prereg-v1.2` 
 mỗi tầng một lệnh, cùng các thông số khác như thí nghiệm chính (`--reps 3 --jobs 8 --seed 20261115`).
 Hai chuỗi lệnh chạy song song; trong mỗi chuỗi, các tầng chạy lần lượt nhỏ → vừa → lớn.
 
-E1 (đầu ra `results/raw/haiku`, thư mục làm việc `/tmp/sdlc-runs-haiku`):
+E1 (đầu ra `data/results/raw/haiku`, thư mục làm việc `/tmp/sdlc-runs-haiku`):
 
 ```
-harness/.venv/bin/sdlc-harness run --repo /home/andv/personal/vipharmind \
+code/harness/.venv/bin/sdlc-harness run --repo /home/andv/personal/vipharmind \
   --cohorts claude-haiku --tasks <tầng> --reps 3 --jobs 8 --seed 20261115 \
-  --timeout-s <3600|7200|10800> --out results/raw/haiku --work-root /tmp/sdlc-runs-haiku
+  --timeout-s <3600|7200|10800> --out data/results/raw/haiku --work-root /tmp/sdlc-runs-haiku
 ```
 
-E2 (đầu ra `results/raw/brief`, thư mục làm việc `/tmp/sdlc-runs-brief`):
+E2 (đầu ra `data/results/raw/brief`, thư mục làm việc `/tmp/sdlc-runs-brief`):
 
 ```
-harness/.venv/bin/sdlc-harness run --repo /home/andv/personal/vipharmind \
+code/harness/.venv/bin/sdlc-harness run --repo /home/andv/personal/vipharmind \
   --cohorts claude-sonnet,claude-opus,claude-haiku,codex-luna --tasks <tầng> \
   --prompt-file brief.md --reps 3 --jobs 8 --seed 20261115 \
-  --timeout-s <3600|7200|10800> --out results/raw/brief --work-root /tmp/sdlc-runs-brief
+  --timeout-s <3600|7200|10800> --out data/results/raw/brief --work-root /tmp/sdlc-runs-brief
 ```
 
 `<tầng>` là `t01,…,t15`, `m01,…,m05` hoặc `f08,f14,f15`, ghi rõ từng mã. Mọi quy tắc kết cục ở mục 4
@@ -161,14 +161,14 @@ cáo là thiếu, phân tích chạy trên phần đã có và ghi rõ.
 
 ## Chốt danh sách hành vi và người chấm (2026-11-16, trước khi chấm lượt nào)
 
-- `tasks/<id>/checklist.md` của 23 nhiệm vụ (306 mục) do một agent riêng viết chỉ từ các bài kiểm tra mà commit
-  của nhiệm vụ thêm hoặc sửa; agent đó không mở thư mục kết quả nào. Ghi chú từng nhiệm vụ: `tasks/CHECKLIST_NOTES.md`.
+- `data/tasks/<id>/checklist.md` của 23 nhiệm vụ (306 mục) do một agent riêng viết chỉ từ các bài kiểm tra mà commit
+  của nhiệm vụ thêm hoặc sửa; agent đó không mở thư mục kết quả nào. Ghi chú từng nhiệm vụ: `data/tasks/CHECKLIST_NOTES.md`.
 - **Điểm phụ `score_core`** (thêm trước khi chấm): một agent riêng khác gắn ` [exact]` cho mục mà muốn đạt phải có
   một giá trị chữ cụ thể không xác định được từ `brief.md` cộng cây mã khởi đầu mà agent thấy (sau khi bỏ các thư mục
   `superpowers` và tệp cấu hình agent) hay từ hợp đồng của dịch vụ bên ngoài được nêu tên. 45/306 mục được gắn, ở 15
-  nhiệm vụ (`tasks/CHECKLIST_EXACT.md`). Điểm chính `score` vẫn tính trên mọi mục; `score_core` bỏ các mục `[exact]`
+  nhiệm vụ (`data/tasks/CHECKLIST_EXACT.md`). Điểm chính `score` vẫn tính trên mọi mục; `score_core` bỏ các mục `[exact]`
   và là phân tích độ nhạy. Người chấm không thấy thẻ `[exact]`.
-- Prompt chấm: `prompts/judge.md`. Mã chấm: `sdlc-harness judge` (`harness/src/sdlc_harness/judge.py`); kết quả
+- Prompt chấm: `code/prompts/judge.md`. Mã chấm: `sdlc-harness judge` (`code/harness/src/sdlc_harness/judge.py`); kết quả
   mỗi lượt ở `judge.json` cạnh `grade.json`. Mỗi lượt được thử tối đa 4 lần (xoay tài khoản khi hết hạn mức, đăng
   nhập lỗi hoặc câu trả lời không đúng dạng); lượt vẫn hỏng sau đó được báo cáo là thiếu điểm.
 - Thẻ `prereg-v1.2-judge` chốt các tệp trên trước lượt chấm đầu tiên.

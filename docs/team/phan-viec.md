@@ -24,7 +24,7 @@ Hạn 21/11, trừ việc 6.
 
 ## 2. Lợi
 
-Hạn 20/11. Gói: `results/packets/goi-loi-viec-them.zip` (repo nghiên cứu).
+Hạn 20/11. Gói: `data/results/packets/goi-loi-viec-them.zip` (repo nghiên cứu).
 
 1. ~~Chấm tay kiểm tra đối chứng người – máy (24 lượt đề sơ sài, gửi lại `sheet-loi.csv`)~~ — xong 17/11.
 2. ~~Kiểm tra trích dẫn~~ — xong 17/11: đã mở đủ 24 nguồn, các link đều vào được, thông tin tác giả, năm và các con số trích trong báo cáo đều đúng với bài gốc (xem `kiem-trich-dan.csv`).
@@ -33,7 +33,7 @@ Hạn 20/11. Gói: `results/packets/goi-loi-viec-them.zip` (repo nghiên cứu).
 
 ## 3. Bảo
 
-Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
+Hạn 20/11. Gói: `data/results/packets/goi-bao-viec-them.zip`.
 
 1. ~~Chấm tay kiểm tra đối chứng người – máy (24 lượt đề sơ sài, gửi lại `sheet-bao.csv`)~~ — xong 17/11.
 2. ~~Kiểm tra độc lập số liệu chính~~ — xong 17/11: tự kéo PivotTable trên Excel từ file `runs.csv`, tỉ lệ đạt của 18 ô trùng khớp bảng trong báo cáo; trung vị token tầng nhỏ cùng chiều H2 (×1,65–2,59; báo cáo không có bảng trung vị) (xem `kiem-so-lieu.csv`).

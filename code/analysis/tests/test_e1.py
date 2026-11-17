@@ -52,7 +52,7 @@ def test_priced_cohorts_unchanged_by_wrapper(haiku_study):
 def test_e1_argv_defaults():
     a = e1.e1_argv(["--results", "x"])
     assert a[a.index("--cohorts") + 1] == "claude-sonnet,claude-opus,codex-luna,claude-haiku"
-    assert a[a.index("--out") + 1].endswith("results/analysis/e1")
+    assert a[a.index("--out") + 1].endswith("data/results/analysis/e1")
     a = e1.e1_argv(["--results", "x", "--out", "o", "--cohorts", "claude-haiku"])
     assert a.count("--out") == 1 and a.count("--cohorts") == 1
 

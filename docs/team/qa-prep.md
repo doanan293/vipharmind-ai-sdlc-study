@@ -1,11 +1,11 @@
 # Chuẩn bị hỏi đáp
 
 Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn An, có trợ lý AI soạn nháp (xem
-`team/ai-use.md`, mục 3.20). Hai bạn đọc, tự nói lại bằng lời của mình, đừng học thuộc.
+`docs/team/ai-use.md`, mục 3.20). Hai bạn đọc, tự nói lại bằng lời của mình, đừng học thuộc.
 
 Ký hiệu: **[L]** Lợi trả lời chính (phần bối cảnh, phương pháp), **[B]** Bảo trả lời chính (phần kết quả). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
-`summary.json` của `results/analysis/`); "mục 6.5", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
+`summary.json` của `data/results/analysis/`); "mục 6.5", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.
 
 ## Cách trả lời
@@ -23,7 +23,7 @@ chỉ người trong nhóm trả lời được.
 | Mục | Số |
 | --- | --- |
 | ViPharmind | 505 commit, 2026-07-23 đến 2026-11-10; 221 commit `feat`; 43 file spec, plan; 0 commit ghi công AI |
-| Hồi cứu | 88,7% commit tính năng có plan đi trước; quy tắc nối đúng 15/20 khi kiểm tay (khớp `retrospective/out/summary.md`; mục 5.2) |
+| Hồi cứu | 88,7% commit tính năng có plan đi trước; quy tắc nối đúng 15/20 khi kiểm tay (khớp `data/retrospective/summary.md`; mục 5.2) |
 | Phễu tầng nhỏ | 110 → 64 → 47 → 47 → 43 commit; chọn 15, phân tầng theo lớp (api 1, application 2, domain 5, infrastructure 7); 43–311 dòng |
 | Tầng vừa | 93 cửa sổ → 21 hợp lệ → 5 nhiệm vụ m01–m05, 335–515 dòng, 2–3 commit |
 | Tầng lớn | f08 764 dòng (6 commit), f14 1.464 (4), f15 1.367 (5) |
@@ -74,7 +74,7 @@ không đổi được kết quả.
 
 **B2. Test ẩn viết cho lời giải gốc. Lời giải đúng nhưng khác cách thì sao?**
 Đúng là có rủi ro này. Tiêu chí 3 của sàng lọc chỉ giữ nhiệm vụ mà test kiểm hành vi qua giao diện đề bài
-nêu được, và đề bài nêu mọi tên công khai mà test cần (rà ở `tasks/PROMPT_AUDIT.md`, Fable duyệt tầng vừa
+nêu được, và đề bài nêu mọi tên công khai mà test cần (rà ở `data/tasks/PROMPT_AUDIT.md`, Fable duyệt tầng vừa
 và lớn). Rủi ro còn lại ảnh hưởng hai cách làm như nhau vì cả hai nhận cùng đề. Nhãn `de_bai_thieu` trong
 phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 6.8, 7.5).
 
@@ -195,7 +195,7 @@ công bố của nhà cung cấp.
 **E4. Có lộ dữ liệu cá nhân hay khóa API không?**
 Đã quét kết quả bằng `gitleaks` và so khớp chính xác khóa proxy, email: không tìm thấy (chạy thử). Email
 trong nhật ký là dữ liệu mẫu của mã ViPharmind. Repo nghiên cứu để riêng tư cho tới khi lọc xong nhật ký.
-Quét lại ngày 2026-11-17 trên `results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
+Quét lại ngày 2026-11-17 trên `data/results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
 
 ## F. Phần hồi cứu [L]
 
@@ -431,7 +431,7 @@ trong E2 dừng vì hết hạn mức; đó là một lý do An không chạy n�
 ## N. Đạo đức, dùng AI, làm việc nhóm
 
 **N1. [L] ★ AI đã soạn đề bài, viết mã, viết báo cáo. Vậy nhóm nghiên cứu cái gì?**
-Mọi chỗ AI tham gia được khai trong `team/ai-use.md`. AI là trợ lý; các quyết định thiết kế, duyệt đề, đăng
+Mọi chỗ AI tham gia được khai trong `docs/team/ai-use.md`. AI là trợ lý; các quyết định thiết kế, duyệt đề, đăng
 ký trước và mọi thay đổi do An quyết, có người duyệt độc lập cho các văn bản và mã quan trọng. Điểm yếu nhóm
 thừa nhận: đề bài được duyệt gộp, không sửa từng đề, và trợ lý cùng mô hình với một nhóm được đo; báo cáo
 nêu cả hai.
@@ -446,7 +446,7 @@ Trả lời thật: An làm phần lớn nghiên cứu, thí nghiệm, báo cáo
 thiết kế, làm các bước đo bằng người (gán nhãn 30 lượt thất bại, kiểm 20 lượt đạt, chấm tay 24 lượt E2),
 mỗi người phụ trách một phần riêng: Lợi phần bối cảnh, phương pháp (kiểm lại trích dẫn), Bảo phần kết quả
 (tính lại độc lập số liệu chính); cả hai đọc phản biện báo cáo. Các bước đo bằng người cần
-người không chạy thí nghiệm, để kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
+người không chạy thí nghiệm, để kappa có ý nghĩa. Bản kê ở `docs/team/contributions.md`.
 
 **N4. [B] Kết luận chính là gì, và nên tin đến đâu?**
 Với đề chi tiết: H1 chưa kết luận được, Sonnet tầng nhỏ đặc tả trừ vibe −2,2 điểm phần trăm, khoảng tin

@@ -15,7 +15,7 @@ from report_data import explore, fmt, labels, passcheck, results
 
 Numbers = dict[str, str | None]
 
-# Khâu vòng đời: mã trong retrospective/out, tên macro, tên tiếng Việt (như summary.md).
+# Khâu vòng đời: mã trong data/retrospective, tên macro, tên tiếng Việt (như summary.md).
 STAGES = [
     ("research_eval", "ResearchEval", "nghiên cứu và đánh giá"),
     ("data", "Data", "dữ liệu"),
@@ -28,7 +28,7 @@ STAGES = [
 ]
 COMMIT_TYPES = ["feat", "docs", "fix", "refactor", "chore", "test"]
 LAYERS = ["api", "application", "domain", "infrastructure"]
-# Thứ tự áp tiêu chí sàng lọc của bộ chạy (tasks/SCREENING.md): 1, 4, 5, rồi 2.
+# Thứ tự áp tiêu chí sàng lọc của bộ chạy (data/tasks/SCREENING.md): 1, 4, 5, rồi 2.
 CRITERIA = [(1, "One"), (4, "Four"), (5, "Five"), (2, "Two")]
 CRITERION_TEXT = {
     1: "1. Không sửa file dùng chung của bộ test",
@@ -177,7 +177,7 @@ def _sessions(rows: list[dict[str, str]]) -> Numbers:
     def total(field: str, of: list[dict[str, str]]) -> str:
         return fmt.number(sum(int(r[field]) for r in of))
 
-    # Như retrospective/out/summary.md: tin nhắn người dùng chỉ tính phiên chính; lượt trả lời,
+    # Như data/retrospective/summary.md: tin nhắn người dùng chỉ tính phiên chính; lượt trả lời,
     # lời gọi công cụ và số lần ngắt tính mọi nhật ký.
     return {
         "SessionsMain": fmt.number(len(main)),

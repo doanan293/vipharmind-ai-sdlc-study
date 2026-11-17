@@ -11,7 +11,7 @@ PROMPTS_DIR = Path(__file__).resolve().parents[3] / "prompts"
 
 
 def arm_instructions(arm: Arm, prompts_dir: Path = PROMPTS_DIR) -> str:
-    """The instruction block for an arm, read from prompts/<arm>.md without trailing whitespace."""
+    """The instruction block for an arm, read from code/prompts/<arm>.md without trailing whitespace."""
     if arm not in ARMS:
         raise ValueError(f"unknown arm {arm!r}, expected one of {ARMS}")
     return (prompts_dir / f"{arm}.md").read_text().rstrip()

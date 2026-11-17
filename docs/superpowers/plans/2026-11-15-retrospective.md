@@ -4,7 +4,7 @@
 
 **Goal:** Trả lời RQ1 và RQ2 bằng số liệu từ lịch sử git, các file spec, plan và nhật ký phiên của ViPharmind, đồng thời trích bộ plan cũ để viết lời dặn cho nhánh theo đặc tả của thực nghiệm.
 
-**Architecture:** Một gói Python nhỏ `retro` trong `retrospective/`, đọc repo ViPharmind chỉ bằng `git log` và `git show` trên hai mã commit cố định, không checkout. Mỗi mô-đun lo một phép đo và có test chạy trên một repo git giả dựng trong `tmp_path`. Lệnh `uv run retro all` sinh mọi bảng CSV, hình và `summary.md` vào `retrospective/out/`.
+**Architecture:** Một gói Python nhỏ `retro` trong `code/retrospective/`, đọc repo ViPharmind chỉ bằng `git log` và `git show` trên hai mã commit cố định, không checkout. Mỗi mô-đun lo một phép đo và có test chạy trên một repo git giả dựng trong `tmp_path`. Lệnh `uv run retro all` sinh mọi bảng CSV, hình và `summary.md` vào `data/retrospective/`.
 
 **Tech Stack:** Python 3.12, `uv`, `pytest`, `matplotlib`, thư viện chuẩn (`subprocess`, `csv`, `json`, `dataclasses`, `random`).
 
@@ -36,9 +36,9 @@
 ### Task 1: Khung gói và bộ đọc lịch sử git
 
 **Files:**
-- Create: `retrospective/pyproject.toml`, `retrospective/README.md`, `retrospective/.gitignore`
-- Create: `retrospective/src/retro/__init__.py`, `retrospective/src/retro/gitlog.py`
-- Test: `retrospective/tests/conftest.py`, `retrospective/tests/test_gitlog.py`, `retrospective/tests/test_real_repo.py`
+- Create: `code/retrospective/pyproject.toml`, `code/retrospective/README.md`, `code/retrospective/.gitignore`
+- Create: `code/retrospective/src/retro/__init__.py`, `code/retrospective/src/retro/gitlog.py`
+- Test: `code/retrospective/tests/conftest.py`, `code/retrospective/tests/test_gitlog.py`, `code/retrospective/tests/test_real_repo.py`
 
 **Interfaces:**
 - Produces:
@@ -103,15 +103,15 @@ Expected: mọi test đạt, kể cả `test_reference_values`.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): load the ViPharmind commit history"
 ```
 
 ### Task 2: Bản đồ vòng đời (RQ1)
 
 **Files:**
-- Create: `retrospective/src/retro/stages.py`
-- Test: `retrospective/tests/test_stages.py`
+- Create: `code/retrospective/src/retro/stages.py`
+- Test: `code/retrospective/tests/test_stages.py`
 
 **Interfaces:**
 - Consumes: `Commit`, `FileChange` (Task 1).
@@ -177,15 +177,15 @@ Expected: đạt. Nếu `test_real_repo_has_little_other` hỏng, in 20 đườn
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): map commits to lifecycle stages"
 ```
 
 ### Task 3: Dấu vết quy trình theo đặc tả và quy tắc nối commit với plan (RQ1)
 
 **Files:**
-- Create: `retrospective/src/retro/specplans.py`
-- Test: `retrospective/tests/test_specplans.py`
+- Create: `code/retrospective/src/retro/specplans.py`
+- Test: `code/retrospective/tests/test_specplans.py`
 
 **Interfaces:**
 - Consumes: `load_commits`, `Commit` (Task 1).
@@ -233,15 +233,15 @@ Expected: đạt.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): trace specs and plans to the commits that follow them"
 ```
 
 ### Task 4: Mức phải sửa lại (RQ2)
 
 **Files:**
-- Create: `retrospective/src/retro/rework.py`
-- Test: `retrospective/tests/test_rework.py`
+- Create: `code/retrospective/src/retro/rework.py`
+- Test: `code/retrospective/tests/test_rework.py`
 
 **Interfaces:**
 - Consumes: `Commit` (Task 1); `has_preceding_plan`, `DocFile` (Task 3); `classify_file` (Task 2).
@@ -277,17 +277,17 @@ Expected: đạt.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): count fix and refactor follow-ups per feature"
 ```
 
 ### Task 5: Bộ plan cũ cho lời dặn của nhánh theo đặc tả
 
-Đầu ra của task này là đầu vào cho kế hoạch dựng bộ chạy: người viết `prompts/spec-driven.md` dựa vào đây để mô tả quy trình spec, plan, làm theo plan với cách chia việc tự nhiên (bản thiết kế mục 7.3).
+Đầu ra của task này là đầu vào cho kế hoạch dựng bộ chạy: người viết `code/prompts/spec-driven.md` dựa vào đây để mô tả quy trình spec, plan, làm theo plan với cách chia việc tự nhiên (bản thiết kế mục 7.3).
 
 **Files:**
-- Create: `retrospective/src/retro/plan_corpus.py`
-- Test: `retrospective/tests/test_plan_corpus.py`
+- Create: `code/retrospective/src/retro/plan_corpus.py`
+- Test: `code/retrospective/tests/test_plan_corpus.py`
 
 **Interfaces:**
 - Consumes: `DocFile`, `load_spec_plan_files` (Task 3).
@@ -332,15 +332,15 @@ Expected: đạt.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): summarise the shape of the historical plans"
 ```
 
 ### Task 6: Thống kê nhật ký phiên
 
 **Files:**
-- Create: `retrospective/src/retro/sessions.py`
-- Test: `retrospective/tests/test_sessions.py`
+- Create: `code/retrospective/src/retro/sessions.py`
+- Test: `code/retrospective/tests/test_sessions.py`
 
 **Interfaces:**
 - Produces:
@@ -387,17 +387,17 @@ Expected: đạt.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): count turns and tool calls in the surviving session logs"
 ```
 
 ### Task 7: Lệnh `retro`, chạy trên ViPharmind và kiểm tra tay
 
 **Files:**
-- Create: `retrospective/src/retro/cli.py`, `retrospective/src/retro/figures.py`
-- Modify: `retrospective/README.md`
-- Create (kết quả, commit kèm): `retrospective/out/*.csv`, `retrospective/out/figures/*.png`, `retrospective/out/summary.md`, `retrospective/out/plan-corpus/index.csv`, `retrospective/out/plan-corpus/summary.md`, `retrospective/out/link-check.csv`
-- Test: `retrospective/tests/test_cli.py`
+- Create: `code/retrospective/src/retro/cli.py`, `code/retrospective/src/retro/figures.py`
+- Modify: `code/retrospective/README.md`
+- Create (kết quả, commit kèm): `data/retrospective/*.csv`, `data/retrospective/figures/*.png`, `data/retrospective/summary.md`, `data/retrospective/plan-corpus/index.csv`, `data/retrospective/plan-corpus/summary.md`, `data/retrospective/link-check.csv`
+- Test: `code/retrospective/tests/test_cli.py`
 
 **Interfaces:**
 - Consumes: mọi hàm `Produces` của Task 1–6.
@@ -451,13 +451,13 @@ Expected: không in dòng nào, `exit=1`.
 - [ ] **Step 7: Commit kết quả**
 
 ```bash
-git add retrospective/
+git add code/retrospective/
 git commit -m "feat(retro): run the retrospective analysis on ViPharmind"
 ```
 
 - [ ] **Step 8: Giao An chấm mẫu 20 commit**
 
-Gửi An đường dẫn tuyệt đối tới `retrospective/out/link-check.csv`: với mỗi dòng, mở commit và plan được quy tắc chọn, ghi `correct` hoặc `wrong` vào `an_verdict`. Dừng ở đây cho đến khi An chấm xong.
+Gửi An đường dẫn tuyệt đối tới `data/retrospective/link-check.csv`: với mỗi dòng, mở commit và plan được quy tắc chọn, ghi `correct` hoặc `wrong` vào `an_verdict`. Dừng ở đây cho đến khi An chấm xong.
 
 - [ ] **Step 9: Ghi độ chính xác của quy tắc nối**
 
