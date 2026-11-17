@@ -34,6 +34,11 @@ Hạn 20/11. Gói: `results/packets/goi-loi-viec-them.zip` (repo nghiên cứu).
 4. **Đọc phản biện báo cáo mục 1–5** và slide phần bối cảnh, phương pháp (slide 1–13). Ghi góp ý vào mục 4.
 5. **Ôn hỏi đáp** nhóm A–F, J, M trong `qa-prep.md`; ghi câu nào chưa trả lời được.
 
+6. **Người kiểm thứ hai cho phần hồi cứu (RQ1)** (khoảng 2 giờ): kiểm 40 commit tính năng xem quy tắc tự động
+   nối commit với plan có đúng không (20 commit An đã kiểm + 20 commit mới, trộn lẫn), độc lập với
+   Bảo. Thư mục `noi-plan/` trong gói. Kết quả: độ tin cậy giữa người chấm và độ chính xác của quy tắc
+   trên mẫu gấp đôi, đưa vào mục 5 báo cáo.
+
 ## 3. Bảo
 
 Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
@@ -45,6 +50,11 @@ Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
 3. **Xem lại chỗ lệch người–máy**: như Lợi, cùng 19 mục, làm độc lập. Điền `sheet-lech-bao.csv`.
 4. **Đọc phản biện báo cáo mục 6–8** và slide phần kết quả (slide 14–30). Ghi góp ý vào mục 4.
 5. **Ôn hỏi đáp** nhóm G–L, N trong `qa-prep.md`.
+
+6. **Người kiểm thứ hai cho phần hồi cứu (RQ1)** (khoảng 2 giờ): kiểm 40 commit tính năng xem quy tắc tự động
+   nối commit với plan có đúng không (20 commit An đã kiểm + 20 commit mới, trộn lẫn), độc lập với
+   Lợi. Thư mục `noi-plan/` trong gói. Kết quả: độ tin cậy giữa người chấm và độ chính xác của quy tắc
+   trên mẫu gấp đôi, đưa vào mục 5 báo cáo.
 
 Người thuyết trình chưa chốt; speaker notes viết để ai trong nhóm cũng nói được. Cả ba cùng nắm toàn bộ
 slide.

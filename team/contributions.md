@@ -7,8 +7,8 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
 | Doãn Văn An | 20252778M | Thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
-| Trần Ngọc Bảo | 20251227M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
+| Lê Xuân Lợi | 20252781M | Hỗ trợ chọn đề tài, góp ý thiết kế; kiểm tra phần hồi cứu; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
+| Trần Ngọc Bảo | 20251227M | Hỗ trợ chọn đề tài, góp ý thiết kế; kiểm tra phần hồi cứu; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
 của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay, kiểm tra), kiểm tra độc lập
@@ -38,6 +38,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
 | Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. Xong 17/11: kappa Lợi–Bảo 0,93; người–máy 0,88 và 0,90. |
 | Xem lại chỗ lệch người–máy chấm (19 mục) | H | C | C | Hai người làm độc lập, chọn nguyên nhân từng mục; kết quả vào phụ lục [chờ, hạn 20/11] |
+| Kiểm tra quy tắc nối commit–plan, người kiểm thứ hai (40 commit) | H | C | C | Hai người làm độc lập; đo độ tin cậy và độ chính xác của quy tắc RQ1 trên mẫu gấp đôi [chờ, hạn 20/11] |
 | Kiểm tra trích dẫn (24 nguồn) | H | C | – | Lợi mở lại từng nguồn, đối chiếu số trích [chờ, hạn 20/11] |
 | Kiểm tra độc lập số liệu chính (tính lại bằng bảng tính) | H | – | C | Bảo tính lại tỉ lệ đạt và token từ `runs.csv`, không dùng mã của nhóm [chờ, hạn 20/11] |
 | Báo cáo viết (`docs/report/`) | C | H | H | Lợi phản biện mục 1–5, Bảo mục 6–8; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
@@ -79,6 +80,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
 - Kiểm tra trích dẫn: mở lại 24 nguồn, đối chiếu thông tin và số liệu trích [chờ, hạn 20/11].
 - Xem lại 19 mục chấm lệch giữa người và máy, độc lập với Bảo [chờ, hạn 20/11].
+- Người kiểm thứ hai cho quy tắc nối commit–plan của phần hồi cứu, 40 commit [chờ, hạn 20/11].
 - Ôn hỏi đáp nhóm A–F, J, M trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: xong 17/11, 282 mục; khớp với Bảo kappa 0,93, với người chấm máy kappa 0,88.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
@@ -92,6 +94,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Kiểm tra độc lập số liệu chính: tính lại tỉ lệ đạt theo nhóm × tầng × cách làm và token bằng bảng tính
   từ dữ liệu từng lượt, so với báo cáo [chờ, hạn 20/11].
 - Xem lại 19 mục chấm lệch giữa người và máy, độc lập với Lợi [chờ, hạn 20/11].
+- Người kiểm thứ hai cho quy tắc nối commit–plan của phần hồi cứu, 40 commit [chờ, hạn 20/11].
 - Ôn hỏi đáp nhóm G–L, N trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: xong 17/11, 282 mục; khớp với Lợi kappa 0,93, với người chấm máy kappa 0,90.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
