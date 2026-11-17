@@ -58,7 +58,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 | # | Việc | AI đã làm gì | Người đã làm và quyết gì | Bằng chứng |
 | --- | --- | --- | --- | --- |
 | 3.1 | Chọn đề tài, câu hỏi nghiên cứu | Trợ lý đề xuất ba hướng tiếp cận và phân tích được mất | An chọn cách 2 (hồi cứu cộng thực nghiệm đối chứng), chọn ba công cụ, hai mô hình Claude, mức effort medium | Bản thiết kế nghiên cứu, mục 6 |
-| 3.2 | Tổng quan tài liệu | Trợ lý chạy 10 chuỗi tìm kiếm, mở trang abstract, DOI hoặc trang hội nghị của từng nguồn, chép tên bài, tác giả, năm, nơi đăng, số liệu từ abstract, viết nhật ký tìm kiếm và mục BibTeX | An đọc nhật ký và danh sách 24 nguồn; An đã xác nhận (17/11) | `docs/report/literature-log.md`, `docs/report/references.bib` |
+| 3.2 | Tổng quan tài liệu | Trợ lý chạy 15 chuỗi tìm kiếm, mở trang abstract, DOI hoặc trang hội nghị của từng nguồn, chép tên bài, tác giả, năm, nơi đăng, số liệu từ abstract, viết nhật ký tìm kiếm và mục BibTeX | An đọc nhật ký và danh sách 24 nguồn; An đã xác nhận (17/11) | `docs/report/literature-log.md`, `docs/report/references.bib` |
 | 3.3 | Phân tích hồi cứu ViPharmind | Trợ lý viết mã đọc lịch sử git, phân khâu commit, nối commit với plan, đo mức sửa lại; trợ lý gợi ý nhận định cho từng commit trong mẫu kiểm tra | An kiểm tra tay mẫu ngẫu nhiên 20 commit cho quy tắc nối commit với plan (kết quả 15/20) **có tham khảo gợi ý của AI**, nên đây không phải kiểm tra hoàn toàn độc lập | `retrospective/` (nhánh `retrospective`) |
 | 3.4 | Sàng lọc commit | Trợ lý viết lệnh `sdlc-harness screen`, chạy và ghi phễu 110 → 64 → 47 → 47 → 43 | An duyệt tiêu chí sàng lọc (theo bản thiết kế); độ lệch ở tiêu chí 1 (46 thay vì 39) được ghi lại | `tasks/SCREENING.md`, `tasks/screening.json` |
 | 3.5 | Tiêu chí 3 và đề bài tầng nhỏ | Trợ lý đề xuất đạt hoặc không đạt tiêu chí 3 và soạn nháp đề bài tiếng Anh cho 32 commit đầu theo thứ tự duyệt ngẫu nhiên | **An duyệt gộp** ngày 2026-11-15: chấp nhận nguyên văn mọi đề xuất và mọi đề bài, không sửa từng mục. Ba mục (#12, #20, #30) bị loại theo khuyến nghị của trợ lý vì test hành vi chỉ thuộc loại `integration`. Một tác tử duyệt đối chiếu mẫu vài đề với commit gốc | `tasks/REVIEW.md` (dòng "Review record") |
@@ -99,7 +99,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 
 ViPharmind được An phát triển với trợ lý lập trình AI ở mọi khâu: nghiên cứu, dữ liệu, mã, kiểm thử, triển
 khai. Commit của ViPharmind không mang dấu ghi công AI (0 commit có `Co-Authored-By`), và nhật ký phiên chỉ
-còn một phần (13 phiên Claude Code; nhật ký Codex 2 dòng). Vì vậy báo cáo **không** đo được tỉ lệ mã do AI
+còn một phần (12 phiên Claude Code chính và 21 nhật ký tác tử con, Phụ lục C; nhật ký Codex 2 dòng). Vì vậy báo cáo **không** đo được tỉ lệ mã do AI
 viết; nhận định "AI tham gia mọi khâu" dựa trên lời khai của tác giả và phần nhật ký còn lại. Báo cáo nêu
 điều này ở phần hạn chế.
 

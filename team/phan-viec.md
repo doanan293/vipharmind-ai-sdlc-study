@@ -1,6 +1,6 @@
 # Phân việc còn lại đến 24/11
 
-An điều phối và làm phần lớn. Lợi, Bảo đọc và góp ý phần mình nói, cộng việc chấm tay E2. Mỗi góp ý ghi
+An điều phối và làm phần lớn. Lợi, Bảo đọc và góp ý phần mình nói (chấm tay E2 đã xong 17/11). Mỗi góp ý ghi
 vào bảng ở mục 4 (ai, mục hay slide nào, góp ý gì, đã sửa chưa). Bảng này là nguồn cho cột "góp ý" trong
 `contributions.md` và `ai-use.md` mục 3.18.
 
@@ -8,8 +8,7 @@ vào bảng ở mục 4 (ai, mục hay slide nào, góp ý gì, đã sửa chưa
 
 Hạn 21/11, trừ việc 6.
 
-1. **Gửi gói chấm tay E2** cho Lợi và Bảo nếu chưa gửi: `results/packets/goi-loi-cham-tay-e2.zip`,
-   `goi-bao-cham-tay-e2.zip`. Không gửi file nào có `PRIVATE` trong tên. Hạn trả: 20/11.
+1. ~~Gửi gói chấm tay E2 cho Lợi và Bảo~~ — xong 17/11.
 2. **Duyệt kết luận.** Đọc kỹ mục 8 và đoạn tóm tắt. Mỗi câu kết luận phải có số đi kèm ở mục 6. Không câu
    nào được nói "đặc tả tốt hơn" mà không kèm điều kiện (đề sơ sài, tầng nhỏ, thăm dò).
 3. **Duyệt mục 6.9 (E2) và phụ lục "Mở kết quả chính".** Kiểm hai điều:
@@ -25,8 +24,7 @@ Hạn 21/11, trừ việc 6.
 
 Hạn 20/11.
 
-1. **Chấm tay E2:** 24 lượt trong gói của Lợi (cùng 24 lượt với Bảo), theo `HUONG-DAN.md`. Làm một mình, không bàn với Bảo. Gửi
-   lại `sheet-loi.csv`.
+1. ~~Chấm tay E2 (24 lượt, gửi lại `sheet-loi.csv`)~~ — xong 17/11.
 2. **Đọc slide 1–13 và speaker notes** (`docs/presentation/rehearsal.md`). Ghi chỗ nào nói không trôi, từ nào
    khó hiểu, slide nào quá chữ.
 3. **Đọc báo cáo mục 1–5** (giới thiệu, tổng quan, câu hỏi, phương pháp, hồi cứu). Ghi chỗ khó hiểu hoặc
@@ -37,8 +35,7 @@ Hạn 20/11.
 
 Hạn 20/11.
 
-1. **Chấm tay E2:** 24 lượt trong gói của Bảo (cùng 24 lượt với Lợi), theo `HUONG-DAN.md`. Làm một mình, không bàn với Lợi. Gửi
-   lại `sheet-bao.csv`.
+1. ~~Chấm tay E2 (24 lượt, gửi lại `sheet-bao.csv`)~~ — xong 17/11.
 2. **Đọc slide 14–30 và speaker notes.** Như Lợi.
 3. **Đọc báo cáo mục 6–8** (kết quả, bàn luận, kết luận). Ghi chỗ số liệu khó đọc hoặc câu nghe như khẳng
    định quá mức.
@@ -50,7 +47,7 @@ Hạn 20/11.
 | --- | --- | --- | --- | --- |
 | | | | | |
 
-## 5. Sau khi có hai sheet chấm tay
+## 5. ~~Sau khi có hai sheet chấm tay~~ — xong 17/11
 
-Trợ lý tính kappa người–máy bằng `scripts/draw_human_check.py kappa`, điền vào mục 6.9, slide và tài liệu
-nhóm, chạy `check.sh`, commit. An duyệt rồi push.
+~~Trợ lý tính kappa người–máy, điền vào mục 6.9, slide và tài liệu nhóm.~~ Kết quả: Lợi–Bảo kappa 0,93;
+máy–Lợi 0,88, máy–Bảo 0,90 (24 lượt, 282 mục, chỉ 6 lượt Codex).

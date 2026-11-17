@@ -50,7 +50,7 @@ thầy, mở rộng sang B4, B1, F2.
 **A2. Vì sao dùng ViPharmind mà không dùng SWE-bench?**
 ViPharmind là sản phẩm thật, đã triển khai, được làm với AI theo đúng quy trình spec, plan mà nhánh "theo
 đặc tả" tái hiện, nên vừa nghiên cứu được quá trình (hồi cứu) vừa lấy được nhiệm vụ thật. Mã của nó ra đời
-từ 2026-07-23, sau mốc dữ liệu huấn luyện của cả bốn mô hình, nên khó bị nhớ sẵn như các bộ đo công khai.
+từ 2026-07-23, sau mốc dữ liệu huấn luyện của mọi mô hình được đo, nên khó bị nhớ sẵn như các bộ đo công khai.
 Cái giá là chỉ một dự án, một ngôn ngữ, và tác giả nghiên cứu cũng là tác giả dự án.
 
 **A3. "Vibe coding" và "theo đặc tả" ở đây nghĩa là gì cụ thể?**
@@ -60,8 +60,8 @@ Cả hai nhận cùng đề bài, cùng mô hình, cùng công cụ, không ngư
 trình đặc tả tự động" vì không có người duyệt đặc tả.
 
 **A4. Đóng góp mới của đề tài là gì?**
-Một thí nghiệm có đối chứng trên commit thật, chấm bằng test ẩn, chạy trên bốn tổ hợp công cụ và mô hình,
-và trải ba cỡ nhiệm vụ từ một commit tới cỡ một tính năng (H5). Toàn bộ thiết kế, nhiệm vụ, mã chấm và kế
+Một thí nghiệm có đối chứng trên commit thật, chấm bằng test ẩn, thiết kế cho bốn tổ hợp công cụ và mô hình
+(phân tích ba, vì `agy-gemini` bị bỏ do hết hạn mức; thêm Haiku ở phần thăm dò E1, E2), và trải ba cỡ nhiệm vụ từ một commit tới cỡ một tính năng (H5). Toàn bộ thiết kế, nhiệm vụ, mã chấm và kế
 hoạch phân tích được chốt trước bằng thẻ git. Phần hồi cứu cho thấy quy trình mà thí nghiệm tái hiện thực
 sự đã được dùng.
 
@@ -188,7 +188,7 @@ hướng dẫn cho AI. Việc này quan trọng: rà đề phát hiện plan cũ
 nguyên văn lời giải của t05–t08. Bộ chạy từ chối khởi động nếu cây còn file bị cấm.
 
 **E3. Mô hình có thể đã học mã ViPharmind khi huấn luyện?**
-Mốc dữ liệu của cả bốn mô hình đều trước 2026-07-23 (commit đầu của ViPharmind): Claude tháng 6/2026,
+Mốc dữ liệu của mọi mô hình được đo đều trước 2026-07-23 (commit đầu của ViPharmind): Claude tháng 6/2026,
 Gemini 3.8 Flash tháng 3/2026, `gpt-6-luna` 18/5/2026. Mốc của Claude chỉ ghi tháng, và nhận định dựa trên
 công bố của nhà cung cấp.
 
@@ -200,8 +200,8 @@ Quét lại ngày 2026-11-17 trên `results/raw` của thí nghiệm chính, E1,
 ## F. Phần hồi cứu [L]
 
 **F1. Làm sao biết AI tham gia mọi khâu của ViPharmind?**
-Không đo được chính xác: 0 commit có dấu ghi công AI, và An đã xóa phần lớn lịch sử chat (còn 13 phiên
-Claude Code). Nhận định dựa trên lời khai của tác giả và phần nhật ký còn lại; báo cáo nói rõ là hạn chế.
+Không đo được chính xác: 0 commit có dấu ghi công AI, và An đã xóa phần lớn lịch sử chat (còn 12 phiên
+Claude Code chính và 21 nhật ký tác tử con, 25/10 đến 9/11, Phụ lục C). Nhận định dựa trên lời khai của tác giả và phần nhật ký còn lại; báo cáo nói rõ là hạn chế.
 Điều đo được là dấu vết quy trình: 43 file spec, plan và tỉ lệ commit tính năng có plan đi trước.
 
 **F2. Quy tắc nối commit với plan đúng đến đâu?**
@@ -238,7 +238,7 @@ trình ít tác dụng. Kết quả 2 × 2 ở tầng nhỏ: Sonnet đặc tả/
 ## H. Ít nhiệm vụ lớn, sức mạnh của H5 [B]
 
 **H1. Tầng lớn chỉ 3 nhiệm vụ, tầng vừa 5. Kết luận được gì?**
-Bằng chứng sơ bộ. Tầng dưới 6 nhiệm vụ thì báo cáo thêm hiệu số từng nhiệm vụ trong bảng, và khoảng tin
+Chỉ có giá trị tham khảo. Tầng dưới 6 nhiệm vụ thì báo cáo thêm hiệu số từng nhiệm vụ trong bảng, và khoảng tin
 cậy bootstrap chỉ có giá trị tham khảo (`prereg-v1` mục 9 điểm 1). Mọi hướng kết quả được báo cáo như nhau.
 
 **H2. Sao không thêm nhiệm vụ lớn?**
@@ -261,13 +261,12 @@ và việc loại F07 phụ thuộc vào đơn vị đếm.
 ## I. Hạn mức agy và lượng token [B]
 
 **I1. Vì sao agy tốn nhiều token thế?**
-Ở chạy thử, một lượt agy theo đặc tả dùng khoảng 8,5 triệu token vào và 1.004 s, trong khi Claude Sonnet
-khoảng 0,57 triệu và 103 s (trung vị). Hạn mức tuần của tài khoản agy đầu tiên hết sau 3 lượt. Vì vậy agy
-chạy xoay vòng 4 tài khoản. Thí nghiệm chính: cả bốn tài khoản agy hết hạn mức tuần khi nhóm mới chấm xong
-73/138 lượt (nhỏ 59/90, vừa 12/30, lớn 2/18), và An bỏ nhóm `agy-gemini` (mục 6.1). Báo cáo chỉ dùng số mô
-tả từ chạy thử, tính trên mọi lượt có nhật ký (gồm cả lượt bị ngắt vì hạn mức, nên khác số ở câu đầu): trung
-vị token vào mỗi lượt của agy là 3,4 triệu, gấp khoảng 9 lần mức 0,37 triệu của
-Sonnet, và 94% là token đọc cache. Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào hạn mức
+Ở chạy thử (Phụ lục C), trung vị token vào mỗi lượt của agy là 3,4 triệu với 50 lượt gọi mô hình (4 lượt có
+nhật ký, gồm cả lượt bị ngắt vì hạn mức), gấp khoảng 9 lần mức 0,37 triệu với 12 lượt gọi của Sonnet, và 94%
+token vào của agy là token đọc cache. Tài khoản agy đầu tiên hết hạn mức tuần ngay trong chạy thử
+(`docs/pilot-report.md` §5.2), nên agy chạy xoay vòng 4 tài khoản. Thí nghiệm chính: cả bốn tài khoản agy hết
+hạn mức tuần khi nhóm mới chấm xong 73/138 lượt (nhỏ 59/90, vừa 12/30, lớn 2/18), và An bỏ nhóm `agy-gemini`
+(mục 6.1). Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào hạn mức
 thuê bao (Phụ lục C).
 
 **I2. Nếu agy hoặc Codex không chạy xong trước hạn thì sao?**
@@ -340,7 +339,8 @@ hệ số nên không đổi (mục 7.5, Phụ lục G).
 **K6. Nhiều phép so như vậy có bị "câu cá" kết quả không?**
 Chỉ H1 là phép thử xác nhận. Các phép phụ không hiệu chỉnh so sánh nhiều lần, nhưng được báo cáo đủ, không
 chỉ số nào bị bỏ vì kết quả, và báo cáo nói rõ số phép so: 57 phép so phụ (mục 6.3). Vì vậy ô "được ủng
-hộ" duy nhất về tỉ lệ đạt (Codex tầng lớn) cũng có thể là ngẫu nhiên. Người đọc tự cân nhắc.
+hộ" duy nhất về tỉ lệ đạt (Codex tầng lớn) cũng có thể là ngẫu nhiên. Thêm nữa, khoảng tin cậy của ô đó co
+về một điểm vì cả ba nhiệm vụ cho cùng hiệu số, nên nó không phản ánh độ bất định thật (mục 6.3).
 
 **K7. Ba lần lặp có đủ không?**
 Cho mỗi ô thì ít, nhưng mục đích của lặp là trung bình hóa độ ngẫu nhiên của mô hình trong một nhiệm vụ.
@@ -385,6 +385,31 @@ chỉ "đạt" khi mọi mục đạt, nên một mục lệch là cả lượt 
 0,88 và 0,90; chỗ lệch chủ yếu là máy cho "chưa đạt" ở mục người cho "đạt". Giới hạn: mẫu chỉ có sáu lượt
 Codex, chưa đủ để kiểm máy chấm có nghiêng về bài của Claude không.
 
+**L6. [B] E1 chạy Haiku để làm gì, kết quả ra sao?**
+E1 hỏi mô hình yếu hơn có cần quy trình hơn không, với đề chi tiết, đủ 138/138 lượt. Đặc tả trừ vibe: tầng
+nhỏ −4,4 đpt [−13,3; 4,4], tầng vừa 0,0, tầng lớn −11,1 [−33,3; 0,0]. Không tầng nào đặc tả đạt hơn, cùng
+hướng với thí nghiệm chính, và tầng nhỏ tốn 3,3 so với 1,5 triệu token mỗi lượt. E1 thêm sau khi thấy kết
+quả chính nên chỉ là thăm dò (mục 6.9).
+
+**L7. [B] Sao ở tầng lớn đặc tả lại kém hơn với Sonnet, Opus?**
+Hiệu số tầng lớn là −11,1 đpt ở cả hai nhóm, chỉ tham khảo vì ba nhiệm vụ. Ca `f15` (mục 6.8) cho một cơ
+chế cụ thể. Đề nêu tên `deleted_with_releases()` nhưng không nói trả về gì.
+Bản thiết kế của agent chốt là danh sách đối tượng, trong khi bản gốc trả về danh sách mã; kế hoạch và test
+của agent đều dựa trên quyết định đó nên đều đạt, còn test ẩn thì trượt. Cả ba lượt đặc tả trượt, một lượt
+vibe đạt. Tức là bước thiết kế biến một chỗ đề bỏ ngỏ thành quyết định cố định, rồi tự kiểm bằng chính giả
+định đó. Đây là một ca, tầng lớn chỉ ba nhiệm vụ, nên chỉ để minh họa.
+
+**L8. [B] Cận trên của H1 là 0,0. Vậy đặc tả có hại không?**
+Không nói vậy được. Khoảng [−6,7; 0,0] chạm 0 nên theo quy tắc đọc là "chưa kết luận được", không phải
+"trái với giả thuyết". Nó cho biết dữ liệu không ủng hộ một lợi ích đáng kể, chứ không chứng minh có hại.
+Thêm nữa, bootstrap trên ít nhiệm vụ có thể cho khoảng hẹp hơn thật (mô phỏng cho bootstrap cụm của mô hình
+hỗn hợp chỉ phủ 82,5% thay vì 95%, K5), nên một lợi ích nhỏ vẫn chưa loại được.
+
+**L9. [B] Fable chấm E2 có thiên vị bài của Claude so với Codex không?**
+Chưa loại được. Xem L5: chấm tay khớp máy tốt (kappa 0,88 và 0,90), nhưng mẫu chỉ có sáu lượt Codex, quá ít
+để so riêng. Vì vậy nhóm không dựa vào Codex để đọc xu hướng E2; KTC của Codex đã rộng và chứa 0
+(+4,3 [−3,9; 17,4]).
+
 ## M. Tái lập [L]
 
 **M1. Người khác chạy lại được không?**
@@ -423,19 +448,21 @@ kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
 
 **N4. [B] Kết luận chính là gì, và nên tin đến đâu?**
 Với đề chi tiết: H1 chưa kết luận được, Sonnet tầng nhỏ đặc tả trừ vibe −2,2 điểm phần trăm, khoảng tin
-cậy [−6,7; 0,0], tức không thấy lợi ích. H5 chưa kết luận được: hiệu số không tăng rõ theo tầng, chỉ Codex ở
-ba nhiệm vụ lớn nghiêng về đặc tả. Chi phí rõ: đặc tả tốn gấp 1,3–2,2 lần token. Với đề sơ sài (E2, thăm
-dò): bỏ chi tiết làm tỉ lệ lượt đạt hết test ẩn giảm khoảng 79–81 điểm ở cả hai cách; đặc tả bù được một phần
-ở tầng nhỏ (+4,2 điểm hành vi [0,7; 8,1], Sonnet +9,1), gộp mọi tầng +2,5 [−0,1; 5,4], không thấy lợi ích ở
-tầng vừa, lớn. Câu chốt: viết đề rõ quan trọng hơn chọn quy trình; đặc tả bù một phần cho đề sơ sài nhưng
-không thay được thông tin đề thiếu. E2 thêm sau khi thấy kết quả chính, nên chỉ là xu hướng gợi ý. Giới hạn: một dự án Python, 23 nhiệm vụ,
+cậy [−6,7; 0,0]: dữ liệu không ủng hộ một lợi ích đáng kể, nhưng chưa loại được một lợi ích nhỏ. H5 chưa kết
+luận được: hiệu số không tăng rõ theo tầng, chỉ Codex ở ba nhiệm vụ lớn nghiêng về đặc tả, và khoảng tin cậy
+của ô này co về một điểm vì ba nhiệm vụ cho cùng hiệu số. Chi phí rõ: đặc tả tốn gấp 1,3–2,2 lần token. Với
+đề sơ sài (E2, thăm dò): bỏ chi tiết làm điểm danh sách hành vi giảm 35,8 đpt ở nhánh đặc tả và 38,6 đpt ở
+nhánh vibe. Đặc tả bù được một phần ở tầng nhỏ (+4,2 [0,7; 8,1], rõ nhất Sonnet +9,1); gộp mọi tầng +2,5
+[−0,1; 5,4], chứa 0; tương tác mức chi tiết × cách làm +2,8 [−0,1; 5,8], cũng chứa 0. Tầng vừa, lớn chỉ tham
+khảo và không thấy lợi ích; Haiku tầng lớn còn nghiêng về vibe. Câu chốt: viết đề rõ quan trọng hơn chọn
+quy trình; đặc tả có thể bù một phần cho đề sơ sài ở việc nhỏ nhưng không thay được thông tin đề thiếu. E1,
+E2 thêm sau khi thấy kết quả chính, nên chỉ là xu hướng gợi ý. Giới hạn: một dự án Python, 23 nhiệm vụ,
 nhánh đặc tả tự động không có người duyệt, mạng mở. Kết luận áp cho quy trình đặc tả tự động trên dự án cỡ
 này, không áp cho mọi cách làm theo đặc tả.
 
 **N5. [B] Nếu làm lại, nhóm sẽ làm khác gì?**
 Thêm nhiệm vụ lớn từ nhiều dự án để H5 đủ mạnh; có nhánh đặc tả do người duyệt; chặn mạng ngang nhau cho
-mọi công cụ nếu công cụ cho phép; viết đề bài bằng tay hoặc có người sửa từng đề. [Bảo bổ sung sau khi có
-kết quả.]
+mọi công cụ nếu công cụ cho phép; viết đề bài bằng tay hoặc có người sửa từng đề.
 
 ---
 
