@@ -1,0 +1,11 @@
+ma_luot,dung_that(yes/no),ghi_chu
+p3a114fc8,yes,"Cài đặt đầy đủ các dịch vụ import bundle và quản lý release theo đúng đặc tả"
+p7c926bf2,yes,"Tích hợp fastapi-users với build_auth và cấu hình JWT bearer chuẩn xác"
+pc3ae621c,yes,"Xử lý chuẩn hóa OpenAPI schema, lọc schema rác và lệnh export-openapi hoạt động đúng"
+p877a3abe,yes,"Hiện thực InlineDispatcher kèm retry và tích hợp asgi/publishing_factory đúng yêu cầu"
+pf2543f82,yes,"Hiện thực OpenAiLlmAdapter hỗ trợ client_factory và chuẩn OpenAI SDK đầy đủ"
+p490c9570,yes,"Dựng FastAPI app với SSE chat turn streaming, router và lệnh CLI serve/migrate đầy đủ"
+p0f54ca7d,yes,"Chuẩn hóa tài liệu OpenAPI và bổ sung lệnh export-openapi đúng quy cách"
+p34588a33,yes,"Hiện thực toàn bộ logic indexing và quản lý corpus releases đúng chức năng"
+p7817a02b,yes,"Triển khai đầy đủ invitation service, audit log, endpoints và lệnh superadmin"
+p81984797,yes,"Hiện thực DeepInfraReranker kết nối endpoint inference với semaphore concurrency chuẩn"

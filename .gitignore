@@ -24,3 +24,9 @@ harness/accounts.local.toml
 
 # Run logs are results (the *.log rule above is for LaTeX)
 !results/**/*.log
+
+# Gói việc gửi Lợi, Bảo: sinh lại được bằng analysis/scripts (hạt giống cố định); có khóa làm mù và bản zip trùng
+/results/packets/
+
+# Khóa làm mù (nối mã lượt với cách làm): chỉ giữ trên máy An, không commit
+*-PRIVATE*.csv

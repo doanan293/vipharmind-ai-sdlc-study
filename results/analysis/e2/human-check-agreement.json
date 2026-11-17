@@ -1,0 +1,78 @@
+{
+  "loi~bao": {
+    "n_items": 282,
+    "n_units": 24,
+    "agreement": 0.9645390070921985,
+    "kappa": 0.926239799121155,
+    "agreement_binary": 0.9716312056737588,
+    "kappa_binary": 0.9395498392282957,
+    "crosstab": {
+      "met": {
+        "met": 172,
+        "not_met": 4,
+        "unclear": 2
+      },
+      "not_met": {
+        "met": 1,
+        "not_met": 98,
+        "unclear": 1
+      },
+      "unclear": {
+        "met": 1,
+        "not_met": 1,
+        "unclear": 2
+      }
+    },
+    "invalid_or_blank_a": 0,
+    "invalid_or_blank_b": 0
+  },
+  "loi~judge": {
+    "n_items": 282,
+    "n_units": 24,
+    "agreement": 0.9432624113475178,
+    "kappa": 0.8817052068585811,
+    "agreement_binary": 0.9539007092198581,
+    "kappa_binary": 0.9027328203767577,
+    "crosstab": {
+      "met": {
+        "met": 167,
+        "not_met": 11
+      },
+      "not_met": {
+        "met": 1,
+        "not_met": 99
+      },
+      "unclear": {
+        "met": 1,
+        "not_met": 3
+      }
+    },
+    "invalid_or_blank_a": 0,
+    "invalid_or_blank_b": 0
+  },
+  "bao~judge": {
+    "n_items": 282,
+    "n_units": 24,
+    "agreement": 0.9539007092198581,
+    "kappa": 0.9047272538267626,
+    "agreement_binary": 0.9609929078014184,
+    "kappa_binary": 0.9181832568444374,
+    "crosstab": {
+      "met": {
+        "met": 166,
+        "not_met": 8
+      },
+      "not_met": {
+        "met": 0,
+        "not_met": 103
+      },
+      "unclear": {
+        "met": 3,
+        "not_met": 2
+      }
+    },
+    "invalid_or_blank_a": 0,
+    "invalid_or_blank_b": 0
+  },
+  "units_without_judge": []
+}

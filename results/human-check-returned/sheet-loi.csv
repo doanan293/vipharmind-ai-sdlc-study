@@ -1,0 +1,283 @@
+unit_code,item_n,verdict,note
+h3a147401,1,met,"Model từ chối khi có cả hai chủ sở hữu, DB cũng có ràng buộc single_owner."
+h3a147401,2,not_met,"Ràng buộc cho collection thì có đủ, nhưng conversation không được thêm danh sách collection id."
+h3a147401,3,not_met,"Tạo được, id sinh từ key, mặc định private và có audit. Riêng key lấy nguyên từ người gọi, không thêm tiền tố ""u-"" hay ""o-""."
+h3a147401,4,met,Member thường tạo collection cho tổ chức thì nhận lỗi role.
+h3a147401,5,not_met,"Danh sách trả về phẳng, không chia nhóm mine, theo tổ chức và public."
+h3a147401,6,met,"Quy tắc xem đúng như mô tả, superadmin thấy hết. Bản này không có trạng thái xoá nên cũng không có collection đã xoá nào lộ ra."
+h3a147401,7,met,"Không thấy được thì báo COLLECTION_NOT_FOUND (404). Member chỉ đọc, can_edit là false."
+h3a147401,8,not_met,"Người thường đặt public bị ForbiddenRole, nhưng sự kiện đổi visibility chỉ ghi from/to, thiếu title."
+h3a147401,9,not_met,"Đổi tên collection hệ thống bị chặn, nhưng view không cho biết đó là system và không có số release hiện tại."
+h3a147401,10,met,Import bundle không có chủ thì tạo collection hệ thống ở chế độ public.
+h3a147401,11,not_met,Không có quota và cũng không có endpoint quota.
+h3a147401,12,not_met,Chưa có chức năng xoá collection.
+h3a147401,13,not_met,Làm ngược lại: tổ chức còn collection thì không cho xoá. Không có job purge hay lệnh CLI.
+h3a147401,14,not_met,"Có POST, GET danh sách, GET và PATCH theo id. Thiếu danh sách dạng nhóm, endpoint quota, DELETE và update_conversation."
+h3a147401,15,not_met,"Phần conversation không được đụng tới, không có collection_ids."
+h3a147401,16,not_met,Chat không nhận hay lưu collection id nào.
+h3a147401,17,not_met,"Scope được tính mỗi lượt theo những gì người dùng xem được, nhưng không có bước thu hẹp theo id được yêu cầu."
+h3a147401,18,not_met,"Retrieval truyền người xem xuống chứ không truyền scope tường minh, vector search tự suy ra release."
+h3a147401,19,not_met,Scope rỗng thì không gọi vector search nhưng lại trả về lỗi retrieval.
+h3a147401,20,not_met,"Lọc theo quyền xem có chạy xuyên suốt, nhưng không thu hẹp được theo collection đã chọn và scope rỗng thì ra lỗi."
+h639b86ee,1,not_met,"Audit gom một bản ghi cho mỗi vòng tìm (kèm danh sách query), không tách riêng từng query."
+h639b86ee,2,not_met,"Kết quả gắn theo vòng chứ không theo query, không lọc theo matched queries và cũng không có rank."
+h639b86ee,3,met,Mỗi kết quả có cờ cited dựa trên chunk có nằm trong citations hay không.
+h639b86ee,4,not_met,"Không giữ rerank score, cũng không có đoạn trích văn bản."
+h639b86ee,5,not_met,Vì gom theo vòng nên một query không ra kết quả trong vòng có nhiều query sẽ không có bản ghi rỗng riêng.
+h639b86ee,6,met,"Vòng tìm bị lỗi vẫn có bản ghi mang query của nó, danh sách kết quả rỗng và có kèm lỗi."
+hb89e1c9b,1,met,"Lỗi trả về dạng application/problem+json có status, code, type urn và title đọc được. Lỗi validation lúc nào cũng kèm một detail chung chung, mình tính phần đó ở mục 3."
+hb89e1c9b,2,met,"Lỗi ứng dụng giữ nguyên code, 404 CONVERSATION_NOT_FOUND và không có errors. Detail là một câu có chứa id chứ không phải riêng id."
+hb89e1c9b,3,not_met,"Có 422 với danh sách errors gồm loc, message, type. Nhưng code là VALIDATION_FAILED và lúc nào cũng có detail."
+hb89e1c9b,4,met,"Đường dẫn lạ ra 404 NOT_FOUND, sai method ra 405 METHOD_NOT_ALLOWED và giữ header Allow."
+hb89e1c9b,5,met,"Code của thư viện auth được giữ, 401 và 403 map đúng, thông báo tên skill không hợp lệ nằm trong detail."
+hb89e1c9b,6,not_met,"Trường hợp đang khởi động và trường hợp chưa cấu hình dùng chung một code SERVICE_UNAVAILABLE, không tách SERVICE_STARTING và SERVICE_NOT_CONFIGURED."
+hb89e1c9b,7,met,"Lỗi không lường trước thành 500 INTERNAL_ERROR, không lộ thông báo gốc."
+hb89e1c9b,8,met,"Chat chưa đăng nhập ra 401 UNAUTHORIZED, đăng ký trùng và sai mật khẩu giữ code của thư viện với 400."
+hb89e1c9b,9,met,"Hai danh sách trả về items và next_cursor, trang cuối thì next_cursor là null."
+hb89e1c9b,10,met,"Sắp theo updated_at rồi id giảm dần, cursor mang cả hai nên không sót hay trùng khi thời gian bằng nhau."
+hb89e1c9b,11,not_met,Cuộc trò chuyện chưa có lượt nào vẫn hiện trong danh sách.
+hb89e1c9b,12,met,"Messages lấy từ mới về cũ, mỗi trang theo thứ tự thời gian, vừa khít trang thì không có cursor tiếp."
+hb89e1c9b,13,not_met,"Cursor là base64 URL-safe không padding, nhưng JSON bên trong khác dạng {""t"", ""id""}, thời gian naive vẫn encode được và không quy về UTC."
+hb89e1c9b,14,not_met,"Phần lớn cursor hỏng bị từ chối với INVALID_CURSOR, riêng id không hợp lệ vẫn được nhận và trả trang rỗng."
+hb89e1c9b,15,not_met,"Danh sách conversations chặn limit trên 100 và cursor quá 512 ký tự, nhưng danh sách messages vẫn cho limit tới 200."
+hb89e1c9b,16,not_met,"Tạo trả 201 với tiêu đề mặc định, 0 lượt và lấy lại được. Nhưng cuộc trò chuyện rỗng vẫn bị liệt kê."
+hb89e1c9b,17,met,"Tin nhắn đầu đặt tiêu đề (gộp khoảng trắng, tối đa 80 ký tự), các trường hợp sau không đổi. Sự kiện conversation không còn khoá created vì chat không tự tạo cuộc trò chuyện nữa."
+hb89e1c9b,18,not_met,"Không sinh trước id cho message, sự kiện conversation không có id của message trả lời."
+hb89e1c9b,19,not_met,"Lưu lỗi thì vẫn có thêm sự kiện error sau done, và done không có created_at."
+hb89e1c9b,20,not_met,Không thấy thay đổi nào ở CLI cho cảnh báo này.
+hb89e1c9b,21,met,Migration thay hai index cũ bằng index ba cột đúng như mô tả.
+hb89e1c9b,22,not_met,"operationId vẫn là mặc định của FastAPI, lỗi 422 dùng schema riêng và health 503 không kèm problem."
+hb89e1c9b,23,not_met,"Phần lớn đã có (401, 503, 409/413, 400 của đăng ký, body thành công, bỏ schema mặc định, idempotent). Tên schema Body_ đi theo operationId mặc định nên không đúng dạng Body_<operation>."
+hb89e1c9b,24,not_met,Không có lệnh CLI export OpenAPI.
+h8472281b,1,not_met,"Structured call chỉ bật json_object, không gửi schema yêu cầu làm response format. Vẫn trả object đã validate và usage nhưng thiếu vế schema."
+h8472281b,2,met,"Messages đúng dạng {""role"", ""content""}."
+h8472281b,3,met,"Endpoint và model lấy qua settings.resolve(role), role không override thì theo mặc định. Model mặc định theo role nằm ở settings có sẵn."
+h8472281b,4,met,"Override theo role (base URL, key, model) được dùng đúng cho role đó."
+h8472281b,5,met,"Có stream=True và include_usage, text ra theo thứ tự rồi phần usage đi sau cùng."
+h8472281b,6,not_met,"Client được tạo mới và đóng lại ở mỗi lần gọi, không chia sẻ giữa các role cùng endpoint."
+h8472281b,7,met,"Lỗi SDK thành LlmError, thông báo gốc vẫn nằm trong chuỗi lỗi."
+h8472281b,8,met,"Content rỗng thì ném LlmError. Thông báo không dùng đúng cụm ""no parsed output"" nhưng cùng ý."
+h8472281b,9,not_met,"Request gửi đi là json_object, không có json_schema strict."
+h8472281b,10,met,Stream được gom thành text đầy đủ và có usage cuối.
+h8a35e31f,1,met,Ghi bundle ra thư mục rồi đọc lại cho ra bundle tương đương kèm manifest đã tính. lộ cách làm (spec: docstring nhắc docs/design.md).
+h8a35e31f,2,met,"documents và sections là JSON Lines, giữ nguyên tiếng Việt. glossary và mappings là JSON list, mỗi model một file embeddings."
+h8a35e31f,3,not_met,"Có tính danh sách file và mục embeddings, nhưng document_count và section_count không được tính lại. Manifest đầu vào có số cũ thì bị báo lỗi thay vì được thay."
+h8a35e31f,4,met,"Không có embeddings thì không tạo thư mục, manifest để trống và đọc lại ra rỗng."
+h8a35e31f,5,met,"Đầu ra không có thời gian hay ngẫu nhiên, ghi hai lần cho file giống hệt nhau."
+h8a35e31f,6,met,"Validate trước khi ghi, có lỗi thì không ghi gì và báo một lượt tất cả vấn đề."
+h8a35e31f,7,met,"Đọc bundle lỗi sẽ gom mọi vấn đề lại, mỗi dòng có tên file, số dòng và đường dẫn trường."
+h8a35e31f,8,not_met,"Thiếu manifest có được báo, nhưng code vẫn đọc tiếp các file khác chứ không dừng. Việc kiểm phiên bản schema cũng không thấy trong diff."
+h8a35e31f,9,not_met,"Có báo lệch size, lệch SHA-256 và thiếu file. Chưa báo trường hợp manifest liệt kê file không thuộc định dạng bundle."
+h8a35e31f,10,met,Số document và section trong manifest lệch với thực tế thì được báo.
+h8a35e31f,11,met,Trường sai (ví dụ kind lạ) được báo kèm số dòng.
+h8a35e31f,12,met,Section trỏ tới document không tồn tại thì bị báo.
+h8a35e31f,13,not_met,"Có báo trùng key và trùng ordinal, nhưng báo ở dòng sau và không chỉ về dòng xuất hiện đầu tiên."
+h8a35e31f,14,unclear,Diff chỉ kiểm trang bắt đầu lớn hơn trang kết thúc. Điều kiện trang >= 1 có thể nằm sẵn trong model nhưng mình không thấy nên chưa kết luận được.
+h8a35e31f,15,unclear,"Markdown trống có được báo. Còn section không có block nào thì diff không kiểm, có thể model sẵn có chặn nhưng mình không xác nhận được."
+h8a35e31f,16,not_met,"Chỉ kiểm section có tồn tại, chưa kiểm một section thuộc nhiều mapping."
+h8a35e31f,17,not_met,"Có báo term trống, nhưng chưa phát hiện term trùng nhau không phân biệt hoa thường."
+h8a35e31f,18,not_met,"Dòng embedding chỉ có id và vector, không kiểm dims theo dòng và không kiểm hash là 64 ký tự hex."
+h8a35e31f,19,not_met,Không so file của entry với tên file mong đợi theo model.
+h8a35e31f,20,met,Có một hằng namespace UUID cố định dùng cho các id.
+h8a35e31f,21,not_met,Không có hàm serialize JSON chuẩn hoá và cũng không có helper SHA-256 cho text.
+h8a35e31f,22,not_met,"Section id chỉ sinh từ section key, không phụ thuộc nội dung block."
+h8a35e31f,23,not_met,"Chunk id sinh từ section id và vị trí chunk, không dựa trên text, embedding text hay phiên bản chunker."
+h45e1253d,1,met,"Request đi tới /v1/inference/<model> khi cấu hình như .env.example hướng dẫn. Phần /v1/inference nằm trong base_url chứ adapter không tự thêm, mình vẫn cho đạt."
+h45e1253d,2,met,Body có queries lặp lại theo số hit và documents mỗi hit một phần tử.
+h45e1253d,3,met,"Scores được gán thành rerank score, sắp giảm dần và cắt theo top_n."
+h45e1253d,4,met,Số score lệch với số document thì ném RetrievalError.
+h45e1253d,5,met,Thiếu trường scores cũng ném RetrievalError.
+h45e1253d,6,met,HTTP 500 đi qua raise_for_status và được đổi thành RetrievalError.
+h45e1253d,7,met,"Danh sách hit rỗng trả về rỗng ngay, không gọi HTTP."
+h45e1253d,8,met,"Đổi protocol sang giá trị DeepInfra thì factory dựng DeepInfraReranker. Giá trị được đặt là ""deepinfra_inference"" thay vì ""deepinfra"", mình coi là khác tên gọi."
+he09a3290,1,met,"POST tới /v1/inference/<model>, adapter tự ghép đường dẫn."
+he09a3290,2,met,"queries lặp lại query cho từng hit, documents mỗi hit một mục."
+he09a3290,3,met,"Gán rerank score, sắp giảm dần rồi lấy top_n."
+he09a3290,4,met,Số score không khớp số document thì RetrievalError.
+he09a3290,5,met,Không có trường scores thì RetrievalError.
+he09a3290,6,met,Lỗi HTTP (500) được chuyển thành RetrievalError.
+he09a3290,7,met,Không có hit thì trả về rỗng và không gửi request nào.
+he09a3290,8,met,"Đặt protocol là ""deepinfra"" thì factory dựng DeepInfraReranker. Lưu ý là settings bắt buộc phải có api_key đi kèm."
+h97bc980c,1,met,"Tên được strip và người tạo là owner duy nhất. View không mang số thành viên, nhưng tổ chức thực sự chỉ có 1 người nên mình vẫn cho đạt."
+h97bc980c,2,met,list_mine trả về tổ chức vừa tạo cho chính người tạo.
+h97bc980c,3,met,Có ghi ORGANIZATION_CREATED cùng transaction với lệnh tạo.
+h97bc980c,4,met,Tên rỗng hay toàn khoảng trắng đều bị InvalidInput.
+h97bc980c,5,met,Người ngoài và id không tồn tại đều ra OrganizationNotFound (404).
+h97bc980c,6,met,"Member xem được kèm role của mình, đổi tên thì nhận OrganizationForbidden."
+h97bc980c,7,not_met,"Superadmin xem được với role None, nhưng view không có trường số thành viên."
+h97bc980c,8,met,"Đổi role được lưu và ghi MEMBER_ROLE_CHANGED có người bị đổi, role cũ và role mới (khoá là role/previous_role)."
+h97bc980c,9,met,"Xoá thành viên có lưu và audit MEMBER_REMOVED, người không phải thành viên thì MemberNotFound."
+h97bc980c,10,met,"Owner cuối bị chặn ở cả ba đường (hạ quyền, xoá, rời). Có owner khác thì rời được và ghi MEMBER_LEFT."
+h97bc980c,11,met,Người ngoài rời tổ chức nhận OrganizationNotFound.
+h97bc980c,12,not_met,"Hàm xoá không nhận tên xác nhận, không so sánh gì cả."
+h97bc980c,13,met,Xoá xong ghi ORGANIZATION_DELETED kèm id và tên tổ chức.
+h97bc980c,14,met,Ghi dữ liệu và ghi audit chung một transaction nên lỗi lưu trữ không để lại sự kiện.
+h97bc980c,15,met,"Thành viên liệt kê được user và role, người ngoài nhận not found."
+hd0fde618,1,not_met,"Mỗi vòng chỉ có một bản ghi chứa danh sách query, chưa tách theo từng query."
+hd0fde618,2,not_met,"Chỉ lưu chunk id theo vòng, không gắn theo query, không có rank hay thứ tự theo rerank score."
+hd0fde618,3,met,"Sau khi có citations, mỗi vòng ghi lại chunk nào được trích (cited_chunk_ids), đủ để biết từng kết quả có được trích hay không."
+hd0fde618,4,not_met,Không có rerank score và không có snippet.
+hd0fde618,5,not_met,Không có bản ghi theo từng query nên trường hợp một query không khớp gì không thể hiện được.
+hd0fde618,6,met,Vòng lỗi vẫn được thêm bản ghi với query và danh sách kết quả rỗng.
+h7c173d83,1,met,"Xin access token tại oauth2.googleapis.com/token bằng form có grant_type=refresh_token, refresh token, client id và secret."
+h7c173d83,2,met,"Access token được cache tới sát lúc hết hạn, hai lần gửi chỉ một lần xin token."
+h7c173d83,3,met,Gửi bằng POST tới messages/send với Authorization Bearer.
+h7c173d83,4,met,"Body có raw là thư mã hoá base64url. Phần đệm ""="" bị cắt bỏ, vẫn là base64url hợp lệ và Gmail nhận được."
+h7c173d83,5,met,"To, From đúng và thư là multipart/alternative có cả text lẫn HTML."
+h7c173d83,6,not_met,"Lỗi token có thành DeliveryError nhưng thông báo chỉ ghi ""HTTP 400"", không mang mã lỗi của Google (invalid_grant)."
+h7c173d83,7,met,Gmail trả 403 thì DeliveryError có mã trạng thái trong thông báo.
+h7c173d83,8,met,"Chọn provider Gmail với đủ thông tin thì dựng sender Gmail API. Giá trị provider là ""gmail_api"" thay vì ""gmail"", mình xem là khác tên gọi."
+h7c173d83,9,met,"Thiếu thông tin thì lỗi lúc build và nêu đúng biến còn thiếu, thiếu refresh token thì báo GMAIL_REFRESH_TOKEN."
+h90a3194b,1,not_met,"Không có lớp lọc bằng mẫu nào, mọi câu hỏi đều đưa thẳng cho LLM."
+h90a3194b,2,not_met,Không có lớp lọc bằng mẫu cho tiếng Anh.
+h90a3194b,3,not_met,Lớp lọc bằng mẫu không tồn tại nên không có gì để chấm ở bước này.
+h90a3194b,4,not_met,"Không có giai đoạn pattern, vì vậy cũng không có chuyện chặn mà không gọi LLM hay đánh dấu nguồn regex."
+h90a3194b,5,met,"LLM được hỏi một phán quyết có cấu trúc gồm category (tấn công, trong phạm vi hay không) và lý do."
+h90a3194b,6,met,LLM trả prompt_injection thì kết quả không được cho qua và không tính là trong phạm vi.
+h90a3194b,7,not_met,Câu hỏi ngoài phạm vi bị chặn hẳn (allowed = False) chứ không cho qua kèm cờ. Usage thì có trả về.
+h90a3194b,8,not_met,"LLM lỗi thì LlmError bị ném ra ngoài, không fail open."
+h646a3e7d,1,met,"POST /api/v1/chat/stream trả EventSourceResponse, mỗi sự kiện mang tên theo loại. Thứ tự sự kiện do ChatService có sẵn phát ra."
+h646a3e7d,2,met,"Dữ liệu của sự kiện done được chuyển nguyên từ ChatService, user id lấy từ người đang đăng nhập. Phần nội dung done nằm ở code có sẵn nên mình chấm theo đọc."
+h646a3e7d,3,met,POST /api/v1/chat trả ChatTurnResult dạng JSON.
+h646a3e7d,4,met,"Truyền conversation_id thì tiếp tục cuộc trò chuyện đó, sau lượt có gọi summarizer khi tới hạn. Summarizer chạy ngay trong request chứ không hẳn là chạy nền."
+h646a3e7d,5,met,ConversationNotFound được map sang 404 và body có code.
+h646a3e7d,6,unclear,"Message rỗng thì 422 rõ ràng. Còn conversation id sai định dạng không được kiểm ở tầng API, kết quả tuỳ ChatService có sẵn nên mình chưa dám kết luận."
+h646a3e7d,7,met,"Chưa có chat service thì ném AgentUnavailable, map sang 503."
+h646a3e7d,8,met,"Các route chat yêu cầu current_active_user, chưa đăng nhập nhận 401."
+h646a3e7d,9,met,Danh sách chỉ lấy theo user id của người gọi.
+h646a3e7d,10,met,"Có GET chi tiết cuộc trò chuyện và GET messages, dữ liệu lấy từ ConversationQueries."
+h646a3e7d,11,unclear,"PATCH đổi tên được và trả view mới. Title rỗng không bị chặn ở schema, có ra 422 hay không tuỳ queries.rename có sẵn nên mình chưa chắc."
+h646a3e7d,12,met,"Của người khác thì ConversationNotFound thành 404, xoá của mình trả 204."
+h646a3e7d,13,not_met,"Health nằm ở /health chứ không dưới /api/v1, body không có trường agent và checks là chuỗi ""ok""/""down"" thay vì true/false."
+h646a3e7d,14,not_met,Có trả 503 degraded nhưng thiếu trường agent và checks không phải dạng bool.
+h646a3e7d,15,met,"Auth, chat stream và conversations đều được gắn dưới /api/v1 nên luồng này đi được. Mình chấm theo đọc code, chưa chạy với Postgres."
+h646a3e7d,16,met,create_app nhận container_factory và dùng nó trong lifespan.
+h646a3e7d,17,met,"Lệnh migrate gọi alembic upgrade, mặc định tới head."
+h646a3e7d,18,met,"Lệnh serve chạy uvicorn với factory=True, nhận --host, cổng lấy từ settings."
+hc4f00f02,1,not_met,"Lượt hội thoại chỉ có role và content, không có trạng thái nên không lọc được lượt blocked, error hay timeout."
+hc4f00f02,2,not_met,"Có giữ N lượt gần nhất theo thứ tự thời gian, nhưng context không có summary để chuyển tiếp."
+hc4f00f02,3,not_met,Không có giới hạn theo số ký tự.
+hc4f00f02,4,not_met,"Không có summary nên không có chuyện cắt theo budget, is_empty chỉ xét danh sách lượt."
+hc4f00f02,5,not_met,"Parse được name và description, còn phần thân gom hết vào instructions chứ không tách mục ""Tìm kiếm"" và ""Trả lời""."
+hc4f00f02,6,not_met,Skill không có chuỗi version sinh từ nội dung.
+hc4f00f02,7,not_met,"Không phân biệt hai mục hướng dẫn nên skill không có mục nào vẫn được nhận, miễn có nội dung."
+hc4f00f02,8,not_met,"Thiếu frontmatter, thiếu description hay name rỗng đều bị từ chối, nhưng khoá lạ trong frontmatter thì vẫn được chấp nhận."
+hc4f00f02,9,not_met,Chưa có phần resolve danh sách skill id theo catalog.
+hc4f00f02,10,not_met,Chưa có dạng metadata hay dạng selected-skill mang hướng dẫn.
+hc4f00f02,11,met,"Tên skill (cũng là id) phải là slug chữ thường, ""Bad_Id"" bị từ chối."
+hdbb480d3,1,met,"Email được chuẩn hoá, lời mời ở trạng thái sent và có gửi thư kèm link chứa token. Link có dạng /invitations/accept?token=... thay vì /invitations/<token>, mình coi là khác cách đặt đường dẫn. lộ cách làm (spec: docstring nhắc ""spec §3"")."
+hdbb480d3,2,not_met,Không có chức năng xem trước lời mời.
+hdbb480d3,3,met,"Email đã xác minh và khớp thì nhận được, vào với role được mời, có ghi member joined. Nhận lần hai bị từ chối vì không còn pending."
+hdbb480d3,4,met,Email khác hoặc chưa xác minh đều bị báo lệch email.
+hdbb480d3,5,not_met,Hết hạn sau 7 ngày thì nhận lời mời bị từ chối đúng. Vế preview báo not found thì không có vì không có preview.
+hdbb480d3,6,met,"Member mời thì chờ duyệt và chưa gửi thư, member không duyệt được. Editor hoặc owner duyệt thì gửi thư và ghi audit."
+hdbb480d3,7,met,"Từ chối xong thì trạng thái rejected, duyệt lại không được nữa."
+hdbb480d3,8,met,"Role mời bị giới hạn theo cấp của người mời, người ngoài nhận organization not found."
+hdbb480d3,9,met,Mời người đã là thành viên hoặc địa chỉ đang có lời mời mở đều bị từ chối.
+hdbb480d3,10,met,Việc nhận lời mời không phụ thuộc người mời còn trong tổ chức hay không.
+hdbb480d3,11,met,"Gửi lại thì sinh token mới, token cũ hết dùng và thư được gửi lại. Thu hồi thì lời mời đóng, token không còn dùng được vào việc gì."
+hdbb480d3,12,met,"Người được mời từ chối được, trạng thái thành declined."
+hdbb480d3,13,not_met,"Member thường gọi danh sách thì bị lỗi role, không thấy được những lời mời do chính mình tạo."
+hdbb480d3,14,not_met,Không có giới hạn tần suất gửi thư mời.
+hdbb480d3,15,not_met,"Tiêu đề tiếng Việt đúng, link có trong text và được escape trong HTML. Tiêu đề tiếng Anh khác mẫu và thư không nêu role."
+hdbb480d3,16,not_met,"Phân quyền và phân trang đúng, nhưng mỗi dòng chỉ có actor_user_id, không có tên hay email của người thực hiện."
+hdbb480d3,17,met,"Audit của người dùng chỉ chính họ (hoặc superadmin) đọc được, audit toàn hệ thống chỉ dành cho superadmin."
+hdbb480d3,18,not_met,"Có danh sách tổ chức (id, tên, role) và cờ superadmin, thiếu thông tin đăng nhập bằng số điện thoại có bật hay không."
+hdbb480d3,19,not_met,Không có xử lý nào cho trường hợp SMS bị tắt.
+hdbb480d3,20,not_met,"Tạo và liệt kê tổ chức, tạo lời mời đều có. Thiếu GET preview theo token, và accept là POST /invitations/accept với token trong body."
+hdbb480d3,21,met,"ForbiddenRole map sang 403, member không đọc được audit, owner đọc audit thấy member.joined."
+hdbb480d3,22,met,Các route đều kiểm quyền xem trước và trả 404 cho người ngoài.
+hdbb480d3,23,met,"LastOwner map 409, xoá có confirm_name và trả 204. Audit của người dùng nằm ở /users/me/audit thay vì /account/audit, mình coi là khác đường dẫn."
+hdbb480d3,24,not_met,"Operation id là duy nhất, nhưng không có route preview nên thiếu hẳn operation đó."
+hdbb480d3,25,not_met,Không có CLI superadmin.
+h158f4989,1,met,"Tên được cắt khoảng trắng, người tạo là owner duy nhất. View trả về không có số thành viên nhưng thực tế tổ chức chỉ có đúng 1 người. lộ cách làm (spec: code nhắc docs/design.md, test chia ""Task 1"", ""Task 2"")."
+h158f4989,2,met,Tổ chức vừa tạo hiện trong danh sách của chính người tạo (list_mine).
+h158f4989,3,met,Tạo xong có ghi sự kiện ORGANIZATION_CREATED trong cùng transaction.
+h158f4989,4,met,Tên rỗng hoặc toàn khoảng trắng bị từ chối bằng InvalidInput.
+h158f4989,5,met,"Người ngoài hoặc id lạ đều nhận OrganizationNotFound, không phải lỗi quyền."
+h158f4989,6,met,"Member xem được và thấy role của mình, đổi tên thì bị chặn bằng OrganizationForbidden."
+h158f4989,7,not_met,"Superadmin xem được và role là None, nhưng view không có số thành viên nên thiếu vế ""correct member count""."
+h158f4989,8,met,"Owner đổi role được, có lưu và ghi MEMBER_ROLE_CHANGED kèm người bị đổi, old_role và new_role."
+h158f4989,9,met,"Xoá thành viên có lưu và ghi MEMBER_REMOVED, xoá người không còn trong tổ chức thì báo MemberNotFound."
+h158f4989,10,met,"Owner cuối không bị hạ quyền, bị xoá hay rời được (LastOwner). Khi có owner thứ hai thì rời được và ghi MEMBER_LEFT."
+h158f4989,11,met,Người ngoài gọi rời tổ chức nhận OrganizationNotFound.
+h158f4989,12,not_met,"Xoá tổ chức không hề yêu cầu nhập lại tên, owner gọi là xoá luôn."
+h158f4989,13,met,Xoá xong tổ chức biến mất và có sự kiện ORGANIZATION_DELETED mang id và tên.
+h158f4989,14,met,"Thay đổi và audit nằm chung một transaction, ghi lỗi giữa chừng thì không có sự kiện nào."
+h158f4989,15,met,"Thành viên xem được danh sách (user, role), người ngoài nhận not found."
+h4bfb3ff6,1,met,enqueue chạy job ngay bên trong và chỉ trả về sau khi job chạy xong.
+h4bfb3ff6,2,met,"Job lỗi thì chạy lại sau một khoảng nghỉ cấu hình được, đặt 0 cũng được, tới khi thành công."
+h4bfb3ff6,3,met,"Số lần chạy bị chặn bởi max_runs, lỗi hoài thì dừng đúng sau từng ấy lần."
+h4bfb3ff6,4,met,"Hết lượt mà vẫn lỗi thì chỉ ghi log, không ném lỗi ra cho bên gọi enqueue."
+h4bfb3ff6,5,met,"Settings nhận giá trị dispatcher ""inline"" từ biến môi trường."
+h9c3e950a,1,met,"Gửi schema dạng json_schema strict rồi validate nội dung trả về, có kèm usage. Không gọi hàm parse của SDK nhưng hành vi tương đương."
+h9c3e950a,2,met,"Messages đúng dạng {""role"", ""content""} của OpenAI."
+h9c3e950a,3,met,"Mọi role được resolve một lần lúc khởi tạo, role không override dùng endpoint mặc định. Model mặc định theo role nằm ở settings có sẵn."
+h9c3e950a,4,met,Role answer override sang server local thì request đi đúng server và model đó.
+h9c3e950a,5,met,"stream=True, include_usage, text theo thứ tự rồi một phần tử usage ở cuối."
+h9c3e950a,6,met,"Client được tạo theo cặp (base_url, api_key) và dùng chung cho các role cùng endpoint."
+h9c3e950a,7,met,"OpenAIError được đổi thành LlmError, giữ thông báo gốc."
+h9c3e950a,8,met,"Không có nội dung thì ném LlmError (""empty completion""). Câu chữ khác cụm ""no parsed output"" nhưng đúng ý."
+h9c3e950a,9,met,Test chạy qua SDK thật cho thấy POST /chat/completions với json_schema strict và parse được JSON.
+h9c3e950a,10,met,SSE qua SDK thật được đọc thành text đầy đủ kèm usage cuối.
+h41f06fdd,1,met,"Đổi refresh token lấy access token tại oauth2.googleapis.com/token, form có grant_type, refresh_token, client id và secret."
+h41f06fdd,2,met,"Token được giữ lại tới gần hết hạn, gửi hai thư chỉ xin token một lần."
+h41f06fdd,3,met,POST tới đúng endpoint messages/send với header Bearer.
+h41f06fdd,4,met,Body JSON có trường raw là thư RFC 822 mã hoá base64url.
+h41f06fdd,5,met,"Thư có To, From theo sender cấu hình và là multipart/alternative gồm text và HTML."
+h41f06fdd,6,met,"Lỗi từ token endpoint thành DeliveryError, thông báo có kèm mã lỗi của Google (invalid_grant)."
+h41f06fdd,7,met,Gmail trả 403 thì DeliveryError có ghi mã trạng thái.
+h41f06fdd,8,met,"Chọn provider Gmail kèm đủ ba thông tin thì factory dựng sender Gmail API. Giá trị provider được đặt là ""gmail_api"" chứ không phải ""gmail"", mình coi là khác tên gọi thôi."
+h41f06fdd,9,met,"Thiếu thông tin thì lỗi ngay lúc build, thông báo có nêu GMAIL_REFRESH_TOKEN."
+habc6141e,1,not_met,"Diff không đặt cách sinh operationId nên vẫn là id mặc định của FastAPI (tên kèm đường dẫn và method), chưa theo tên route."
+habc6141e,2,met,Mọi response từ 400 trở lên được viết lại thành Problem dưới application/problem+json và chỉ có content type đó.
+habc6141e,3,not_met,"Health 503 chỉ ghi HealthResponse dạng JSON, không kèm problem."
+habc6141e,4,met,"Route có security được thêm 401, mọi route có 503, và liệt kê conversations có 422 do có tham số."
+habc6141e,5,met,"Upload skill có 401, 409, 413, 422, 503. Lỗi 400 của đăng ký được đổi sang Problem."
+habc6141e,6,met,"Phần response thành công không bị đụng tới, vẫn đúng như trước."
+habc6141e,7,not_met,"Có Problem, ProblemItem và các view, nhưng tên schema form-body đi theo operationId mặc định nên không ra dạng gọn như Body_upload_skill."
+habc6141e,8,met,"HTTPValidationError, ValidationError và ErrorModel bị gỡ khỏi components."
+habc6141e,9,met,Tên schema không chứa ký tự lạ.
+habc6141e,10,met,Schema Problem lấy thẳng từ model Problem có sẵn. Mình không thấy model trong diff nên tin là các trường bắt buộc đúng như mô tả.
+habc6141e,11,met,Tài liệu được cache trên app nên gọi lại cho ra y hệt.
+habc6141e,12,not_met,"Lệnh openapi -o ghi file và in ""wrote <path>"", nhưng không tạo thư mục cha nếu chưa có."
+habc6141e,13,not_met,"Kết quả ổn định và có xuống dòng cuối, nhưng khoá cấp cao nhất không được sắp xếp và bản export tắt Google nên thiếu route OAuth."
+hdcfe76b3,1,not_met,FeedbackService chỉ được tạo trong nhánh có agent nên khi chưa cấu hình LLM thì feedback vẫn là None. Container cũng không có skill service.
+hdcfe76b3,2,not_met,Container không có skill service nên không liệt kê skill được.
+hdcfe76b3,3,met,"Mỗi lượt mở một observation ""chat-turn"" trên trace có id chính là run id nên luôn xác định. Mình chấm theo đọc code, chưa chạy với Langfuse thật."
+hdcfe76b3,4,met,user_id và session_id được gắn qua propagate_attributes lên observation của lượt.
+hdcfe76b3,5,met,"Khi kết thúc, output của observation được cập nhật bằng câu trả lời cuối."
+hdcfe76b3,6,met,CallbackHandler của Langfuse được truyền vào graph nên span của các node nằm cùng trace với lượt.
+hdcfe76b3,7,met,"Ghi feedback gọi create_score đúng một lần với trace_id là run id, trùng trace của lượt."
+hdcfe76b3,8,not_met,"Tên score cố định và có comment, nhưng giá trị là chuỗi ""up""/""down"" kiểu CATEGORICAL chứ không phải số 0.0/1.0."
+h6d848ead,1,met,"Gọi search_many một lần cho mọi query, số ứng viên mỗi query lấy từ cấu hình search_top_k."
+h6d848ead,2,met,Hit trùng chunk id được gộp trước khi đưa sang reranker.
+h6d848ead,3,not_met,"Có ghi các query khớp theo thứ tự, nhưng fusion score bị thay bằng điểm RRF tự tính chứ không giữ điểm cao nhất của hit."
+h6d848ead,4,met,Rerank với một query duy nhất và chỉ trả về top N theo cấu hình.
+h6d848ead,5,met,Mỗi kết quả được hydrate theo strategy của nó.
+h6d848ead,6,met,Hit search-only trả về không kèm chunk.
+h6d848ead,7,met,"Tìm thành công thì trả kết quả bình thường, không có lỗi nào. Kết quả không có cờ riêng cho lỗi hay rerank hỏng, thành công đơn giản là không ném lỗi."
+h6d848ead,8,not_met,"Rerank lỗi thì cả lượt tìm ném RetrievalError, không lùi về thứ tự fusion và không có cờ báo rerank hỏng."
+h6d848ead,9,not_met,"Retriever lỗi thì exception bị ném ra ngoài, không trả về kết quả rỗng kèm thông báo lỗi."
+h68e25ade,1,met,"Không gọi hẳn hàm parse nhưng gửi schema dạng json_schema strict làm response_format rồi validate kết quả, trả về object kèm usage. Hành vi tương đương nên mình cho đạt."
+h68e25ade,2,met,"Messages gửi đi là danh sách {""role"", ""content""} với role lấy từ ChatRole."
+h68e25ade,3,met,"Mỗi role đi qua settings.resolve(role) để lấy endpoint và model. Model mặc định theo role nằm ở settings có sẵn, không thuộc diff."
+h68e25ade,4,met,"Role có override thì dùng base_url, api_key và model riêng của nó."
+h68e25ade,5,met,"Gọi stream=True kèm include_usage, trả từng đoạn text theo thứ tự rồi tới phần usage ở cuối."
+h68e25ade,6,not_met,"Mỗi lần gọi lại tạo một AsyncOpenAI mới rồi đóng, không dùng chung client theo endpoint."
+h68e25ade,7,met,Lỗi từ SDK được bọc thành LlmError và giữ nguyên nội dung lỗi gốc.
+h68e25ade,8,met,"Không có nội dung trả về thì thành LlmError. Câu chữ là ""returned no structured content"" chứ không đúng cụm ""no parsed output"", ý nghĩa thì như nhau."
+h68e25ade,9,met,Qua SDK thật sẽ POST /v1/chat/completions với json_schema strict và parse nội dung JSON về schema.
+h68e25ade,10,met,"Stream SSE được đọc hết thành text, cuối cùng có usage."
+h3fd856a3,1,met,"Khi có JWT secret, router đăng nhập được gắn ở /auth/jwt nên có /auth/jwt/login và /auth/jwt/logout."
+h3fd856a3,2,met,Router đăng ký gắn với prefix /auth nên có /auth/register.
+h3fd856a3,3,met,"Router người dùng gắn dưới /users, có /users/me."
+h3fd856a3,4,met,Chưa cấu hình Google thì không gắn route /auth/google và cũng không tạo client OAuth.
+h3fd856a3,5,met,"Bật Google thì gắn router OAuth ở /auth/google, có authorize và callback."
+h3fd856a3,6,met,"build_auth gọi require_jwt_secret() ngay dòng đầu nên thiếu secret là lỗi liền. Hàm này có sẵn trong settings, mình không thấy trong diff nên tin theo tên gọi."
+hf5bb96a7,1,not_met,"Bản ghi theo từng vòng (có số vòng và danh sách query), không phải một bản ghi cho mỗi query."
+hf5bb96a7,2,not_met,"Có rank bắt đầu từ 1 nhưng kết quả gắn theo vòng, không lọc theo query nào khớp."
+hf5bb96a7,3,met,"Phần cited và uncited_chunk_ids cho biết rõ kết quả nào được trích, kết quả nào không."
+hf5bb96a7,4,not_met,Có giữ score nhưng thiếu hẳn đoạn trích văn bản cắt theo số ký tự cấu hình.
+hf5bb96a7,5,not_met,Chưa có bản ghi rỗng cho riêng một query không khớp kết quả nào trong vòng.
+hf5bb96a7,6,met,"Vòng lỗi vẫn có bản ghi với outcome error, kèm query và không có kết quả."
