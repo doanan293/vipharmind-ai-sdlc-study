@@ -14,7 +14,7 @@ nhau:
 4. **Công cụ làm ra dự án được nghiên cứu**: ViPharmind được phát triển với trợ lý lập trình AI. Phần hồi
    cứu (RQ1, RQ2) nghiên cứu chính quá trình đó.
 
-Ký hiệu: An đã kiểm lại mọi chỗ cần xác nhận (17/11). **[chờ Lợi, Bảo chấm tay E2]** là số chưa có. Số liệu khác lấy từ báo cáo
+Ký hiệu: An đã kiểm lại mọi chỗ cần xác nhận (17/11). Số liệu khác lấy từ báo cáo
 (`docs/report/generated/numbers.json`); "mục 6.1", "Phụ lục G" là mục của báo cáo.
 
 ## 1. Công cụ và mô hình
@@ -84,8 +84,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
   120, tầng lớn 72, tổng 552 lượt dự kiến. Số lượt hợp lệ thật: thí nghiệm chính 414 (ba nhóm; `agy-gemini` bị bỏ vì hết
   hạn mức); E1 (Haiku, đề chi tiết) 138/138; E2 (đề sơ sài) 492/552 được chấm: ba nhóm Claude đủ 414, Codex
   dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức. Lượt đề chi tiết của Haiku chỉ được Fable chấm danh sách hành vi
-  42/138 vì hết hạn mức Fable (chỉ số chính của E1 là test ẩn). Chấm tay mẫu kiểm tra E2 (Lợi, Bảo, 24
-  lượt): [chờ Lợi, Bảo chấm tay E2].
+  42/138 vì hết hạn mức Fable (chỉ số chính của E1 là test ẩn). Chấm tay mẫu kiểm tra E2: Lợi, Bảo chấm độc lập 24 lượt, 282 mục: hai người khớp 96% số mục (kappa 0,93); người chấm máy khớp Lợi 94% (kappa 0,88), Bảo 95% (kappa 0,90), lệch chủ yếu do máy khắt khe hơn (mục 6.9).
 - Chạy bằng gói thuê bao của An, không dùng khóa API trả theo lượng. Claude Code dùng 1 tài khoản; agy và
   Codex xoay vòng nhiều tài khoản của An khi hết hạn mức (ruling R11). Chi phí bằng tiền là số **quy đổi**
   từ token theo bảng giá API công khai ngày 2026-11-15, không phải tiền đã trả.

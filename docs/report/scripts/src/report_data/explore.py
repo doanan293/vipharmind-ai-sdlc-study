@@ -136,7 +136,21 @@ def _e2_keys() -> list[str]:
         "ETwoHaikuDetailedJudged",
         "ETwoHaikuDetailedExpected",
     ]
+    k += HUMAN_KEYS
     return k
+
+
+# mẫu chấm tay E2 (Lợi, Bảo): mức khớp giữa hai người và với người chấm máy, theo từng mục
+HUMAN_KEYS = [
+    "ETwoHumanUnits",
+    "ETwoHumanItems",
+    "ETwoHumanLoiBaoAgreePct",
+    "ETwoHumanLoiBaoKappa",
+    "ETwoHumanLoiJudgeAgreePct",
+    "ETwoHumanLoiJudgeKappa",
+    "ETwoHumanBaoJudgeAgreePct",
+    "ETwoHumanBaoJudgeKappa",
+]
 
 
 E2_KEYS = _e2_keys()
@@ -240,6 +254,14 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
     else:
         for k in ("N", "AgreePct", "AgreeLowPct", "AgreeHighPct", "Kappa", "AllMetGivenPassPct"):
             out[f"ETwoJudge{k}"] = None
+
+    h = src.get("human") or {}
+    lb, lj, bj = (h.get(k) or {} for k in ("loi~bao", "loi~judge", "bao~judge"))
+    out["ETwoHumanUnits"] = fmt.number(int(lb["n_units"])) if lb else None
+    out["ETwoHumanItems"] = fmt.number(int(lb["n_items"])) if lb else None
+    for name, r in (("LoiBao", lb), ("LoiJudge", lj), ("BaoJudge", bj)):
+        out[f"ETwoHuman{name}AgreePct"] = _num(r.get("agreement"), 100, 0)
+        out[f"ETwoHuman{name}Kappa"] = _num(r.get("kappa"), 1, 2)
 
     out["ETwoReading"], out["ETwoReadingShort"] = _reading(
         _est(E, "primary.score.pooled.all"),
@@ -401,6 +423,9 @@ def load_e2(root: Path) -> dict[str, Any] | None:
     return {
         "summary": json.loads((d / "summary.json").read_text(encoding="utf-8")),
         "runs": _read_csv(d / "runs.csv"),
+        "human": json.loads(h.read_text(encoding="utf-8"))
+        if (h := d / "human-check-agreement.json").exists()
+        else None,
     }
 
 

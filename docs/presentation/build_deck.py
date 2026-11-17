@@ -399,7 +399,9 @@ def _(r):
       f"lớn có {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba nhóm, hai cách làm, ba lần lặp cho "
       f"{N['ResRuns']} lượt của thí nghiệm chính. Hai thí nghiệm thăm dò thêm {N['ResRunsPerCohort']} lượt "
       f"Haiku và {N['RunsTotal']} lượt đề sơ sài; E2 được chấm bằng 306 mục hành vi, do Claude Fable 5.2 chấm "
-      f"khi không biết cách làm, và Lợi, Bảo chấm tay 24 lượt để đo độ khớp.")
+      f"khi không biết cách làm, và Lợi, Bảo chấm tay {N['ETwoHumanUnits']} lượt để đo độ khớp: hai bạn khớp "
+      f"nhau kappa {N['ETwoHumanLoiBaoKappa']}, khớp với máy chấm kappa {N['ETwoHumanLoiJudgeKappa']} và "
+      f"{N['ETwoHumanBaoJudgeKappa']}.")
 def _(r):
     set_text(r, "shape-2228", [f"Ba tầng nhiệm vụ, {N['ResRuns']} lượt"])
     cols = [("shape-2263", "shape-2259", "shape-2260", N["Tasks"], "Nhỏ",

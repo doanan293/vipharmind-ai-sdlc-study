@@ -6,7 +6,7 @@ Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn A
 Ký hiệu: **[L]** Lợi trả lời chính, **[B]** Bảo trả lời chính. Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
 `summary.json` của `results/analysis/`); "mục 6.5", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
-chỉ người trong nhóm trả lời được; **[chờ Lợi, Bảo chấm tay E2]** là số chưa có.
+chỉ người trong nhóm trả lời được.
 
 ## Cách trả lời
 
@@ -31,6 +31,7 @@ chỉ người trong nhóm trả lời được; **[chờ Lợi, Bảo chấm ta
 | Quy mô | 3 lần lặp; tầng nhỏ 360, vừa 120, lớn 72 lượt; tổng 552 dự kiến. Thực tế: 414 lượt hợp lệ (ba nhóm × 138), 0 lượt hết giờ, thoát lỗi hay bị loại |
 | Giới hạn thời gian | 3600 s / 7200 s / 10800 s |
 | Thống kê | Bootstrap theo nhiệm vụ, 10.000 lần, hạt giống 20261115; mô hình hỗn hợp: bootstrap cụm 999 lần |
+| Chấm tay E2 | Lợi, Bảo chấm độc lập 24 lượt, 282 mục: hai người khớp 96% số mục (kappa 0,93); người chấm máy khớp Lợi 94% (kappa 0,88), Bảo 95% (kappa 0,90), lệch chủ yếu do máy khắt khe hơn |
 | Hạn thu dữ liệu | 2026-11-29 |
 | Chạy thử (cấu hình cũ) | Claude: spec 11/12, vibe 12/12 |
 | Kết quả chính (đpt = điểm phần trăm) | H1 chưa kết luận được: −2,2 đpt [−6,7; 0,0]; H5 chưa kết luận được: 3,7 đpt [−3,0; 11,1], hệ số tương tác 0,16 [−0,43; 0,44]; H2 được ủng hộ ở mọi ô; kappa nhãn thất bại 0,95 (đồng ý 29/30) |
@@ -376,6 +377,13 @@ lỗi logic 1, lỗi môi trường 1. Tức là 23/30 lượt hỏng không vì
 gần như nhau ở hai cách làm (76% đặc tả, 77% vibe), nên quy trình đặc tả không ngăn được chúng. Fable 5.2 gán
 thêm làm người chấm thứ ba (chỉ để đối chiếu): đồng ý với Lợi 22/30, Bảo 21/30, khác chủ yếu ở các lượt t12
 mà người gán là dùng sai API có sẵn còn Fable gán là đề bài thiếu.
+
+**L5. [B] E2 do mô hình chấm, sao tin được điểm đó?**
+Kiểm hai cách. Trên đề chi tiết, đối chiếu với test ẩn: khớp 85% số lượt, kappa 0,43 theo cả lượt (một lượt
+chỉ "đạt" khi mọi mục đạt, nên một mục lệch là cả lượt lệch). Trên đề sơ sài, Lợi và Bảo chấm tay độc lập
+24 lượt (282 mục), không biết cách làm: hai người khớp nhau kappa 0,93, người chấm máy khớp từng người kappa
+0,88 và 0,90; chỗ lệch chủ yếu là máy cho "chưa đạt" ở mục người cho "đạt". Giới hạn: mẫu chỉ có sáu lượt
+Codex, chưa đủ để kiểm máy chấm có nghiêng về bài của Claude không.
 
 ## M. Tái lập [L]
 

@@ -37,6 +37,10 @@ fi
 step "3/6 chép kết quả sang repo báo cáo"
 mkdir -p "$here/results/analysis/e2-interim"
 cp "$STUDY"/results/analysis/e2-interim/{summary.json,runs.csv,coverage.csv} "$here/results/analysis/e2-interim/"
+# mức khớp của mẫu chấm tay (draw_human_check.py kappa ghi vào results/analysis/e2)
+if [ -f "$STUDY/results/analysis/e2/human-check-agreement.json" ]; then
+  cp "$STUDY/results/analysis/e2/human-check-agreement.json" "$here/results/analysis/e2-interim/"
+fi
 if [ -f "$STUDY/results/analysis/e1/summary.json" ]; then
   mkdir -p "$here/results/analysis/e1"
   cp "$STUDY"/results/analysis/e1/{summary.json,runs.csv} "$here/results/analysis/e1/"
