@@ -14,8 +14,7 @@ Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần l�
 của Lợi và Bảo tập trung ở thuyết trình, hỏi đáp và gán nhãn. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
 
-Chỗ ghi **[An điền]**, **[Lợi điền]**, **[Bảo điền]** là thông tin chỉ người đó cung cấp được (số giờ, số
-buổi tập, góp ý). Chỗ ghi **[chờ Lợi, Bảo chấm tay E2]** là việc chưa xong. Số liệu khác lấy từ báo cáo.
+Chỗ ghi **[An điền]**, **[Lợi điền]**, **[Bảo điền]** là thông tin chỉ người đó cung cấp được (số giờ, góp ý). Chỗ ghi **[chờ Lợi, Bảo chấm tay E2]** là việc chưa xong. Số liệu khác lấy từ báo cáo.
 
 ## 1. Đóng góp theo sản phẩm
 
@@ -36,11 +35,12 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
 | Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. [chờ Lợi, Bảo chấm tay E2] |
-| Báo cáo viết (`docs/report/`) | C | H | H | Lợi, Bảo đọc bản nháp và góp ý [An điền: có hay không; nếu có, ai góp ý mục nào] |
-| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi, Bảo góp ý lời nói phần mình [An điền: có hay không; nếu có, góp ý gì, slide nào đã sửa] |
+| Báo cáo viết (`docs/report/`) | C | H | H | Lợi đọc mục 1–5, Bảo đọc mục 6–8 và góp ý; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
+| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30, phần mình nói; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
 | Tập dượt thuyết trình | H | C | C | |
 | Thuyết trình trên lớp | – | C | C | An không nói trong 15 phút, có mặt để hỗ trợ hỏi đáp [An xác nhận] |
 | Trả lời câu hỏi | H | C | C | Theo phân công trong `qa-prep.md` |
+| Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
 | Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |
 
 ## 2. Chi tiết từng người
@@ -63,7 +63,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
   nhóm Claude đủ 414 lượt đề sơ sài, Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức (mục 6.9).
 - Gói phân tích, báo cáo, slide, tài liệu nhóm.
 - Phân xử nhãn lệch; dựng gói và soát lại kiểm tra "đạt test nhưng sai".
-- Thời gian ước tính: [An điền] giờ.
+- Điều phối nhóm và duyệt cuối báo cáo, slide (`phan-viec.md` mục 1).
 
 ### Lê Xuân Lợi
 
@@ -74,8 +74,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
   (bộ đề, hai cách làm, chống rò rỉ), kết quả hồi cứu.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: [chờ Lợi, Bảo chấm tay E2].
-- Số buổi tập dượt: [An điền: số buổi Lợi tập, ngày tập]. Góp ý cho slide hoặc báo cáo: [An điền: Lợi góp ý
-  gì cho slide hoặc báo cáo, ghi cụ thể; ghi "không" nếu không có].
+- Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
 - Thời gian ước tính: [Lợi điền] giờ.
 
 ### Trần Ngọc Bảo
@@ -87,8 +86,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
   loại lỗi, hạn chế, kết luận.
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: [chờ Lợi, Bảo chấm tay E2].
-- Số buổi tập dượt: [An điền: số buổi Bảo tập, ngày tập]. Góp ý cho slide hoặc báo cáo: [An điền: Bảo góp ý
-  gì cho slide hoặc báo cáo, ghi cụ thể; ghi "không" nếu không có].
+- Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
 - Thời gian ước tính: [Bảo điền] giờ.
 
 ## 3. Số liệu gán nhãn (vòng 2)
