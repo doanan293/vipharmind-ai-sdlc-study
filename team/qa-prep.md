@@ -3,7 +3,7 @@
 Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn An, có trợ lý AI soạn nháp (xem
 `team/ai-use.md`, mục 3.20). Hai bạn đọc, tự nói lại bằng lời của mình, đừng học thuộc.
 
-Ký hiệu: **[L]** Lợi trả lời chính (phần slide 1–13), **[B]** Bảo trả lời chính (slide 14–26). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
+Ký hiệu: **[L]** Lợi trả lời chính (phần bối cảnh, phương pháp), **[B]** Bảo trả lời chính (phần kết quả). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
 `summary.json` của `results/analysis/`); "mục 6.5", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.

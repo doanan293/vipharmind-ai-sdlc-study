@@ -7,8 +7,8 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
 | Doãn Văn An | 20252778M | Nhóm trưởng, điều phối và giao việc; thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | **Phần bối cảnh và phương pháp:** kiểm tra trích dẫn; phản biện báo cáo mục 1–5, slide 1–13; thuyết trình slide 1–13; hỏi đáp phần này. Cùng Bảo: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
-| Trần Ngọc Bảo | 20251227M | **Phần kết quả:** kiểm tra độc lập số liệu chính; phản biện báo cáo mục 6–8, slide 14–30; thuyết trình slide 14–26; hỏi đáp phần này. Cùng Lợi: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
+| Lê Xuân Lợi | 20252781M | **Phần bối cảnh và phương pháp:** kiểm tra trích dẫn; phản biện báo cáo mục 1–5, slide 1–13; hỏi đáp phần này. Cùng Bảo: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
+| Trần Ngọc Bảo | 20251227M | **Phần kết quả:** kiểm tra độc lập số liệu chính; phản biện báo cáo mục 6–8, slide 14–30; hỏi đáp phần này. Cùng Lợi: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
 của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay, kiểm tra), kiểm tra độc lập
@@ -41,7 +41,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Kiểm tra độc lập số liệu chính (tính lại bằng bảng tính) | H | – | C | Bảo tính lại tỉ lệ đạt và token từ `runs.csv`, không dùng mã của nhóm [chờ, hạn 20/11] |
 | Báo cáo viết (`docs/report/`) | C | H | H | Lợi phản biện mục 1–5, Bảo mục 6–8; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
 | Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
-| Thuyết trình trên lớp | – | C | C | Lợi slide 1–13 (bối cảnh, phương pháp), Bảo slide 14–26 (kết quả, kết luận); An điều phối, trả lời câu hỏi kỹ thuật khi được chuyển |
+| Thuyết trình trên lớp | | | | Chưa phân công người nói; speaker notes viết để ai trong nhóm cũng trình bày được |
 | Chuẩn bị hỏi đáp | C | H | H | An soạn `qa-prep.md`; Lợi ôn nhóm A–F, J, M; Bảo ôn nhóm G–L, N |
 | Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
 | Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |

@@ -219,13 +219,12 @@ def say(key: str) -> str:
 
 # ---------------------------------------------------------------- pages
 # Each page: stem, template slide, part of the talk, seconds, edit function, notes (spoken prose only).
-# Speakers: Lợi slides 1–13, Bảo from 14 (SPEAKER_A/B, SPLIT_AT). Notes say "nhóm em", "em"; team members are
+# The presenter is not assigned yet, so notes are speaker-neutral ("nhóm em", "em"); team members are
 # named only for their work. build adds the timing cue ("Khoảng ba mươi giây.") in front of each note.
 
 PAGES: list[dict] = []
 OPEN, METHOD, RESULTS, CLOSE, BACKUP = "Mở đầu", "Phương pháp", "Kết quả", "Kết luận", "Dự phòng"
 PARTS = (OPEN, METHOD, RESULTS, CLOSE)
-SPEAKER_A, SPEAKER_B, SPLIT_AT = "Lợi", "Bảo", 13  # Lợi nói slide 1–13, Bảo từ slide 14
 
 
 def page(stem, src, part, secs, notes):
@@ -236,7 +235,7 @@ def page(stem, src, part, secs, notes):
 
 
 @page("p01_title", 1, OPEN, 20,
-      f"Em chào thầy và các bạn. Em là Lợi; nhóm em gồm An, Lợi và Bảo. Em trình bày phần một, Bảo trình bày phần hai. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
+      f"Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
       f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết là phương pháp.")
 def _(r):
     set_text(r, "shape-1431", ["Phát triển theo đặc tả", "so với vibe coding"], size=46, role="title")
@@ -473,7 +472,7 @@ def _(r):
 
 
 @page("p14_results", 4, RESULTS, 10,
-      f"Em là Bảo, em trình bày phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
+      f"Phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
 def _(r):
     set_text(r, "shape-1483", ["02"], role="num")
     set_text(r, "shape-1491", ["Kết quả"], role="title")
@@ -839,22 +838,19 @@ def main():
     for i, p in enumerate(PAGES, 1):
         if p["secs"]:
             t += p["secs"]
-            who = SPEAKER_A if i <= SPLIT_AT else SPEAKER_B
-            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | {who} | {fmt_secs(p['secs'])} | {fmt_secs(t)} |")
+            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | {fmt_secs(p['secs'])} | {fmt_secs(t)} |")
         else:
-            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | – | – | – |")
+            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | – | – |")
     by = {s: sum(p["secs"] for p in PAGES if p["part"] == s) for s in PARTS}
     split = ", ".join(f"{s} {fmt_secs(v)}" for s, v in by.items())
     (HERE / "rehearsal.md").write_text(
         "# Tập dượt\n\n"
         "Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.\n\n"
         f"Tổng thời gian nói: {fmt_secs(t)} ({split}); phần còn lại của 15 phút ({fmt_secs(900 - t)}) dành "
-        f"cho chuyển slide và đổi người nói. Hỏi đáp 5 phút sau đó. Người nói: {SPEAKER_A} slide 1–{SPLIT_AT} "
-        f"({fmt_secs(sum(p['secs'] for p in PAGES[:SPLIT_AT]))}), {SPEAKER_B} slide {SPLIT_AT + 1}–"
-        f"{max(i for i, p in enumerate(PAGES, 1) if p['secs'])} ({fmt_secs(sum(p['secs'] for p in PAGES[SPLIT_AT:]))}); "
-        "An điều phối và trả lời câu hỏi kỹ thuật khi được chuyển. Câu \"Khoảng … giây.\" đầu mỗi ghi chú là "
-        "nhắc giờ, không đọc thành tiếng.\n\n"
-        "| Slide | Trang | Phần | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- | --- |\n"
+        "cho chuyển slide. Hỏi đáp 5 phút sau đó. Người thuyết trình chưa phân công: ghi chú viết trung tính "
+        "(\"nhóm em\", \"em\"), một người hay nhiều người đọc đều được; nếu chia người, chuyển người ở đầu một "
+        "phần. Câu \"Khoảng … giây.\" đầu mỗi ghi chú là nhắc giờ, không đọc thành tiếng.\n\n"
+        "| Slide | Trang | Phần | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Số liệu\n\n"
         "Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; "
         "đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) "

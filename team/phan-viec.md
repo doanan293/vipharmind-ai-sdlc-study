@@ -43,8 +43,8 @@ Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
 3. **Đọc phản biện báo cáo mục 6–8** và slide phần kết quả (slide 14–30). Ghi góp ý vào mục 4.
 4. **Ôn hỏi đáp** nhóm G–L, N trong `qa-prep.md`.
 
-Người thuyết trình: Lợi slide 1–13 (bối cảnh, phương pháp), Bảo slide 14–26 (kết quả, kết luận); An điều
-phối và trả lời câu hỏi kỹ thuật khi được chuyển. Cả ba cùng nắm toàn bộ slide.
+Người thuyết trình chưa chốt; speaker notes viết để ai trong nhóm cũng nói được. Cả ba cùng nắm toàn bộ
+slide.
 
 ## 4. Bảng góp ý
 
