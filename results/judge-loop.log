@@ -1,0 +1,118 @@
+== 2026-11-16T11:17:15+07:00 pass (chains running: 4)
+== 2026-11-16T12:34:21+07:00 pass (chains running: 2)
+2026-11-16 14:36:18,112 judge failed on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r1: ValueError: no JSON object in the judge answer
+2026-11-16 14:36:20,698 judge error on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r1 (account 1, try 1)
+2026-11-16 14:36:21,369 judge failed on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r3: ValueError: no JSON object in the judge answer
+2026-11-16 14:36:24,612 judge error on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r3 (account 1, try 1)
+2026-11-16 14:36:33,677 judge failed on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r2: ValueError: no JSON object in the judge answer
+2026-11-16 14:36:34,627 judge error on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/spec-r2 (account 1, try 1)
+2026-11-16 14:36:48,169 judge failed on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/vibe-r2: ValueError: no JSON object in the judge answer
+2026-11-16 14:36:50,146 judge error on /home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers/codex-luna/f15/vibe-r2 (account 1, try 1)
+== 2026-11-16T15:33:12+07:00 judge loop paused by owner request (Fable quota)
+== 2026-11-16T15:34:42+07:00 pass (chains running: 2, todo 148)
+judged 148, already judged 0, failed 0
+== 2026-11-16T16:04:36+07:00 pass (chains running: 2, todo 32)
+2026-11-16 16:07:53,382 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/spec-r3 (account 1, try 1)
+2026-11-16 16:07:54,078 claude account 1: source changed during the run, not written back
+2026-11-16 16:07:54,393 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t06/vibe-r2 (account 1, try 1)
+2026-11-16 16:07:57,977 claude account 1: source changed during the run, not written back
+2026-11-16 16:07:58,670 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t08/spec-r1 (account 1, try 1)
+2026-11-16 16:07:59,157 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/spec-r3 (account 1, try 2)
+2026-11-16 16:08:00,610 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t06/vibe-r2 (account 1, try 2)
+2026-11-16 16:08:01,319 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r2 (account 1, try 1)
+2026-11-16 16:08:02,732 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/vibe-r3 (account 1, try 1)
+2026-11-16 16:08:05,511 claude account 1: source changed during the run, not written back
+2026-11-16 16:08:05,739 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/spec-r3 (account 1, try 3)
+2026-11-16 16:08:06,502 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t08/spec-r1 (account 1, try 2)
+2026-11-16 16:08:10,503 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t02/spec-r2 (account 1, try 1)
+2026-11-16 16:08:10,982 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r2 (account 1, try 2)
+2026-11-16 16:08:11,305 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/vibe-r3 (account 1, try 2)
+2026-11-16 16:08:11,348 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t06/vibe-r2 (account 1, try 3)
+2026-11-16 16:08:14,562 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/spec-r3 (account 1, try 4)
+2026-11-16 16:08:15,683 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t08/spec-r1 (account 1, try 3)
+2026-11-16 16:08:18,857 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r2 (account 1, try 3)
+2026-11-16 16:08:19,405 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/vibe-r3 (account 1, try 3)
+2026-11-16 16:08:20,639 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t06/vibe-r2 (account 1, try 4)
+2026-11-16 16:08:23,693 claude account 1: source changed during the run, not written back
+2026-11-16 16:08:24,592 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t02/spec-r2 (account 1, try 2)
+2026-11-16 16:08:25,704 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t08/spec-r1 (account 1, try 4)
+2026-11-16 16:08:28,309 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/spec-r1 (account 1, try 1)
+2026-11-16 16:08:28,312 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t03/spec-r3 (account 1, try 1)
+2026-11-16 16:08:29,634 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r2 (account 1, try 4)
+2026-11-16 16:08:30,454 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/vibe-r3 (account 1, try 4)
+2026-11-16 16:08:37,051 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/vibe-r3 (account 1, try 1)
+2026-11-16 16:08:39,409 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t03/spec-r3 (account 1, try 2)
+2026-11-16 16:08:40,075 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t02/spec-r2 (account 1, try 3)
+2026-11-16 16:08:41,239 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/spec-r1 (account 1, try 2)
+2026-11-16 16:08:47,337 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/vibe-r3 (account 1, try 2)
+2026-11-16 16:08:49,213 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t03/spec-r3 (account 1, try 3)
+2026-11-16 16:08:53,392 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/spec-r1 (account 1, try 3)
+2026-11-16 16:08:53,463 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t02/spec-r2 (account 1, try 4)
+2026-11-16 16:08:56,248 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/vibe-r3 (account 1, try 3)
+2026-11-16 16:08:57,324 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t03/spec-r3 (account 1, try 4)
+2026-11-16 16:09:03,431 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/spec-r1 (account 1, try 4)
+2026-11-16 16:09:06,221 judge auth on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/vibe-r3 (account 1, try 4)
+judged 23, already judged 0, failed 9
+== 2026-11-16T16:19:07+07:00 pass (chains running: 2, todo 23)
+2026-11-16 16:20:55,407 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/spec-r3 (account 1, try 1)
+2026-11-16 16:20:58,058 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t12/vibe-r3 (account 1, try 1)
+2026-11-16 16:20:58,855 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r2 (account 1, try 1)
+2026-11-16 16:20:59,761 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t11/spec-r3 (account 1, try 1)
+2026-11-16 16:21:11,546 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t14/spec-r1 (account 1, try 1)
+2026-11-16 16:21:11,559 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t03/spec-r3 (account 1, try 1)
+2026-11-16 16:21:18,910 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/spec-r3 (account 1, try 1)
+2026-11-16 16:21:22,469 judge quota on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/codex-luna/t09/vibe-r1 (account 1, try 1)
+judged 23, already judged 0, failed 0
+== 2026-11-16T16:36:09+07:00 pass (chains running: 2, todo 10)
+judged 10, already judged 0, failed 0
+== 2026-11-16T16:47:54+07:00 pass (chains running: 2, todo 6)
+judged 6, already judged 0, failed 0
+== 2026-11-16T16:59:18+07:00 pass (chains running: 2, todo 2)
+judged 2, already judged 0, failed 0
+== 2026-11-16T17:11:05+07:00 pass (chains running: 2, todo 2)
+judged 2, already judged 0, failed 0
+== 2026-11-16T17:21:53+07:00 pass (chains running: 2, todo 2)
+judged 2, already judged 0, failed 0
+== 2026-11-16T17:33:34+07:00 pass (chains running: 2, todo 0)
+== 2026-11-16T17:43:35+07:00 pass (chains running: 2, todo 0)
+== 2026-11-16T17:53:36+07:00 pass (chains running: 2, todo 0)
+== 2026-11-16T18:03:38+07:00 pass (chains running: 1, todo 2)
+judged 2, already judged 0, failed 0
+== 2026-11-16T18:17:26+07:00 pass (chains running: 1, todo 11)
+judged 11, already judged 0, failed 0
+== 2026-11-16T18:47:33+07:00 pass (chains running: 1, todo 22)
+judged 22, already judged 0, failed 0
+== 2026-11-16T19:14:38+07:00 pass (chains running: 1, todo 26)
+2026-11-16 19:18:28,019 judge failed on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/claude-opus/m01/vibe-r2: JSONDecodeError: Extra data: line 27 column 1 (char 3987)
+2026-11-16 19:18:28,250 judge error on /home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief/claude-opus/m01/vibe-r2 (account 1, try 1)
+judged 26, already judged 0, failed 0
+== 2026-11-16T19:43:37+07:00 pass (chains running: 1, todo 24)
+judged 24, already judged 0, failed 0
+== 2026-11-16T20:06:52+07:00 pass (chains running: 1, todo 7)
+judged 7, already judged 0, failed 0
+== 2026-11-16T20:21:46+07:00 pass (chains running: 1, todo 3)
+judged 3, already judged 0, failed 0
+== 2026-11-16T20:35:26+07:00 pass (chains running: 1, todo 7)
+judged 7, already judged 0, failed 0
+== 2026-11-16T20:50:35+07:00 pass (chains running: 1, todo 5)
+judged 5, already judged 0, failed 0
+== 2026-11-16T21:04:50+07:00 pass (chains running: 0, todo 4)
+judged 4, already judged 0, failed 0
+== 2026-11-16T21:19:50+07:00 pass (chains running: 0, todo 5)
+judged 5, already judged 0, failed 0
+== 2026-11-16T21:33:59+07:00 pass (chains running: 0, todo 7)
+judged 7, already judged 0, failed 0
+== 2026-11-16T21:48:29+07:00 pass (chains running: 0, todo 4)
+judged 4, already judged 0, failed 0
+== 2026-11-16T22:03:31+07:00 pass (chains running: 0, todo 6)
+judged 6, already judged 0, failed 0
+== 2026-11-16T22:18:13+07:00 pass (chains running: 0, todo 5)
+judged 5, already judged 0, failed 0
+== 2026-11-16T22:32:24+07:00 pass (chains running: 0, todo 1)
+judged 1, already judged 0, failed 0
+== 2026-11-16T22:47:10+07:00 pass (chains running: 0, todo 5)
+judged 5, already judged 0, failed 0
+== 2026-11-16T23:01:30+07:00 pass (chains running: 0, todo 1)
+judged 1, already judged 0, failed 0
+== 2026-11-16T23:15:32+07:00 pass (chains running: 0, todo 1)
+judged 1, already judged 0, failed 0

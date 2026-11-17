@@ -159,7 +159,12 @@ def run(args: argparse.Namespace) -> int:
         quota_backoff_s=args.quota_backoff_s,
         keep_work=args.keep_work,
         max_quota_retries=args.max_quota_retries,
+        prompt_file=args.prompt_file,
     )
+    missing = [t for t in task_ids if not (args.tasks_dir / t / args.prompt_file).is_file()]
+    if missing:
+        print(f"{args.prompt_file} missing for task(s) {missing}")
+        return 2
     units = plan_units(names, task_ids, args.reps, args.seed)
     print(
         f"{len(units)} units: {len(names)} cohort(s) x {len(task_ids)} task(s) x 2 arms x {args.reps}"
@@ -217,6 +222,49 @@ def status(args: argparse.Namespace) -> int:
     return 0
 
 
+def judge(args: argparse.Namespace) -> int:
+    from sdlc_harness.judge import JudgeConfig, judge_all
+
+    validate_work_root(args.work_root)
+    args.work_root.mkdir(parents=True, exist_ok=True)
+    if args.units_file:
+        units = [
+            Path(line.strip()) for line in args.units_file.read_text().splitlines() if line.strip()
+        ]
+    else:
+        cohorts = {c for c in args.cohorts.split(",") if c} if args.cohorts else None
+        units = sorted(
+            g.parent
+            for root in args.results
+            for g in root.glob("*/*/*/grade.json")
+            if cohorts is None or g.parts[-4] in cohorts
+        )
+    missing = sorted(
+        {
+            u.parts[-2]
+            for u in units
+            if not (args.tasks_dir / u.parts[-2] / "checklist.md").is_file()
+        }
+    )
+    if missing:
+        print(f"checklist.md missing for task(s) {missing}")
+        return 2
+    cfg = JudgeConfig(
+        run=RunConfig(
+            repo=args.repo,
+            tasks_dir=args.tasks_dir,
+            cohorts={},
+            work_root=args.work_root,
+            accounts_file=args.accounts_file,
+            cache_dir=args.cache_dir,
+        ),
+        timeout_s=args.timeout_s,
+    )
+    counts = judge_all(units, cfg, args.jobs)
+    print(f"judged {counts['done']}, already judged {counts['skipped']}, failed {counts['failed']}")
+    return 1 if counts["failed"] else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="sdlc-harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -270,6 +318,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     r.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     r.add_argument("--accounts-file", type=Path, default=None)
+    r.add_argument(
+        "--prompt-file",
+        default="prompt.md",
+        help="task text file in each task dir (prompt.md; brief.md = short-prompt condition)",
+    )
     r.add_argument("--keep-work", action="store_true", help="keep workspaces after grading")
     rg = sub.add_parser("regrade", help="grade finished units again from their saved patches")
     rg.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
@@ -283,7 +336,23 @@ def main(argv: list[str] | None = None) -> int:
     rg.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
     st = sub.add_parser("status", help="counts by status per cohort and tier; excluded units")
     st.add_argument("--out", type=Path, default=Path("results/raw"))
+    jd = sub.add_parser("judge", help="score finished units against tasks/<id>/checklist.md")
+    jd.add_argument("--repo", type=Path, required=True, help="ViPharmind repo (read only)")
+    jd.add_argument(
+        "--results", type=Path, nargs="*", default=[], help="<cohort>/<task>/<unit> roots"
+    )
+    jd.add_argument("--units-file", type=Path, default=None, help="one unit dir per line instead")
+    jd.add_argument("--cohorts", default="", help="comma-separated; default every cohort")
+    jd.add_argument("--tasks-dir", type=Path, default=Path("tasks"))
+    jd.add_argument("--jobs", type=int, default=4)
+    jd.add_argument("--timeout-s", type=int, default=1800)
+    jd.add_argument("--work-root", type=Path, default=Path("/tmp/sdlc-judge"))
+    jd.add_argument("--cache-dir", type=Path, default=Path(".work/reference"))
+    jd.add_argument("--accounts-file", type=Path, default=None)
     args = parser.parse_args(argv)
+    if args.command == "judge":
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+        return judge(args)
     if args.command == "status":
         return status(args)
     if args.command == "regrade":

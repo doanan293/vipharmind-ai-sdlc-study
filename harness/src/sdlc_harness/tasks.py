@@ -70,10 +70,14 @@ def _required(data: dict) -> tuple[str, ...]:
     return REQUIRED_KEYS
 
 
-def load_task(dir: Path, repo: Path | None = None) -> Task:
-    """Read dir/task.toml and dir/prompt.md; with repo, also read hidden test names at the commit."""
+DEFAULT_PROMPT_FILE = "prompt.md"
+
+
+def load_task(dir: Path, repo: Path | None = None, prompt_name: str = DEFAULT_PROMPT_FILE) -> Task:
+    """Read dir/task.toml and dir/<prompt_name> (default prompt.md; brief.md is the short variant);
+    with repo, also read hidden test names at the commit."""
     data = tomllib.loads((dir / "task.toml").read_text())
-    prompt_file = dir / "prompt.md"
+    prompt_file = dir / prompt_name
     prompt = prompt_file.read_text() if prompt_file.exists() else ""
     hidden = tuple(data.get("hidden_tests", ()))
     names: tuple[str, ...] = ()

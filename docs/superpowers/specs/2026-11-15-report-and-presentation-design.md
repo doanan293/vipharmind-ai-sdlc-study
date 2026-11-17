@@ -13,8 +13,12 @@ phản biện (25%), báo cáo viết (10%), thuyết trình và hỏi đáp (15
 Môn: Chuyên đề nghiên cứu 1, mã học phần IT5421. Giảng viên: TS. Nguyễn Thanh Hùng. Trang bìa chỉ có chữ
 (chưa có logo trường); slide giữ một slide ghi nguồn Slidesgo cho tới khi An xác nhận có Premium.
 
-Nhóm: Doãn Văn An (20252778M) làm toàn bộ nghiên cứu, báo cáo và slide; Lê Xuân Lợi (20252781M) và Trần
-Ngọc Bảo (20251227M) thuyết trình, trả lời câu hỏi, gán nhãn nguyên nhân thất bại.
+Nhóm:
+
+- **Doãn Văn An (20252778M)**, nhóm trưởng: điều phối và giao việc; thiết kế nghiên cứu, xây bộ đề, dựng
+  bộ chạy và bộ chấm, chạy thực nghiệm, phân tích thống kê, viết báo cáo, làm slide.
+- **Lê Xuân Lợi (20252781M)**, phần tổng quan và phương pháp: kiểm tra 24 nguồn tham khảo, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm.
+- **Trần Ngọc Bảo (20251227M)**, phần kết quả: tính lại độc lập số liệu chính, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm.
 
 ## 2. Mục tiêu, ngoài phạm vi, điều phải tránh
 

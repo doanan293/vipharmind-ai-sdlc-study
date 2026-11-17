@@ -36,8 +36,10 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--model-bootstrap", type=int, default=B_MODEL_DEFAULT,
                    help="cluster-bootstrap refits of the H5 mixed model (>= 999)")
     p.add_argument("--jobs", type=int, default=1, help="processes for the model bootstrap")
+    p.add_argument("--draw-passing-sample", action="store_true",
+                   help="write passing_sample.csv (prereg 9.10); give once, after the deadline")
     p.add_argument("--force", action="store_true",
-                   help="overwrite an existing passing_sample.csv (drawn once, after the deadline)")
+                   help="with --draw-passing-sample: overwrite an existing passing_sample.csv")
     p.add_argument("--labels", type=Path, nargs=2, metavar=("RATER_A_CSV", "RATER_B_CSV"),
                    default=None, help="two filled labeling sheets: compute Cohen's kappa")
     return p.parse_args(argv)
@@ -77,10 +79,11 @@ def main(argv=None) -> int:
     sheet.to_csv(lab / "sheet-template.csv", index=False)
     key.to_csv(lab / "key-PRIVATE.csv", index=False)
     sample_path = out / "passing_sample.csv"
-    if sample_path.exists() and not a.force:
-        log.info("kept existing %s (drawn once; --force to redraw)", sample_path)
-    else:
+    if a.draw_passing_sample:
+        if sample_path.exists() and not a.force:
+            raise SystemExit(f"{sample_path} exists; --force to redraw")
         passing_sample(valid, a.seed).to_csv(sample_path, index=False)
+    summary["passing_sample"] = {"drawn": sample_path.exists()}
     tiers = [t for t in TIERS if t in set(tasks["tier"])]
     est = summary["estimates"]
     figs = figures.effect_vs_size(tables["task_diffs"], tables["pooled_task_diffs"],

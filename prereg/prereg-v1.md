@@ -456,3 +456,123 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (cùng câu nói không nhiệm vụ tầng vừa nào thuộc loại đó, trong khi m04 ở cùng trường hợp với f14); bỏ cả
   f14 sẽ chỉ còn f15 ở tầng lớn. Đã xem trước khi đổi: chưa xem kết quả chính nào. Commit: commit mang
   thẻ `prereg-v1-analysis`.
+- **2026-11-16 08:13, vận hành.** Máy khởi động lại trong đêm (khoảng 07:59), dừng cả ba lệnh chạy. Các lượt đã có
+  `grade.json` giữ nguyên. Ba lệnh được gọi lại đúng như đã chốt lúc 08:13; lượt chưa xong được chạy lại từ đầu
+  theo mục 4. Lúc đó: codex-luna xong 138/138, claude-sonnet 137 (1 hoãn vì hạn mức), claude-opus 130 (8 hoãn),
+  agy-gemini 53 (hết hạn mức cả 4 tài khoản). Chưa kết quả nào được mở.
+- **2026-11-16, quy tắc đọc bài kiểm tra độ phủ (ghi trước khi thấy kết quả).** Bài kiểm tra độ phủ khoảng tin cậy
+  bootstrap của mô hình hỗn hợp (40 bộ dữ liệu mô phỏng theo thiết kế 23 nhiệm vụ, 99 lần lặp mỗi bộ) đang
+  chạy. Quy tắc chốt trước: ≥ 32/40 lần trúng thì ghi số đó và khóa mã, không chỉnh gì; ≤ 31/40 thì dừng, xem
+  từng dòng và đo lại trên hạt giống mới. Mô phỏng độc lập của Fable cho độ phủ kỳ vọng khoảng 88–90% dù danh
+  nghĩa là 95%; báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng khoảng 88–90%, quan sát k/40". Kết luận H5 chỉ dựa
+  vào dấu của hệ số tương tác ở thang logit nên không đổi vì điểm này.
+- **2026-11-16, mục 7 (token của mô hình ngoài bảng giá).** Mã mô hình được ghép với bảng giá theo đúng tên, hoặc
+  theo tên trong bảng cộng phần đuôi ngày hay nhãn (`-20…`, `[…]`, `@…`; ví dụ `claude-sonnet-5-5-20261101`,
+  `claude-opus-5-5[1m]`). Token của một mô hình có tên nhưng không khớp dòng nào trong bảng (ví dụ mô hình nhỏ
+  chạy tác vụ phụ) được tính theo giá mô hình của nhóm và được đánh dấu theo từng lượt (`tok_offtable`,
+  `cost_has_offtable_model`, `offtable_models`); số lượt bị đánh dấu được báo cáo theo nhóm và cách làm. Lý do:
+  bảng giá chỉ có bốn mô hình của bốn nhóm, trong khi công cụ có thể gọi mô hình khác cho tác vụ phụ. Chưa xem
+  kết quả chính nào khi đổi.
+- **2026-11-16 08:58, kết quả bài kiểm tra độ phủ.** 33/40 lần trúng (82,5%), đạt quy tắc ≥ 32/40 đã ghi trước; mã được
+  khóa không chỉnh. Báo cáo ghi "danh nghĩa 95%, độ phủ mô phỏng 82,5% (33/40)". Kết luận H5 dựa vào dấu hệ số.
+- **2026-11-16, vận hành.** Hai lượt `claude-opus` tầng lớn ở trạng thái `deferred` (f15 vibe-r1, vibe-r2) được chạy lại
+  bằng đúng lệnh tầng lớn, giới hạn `--cohorts claude-opus` và `--work-root /tmp/sdlc-runs-opus` (vì lệnh tầng lớn
+  ban đầu vẫn đang chạy cho agy và giữ khóa thư mục làm việc). Điều kiện chạy không đổi.
+- **2026-11-16 khoảng 09:30, mở kết quả chính.** Sau khi thẻ `prereg-v1.1` và `prereg-v1-analysis` đã gắn, An và trợ lý
+  AI xem số liệu mô tả (đếm thô từ `grade.json` và `meta.json`): tỉ lệ đạt theo nhóm, tầng và cách làm; trung vị test
+  tự viết, độ phủ, hồi quy, kiến trúc, thời gian, token. Lúc đó claude-sonnet, claude-opus và codex-luna đã xong
+  138/138; **agy-gemini mới xong một phần**, nên số đếm thô của phần agy đã xong cũng đã được xem trước khi nhóm này
+  chạy xong. Các lượt agy còn lại vẫn chạy bằng đúng lệnh đã chốt, không đổi gì; báo cáo nêu điểm này. Chưa chạy
+  phân tích chính thức lúc mở.
+- **2026-11-16, bản bổ sung `prereg-v1.2` (thăm dò, sau khi thấy kết quả).** Thêm nhóm `claude-haiku` theo thiết kế gốc
+  (E1) và điều kiện đề sơ sài `brief.md` cho bốn nhóm (E2), theo yêu cầu của An. Toàn bộ là thăm dò, không đổi H1–H5
+  hay phân tích xác nhận. Harness thêm cờ `--prompt-file` và nhóm `claude-haiku`; không đổi hành vi khi để mặc định.
+
+- **2026-11-16 10:19, vận hành (E1, E2).** Lần khởi động đầu của hai chuỗi lệnh `prereg-v1.2` lỗi ngay vì cây chạy mới
+  `../vipharmind-ai-sdlc-study-run3` thiếu tệp `harness/accounts.local.toml` (không nằm trong git). Mọi lượt dừng trước
+  khi agent khởi động (`started_at` rỗng, không có `transcript.jsonl`, không `grade.json`). Hai chuỗi được dừng, thư
+  mục `results/raw/haiku` và `results/raw/brief` của lần đó bị xóa để số lần chạy lại vì lỗi không bị tính, tệp tài
+  khoản được chép vào, và hai chuỗi được gọi lại đúng lệnh lúc 10:20. Không lượt AI nào bị bỏ hay chạy lại vì kết quả.
+- **2026-11-16 10:35, bỏ agy-gemini (quyết định của An).** agy-gemini hết hạn mức cả bốn tài khoản và không kịp chạy
+  đủ; An quyết định bỏ nhóm này. Ba lệnh chạy chính bị dừng lúc agy mới có 73/138 lượt chấm xong (nhỏ 59/90, vừa
+  12/30, lớn 2/18); ba nhóm còn lại đã xong 138/138 từ trước. Hệ quả: agy-gemini bị loại khỏi mọi phân tích (chạy mã
+  phân tích với `--cohorts claude-sonnet,claude-opus,codex-luna`); dữ liệu thô giữ nguyên; báo cáo chỉ nêu số lượt đã
+  chạy, lý do bỏ và quan sát mô tả về token từ pilot. Lưu ý trung thực: quyết định này đến sau khi số đếm thô của phần
+  agy đã xong đã được xem (dòng 09:30); lý do được nêu là thời gian và hạn mức, không phải kết quả.
+- **2026-11-16, chốt danh sách hành vi E2.** Danh sách 23 nhiệm vụ, điểm phụ `score_core` (mục `[exact]`), prompt và mã
+  chấm được chốt bằng thẻ `prereg-v1.2-judge` trước lượt chấm đầu tiên; chi tiết ở cuối `prereg-v1.2.md`. Lần gắn
+  `[exact]` đầu tiên đã coi nhầm tài liệu `superpowers` (bị xóa khỏi cây của agent) là thấy được và được làm lại trước
+  khi chốt. Chưa xem bản vá hay kết quả E2 nào khi viết và gắn.
+- **2026-11-16, người chấm E2 đổi sang Fable 5.2 (An quyết định).** Trước lượt chấm đầu tiên, người chấm danh sách hành vi đổi
+  từ Codex sang Claude Fable 5.2, effort high (thẻ `prereg-v1.2-judge-fable`). Lý do: Fable không phải nhóm được thử,
+  và Codex còn ít hạn mức. Hạn chế: cùng họ Claude với ba nhóm.
+- **2026-11-16 11:17, chấm E2 bắt đầu.** Đủ hạn mức Claude, nên theo nhánh "nếu đủ hạn mức" của `prereg-v1.2`, Fable 5.2
+  chấm **mọi** lượt hợp lệ của bốn nhóm E2 ở cả đề chi tiết (thí nghiệm chính, E1) lẫn đề sơ sài (E2), không chỉ mẫu 48
+  lượt. Một vòng lặp gọi lại `sdlc-harness judge` mỗi 20 phút cho tới khi E1, E2 chạy xong. `judge.json` được ghi cạnh
+  `grade.json` trong thư mục kết quả của từng cây chạy (chỉ thêm tệp, không đổi tệp có sẵn).
+- **2026-11-16, gói gán nhãn.** Gói cho Lợi và Bảo (30 lượt hỏng của hai nhóm Claude, mã ngẫu nhiên từ
+  `labeling/key-PRIVATE.csv`) và gói 20 lượt đạt cho An được dựng bằng `analysis/scripts/build_packets.py`; log test
+  đầy đủ của test ẩn (`--tb=short`) dựng lại bằng `analysis/scripts/test_logs.py` từ bản vá đã lưu, đúng như bộ chấm.
+- **2026-11-16, đổi người kiểm tra mục 9.10.** An giao việc đối chiếu 20 lượt đạt cho Lợi và Bảo (mỗi người 10:
+  5 spec, 5 vibe, chia ngẫu nhiên hạt giống 20261115) và chỉ soát lại kết quả. Gói được che cách làm (mã
+  `p…`, bản vá bỏ design/plan, khóa ở `labeling/passing-key-PRIVATE.csv`) và kèm bản vá gốc chỉ phần mã
+  nguồn; dựng bằng `analysis/scripts/passing_packets.py`. Khác bản đăng ký: người kiểm tra mù cách làm, mỗi
+  lượt một người chấm.
+- **2026-11-16, nhãn thất bại và kiểm tra lượt đạt.** Lợi và Bảo nộp phiếu (gán tay, không dùng AI). Đồng ý
+  21/30, kappa 0,45. 9 lượt lệch (8 của t12, 1 của m04) do An phân xử theo đề xuất có lý do của trợ lý
+  (`labeling/returned/adjudication-proposal.csv`; nhãn cuối ở `labeling/final-labels.csv`). Thêm, ngoài bản
+  đăng ký: Claude Fable 5.2 gán nhãn độc lập trên cùng gói che cách làm làm người chấm thứ ba (đồng ý với
+  Lợi 6/30, Bảo 7/30, kappa 0,15; gán `de_bai_thieu` cho 22/30 lượt vì test ẩn kiểm chi tiết đề không nêu);
+  chỉ báo cáo mô tả, không thay nhãn người. Kiểm tra 9.10: 20/20 lượt đạt được Lợi và Bảo đánh giá là đúng thật.
+- **2026-11-16 ~14:10, vòng gán nhãn thứ hai (quyết định trước khi có phiếu vòng 2).** Vì Lợi và Bảo lệch
+  có hệ thống ở 8 lượt t12 và Fable đọc mục `de_bai_thieu` khác hẳn, An cho gán nhãn lại cả 30 lượt. Vòng 2:
+  mã lượt mới và thứ tự mới (hạt giống 20261116, khóa `labeling/key-round2-PRIVATE.csv`), thêm mã nguồn test
+  ẩn vào mỗi lượt, thêm mục 3b (thứ tự quyết định cố định; bảng nhãn không đổi) và sửa chỗ ghi nhầm vị trí
+  `het_gio`; dựng bằng `analysis/scripts/relabel_packets.py`. Hai người không được xem nhãn vòng 1 của mình
+  hay của người kia, nhãn Fable hay đề xuất phân xử. **Kết quả chính = nhãn vòng 2, chỗ lệch do An phân
+  xử**; nhãn vòng 1 và nhãn Fable báo cáo như phân tích độ nhạy, kèm kappa giữa các vòng.
+- **2026-11-16 ~14:30, đính chính vòng 1.** Lợi và Bảo cho biết phiếu nhãn vòng 1 đã được điền có dùng AI
+  (mục ghi "gán tay, không dùng AI" ở trên là sai). Theo yêu cầu của An, phiếu nhãn vòng 1, đề xuất phân xử và
+  nhãn cuối vòng 1 bị xóa và không dùng trong báo cáo; các con số vòng 1 nêu ở hai mục trên (kappa 0,45, phân
+  bố nhãn) không còn hiệu lực.
+- **2026-11-16 ~14:40, nhãn vòng 2 (kết quả chính).** Lợi và Bảo cho biết vòng 1 điền chưa kỹ và nhờ bỏ
+  vòng 1; An chuyển lời là hai người không dùng AI (thay cho mục đính chính ngay trên). Phiếu vòng 2 (tệp của
+  Lợi nộp với tên `sheet-claude-vong2.csv`) lưu ở `labeling/returned/labels-{loi,bao}-vong2.csv`. Đồng ý 29/30,
+  kappa 0,95; 1 lượt lệch (t07: `de_bai_thieu` / `hieu_sai`) phân xử là `de_bai_thieu` (Lợi chọn, Bảo ghi
+  "cũng có thể coi là đề thiếu"). Nhãn cuối: `labeling/final-labels.csv`. Fable đồng ý với Lợi 22/30, Bảo 21/30.
+- **2026-11-16 15:35, phạm vi chấm sau khi hết hạn mức Fable.** Chấm toàn bộ 414 lượt đề chi tiết đã xong (đã
+  dùng ~190 triệu token). Hạn mức Fable hết lúc ~15:30; An reset hạn mức. Từ đây chỉ chấm các lượt **đề sơ sài**
+  (E2, bắt buộc), theo thứ tự tầng nhỏ → vừa → lớn; các lượt E1 (Haiku, đề chi tiết) không chấm thêm (42 lượt đã
+  chấm giữ lại, báo cáo mô tả), vì chỉ số chính của E1 là test ẩn. Người chấm, prompt và effort không đổi.
+- **2026-11-16 18:00, E2 dừng nhóm Codex vì hết hạn mức.** Bốn tài khoản Codex đều hết hạn mức (reset 5/12 và
+  8/12, sau hạn 24/11); An quyết định không mua thêm. Nhóm `codex-luna` của E2 dừng ở tầng nhỏ (78/90 lượt
+  chấm xong); tầng vừa và lớn của E2 chỉ có ba nhóm Claude. Để không chờ Codex, tầng vừa và lớn của ba nhóm Claude
+  được chạy bằng một lệnh riêng (`--cohorts claude-sonnet,claude-opus,claude-haiku`, work root riêng), cùng
+  tham số `--jobs 8`, hạt giống, giới hạn thời gian và đề `brief.md`; lệnh tầng nhỏ cũ chạy nốt rồi dừng.
+  Phân tích E2 báo Codex riêng cho tầng nhỏ và gộp "mọi nhóm" chỉ trên các ô có đủ dữ liệu.
+- **2026-11-16 23:20, E2 xong; rút mẫu chấm tay với Codex đã dừng.** Ba nhóm Claude đủ 414/414 lượt đề sơ sài,
+  chạy và chấm xong (23:18). Codex giữ 78/90 ở tầng nhỏ (An quyết định 16/11 tối không chạy nốt 12 lượt bằng
+  tài khoản API: tốn tiền, và Codex trên máy đã tự cập nhật 0.162.1 → 0.169.0 lúc 18:01, nên 12 lượt chạy thêm
+  sẽ khác phiên bản). `draw_human_check.py` thêm cờ `--collection-stopped`: các lượt chưa xong của nhóm đã dừng
+  thu thập không chặn việc rút mẫu; mẫu rút từ các lượt đã có của nhóm đó, phân tầng và hạt giống không đổi
+  (3 lượt mỗi ô nhóm × cách làm, 24 lượt). Lệnh: `draw --collection-stopped codex-luna`. Kết quả E2 cuối:
+  `results/analysis/e2/`.
+- **2026-11-17 (đính chính dòng "2026-11-16 khoảng 09:30, mở kết quả chính").** Đối chiếu `meta.json` khi soạn báo cáo:
+  hai lượt `claude-opus` chạy lại (f15 vibe-r2: 09:15–09:34; f15 vibe-r1: 09:35–09:56, giờ Hà Nội) còn đang chạy
+  lúc mở số mô tả khoảng 09:30, nên lúc đó claude-opus có 136/138 lượt, không phải 138/138 như dòng trên ghi. Hai
+  lượt này chạy bằng đúng lệnh đã chốt (dòng "vận hành" ở trên), không đổi gì sau khi mở; phân tích chính thức
+  (11:15) có đủ 138/138. Ngoài ra lượt chạy chính sớm nhất bắt đầu 18:54 ngày 2026-11-15 theo `meta.json`
+  (15 giây sau thẻ `prereg-v1`), sớm hơn mốc "khoảng 19:16" ghi ở ràng buộc 1; thứ tự thẻ trước, chạy sau không đổi.
+
+- **2026-11-17 (chấm tay E2 xong).** Lợi và Bảo trả phiếu chấm tay 24 lượt đề sơ sài (282 mục; Bảo lúc 09:41,
+  Lợi lúc 10:46), không ô nào trống hay sai giá trị. Phiếu gốc chép vào `results/human-check-returned/`. Không
+  ghi chú nào trùng nguyên văn giữa hai người. `draw_human_check.py kappa`: Lợi–Bảo khớp 96,5% (kappa 0,93);
+  Lợi–người chấm máy 94,3% (0,88); Bảo–người chấm máy 95,4% (0,90). Lệch chủ yếu ở mục người cho `met`, máy cho
+  `not_met`. Mô tả, không có ngưỡng đặt trước.
+- **2026-11-17 (việc thêm cho Lợi, Bảo; mô tả, sau kappa).** Ba việc kiểm tra thêm, không đổi phân tích nào:
+  (1) Lợi, Bảo xem lại độc lập 19 mục mà ít nhất một người chấm khác máy chấm, chọn một nguyên nhân mỗi mục
+  (`analysis/scripts/disagreement_packets.py`; lý do của máy đã che từ chỉ cách làm); (2) Lợi mở lại 24 nguồn
+  và đối chiếu số liệu trích; (3) Bảo tính lại tỉ lệ đạt theo nhóm × tầng × cách làm bằng bảng tính từ
+  `runs.csv`, không dùng mã của nhóm. Kết quả chỉ để mô tả, ghi vào phụ lục.
+- **2026-11-17 (bỏ việc (1)).** An bỏ việc xem lại 19 mục lệch người–máy (và không giao kiểm thứ hai quy tắc
+  nối commit–plan); chỉ giữ việc (2) và (3). Gói đã dựng ở `results/packets/lech-nguoi-may` không dùng.

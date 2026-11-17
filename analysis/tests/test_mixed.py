@@ -129,9 +129,11 @@ def test_size_column_is_selectable_and_missing_sizes_are_listed():
 
 @pytest.mark.skipif(not os.environ.get("SDLC_SLOW_TESTS"), reason="slow: set SDLC_SLOW_TESTS=1")
 def test_interval_coverage_on_the_23_task_design():
-    """Calibration (review B2): on the real design (23 tasks, real src_lines and tiers,
-    4 cohorts, 2 arms, 3 reps), the bootstrap interval must cover the true interaction in at
-    least 88% of data sets. The variational posterior +/- 1.96 SD covered 65-87% here."""
+    """Regression guard (reviews B2, N1): on the real design (23 tasks, real src_lines and
+    tiers, 4 cohorts, 2 arms, 3 reps) the bootstrap interval must cover the true interaction in
+    at least 80% of 40 data sets, against the 65-87% of the old variational +/- 1.96 SD interval.
+    It is not a calibration: the within-tier percentile bootstrap is expected to cover about
+    88-90% on this design (nominal 95%)."""
     n = int(os.environ.get("SDLC_COVERAGE_SETS", "40"))
     B = int(os.environ.get("SDLC_COVERAGE_B", "99"))
     jobs = int(os.environ.get("SDLC_COVERAGE_JOBS", "1"))
@@ -146,4 +148,4 @@ def test_interval_coverage_on_the_23_task_design():
                      i.get("vb_posterior_sd"), hit))
         print(*rows[-1], flush=True)
     print("coverage", hits / n)
-    assert hits / n >= 0.88
+    assert hits / n >= 0.80

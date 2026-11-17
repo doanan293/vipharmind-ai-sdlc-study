@@ -252,8 +252,15 @@ def test_select_tasks(world):
 
 def test_load_cohorts_from_repo_file():
     cohorts = load_cohorts(Path(__file__).parents[1] / "cohorts.toml")
-    assert set(cohorts) == {"claude-sonnet", "claude-opus", "agy-gemini", "codex-luna"}
+    assert set(cohorts) == {
+        "claude-sonnet",
+        "claude-opus",
+        "claude-haiku",
+        "agy-gemini",
+        "codex-luna",
+    }
     assert cohorts["claude-opus"].model == "claude-opus-5-5"
+    assert cohorts["claude-haiku"].model == "claude-haiku-5-5"
     assert cohorts["agy-gemini"].agent == "agy"
     assert cohorts["codex-luna"].model == "gpt-6-luna"
     assert all(c.effort == "medium" and c.accounts for c in cohorts.values())
@@ -943,3 +950,28 @@ def test_regrade_all_records_a_failing_unit_and_continues(world, fake, tmp_path)
     meta = json.loads((bad / "meta.json").read_text())
     assert meta["regrade_status"] == "error" and meta["regrade_error"]
     assert json.loads((bad / "grade.json").read_text())["task_pass"] is True  # old grade kept
+
+
+# --- prereg-v1.2: short-prompt condition ------------------------------------------------------
+
+
+def test_brief_prompt_file_is_used_and_recorded(world, fake, tmp_path):
+    from dataclasses import replace
+
+    _, tasks, _, _ = world
+    (tasks / "t01" / "brief.md").write_text("Add a dosage check.\n")
+    out = tmp_path / "out"
+    cfg = replace(_cfg(world, tmp_path), prompt_file="brief.md")
+    assert run_unit(UNIT, cfg, out) == "done"
+    prompt = (unit_dir(out, UNIT) / "prompt.txt").read_text()
+    assert prompt.endswith("Add a dosage check.\n")
+    assert _meta(out)["prompt_file"] == "brief.md"
+
+
+def test_cli_run_refuses_missing_brief(world, tmp_path):
+    repo, tasks, accounts, _ = world
+    argv = ["run", "--repo", str(repo), "--tasks-dir", str(tasks), "--cohorts", "claude-sonnet"]
+    argv += ["--tasks", "pilot", "--prompt-file", "brief.md", "--out", str(tmp_path / "raw")]
+    argv += ["--work-root", str(tmp_path / "work"), "--accounts-file", str(accounts)]
+    assert main(argv) == 2
+    assert not (tmp_path / "raw").exists()

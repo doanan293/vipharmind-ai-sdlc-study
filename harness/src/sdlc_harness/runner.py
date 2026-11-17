@@ -133,6 +133,7 @@ class RunConfig:
     quota_backoff_s: float = 600.0
     max_quota_retries: int = 20  # per unit; then the unit is deferred to a later run
     keep_work: bool = False
+    prompt_file: str = "prompt.md"  # task text file; "brief.md" for the short-prompt condition
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False, repr=False)
     _task_locks: dict[str, threading.Lock] = field(default_factory=dict, init=False, repr=False)
     _warm: set[str] = field(default_factory=set, init=False, repr=False)
@@ -489,8 +490,11 @@ def run_unit(unit: RunUnit, cfg: RunConfig, out_root: Path, account: int | None 
         "upstream_urls": [],
     }
     try:
-        task = load_task(cfg.tasks_dir / unit.task_id)
+        task = load_task(cfg.tasks_dir / unit.task_id, prompt_name=cfg.prompt_file)
+        if not task.prompt.strip():
+            raise ValueError(f"{unit.task_id}: {cfg.prompt_file} is missing or empty")
         meta["tier"] = task.tier
+        meta["prompt_file"] = cfg.prompt_file
         prompt = render_prompt(task, unit.arm, cfg.prompts_dir).encode()
         (out / "prompt.txt").write_bytes(prompt)
         meta["prompt_sha256"] = hashlib.sha256(prompt).hexdigest()
