@@ -1,6 +1,7 @@
 # Phân việc còn lại đến 24/11
 
-An điều phối và làm phần lớn. Lợi, Bảo đọc và góp ý phần mình nói (chấm tay E2 đã xong 17/11). Mỗi góp ý ghi
+An điều phối và làm phần lớn. Lợi, Bảo làm ba việc kiểm tra có kết quả đưa vào báo cáo, cộng đọc phản biện và ôn hỏi đáp (chấm tay E2 đã
+xong 17/11). Mỗi góp ý ghi
 vào bảng ở mục 4 (ai, mục hay slide nào, góp ý gì, đã sửa chưa). Bảng này là nguồn cho cột "góp ý" trong
 `contributions.md` và `ai-use.md` mục 3.18.
 
@@ -18,28 +19,35 @@ Hạn 21/11, trừ việc 6.
 4. ~~Rà các chỗ `[An xác nhận]`~~ — xong 17/11.
 5. **Đọc lướt toàn bộ báo cáo một lượt** (khoảng 1 giờ). Sửa trực tiếp câu nào đọc không tự nhiên hoặc
    khẳng định quá mức. Chỗ nào không chắc, ghi vào bảng mục 4 để trợ lý sửa.
-6. **Gộp góp ý** của Lợi, Bảo (hạn 22/11), giao trợ lý sửa, rồi đồng ý push (23/11).
+6. **Gộp kết quả và góp ý** của Lợi, Bảo (hạn 22/11): trợ lý đưa kết quả ba việc kiểm tra vào phụ lục, sửa
+   theo góp ý; An duyệt rồi đồng ý push (23/11).
 
-## 2. Lợi (phần nói 1–13)
+## 2. Lợi
 
-Hạn 20/11.
+Hạn 20/11. Gói: `results/packets/goi-loi-viec-them.zip` (repo nghiên cứu).
 
 1. ~~Chấm tay E2 (24 lượt, gửi lại `sheet-loi.csv`)~~ — xong 17/11.
-2. **Đọc slide 1–13 và speaker notes** (`docs/presentation/rehearsal.md`). Ghi chỗ nào nói không trôi, từ nào
-   khó hiểu, slide nào quá chữ.
-3. **Đọc báo cáo mục 1–5** (giới thiệu, tổng quan, câu hỏi, phương pháp, hồi cứu). Ghi chỗ khó hiểu hoặc
-   chỗ thầy có thể hỏi mà báo cáo chưa trả lời.
-4. Đọc các câu đánh dấu **[L]** trong `qa-prep.md`. Ghi câu nào chưa trả lời được.
+2. **Kiểm tra trích dẫn** (khoảng 2 giờ): mở lại 24 nguồn, đối chiếu tên bài, tác giả, năm và từng số liệu
+   báo cáo trích với trang gốc. Điền `kiem-trich-dan.csv` theo `HUONG-DAN-trich-dan.md`.
+3. **Xem lại chỗ lệch người–máy** (khoảng 1,5 giờ): 19 mục mà Lợi hoặc Bảo chấm khác máy; chọn nguyên nhân
+   cho từng mục, làm độc lập với Bảo. Điền `lech-nguoi-may/sheet-lech-loi.csv`. Kết quả vào phụ lục báo cáo.
+4. **Đọc phản biện báo cáo mục 1–5** và slide phần bối cảnh, phương pháp (slide 1–13). Ghi góp ý vào mục 4.
+5. **Ôn hỏi đáp** nhóm A–F, J, M trong `qa-prep.md`; ghi câu nào chưa trả lời được.
 
-## 3. Bảo (phần nói 14–30)
+## 3. Bảo
 
-Hạn 20/11.
+Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
 
 1. ~~Chấm tay E2 (24 lượt, gửi lại `sheet-bao.csv`)~~ — xong 17/11.
-2. **Đọc slide 14–30 và speaker notes.** Như Lợi.
-3. **Đọc báo cáo mục 6–8** (kết quả, bàn luận, kết luận). Ghi chỗ số liệu khó đọc hoặc câu nghe như khẳng
-   định quá mức.
-4. Đọc các câu đánh dấu **[B]** trong `qa-prep.md`. Ghi câu nào chưa trả lời được.
+2. **Kiểm tra độc lập số liệu chính** (khoảng 2 giờ): tính lại tỉ lệ đạt theo nhóm × tầng × cách làm và trung
+   vị token bằng Excel từ `runs.csv`, không dùng mã của nhóm, rồi so với báo cáo. Điền `kiem-so-lieu.csv`
+   theo `HUONG-DAN-so-lieu.md`.
+3. **Xem lại chỗ lệch người–máy**: như Lợi, cùng 19 mục, làm độc lập. Điền `sheet-lech-bao.csv`.
+4. **Đọc phản biện báo cáo mục 6–8** và slide phần kết quả (slide 14–30). Ghi góp ý vào mục 4.
+5. **Ôn hỏi đáp** nhóm G–L, N trong `qa-prep.md`.
+
+Người thuyết trình chưa chốt; speaker notes viết để ai trong nhóm cũng nói được. Cả ba cùng nắm toàn bộ
+slide.
 
 ## 4. Bảng góp ý
 

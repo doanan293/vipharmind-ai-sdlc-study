@@ -7,11 +7,12 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
 | Doãn Văn An | 20252778M | Thực hiện toàn bộ nghiên cứu: thiết kế, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | Thuyết trình phần bối cảnh, phương pháp, hồi cứu (khoảng 7 phút); trả lời câu hỏi; gán nhãn mù nguyên nhân thất bại |
-| Trần Ngọc Bảo | 20251227M | Thuyết trình phần kết quả, kết luận (khoảng 7 phút); trả lời câu hỏi; gán nhãn mù nguyên nhân thất bại |
+| Lê Xuân Lợi | 20252781M | Đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
+| Trần Ngọc Bảo | 20251227M | Đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
-của Lợi và Bảo tập trung ở thuyết trình, hỏi đáp và gán nhãn. Gán nhãn là một bước đo của nghiên cứu: nó
+của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay, kiểm tra), kiểm tra độc lập
+và phản biện. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
 
 Chỗ ghi **[chờ góp ý]** là góp ý của Lợi, Bảo chưa nhận. Số liệu khác lấy từ báo cáo.
@@ -35,11 +36,13 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
 | Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. Xong 17/11: kappa Lợi–Bảo 0,93; người–máy 0,88 và 0,90. |
-| Báo cáo viết (`docs/report/`) | C | H | H | Lợi đọc mục 1–5, Bảo đọc mục 6–8 và góp ý; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
-| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30, phần mình nói; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
-| Tập dượt thuyết trình | H | C | C | |
-| Thuyết trình trên lớp | – | C | C | An không nói trong 15 phút, có mặt để hỗ trợ hỏi đáp |
-| Trả lời câu hỏi | H | C | C | Theo phân công trong `qa-prep.md` |
+| Xem lại chỗ lệch người–máy chấm (19 mục) | H | C | C | Hai người làm độc lập, chọn nguyên nhân từng mục; kết quả vào phụ lục [chờ, hạn 20/11] |
+| Kiểm tra trích dẫn (24 nguồn) | H | C | – | Lợi mở lại từng nguồn, đối chiếu số trích [chờ, hạn 20/11] |
+| Kiểm tra độc lập số liệu chính (tính lại bằng bảng tính) | H | – | C | Bảo tính lại tỉ lệ đạt và token từ `runs.csv`, không dùng mã của nhóm [chờ, hạn 20/11] |
+| Báo cáo viết (`docs/report/`) | C | H | H | Lợi phản biện mục 1–5, Bảo mục 6–8; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
+| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
+| Thuyết trình trên lớp | | | | Chưa phân công người nói; speaker notes viết để ai trong nhóm cũng trình bày được |
+| Chuẩn bị hỏi đáp | C | H | H | An soạn `qa-prep.md`; Lợi ôn nhóm A–F, J, M; Bảo ôn nhóm G–L, N |
 | Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
 | Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |
 
@@ -71,9 +74,9 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
-- Thuyết trình khoảng 7 phút: vấn đề và câu hỏi nghiên cứu, ViPharmind, tổng quan ngắn, phương pháp
-  (bộ đề, hai cách làm, chống rò rỉ), kết quả hồi cứu.
-- Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
+- Kiểm tra trích dẫn: mở lại 24 nguồn, đối chiếu thông tin và số liệu trích [chờ, hạn 20/11].
+- Xem lại 19 mục chấm lệch giữa người và máy, độc lập với Bảo [chờ, hạn 20/11].
+- Ôn hỏi đáp nhóm A–F, J, M trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: xong 17/11, 282 mục; khớp với Bảo kappa 0,93, với người chấm máy kappa 0,88.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
 
@@ -82,9 +85,10 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
   Lợi.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
-- Thuyết trình khoảng 7 phút: kết quả thí nghiệm, Sonnet so với Opus, ba công cụ, đề nhỏ và đề lớn, phân
-  loại lỗi, hạn chế, kết luận.
-- Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
+- Kiểm tra độc lập số liệu chính: tính lại tỉ lệ đạt theo nhóm × tầng × cách làm và token bằng bảng tính
+  từ dữ liệu từng lượt, so với báo cáo [chờ, hạn 20/11].
+- Xem lại 19 mục chấm lệch giữa người và máy, độc lập với Lợi [chờ, hạn 20/11].
+- Ôn hỏi đáp nhóm G–L, N trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: xong 17/11, 282 mục; khớp với Lợi kappa 0,93, với người chấm máy kappa 0,90.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
 
