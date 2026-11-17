@@ -7,8 +7,8 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
 | Doãn Văn An | 20252778M | Thực hiện toàn bộ nghiên cứu: thiết kế, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | Đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
-| Trần Ngọc Bảo | 20251227M | Đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
+| Lê Xuân Lợi | 20252781M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
+| Trần Ngọc Bảo | 20251227M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
 của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay, kiểm tra), kiểm tra độc lập
@@ -23,7 +23,8 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 | Sản phẩm, công việc | An | Lợi | Bảo | Ghi chú |
 | --- | --- | --- | --- | --- |
-| Chọn đề tài, đăng ký nhóm | C | H | H | Lợi, Bảo đồng ý đề tài |
+| Chọn đề tài, đăng ký nhóm | C | H | H | Lợi, Bảo cùng bàn và chọn đề tài |
+| Thiết kế nghiên cứu (câu hỏi, giả thuyết, hai cách làm, tầng kích thước) | C | H | H | An thiết kế chính; Lợi, Bảo góp ý thiết kế |
 | Đề cương 1–2 trang (`proposal/`) | C | – | – | |
 | Tổng quan tài liệu (tìm, mở, kiểm tra 24 nguồn; `docs/report/literature-log.md`) | C | – | – | AI hỗ trợ tìm kiếm; An kiểm tra |
 | Phân tích hồi cứu ViPharmind (RQ1, RQ2; 505 commit, 43 file spec/plan) | C | – | – | Gồm kiểm tra tay 20 commit cho quy tắc nối |
@@ -50,7 +51,8 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 ### Doãn Văn An
 
-- Thiết kế nghiên cứu: câu hỏi RQ1–RQ6, giả thuyết H1–H5, hai cách làm, ba tầng kích thước, bốn nhóm chạy.
+- Thiết kế nghiên cứu: câu hỏi RQ1–RQ6, giả thuyết H1–H5, hai cách làm, ba tầng kích thước, bốn nhóm chạy
+  (Lợi, Bảo góp ý).
 - Tổng quan tài liệu: quy trình tìm có ghi lại (47 → 31 → 18 nguồn mới, cộng 6 nguồn cũ; 24 nguồn trong
   `references.bib`).
 - Phân tích hồi cứu ViPharmind: bản đồ vòng đời, dấu vết spec/plan, mức sửa lại, kiểm tra tay 20 commit.
@@ -71,6 +73,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 ### Lê Xuân Lợi
 
+- Hỗ trợ chọn đề tài và góp ý thiết kế nghiên cứu.
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
@@ -82,6 +85,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 
 ### Trần Ngọc Bảo
 
+- Hỗ trợ chọn đề tài và góp ý thiết kế nghiên cứu.
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
   Lợi.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
