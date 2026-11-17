@@ -17,12 +17,8 @@ Nhóm:
 
 - **Doãn Văn An (20252778M)**, nhóm trưởng: điều phối và giao việc; thiết kế nghiên cứu, xây bộ đề, dựng
   bộ chạy và bộ chấm, chạy thực nghiệm, phân tích thống kê, viết báo cáo, làm slide.
-- **Lê Xuân Lợi (20252781M)**, phần tổng quan và phương pháp: kiểm tra 24 nguồn tham khảo, kiểm tra quy
-  tắc nối plan, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm; thuyết trình vấn đề,
-  phương pháp, kết quả hồi cứu.
-- **Trần Ngọc Bảo (20251227M)**, phần kết quả: tính lại độc lập số liệu chính, kiểm tra quy tắc nối
-  plan, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm; thuyết trình kết quả thí nghiệm,
-  hạn chế, kết luận.
+- **Lê Xuân Lợi (20252781M)**, phần tổng quan và phương pháp: kiểm tra 24 nguồn tham khảo, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm.
+- **Trần Ngọc Bảo (20251227M)**, phần kết quả: tính lại độc lập số liệu chính, gán nhãn nguyên nhân thất bại và chấm tay đối chiếu máy chấm.
 
 ## 2. Mục tiêu, ngoài phạm vi, điều phải tránh
 
