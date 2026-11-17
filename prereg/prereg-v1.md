@@ -563,3 +563,9 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   lượt này chạy bằng đúng lệnh đã chốt (dòng "vận hành" ở trên), không đổi gì sau khi mở; phân tích chính thức
   (11:15) có đủ 138/138. Ngoài ra lượt chạy chính sớm nhất bắt đầu 18:54 ngày 2026-11-15 theo `meta.json`
   (15 giây sau thẻ `prereg-v1`), sớm hơn mốc "khoảng 19:16" ghi ở ràng buộc 1; thứ tự thẻ trước, chạy sau không đổi.
+
+- **2026-11-17 (chấm tay E2 xong).** Lợi và Bảo trả phiếu chấm tay 24 lượt đề sơ sài (282 mục; Bảo lúc 09:41,
+  Lợi lúc 10:46), không ô nào trống hay sai giá trị. Phiếu gốc chép vào `results/human-check-returned/`. Không
+  ghi chú nào trùng nguyên văn giữa hai người. `draw_human_check.py kappa`: Lợi–Bảo khớp 96,5% (kappa 0,93);
+  Lợi–người chấm máy 94,3% (0,88); Bảo–người chấm máy 95,4% (0,90). Lệch chủ yếu ở mục người cho `met`, máy cho
+  `not_met`. Mô tả, không có ngưỡng đặt trước.
