@@ -569,3 +569,8 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   ghi chú nào trùng nguyên văn giữa hai người. `draw_human_check.py kappa`: Lợi–Bảo khớp 96,5% (kappa 0,93);
   Lợi–người chấm máy 94,3% (0,88); Bảo–người chấm máy 95,4% (0,90). Lệch chủ yếu ở mục người cho `met`, máy cho
   `not_met`. Mô tả, không có ngưỡng đặt trước.
+- **2026-11-17 (việc thêm cho Lợi, Bảo; mô tả, sau kappa).** Ba việc kiểm tra thêm, không đổi phân tích nào:
+  (1) Lợi, Bảo xem lại độc lập 19 mục mà ít nhất một người chấm khác máy chấm, chọn một nguyên nhân mỗi mục
+  (`analysis/scripts/disagreement_packets.py`; lý do của máy đã che từ chỉ cách làm); (2) Lợi mở lại 24 nguồn
+  và đối chiếu số liệu trích; (3) Bảo tính lại tỉ lệ đạt theo nhóm × tầng × cách làm bằng bảng tính từ
+  `runs.csv`, không dùng mã của nhóm. Kết quả chỉ để mô tả, ghi vào phụ lục.
