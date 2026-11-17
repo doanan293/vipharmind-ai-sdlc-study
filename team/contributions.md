@@ -6,7 +6,7 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
-| Doãn Văn An | 20252778M | Thực hiện toàn bộ nghiên cứu: thiết kế, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
+| Doãn Văn An | 20252778M | Thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
 | Lê Xuân Lợi | 20252781M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra trích dẫn; phản biện báo cáo, slide; hỏi đáp |
 | Trần Ngọc Bảo | 20251227M | Hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người: gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2, xem lại chỗ lệch người–máy; kiểm tra độc lập số liệu chính; phản biện báo cáo, slide; hỏi đáp |
 
