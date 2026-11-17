@@ -15,8 +15,9 @@ Trần Ngọc Bảo.
 Sản phẩm nộp: `docs/report/main.pdf` và `docs/presentation/vipharmind-slides.pdf`. Báo cáo lần 1 (17/11)
 nằm ở nhánh `report-lan1`.
 
-Không commit: dữ liệu chạy thô (`.worktrees/run*/results/raw`, khoảng 740 MB), gói việc gửi người chấm
-(`data/results/packets/`) và khóa làm mù mới (`*-PRIVATE*.csv`; ba khóa đã commit từ trước vẫn giữ).
+Dữ liệu chạy thô (khoảng 750 MB) và gói việc gửi người chấm không nằm trong git mà ở bản Release
+[`data-v1`](https://github.com/doanan293/vipharmind-ai-sdlc-study/releases/tag/data-v1), kèm `SHA256SUMS`
+và hướng dẫn khôi phục.
 
 Lệnh của từng gói chạy trong thư mục của gói đó (`cd code/harness && uv run pytest`). Mọi đường dẫn trong
 tài liệu đã theo bố cục này. Riêng các thẻ git cũ (`prereg-v1`, `prereg-v1.1`, `prereg-v1.2`, ...) giữ nguyên
