@@ -166,7 +166,7 @@ Lợi và Bảo gán nhãn độc lập \NumLabRuns{} lượt không đạt củ
 \NumLabAdjudicated{} lượt lệch (Bảng~\ref{tab:labels}). \NumLabOutside{} lượt hỏng không vì logic tác tử tự
 viết: \NumLabDeBaiThieuTotal{} vì test ẩn kiểm chi tiết đề không chốt, \NumLabSaiApiCoSanTotal{} vì nối sai
 với mã có sẵn. Hai loại này chiếm tỉ lệ gần như nhau ở hai nhánh
-(\NumLabOutsideSpecPct{}\% và \NumLabOutsideVibePct{}\%): quy trình đặc tả không ngăn được chúng. Cả
+(\NumLabOutsideSpecPct{}\% và \NumLabOutsideVibePct{}\%): trong \NumLabRuns{} lượt này, quy trình đặc tả không làm giảm tỉ lệ của chúng. Cả
 \NumLabHongChucNangCuTotal{} lượt làm hỏng chức năng cũ đều của Opus. Fable 5.2 (người chấm thứ ba ngoài bản
 đăng ký) đồng ý với Lợi \NumLabFableAgreeLoi{} và Bảo \NumLabFableAgreeBao{} trên \NumLabRuns{} lượt (kappa
 \NumLabFableKappaLoi{}, \NumLabFableKappaBao{}), khác chủ yếu ở lượt người gán dùng sai API có sẵn. Kiểm tra mù \NumPassCheckRuns{} lượt
@@ -223,7 +223,7 @@ gộp mọi nhóm có dữ liệu và mọi tầng, là \NumETwoPooledAllPp{} đ
 Haiku \NumETwoHaikuAllPp{} và Codex (chỉ tầng nhỏ) \NumETwoCodexAllPp{} đpt đều có khoảng tin cậy chứa 0. Ở
 tầng vừa và tầng lớn (chỉ tham khảo, \NumMediumTasks{} và \NumFeatureTasks{} nhiệm vụ) hiệu số gộp là
 \NumETwoPooledMediumRefPp{} và \NumETwoPooledLargeRefPp{} đpt, tức không thấy lợi ích; Haiku tầng lớn còn
-nghiêng về vibe (\NumETwoHaikuLargeRefPp{} đpt). Trong Bảng~\ref{tab:e2-x2}, cùng hiệu số là
+nghiêng về vibe (\NumETwoHaikuLargeRefPp{} đpt). Trong thiết kế $2\times2$ (Bảng~\ref{tab:e2-x2}, trung bình gộp các nhóm có cả hai mức đề), hiệu số là
 \NumETwoXScoreBrief{} đpt khi đề sơ sài và \NumETwoXScoreDetailed{} đpt khi đề chi tiết, nên tương tác mức chi tiết $\times$ cách làm là
 \NumETwoXScoreInter{} đpt [\NumETwoXScoreInterLow{}; \NumETwoXScoreInterHigh{}]: cùng chiều giả thuyết
 thăm dò nhưng khoảng tin cậy chứa 0. Chi phí và test

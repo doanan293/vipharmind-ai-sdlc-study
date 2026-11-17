@@ -219,12 +219,13 @@ def say(key: str) -> str:
 
 # ---------------------------------------------------------------- pages
 # Each page: stem, template slide, part of the talk, seconds, edit function, notes (spoken prose only).
-# The presenter is not assigned yet, so notes are speaker-neutral ("nhóm em", "em"); team members are
+# Speakers: Lợi slides 1–13, Bảo from 14 (SPEAKER_A/B, SPLIT_AT). Notes say "nhóm em", "em"; team members are
 # named only for their work. build adds the timing cue ("Khoảng ba mươi giây.") in front of each note.
 
 PAGES: list[dict] = []
 OPEN, METHOD, RESULTS, CLOSE, BACKUP = "Mở đầu", "Phương pháp", "Kết quả", "Kết luận", "Dự phòng"
 PARTS = (OPEN, METHOD, RESULTS, CLOSE)
+SPEAKER_A, SPEAKER_B, SPLIT_AT = "Lợi", "Bảo", 13  # Lợi nói slide 1–13, Bảo từ slide 14
 
 
 def page(stem, src, part, secs, notes):
@@ -235,7 +236,7 @@ def page(stem, src, part, secs, notes):
 
 
 @page("p01_title", 1, OPEN, 20,
-      f"Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
+      f"Em chào thầy và các bạn. Em là Lợi; nhóm em gồm An, Lợi và Bảo. Em trình bày phần một, Bảo trình bày phần hai. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
       f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết là phương pháp.")
 def _(r):
     set_text(r, "shape-1431", ["Phát triển theo đặc tả", "so với vibe coding"], size=46, role="title")
@@ -394,7 +395,7 @@ def _(r):
       f"{N['TaskSrcLinesMin']} đến {N['TaskSrcLinesMax']} dòng; vừa {N['MediumTasks']} nhiệm vụ, hai đến ba "
       f"commit; lớn {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba nhóm, hai cách, ba lần lặp: "
       f"{N['ResRuns']} lượt. Thăm dò thêm {N['EOneRuns']} lượt Haiku và {N['ETwoBriefJudged']} lượt đề sơ "
-      f"sài, chấm theo 306 mục hành vi rút từ test ẩn; {N['ETwoHumanUnits']} lượt được chấm tay để kiểm máy "
+      f"sài, chấm theo danh sách hành vi rút từ test ẩn; {N['ETwoHumanUnits']} lượt được chấm tay để kiểm máy "
       f"chấm. Còn đề chính thì chấm thế này.")
 def _(r):
     set_text(r, "shape-2228", [f"Ba tầng nhiệm vụ, {N['ResRuns']} lượt"])
@@ -414,7 +415,7 @@ def _(r):
         set_text(r, body, b, size=17)
     add(r, text_block("explore", 75, 494, 820, 30,
                       [f"Thăm dò: E1 Haiku {N['EOneRuns']} lượt · E2 đề sơ sài {N['ETwoBriefJudged']} lượt "
-                       f"(Codex dừng sớm), chấm theo 306 mục hành vi, kiểm tay {N['ETwoHumanUnits']} lượt"],
+                       f"(Codex dừng sớm), chấm theo danh sách hành vi, kiểm tay {N['ETwoHumanUnits']} lượt"],
                       size=13, fill=BLUE, bold=True))
 
 
@@ -472,7 +473,7 @@ def _(r):
 
 
 @page("p14_results", 4, RESULTS, 10,
-      f"Phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
+      f"Em là Bảo, em trình bày phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
 def _(r):
     set_text(r, "shape-1483", ["02"], role="num")
     set_text(r, "shape-1491", ["Kết quả"], role="title")
@@ -588,11 +589,10 @@ def _(r):
     add(r, figure_slot("figure", "slot_effect_vs_size.png"))
 
 
-@page("p20_cost", 20, RESULTS, 30,
+@page("p20_cost", 20, RESULTS, 20,
       f"Chi phí quy đổi từ token theo giá API công khai, cho một lượt đạt. Với Claude, đặc tả đắt hơn ở mọi "
       f"ô; Sonnet tầng nhỏ {usd('claude-sonnet', 'small', 'spec')} so với {usd('claude-sonnet', 'small', 'vibe')} "
-      f"đô, gấp đôi. Codex chỉ có cận dưới, cận trên; ở tầng lớn đặc tả lại rẻ hơn vì vibe gần như không "
-      f"đạt. Giờ là một ca cụ thể.")
+      f"đô, gấp đôi. Ở Codex tầng lớn, đặc tả lại rẻ hơn vì vibe gần như không đạt. Giờ là một ca cụ thể.")
 def _(r):
     set_text(r, "shape-2122", ["Chi phí cho một lượt đạt (USD)"])
     rows = [("shape-2124", "shape-2123", "Sonnet", "claude-sonnet"),
@@ -645,31 +645,31 @@ def _(r):
     set_text(r, "shape-1622", [f"{N['LabOutside']}/{N['LabRuns']} lượt hỏng:", "đề không nêu chi tiết,",
                                "hoặc dùng sai mã có sẵn"], size=32)
     set_text(r, "shape-1621",
-             [f"—Như nhau ở hai cách làm: {N['LabOutsideSpecPct']}% / {N['LabOutsideVibePct']}%"],
+             [f"Như nhau ở hai cách làm: {N['LabOutsideSpecPct']}% / {N['LabOutsideVibePct']}%"],
              size=20, role="title")
 
 
-@page("p23_explore", 14, RESULTS, 50,
+@page("p23_explore", 14, RESULTS, 40,
       f"E2 là thăm dò, thêm sau kết quả chính; Codex dừng ở tầng nhỏ. Bỏ chi tiết đề, điểm hành vi giảm "
       f"{say('ETwoXScoreShiftSpec')} điểm ở đặc tả, {say('ETwoXScoreShiftVibe')} ở vibe; đạt hết test ẩn "
       f"giảm khoảng tám mươi, phần lớn vì test gọi tên đề không nêu. Với đề sơ sài, đặc tả hơn vibe "
       f"{say('ETwoPooledSmallPp')} điểm ở tầng nhỏ, từ {say('ETwoPooledSmallLowPp')} đến "
-      f"{say('ETwoPooledSmallHighPp')}, Sonnet {say('ETwoSonnetSmallPp')}; gộp mọi tầng "
+      f"{say('ETwoPooledSmallHighPp')}; gộp mọi tầng "
       f"{say('ETwoPooledAllPp')}, khoảng chứa 0. E1 với Haiku: {N['EOneSmallSpecPct']} so với "
       f"{N['EOneSmallVibePct']} phần trăm, {N['EOneSmallSpecTokensM']} so với {N['EOneSmallVibeTokensM']} "
       f"triệu, cùng hướng.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 600, 52,
-                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", "E2: " + nv("ETwoStatus")],
+                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", "E1, E2: thăm dò, thêm sau kết quả chính"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
     set_text(r, "shape-1916", [f"−{nv('ETwoXScoreShiftSpec')} / −{nv('ETwoXScoreShiftVibe')}"], size=36,
              role="num")
-    set_text(r, "shape-1917", ["E2 · bỏ chi tiết đề: điểm hành vi giảm (đpt), đặc tả / vibe",
+    set_text(r, "shape-1917", ["E2 · bỏ chi tiết đề: điểm danh sách giảm (đpt), đặc tả / vibe",
                                f"Đạt hết test ẩn giảm {nv('ETwoXPassShiftSpec')} / {nv('ETwoXPassShiftVibe')} đpt,",
                                "phần lớn vì test gọi tên mà đề không nêu"],
              size=15)
     set_text(r, "shape-1918", [f"{sg('ETwoPooledSmallPp')} đpt"], size=40, role="num")
-    set_text(r, "shape-1919", ["E2 · đề sơ sài, tầng nhỏ: điểm hành vi, đặc tả − vibe",
+    set_text(r, "shape-1919", ["E2 · đề sơ sài, tầng nhỏ: điểm danh sách, đặc tả − vibe",
                                f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')} · Sonnet "
                                f"{sg('ETwoSonnetSmallPp')} · gộp mọi tầng {sg('ETwoPooledAllPp')} "
                                f"{ci_n('ETwoPooledAllLowPp', 'ETwoPooledAllHighPp')}"], size=15)
@@ -839,19 +839,22 @@ def main():
     for i, p in enumerate(PAGES, 1):
         if p["secs"]:
             t += p["secs"]
-            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | {fmt_secs(p['secs'])} | {fmt_secs(t)} |")
+            who = SPEAKER_A if i <= SPLIT_AT else SPEAKER_B
+            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | {who} | {fmt_secs(p['secs'])} | {fmt_secs(t)} |")
         else:
-            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | – | – |")
+            rows.append(f"| {i} | `{p['stem']}` | {p['part']} | – | – | – |")
     by = {s: sum(p["secs"] for p in PAGES if p["part"] == s) for s in PARTS}
     split = ", ".join(f"{s} {fmt_secs(v)}" for s, v in by.items())
     (HERE / "rehearsal.md").write_text(
         "# Tập dượt\n\n"
         "Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.\n\n"
         f"Tổng thời gian nói: {fmt_secs(t)} ({split}); phần còn lại của 15 phút ({fmt_secs(900 - t)}) dành "
-        "cho chuyển slide. Hỏi đáp 5 phút sau đó. Người thuyết trình chưa phân công: ghi chú viết trung tính "
-        "(\"nhóm em\", \"em\"), một người hay nhiều người đọc đều được; nếu chia người, chuyển người ở đầu một "
-        "phần.\n\n"
-        "| Slide | Trang | Phần | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
+        f"cho chuyển slide và đổi người nói. Hỏi đáp 5 phút sau đó. Người nói: {SPEAKER_A} slide 1–{SPLIT_AT} "
+        f"({fmt_secs(sum(p['secs'] for p in PAGES[:SPLIT_AT]))}), {SPEAKER_B} slide {SPLIT_AT + 1}–"
+        f"{max(i for i, p in enumerate(PAGES, 1) if p['secs'])} ({fmt_secs(sum(p['secs'] for p in PAGES[SPLIT_AT:]))}); "
+        "An điều phối và trả lời câu hỏi kỹ thuật khi được chuyển. Câu \"Khoảng … giây.\" đầu mỗi ghi chú là "
+        "nhắc giờ, không đọc thành tiếng.\n\n"
+        "| Slide | Trang | Phần | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Số liệu\n\n"
         "Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; "
         "đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) "

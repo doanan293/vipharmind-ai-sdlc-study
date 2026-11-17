@@ -7,8 +7,8 @@ thử xác nhận H1 chưa kết luận được, nhưng khoảng tin cậy khô
 \NumResHOneHighPp{} đpt), dù chưa loại được một lợi ích nhỏ. Cái giá thì rõ: gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token
 và \NumResWallRatioMin{} đến \NumResWallRatioMax{} lần thời gian (H2 được ủng hộ ở mọi ô). Với hai mô hình
 Claude, hiệu số âm hoặc bằng không ở mọi tầng, trừ Sonnet tầng vừa
-(\NumResSonnetMediumDiffPp{} đpt, chỉ tham khảo); cả hai gần trần ở tầng nhỏ và vừa, nên đặc tả không có chỗ
-để giúp mô hình yếu hơn (H4 chưa kết luận được), và Sonnet theo đặc tả cùng ước lượng điểm với Opus vibe (khoảng rộng), với
+(\NumResSonnetMediumDiffPp{} đpt, chỉ tham khảo); cả hai gần trần ở tầng nhỏ và vừa, nên khó thấy đặc tả
+giúp mô hình yếu hơn (H4 chưa kết luận được), và Sonnet theo đặc tả cùng ước lượng điểm với Opus vibe (khoảng rộng), với
 \NumResHFourCostRatioPct{}\% chi phí quy đổi.
 
 Dấu hiệu có ích duy nhất nằm ở việc lớn và công cụ đạt thấp nhất: ở ba nhiệm vụ tầng lớn, Codex theo đặc
@@ -17,11 +17,11 @@ tả đạt \NumResCodexLargeSpecPct{}\% so với \NumResCodexLargeVibePct{}\%, 
 H5 chưa kết luận được (hiệu số gộp không tăng rõ theo tầng), đây chỉ là giả thuyết cho nghiên cứu sau, không
 phải bằng chứng rằng đặc tả ``trả vốn'' khi việc đủ lớn. Hướng hiệu số khác nhau giữa hai công cụ,
 nhưng mọi khoảng tin cậy ở tầng nhỏ đều chứa 0, nên chưa thể nói kết luận đổi theo công cụ (RQ4, chỉ còn
-hai công cụ). Thứ nhánh theo đặc tả thường để lại là test: khoảng ba phần tư số lượt có test mới, chạy qua \NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%
+hai công cụ). Thứ nhánh theo đặc tả thường để lại là test: khoảng \NumResSonnetSpecTestsAnyPct{}--\NumResCodexSpecTestsAnyPct{}\% số lượt có test mới, chạy qua \NumResSonnetSpecCovPct{}--\NumResOpusSpecCovPct{}\%
 số dòng mới, trong khi nhánh vibe của Sonnet và Codex gần như không có test. Test ẩn không đo giá trị của
 phần test này; nó chỉ có giá trị ở lần sửa sau, ngoài phạm vi thí nghiệm.
 
-\subsection{Lỗi nằm ở chỗ đề không chốt, không ở logic}
+\subsection{Phần lớn lượt hỏng đến từ chỗ đề không chốt}
 
 Nhãn nguyên nhân thất bại cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của Claude không vì logic
 tác tử tự viết sai, mà vì test ẩn kiểm một chi tiết đề không chốt hoặc vì nối sai với mã có sẵn, và hai
@@ -74,7 +74,8 @@ làm theo đặc tả, nên có thể thiên vị nhánh này. Can thiệp là m
 \texttt{upstream\_urls} chỉ bắt đường dẫn hiện ra trong nhật ký, nên là cận dưới của việc đọc mã gốc, và
 phân tích độ nhạy chỉ bỏ được những lượt bị bắt. Ba tầng có lúc chạy chồng (tối đa 24 phiên thay vì tám),
 nên thời gian chạy có thể dài hơn (không lượt nào hết giờ). Việc làm mù khi gán nhãn
-chỉ là một phần.
+chỉ là một phần. Trợ lý nghiên cứu cùng mô hình với nhóm \texttt{claude-opus} và đã soạn nháp đề bài mà nhóm
+này nhận.
 
 \textit{Tính hợp lệ cấu trúc.} Test ẩn kiểm cả chi tiết đề không chốt: \NumLabDeBaiThieuTotal{} trên
 \NumLabRuns{} lượt hỏng của Claude mang nhãn đề bài thiếu (\texttt{t07} đòi list chứ không phải tuple;

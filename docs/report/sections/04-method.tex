@@ -134,7 +134,7 @@ ngày \mbox{2026-11-15}, vì mọi lượt chạy bằng gói thuê bao.
 
 Đơn vị phân tích là nhiệm vụ: hiệu số của một nhiệm vụ là tỉ lệ đạt theo đặc tả trừ tỉ lệ đạt vibe trên
 các lần lặp hợp lệ, và ước lượng của một nhóm là trung bình hiệu số trên các nhiệm vụ. Khoảng tin cậy 95\%
-là bootstrap lấy mẫu lại nhiệm vụ (10.000 lần). Một giả thuyết có hướng ``được ủng hộ'' khi khoảng tin cậy
+là bootstrap lấy mẫu lại nhiệm vụ (\NumResBootstrapB{} lần). Một giả thuyết có hướng ``được ủng hộ'' khi khoảng tin cậy
 nằm hẳn về phía giả thuyết, ``trái với giả thuyết'' khi nằm hẳn về phía ngược lại, còn lại là ``chưa kết
 luận được''. Đề tài không dựa vào ngưỡng $p$ và không hiệu chỉnh so sánh nhiều lần, nhưng báo cáo số phép so.
 
@@ -147,7 +147,7 @@ của hai hiệu số, cùng tập nhiệm vụ lấy mẫu lại cho hai mô h�
 \item \textbf{H5, RQ6.} Phép thử chính là hiệu của hai hiệu số (tầng lớn trừ tầng nhỏ), gộp các nhóm đủ ở cả
 ba tầng. Bổ trợ là hồi quy logistic hỗn hợp \texttt{pass \textasciitilde{} arm} $\times$
 \texttt{log(src\_lines) + cohort + (1 + arm | task)} (statsmodels, ước lượng biến phân), khoảng tin cậy
-bằng bootstrap cụm theo nhiệm vụ (999 lần), lùi về mô hình đơn giản hơn theo thứ tự chốt trước khi không hội
+bằng bootstrap cụm theo nhiệm vụ (\NumResModelBootstrapB{} lần), lùi về mô hình đơn giản hơn theo thứ tự chốt trước khi không hội
 tụ hoặc suy biến. H5 chỉ ``được ủng hộ'' khi khoảng tin cậy của phép thử chính nằm hẳn trên 0 \emph{và} hệ
 số tương tác trên thang logit cùng hướng, để không kết luận chỉ vì tầng nhỏ chạm trần.
 \item \textbf{H2, H3, chi phí.} Hiệu theo cặp cho token, thời gian, lỗi tĩnh, tỉ lệ lượt có hồi quy và chỉ
@@ -176,7 +176,7 @@ số lượt theo trạng thái. Mọi thay đổi sau thẻ được ghi kèm l
 Fable 5.2, một tác tử AI chạy tách khỏi phiên soạn thảo, phản biện bản đăng ký, đề bài tầng vừa và tầng
 lớn, và mã phân tích khi chưa có kết quả chính; mọi điểm chặn được sửa trước thẻ.
 
-Hạn chót thu dữ liệu là \mbox{2026-11-29}. Một (nhóm, tầng) chưa chạy đủ ở hạn chót bị loại khỏi phép thử
+Hạn chót thu dữ liệu trong bản đăng ký là \mbox{2026-11-29} (thực tế thu xong trước hạn). Một (nhóm, tầng) chưa chạy đủ ở hạn chót bị loại khỏi phép thử
 xác nhận và phép thử gộp nhóm, và chỉ được mô tả. Cả bốn tài khoản Antigravity hết hạn mức tuần trước
 khi \texttt{agy-gemini} chạy xong, và nhóm này bị bỏ (mục~\ref{sec:data-collected}). Bản bổ sung
 \texttt{prereg-v1.2}, viết sau khi mở kết quả chính, thêm hai thí nghiệm thăm dò: E1 (Claude Haiku 5.5, thiết kế

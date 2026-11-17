@@ -3,7 +3,7 @@
 Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn An, có trợ lý AI soạn nháp (xem
 `team/ai-use.md`, mục 3.20). Hai bạn đọc, tự nói lại bằng lời của mình, đừng học thuộc.
 
-Ký hiệu: **[L]** Lợi trả lời chính, **[B]** Bảo trả lời chính. Người kia bổ sung nếu cần. Câu đánh dấu ★ là
+Ký hiệu: **[L]** Lợi trả lời chính (phần slide 1–13), **[B]** Bảo trả lời chính (slide 14–26). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
 `summary.json` của `results/analysis/`); "mục 6.5", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.
@@ -32,7 +32,7 @@ chỉ người trong nhóm trả lời được.
 | Giới hạn thời gian | 3600 s / 7200 s / 10800 s |
 | Thống kê | Bootstrap theo nhiệm vụ, 10.000 lần, hạt giống 20261115; mô hình hỗn hợp: bootstrap cụm 999 lần |
 | Chấm tay E2 | Lợi, Bảo chấm độc lập 24 lượt, 282 mục: hai người khớp 96% số mục (kappa 0,93); người chấm máy khớp Lợi 94% (kappa 0,88), Bảo 95% (kappa 0,90), lệch chủ yếu do máy khắt khe hơn |
-| Hạn thu dữ liệu | 2026-11-29 |
+| Hạn thu dữ liệu | 2026-11-29 (theo bản đăng ký; thực tế thu xong trước hạn) |
 | Chạy thử (cấu hình cũ) | Claude: spec 11/12, vibe 12/12 |
 | Kết quả chính (đpt = điểm phần trăm) | H1 chưa kết luận được: −2,2 đpt [−6,7; 0,0]; H5 chưa kết luận được: 3,7 đpt [−3,0; 11,1], hệ số tương tác 0,16 [−0,43; 0,44]; H2 được ủng hộ ở mọi ô; kappa nhãn thất bại 0,95 (đồng ý 29/30) |
 
@@ -60,8 +60,8 @@ Cả hai nhận cùng đề bài, cùng mô hình, cùng công cụ, không ngư
 trình đặc tả tự động" vì không có người duyệt đặc tả.
 
 **A4. Đóng góp mới của đề tài là gì?**
-Một thí nghiệm có đối chứng trên commit thật, chấm bằng test ẩn, thiết kế cho bốn tổ hợp công cụ và mô hình
-(phân tích ba, vì `agy-gemini` bị bỏ do hết hạn mức; thêm Haiku ở phần thăm dò E1, E2), và trải ba cỡ nhiệm vụ từ một commit tới cỡ một tính năng (H5). Toàn bộ thiết kế, nhiệm vụ, mã chấm và kế
+Một thí nghiệm có đối chứng trên commit thật, chấm bằng test ẩn, phân tích ba tổ hợp công cụ và mô hình
+(thiết kế bốn, vì `agy-gemini` bị bỏ do hết hạn mức; thêm Haiku ở phần thăm dò E1, E2), và trải ba cỡ nhiệm vụ từ một commit tới cỡ một tính năng (H5). Toàn bộ thiết kế, nhiệm vụ, mã chấm và kế
 hoạch phân tích được chốt trước bằng thẻ git. Phần hồi cứu cho thấy quy trình mà thí nghiệm tái hiện thực
 sự đã được dùng.
 
@@ -80,8 +80,8 @@ phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai 
 
 **B3. ★ Bản gốc của ViPharmind được làm theo đặc tả. Test ẩn có thiên vị nhánh theo đặc tả không?**
 Có thể, và báo cáo ghi rõ là hạn chế. Test ẩn kiểm hành vi qua giao diện đề bài nêu, không kiểm cấu trúc
-bên trong, nên phần thiên vị (nếu có) nằm ở hành vi chứ không ở cách tổ chức mã. Nếu kết quả nghiêng về
-đặc tả, đây là một cách giải thích khác phải xét; nếu không nghiêng, hạn chế này không làm yếu kết luận.
+bên trong, nên phần thiên vị (nếu có) nằm ở hành vi chứ không ở cách tổ chức mã. Kết quả không nghiêng về
+đặc tả (H1 −2,2 đpt [−6,7; 0,0]), nên nếu có thiên vị thì kết luận "không thấy lợi ích" càng chắc hơn.
 
 **B4. Vì sao không có nhánh "đặc tả do người viết hoặc duyệt"?**
 Đặc tả gốc của ViPharmind viết cho phần việc lớn hơn một commit và chỉ có ở một số nhiệm vụ, nên không

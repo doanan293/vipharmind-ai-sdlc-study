@@ -19,7 +19,7 @@ Hạn 21/11, trừ việc 6.
 4. ~~Rà các chỗ `[An xác nhận]`~~ — xong 17/11.
 5. **Đọc lướt toàn bộ báo cáo một lượt** (khoảng 1 giờ). Sửa trực tiếp câu nào đọc không tự nhiên hoặc
    khẳng định quá mức. Chỗ nào không chắc, ghi vào bảng mục 4 để trợ lý sửa.
-6. **Gộp kết quả và góp ý** của Lợi, Bảo (hạn 22/11): trợ lý đưa kết quả ba việc kiểm tra vào phụ lục, sửa
+6. **Gộp kết quả và góp ý** của Lợi, Bảo (hạn 22/11): trợ lý đưa kết quả hai việc kiểm tra vào phụ lục, sửa
    theo góp ý; An duyệt rồi đồng ý push (23/11).
 
 ## 2. Lợi
@@ -43,8 +43,8 @@ Hạn 20/11. Gói: `results/packets/goi-bao-viec-them.zip`.
 3. **Đọc phản biện báo cáo mục 6–8** và slide phần kết quả (slide 14–30). Ghi góp ý vào mục 4.
 4. **Ôn hỏi đáp** nhóm G–L, N trong `qa-prep.md`.
 
-Người thuyết trình chưa chốt; speaker notes viết để ai trong nhóm cũng nói được. Cả ba cùng nắm toàn bộ
-slide.
+Người thuyết trình: Lợi slide 1–13 (bối cảnh, phương pháp), Bảo slide 14–26 (kết quả, kết luận); An điều
+phối và trả lời câu hỏi kỹ thuật khi được chuyển. Cả ba cùng nắm toàn bộ slide.
 
 ## 4. Bảng góp ý
 
