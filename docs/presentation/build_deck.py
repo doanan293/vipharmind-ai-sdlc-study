@@ -521,9 +521,11 @@ def _(r):
     delete_icon_use(r, "imported/flat_slide_12_ill01")
     set_text(r, "shape-1841", ["RQ4: đổi công cụ,", "kết luận có giữ?"], role="title")
     set_text(r, "shape-1842", ["Hiệu số tỉ lệ đạt theo", "nhóm và tầng, KTC 95%.", "",
-                               "Claude: âm hoặc 0", "ở mọi tầng.", "",
-                               "Codex: dương ở tầng", "nhỏ và lớn; chỉ ô", "tầng lớn được ủng hộ",
-                               f"({N['ResCodexLargeSpecPct']}% so với {N['ResCodexLargeVibePct']}%)."],
+                               "Claude: âm hoặc 0, trừ", "Sonnet tầng vừa",
+                               f"(+{N['ResSonnetMediumDiffPp']}, chỉ tham khảo).", "",
+                               "Codex: dương ở tầng", "nhỏ và lớn; ô lớn",
+                               f"({N['ResCodexLargeSpecPct']}% so với {N['ResCodexLargeVibePct']}%)",
+                               "chỉ có 3 nhiệm vụ."],
              size=16)
     add(r, figure_slot("figure", "slot_pass_diff_by_cohort.png"))
 
@@ -660,8 +662,12 @@ def _(r):
       "tiết đề không chốt, hoặc vì agent nối sai với mã có sẵn của dự án, và điều này như nhau ở hai cách làm. "
       "Phân tích đầy đủ để ở báo cáo cuối kỳ.")
 def _(r):
-    set_text(r, "shape-1622", ["Phần lớn lượt hỏng:", "đề không chốt, hoặc", "nối sai mã có sẵn"], size=32)
-    set_text(r, "shape-1621", ["—Hiếm khi do logic sai; như nhau ở hai cách làm"], size=20, role="title")
+    set_text(r, "shape-1622", [f"{N['LabOutside']}/{N['LabRuns']} lượt hỏng:",
+                               f"đề không chốt ({N['LabDeBaiThieuTotal']}),",
+                               f"nối sai mã có sẵn ({N['LabSaiApiCoSanTotal']})"], size=32)
+    set_text(r, "shape-1621", [f"—Như nhau ở hai cách ({N['LabOutsideSpecPct']}% / {N['LabOutsideVibePct']}%);",
+                               f"Lợi, Bảo khớp {N['LabAgree']}/{N['LabRuns']}, kappa {N['LabKappa']}"],
+             size=20, role="title")
 
 
 @page("p23_explore", 14, BAO, 45,
@@ -676,14 +682,15 @@ def _(r):
       f"token. Vì là thăm dò, nhóm chỉ đọc đây là xu hướng; số theo từng nhóm và tầng để ở báo cáo cuối kỳ.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 600, 52,
-                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", f"Thăm dò, đã xong · {nv('ETwoLabel')}"],
+                      ["Câu hỏi mở: đề chỉ một hai câu thì sao?", "Thăm dò, thêm sau kết quả chính · Codex dừng sớm"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"{sg('ETwoPooledSmallPp')} đpt"], size=40, role="num")
-    set_text(r, "shape-1917", ["E2 · đề sơ sài, tầng nhỏ, gộp: đặc tả − vibe",
-                               f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}: lợi nhỏ"], size=15)
-    set_text(r, "shape-1918", [f"{sg('ETwoXHiddenDetailVibe')} đpt"], size=40, role="num")
-    set_text(r, "shape-1919", ["Lượt đạt hết test ẩn khi đề sơ sài",
-                               f"(vibe; đặc tả {sg('ETwoXHiddenDetailSpec')}): đề rõ quan trọng hơn"], size=15)
+    set_text(r, "shape-1916", [f"{sg('ETwoPooledSmallPp')} điểm"], size=40, role="num")
+    set_text(r, "shape-1917", [f"E2 đề sơ sài, tầng nhỏ, gộp: KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}",
+                               f"Gộp mọi tầng {sg('ETwoPooledAllPp')} {ci_n('ETwoPooledAllLowPp', 'ETwoPooledAllHighPp')}: chứa 0"],
+             size=15)
+    set_text(r, "shape-1918", [f"{sg('ETwoXScoreDetailVibe')} điểm"], size=40, role="num")
+    set_text(r, "shape-1919", ["Điểm danh sách khi bỏ chi tiết khỏi đề",
+                               f"(vibe; đặc tả {sg('ETwoXScoreDetailSpec')}): đề rõ quan trọng hơn"], size=15)
     set_text(r, "shape-1920", ["E1"], size=40, role="num")
     set_text(r, "shape-1921", ["Haiku, đề chi tiết: không đạt hơn,",
                                f"tốn ×{nv('EOneTokenRatio')} token"], size=16)
@@ -696,10 +703,10 @@ def _(r):
       "biết: một dự án, ít nhiệm vụ lớn, và đề chi tiết gần như đã là đặc tả.")
 def _(r):
     set_text(r, "shape-1666", ["Việc tiếp theo"])
-    set_text(r, "shape-1671", ["Đang làm"])
-    set_text(r, "shape-1668", ["Lợi, Bảo chấm tay", "24 lượt E2, kiểm", "người chấm máy"], size=16)
+    set_text(r, "shape-1671", ["Đã xong"])
+    set_text(r, "shape-1668", ["Lợi, Bảo chấm tay", "24 lượt E2, kappa 0,93;", "máy khớp 0,88 / 0,90"], size=16)
     set_text(r, "shape-1672", ["Đến 24/11"])
-    set_text(r, "shape-1669", ["Phân tích chi tiết,", "hồi cứu, kết luận;", "nộp báo cáo cuối"], size=16)
+    set_text(r, "shape-1669", ["Lợi, Bảo duyệt slide,", "báo cáo; An duyệt", "lần cuối, nộp"], size=16)
     set_text(r, "shape-1667", ["Hạn chế"])
     set_text(r, "shape-1670", ["Một dự án; ít", "nhiệm vụ lớn; đề", "gần như đặc tả"], size=16)
 
@@ -818,13 +825,89 @@ def _(r):
 LAN1 = ["p01_title", "p03_motivation", "p04_rq", "p08_arms", "p10_tiers", "p15_h1", "p16_rq4", "p17_h2h3",
         "p22_labels", "p23_explore", "p24_next", "p26_thanks"]
 PAGES[:] = [next(p for p in PAGES if p["stem"] == stem) for stem in LAN1]
+
+
+def neg(key: str) -> str:
+    """numbers.json value read aloud: '-6,7' -> 'âm 6,7'."""
+    v = N[key]
+    return "âm " + v[1:] if v.startswith("-") else v
+
+
+SECS_VI = {10: "mười", 15: "mười lăm", 20: "hai mươi", 25: "hai mươi lăm", 30: "ba mươi", 35: "ba mươi lăm",
+           40: "bốn mươi", 45: "bốn mươi lăm", 50: "năm mươi", 55: "năm mươi lăm", 60: "sáu mươi", 65: "sáu mươi lăm"}
+
+# Spoken script for the 17/11 talk: speaker-neutral (whoever presents), about 140 syllables a minute.
+# stem -> (seconds, script). The notes start with the timing only, as a stage direction.
+TALK = {
+    "p01_title": (20,
+        "Em chào thầy. Đề tài của nhóm em hỏi: bắt trợ lý lập trình AI làm theo đặc tả có bù được cho đề bài "
+        "ngắn của vibe coding không. Em đi qua vấn đề, thiết kế, kết quả chính và kết quả thăm dò."),
+    "p03_motivation": (40,
+        "Coding agent như Claude Code hay Codex tự đọc mã, sửa file và chạy test. Vibe coding là giao vài câu "
+        "ngắn, để agent tự đoán phần đề bỏ ngỏ. Phát triển theo đặc tả, kiểu Superpowers, hứa bù chỗ đó: agent "
+        "viết thiết kế, kế hoạch, test trước, rồi kiểm lại. Nhưng chưa có thí nghiệm nào chỉ đổi lời dặn, giữ "
+        "nguyên đề, công cụ, mô hình, và chấm bằng test mà agent không thấy. Nhóm em làm thí nghiệm đó."),
+    "p04_rq": (35,
+        "Nhóm em chốt sáu câu hỏi trước khi chạy. Hồi cứu là RQ1 và RQ2, trên lịch sử git của ViPharmind, trợ lý "
+        "tra cứu thuốc mà An xây cùng AI. Thực nghiệm là RQ3 đến RQ6: đặc tả có đạt hơn, tốn hơn bao nhiêu, và "
+        "có giữ khi đổi công cụ, mô hình, cỡ nhiệm vụ. Hôm nay em tập trung vào thực nghiệm, với đề chi tiết nêu "
+        "đủ tên hàm. Trước hết là hai cách làm."),
+    "p08_arms": (30,
+        "Hai cách làm chỉ khác lời dặn trước đề bài. Vibe chỉ một câu: cài đặt thay đổi sau. Đặc tả thì agent "
+        "viết thiết kế, rồi kế hoạch, làm từng phần với test trước, và chạy cả bộ test trước khi dừng. Còn lại "
+        "giống hệt. Một lượt đạt khi qua mọi test ẩn lấy từ commit gốc, mà agent không thấy. Tiếp theo là quy mô."),
+    "p10_tiers": (35,
+        f"Nhiệm vụ lấy từ commit thật, chia ba tầng: {N['Tasks']} nhỏ, {N['MediumTasks']} vừa, và "
+        f"{N['FeatureTasks']} lớn. Ba nhóm là Claude Code với Sonnet, với Opus, và Codex, hai "
+        f"cách làm, ba lần lặp, ra {N['ResRuns']} lượt. Thêm hai thí nghiệm thăm dò: E1 chạy "
+        f"Haiku {N['ResRunsPerCohort']} lượt, E2 dùng đề sơ sài {N['ETwoBriefJudged']} lượt, chấm theo 306 mục "
+        f"hành vi, máy chấm không biết cách làm. Giờ đến kết quả chính."),
+    "p15_h1": (40,
+        f"Đây là phép thử xác nhận duy nhất, chốt trước: Sonnet ở tầng nhỏ. Đặc tả đạt {N['ResHOneSpecPct']} "
+        f"phần trăm, vibe {N['ResHOneVibePct']} phần trăm. Hiệu số {neg('ResHOneEstPp')} điểm, khoảng tin cậy "
+        f"95 phần trăm từ {neg('ResHOneLowPp')} đến 0. Khoảng này chứa 0, nên H1 chưa kết luận được. Cận trên "
+        f"bằng 0, nên dữ liệu không ủng hộ lợi ích đáng kể nào của đặc tả ở đây. Đổi công cụ thì sao?"),
+    "p16_rq4": (35,
+        f"Hình là hiệu số theo nhóm và tầng. Với Claude, hiệu số âm hoặc "
+        f"0, trừ Sonnet tầng vừa cộng {N['ResSonnetMediumDiffPp']}, chỉ để tham khảo. Codex dương ở tầng nhỏ và "
+        f"lớn. Ô tầng lớn, {N['ResCodexLargeSpecPct']} so với {N['ResCodexLargeVibePct']} phần trăm, nghiêng về "
+        f"đặc tả, nhưng chỉ có 3 nhiệm vụ, khoảng tin cậy suy biến, và là một trong "
+        f"{N['ResSecondaryComparisons']} phép so phụ không hiệu chỉnh. Tiếp theo là chi phí và chất lượng."),
+    "p17_h2h3": (40,
+        f"H2 ủng hộ ở mọi ô: đặc tả tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token, "
+        f"{N['ResWallRatioMin']} đến {N['ResWallRatioMax']} lần thời gian. H3 lẫn lộn: lỗi tĩnh có {H3A_BAD} ô "
+        f"trái giả thuyết. Ở Codex tầng lớn, nhánh vibe làm hỏng test cũ ở {N['ResCodexLargeRegVibePct']} phần "
+        f"trăm, đặc tả thì không lượt nào. Chỉ số bảo trì không kém quá 5 điểm ở {H3C_OK} trên "
+        f"{H3C_ALL} ô. Khác rõ nhất: khoảng ba phần tư lượt đặc tả để lại test tự viết. Vậy lượt hỏng vì đâu?"),
+    "p22_labels": (30,
+        f"Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt hỏng của Claude, khớp {N['LabAgree']} trên "
+        f"{N['LabRuns']}, kappa {N['LabKappa']}. {N['LabOutside']} lượt là do đề không chốt chi tiết, "
+        f"{N['LabDeBaiThieuTotal']} lượt, hoặc dùng sai mã có sẵn, {N['LabSaiApiCoSanTotal']} lượt. Như nhau ở "
+        f"hai cách làm, {N['LabOutsideSpecPct']} và {N['LabOutsideVibePct']} phần trăm. Vậy đề ngắn hơn nữa "
+        f"thì sao?"),
+    "p23_explore": (65,
+        f"Hai thí nghiệm này thêm sau kết quả chính, nên chỉ là thăm dò. E2 cho hai cách làm cùng một đề sơ sài. "
+        f"Codex hết hạn mức, dừng ở 78 trên 90 lượt tầng nhỏ. Ở tầng "
+        f"nhỏ, gộp bốn nhóm, đặc tả hơn vibe {N['ETwoPooledSmallPp']} điểm, khoảng tin cậy từ "
+        f"{neg('ETwoPooledSmallLowPp')} đến {neg('ETwoPooledSmallHighPp')}, riêng Sonnet là "
+        f"{N['ETwoSonnetSmallPp']}. Gộp mọi tầng chỉ còn {N['ETwoPooledAllPp']}, khoảng tin cậy từ "
+        f"{neg('ETwoPooledAllLowPp')} đến {neg('ETwoPooledAllHighPp')}, chứa 0. Tác động của đề lớn hơn nhiều: "
+        f"bỏ chi tiết làm điểm giảm {N['ETwoXScoreDetailVibe'].lstrip('-')} điểm với vibe, "
+        f"{N['ETwoXScoreDetailSpec'].lstrip('-')} với đặc tả. E1, Haiku với đề chi tiết: đặc tả không đạt "
+        f"hơn, tốn gấp {N['EOneTokenRatio']} lần token. Cuối cùng là việc còn lại."),
+    "p24_next": (40,
+        "Chấm tay đã xong: Lợi và Bảo chấm độc lập 24 lượt E2. Hai bạn khớp nhau với kappa "
+        "0,93, máy chấm khớp từng bạn 0,88 và 0,90, lệch chủ yếu do máy khắt khe hơn. Trước 24 tháng 11, Lợi và "
+        "Bảo duyệt slide, báo cáo, An duyệt lần cuối rồi nộp. Hạn chế: một dự án, ít nhiệm vụ lớn, và đề chi "
+        "tiết gần như đã là đặc tả."),
+    "p26_thanks": (10,
+        "Phần trình bày của nhóm em đến đây là hết. Em cảm ơn thầy và xin nhận câu hỏi."),
+}
 for p in PAGES:
-    p["speaker"] = "Doãn Văn An"
-    p["notes"] = re.sub(r"^Người nói: (Lợi|Bảo)", "Người nói: An", p["notes"])
-PAGES[0]["notes"] = ("Người nói: An, khoảng hai mươi giây. Em chào thầy. Đây là báo cáo lần 1 của nhóm em: đề tài "
-                     "hỏi khi giao việc cho trợ lý lập trình AI, bắt nó làm theo đặc tả có bù được cho đề bài ngắn "
-                     "của vibe coding không. Hôm nay em trình bày vấn đề, thiết kế, kết quả chính với đề chi tiết, "
-                     "và xu hướng ban đầu của hai thí nghiệm thăm dò; phân tích đầy đủ ở báo cáo cuối ngày 24/11.")
+    secs, script = TALK[p["stem"]]
+    p["speaker"] = "Người trình bày"
+    p["secs"] = secs
+    p["notes"] = f"Khoảng {SECS_VI[secs]} giây. {script}"
 
 # Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
 # rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are complete (teaser: headline only).
@@ -873,7 +956,7 @@ def main():
     (HERE / "rehearsal.md").write_text(
         "# Tập dượt (báo cáo lần 1, 17/11)\n\n"
         "Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.\n\n"
-        f"Tổng thời gian nói: {fmt_secs(t)}; An trình bày, hỏi đáp sau đó.\n\n"
+        f"Tổng thời gian nói: {fmt_secs(t)}; một người trình bày (chưa chốt ai), hỏi đáp sau đó.\n\n"
         "| Slide | Trang | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Chỗ chờ kết quả\n\n"
         "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. "
