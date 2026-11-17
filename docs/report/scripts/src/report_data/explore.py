@@ -1,8 +1,8 @@
 """Hai thí nghiệm thăm dò của prereg-v1.2: E2 (đề sơ sài, 2 x 2) và E1 (Haiku theo thiết kế gốc).
 
-Nguồn (trong gốc repo báo cáo, chép từ repo nghiên cứu bằng refresh-interim.sh):
-- results/analysis/e2-interim/: summary.json, runs.csv của sdlc-e2 (có thể chưa đủ lượt: sơ bộ);
-- results/analysis/e1/summary.json của sdlc-e1 (cùng định dạng với thí nghiệm chính), nếu đã chạy.
+Nguồn (trong gốc repo báo cáo, chép từ repo nghiên cứu bằng code/refresh-interim.sh):
+- data/results/analysis/e2-interim/: summary.json, runs.csv của sdlc-e2 (có thể chưa đủ lượt: sơ bộ);
+- data/results/analysis/e1/summary.json của sdlc-e1 (cùng định dạng với thí nghiệm chính), nếu đã chạy.
 Mọi khóa thiếu nguồn hoặc chưa có ước lượng là None (\\pending). Hiệu số tính bằng điểm phần trăm.
 Câu đọc kết quả (ETwoReading...) sinh theo dấu của khoảng tin cậy và phạm vi dữ liệu, để văn bản tự
 cập nhật khi chạy lại.
@@ -18,8 +18,8 @@ from report_data import fmt
 
 Numbers = dict[str, str | None]
 
-E2_DIR = Path("results/analysis/e2-interim")
-E1_DIR = Path("results/analysis/e1")
+E2_DIR = Path("data/results/analysis/e2-interim")
+E1_DIR = Path("data/results/analysis/e1")
 HANOI = timezone(timedelta(hours=7))
 
 COHORTS = [

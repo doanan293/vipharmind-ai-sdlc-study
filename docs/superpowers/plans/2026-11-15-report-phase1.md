@@ -4,7 +4,7 @@
 
 **Goal:** Báo cáo LaTeX có khung đầy đủ, số liệu sinh tự động, mục 1–5 viết xong; tài liệu gán nhãn; báo cáo tiến độ dựng được khi có kết quả chạy thử.
 
-**Architecture:** `docs/report/` là một dự án LaTeX (XeLaTeX, `latexmk`) cùng kiểu `proposal/`. Gói Python `report_data` trong `docs/report/scripts/` đọc kết quả hồi cứu, phễu sàng lọc, nhật ký tài liệu và (khi có) kết quả chạy thử, rồi sinh `generated/numbers.tex`, `generated/numbers.json`, `generated/tables/*.tex`, `generated/figures/*.pdf`. Văn bản chỉ gọi macro số liệu.
+**Architecture:** `docs/report/` là một dự án LaTeX (XeLaTeX, `latexmk`) cùng kiểu `docs/proposal/`. Gói Python `report_data` trong `docs/report/scripts/` đọc kết quả hồi cứu, phễu sàng lọc, nhật ký tài liệu và (khi có) kết quả chạy thử, rồi sinh `generated/numbers.tex`, `generated/numbers.json`, `generated/tables/*.tex`, `generated/figures/*.pdf`. Văn bản chỉ gọi macro số liệu.
 
 **Tech Stack:** XeLaTeX, latexmk, BibTeX, Python 3.12 + uv, matplotlib, pytest, bash, `pdfinfo`, `pdftotext`.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Làm trong worktree `/home/andv/personal/vipharmind-ai-sdlc-study-report`, nhánh `report` tách từ `harness` (đã commit), đã gộp nhánh `retrospective` để có `retrospective/out/`.
+- Làm trong worktree `/home/andv/personal/vipharmind-ai-sdlc-study-report`, nhánh `report` tách từ `harness` (đã commit), đã gộp nhánh `retrospective` để có `data/retrospective/`.
 - Tiếng Việt khoa học, câu ngắn, không thổi phồng; "vibe coding", "coding agent", tên công cụ, tên mô hình giữ tiếng Anh; số thập phân dấu phẩy.
 - Times New Roman 12pt, A4, lề 2,5 cm, giãn dòng 1,2; trang bìa: tên đề tài, "Chuyên đề nghiên cứu 1 (IT5421)", "Giảng viên: TS. Nguyễn Thanh Hùng", ba thành viên kèm mã (Doãn Văn An 20252778M, Lê Xuân Lợi 20252781M, Trần Ngọc Bảo 20251227M), tháng 11/2026; không logo.
 - Mọi con số trong văn bản là macro từ `generated/numbers.tex`; không gõ số kết quả bằng tay (số đếm cố định trong câu chữ như "ba nhóm" được phép).
@@ -47,7 +47,7 @@
 
 **Interfaces:**
 - `fmt.number(x: float, decimals: int = 1) -> str` (dấu phẩy thập phân, dấu chấm phân cách nghìn: `13412 → "13.412"`, `88.66 → "88,7"`); `fmt.percent(part: int, total: int, decimals: int = 1) -> str`.
-- `sources.load(root: Path) -> dict[str, Any]` đọc: `retrospective/out/{summary.md không đọc; lifecycle_by_stage.csv, rework_summary.csv, sessions.csv, spec_trace.csv, link-check.csv, commits.csv}`, `tasks/screening.json`, `tasks/t*/task.toml`, `tasks/p*/task.toml`, `docs/report/data/literature.toml` (Task 2 tạo, chép số từ `literature-log.md`: 15 truy vấn, 47 tìm thấy, 31 sàng lọc, 18 giữ, 24 tổng, số nguồn mỗi nhóm), `results/raw/` nếu có; thiếu nguồn nào thì khóa tương ứng là `None`.
+- `sources.load(root: Path) -> dict[str, Any]` đọc: `data/retrospective/{summary.md không đọc; lifecycle_by_stage.csv, rework_summary.csv, sessions.csv, spec_trace.csv, link-check.csv, commits.csv}`, `data/tasks/screening.json`, `data/tasks/t*/task.toml`, `data/tasks/p*/task.toml`, `docs/report/data/literature.toml` (Task 2 tạo, chép số từ `literature-log.md`: 15 truy vấn, 47 tìm thấy, 31 sàng lọc, 18 giữ, 24 tổng, số nguồn mỗi nhóm), `data/results/raw/` nếu có; thiếu nguồn nào thì khóa tương ứng là `None`.
 - `build.write(data, out: Path) -> None` sinh `numbers.tex` (`\newcommand{\Num<Tên>}{<giá trị>}`; giá trị `None` → `\pending{<Tên>}`), `numbers.json` (cùng tên khóa, giá trị đã định dạng), bảng `tables/{lifecycle,rework,funnel,tasks,literature}.tex`, hình `figures/{lifecycle_by_week,rework_by_group}.pdf`.
 - CLI `report-data build --root <repo> --out docs/report/generated`.
 
@@ -70,19 +70,19 @@
 
 - [ ] Mục 4 (khoảng 4 trang): dữ liệu hồi cứu; phễu sàng lọc (`tables/funnel.tex`) và lấy mẫu phân tầng; cách duyệt đề (AI soạn, An duyệt gộp, ba mục yếu bị loại, tác tử đối chiếu mẫu); tầng tính năng (mục 7.2b); hai cách làm (lời dặn đầy đủ ở phụ lục); bộ chạy, bộ chấm (test ẩn, hồi quy, khôi phục test cũ, `pytest_config_touched`); chống rò rỉ (cây mã không có spec, plan cũ và file hướng dẫn; cấu hình sạch; thư mục ngẫu nhiên; không chạy song song hai lượt của cùng đề; bảng đối chiếu điều kiện ba công cụ lấy từ `docs/pilot-report.md` khi có, chưa có thì `\pending`); chỉ số; thống kê; chốt trước khi chạy.
 - [ ] Mục 5 (khoảng 2 trang): bản đồ vòng đời (bảng và hình), giải thích vì sao khâu kiểm thử chiếm tỉ lệ lớn; 88,7% tính năng có plan và độ chính xác quy tắc 15/20 kèm cách kiểm (gợi ý AI, An đồng ý cả 20); mức sửa lại hai nhóm và câu "quan sát, không phải nhân quả"; nhật ký phiên không đầy đủ, số lần ngắt là số đo thay thế.
-- [ ] Phụ lục: hai lời dặn nguyên văn (`\input` từ `prompts/*.md` qua `verbatim`), danh sách 15 + 2 + 3 đề (`tables/tasks.tex`).
+- [ ] Phụ lục: hai lời dặn nguyên văn (`\input` từ `code/prompts/*.md` qua `verbatim`), danh sách 15 + 2 + 3 đề (`tables/tasks.tex`).
 - [ ] `bash check.sh --draft` → exit 0. Commit `docs(report): write the method and the retrospective results`.
 
 ### Task 5: Hướng dẫn và phiếu gán nhãn
 
-**Files:** Create `team/labeling/guide.md`, `team/labeling/README.md`.
+**Files:** Create `docs/team/labeling/guide.md`, `docs/team/labeling/README.md`.
 
-- [ ] `guide.md` tiếng Việt cho Lợi và Bảo: mục đích; họ nhận gì (log test, bản vá đã bỏ `docs/design.md` và `docs/plan.md`); bảng 7 nhãn khởi đầu (bản thiết kế nghiên cứu mục 7.6) mỗi nhãn một định nghĩa và một ví dụ dựng từ một đề thật trong `tasks/`; quy tắc khi một lượt có nhiều nguyên nhân (chọn nguyên nhân làm test hỏng đầu tiên); không trao đổi với nhau khi gán; cách nộp. `README.md`: phiếu `sheet.csv` sẽ được sinh sau chạy chính, cột `unit_id, label, note`.
+- [ ] `guide.md` tiếng Việt cho Lợi và Bảo: mục đích; họ nhận gì (log test, bản vá đã bỏ `docs/design.md` và `docs/plan.md`); bảng 7 nhãn khởi đầu (bản thiết kế nghiên cứu mục 7.6) mỗi nhãn một định nghĩa và một ví dụ dựng từ một đề thật trong `data/tasks/`; quy tắc khi một lượt có nhiều nguyên nhân (chọn nguyên nhân làm test hỏng đầu tiên); không trao đổi với nhau khi gán; cách nộp. `README.md`: phiếu `sheet.csv` sẽ được sinh sau chạy chính, cột `unit_id, label, note`.
 - [ ] Commit `docs(team): add the failure-labeling guide`.
 
 ### Task 6: Báo cáo tiến độ (khi có kết quả chạy thử)
 
 **Files:** Create `docs/report/progress.tex`.
 
-- [ ] Chỉ làm khi `docs/pilot-report.md` và `results/raw/` của lượt chạy thử đã được commit trên nhánh `harness` (gộp vào nhánh `report`). PDF 3–4 trang: đề tài, việc đã làm (mục 1–5 rút gọn bằng cách `\input` lại các đoạn chính), kết quả chạy thử (bảng đạt/tổng theo nhóm và cách làm, kèm câu "chạy thử, chưa kết luận"), kế hoạch còn lại, câu hỏi xin góp ý thầy.
+- [ ] Chỉ làm khi `docs/pilot-report.md` và `data/results/raw/` của lượt chạy thử đã được commit trên nhánh `harness` (gộp vào nhánh `report`). PDF 3–4 trang: đề tài, việc đã làm (mục 1–5 rút gọn bằng cách `\input` lại các đoạn chính), kết quả chạy thử (bảng đạt/tổng theo nhóm và cách làm, kèm câu "chạy thử, chưa kết luận"), kế hoạch còn lại, câu hỏi xin góp ý thầy.
 - [ ] Build sạch; commit `docs(report): add the progress report`.

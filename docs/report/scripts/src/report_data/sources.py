@@ -8,7 +8,7 @@ from typing import Any
 
 from report_data import explore, labels, passcheck, results
 
-RETRO = Path("retrospective/out")
+RETRO = Path("data/retrospective")
 RETRO_CSV = {
     "commits": "commits.csv",
     "lifecycle": "lifecycle_by_stage.csv",
@@ -20,7 +20,7 @@ RETRO_CSV = {
     "spec_trace": "spec_trace.csv",
     "link_check": "link-check.csv",
 }
-PILOT_RUNS = Path("analysis/out/pilot/runs.csv")
+PILOT_RUNS = Path("data/results/analysis/pilot/runs.csv")
 
 
 def _csv(path: Path) -> list[dict[str, str]] | None:
@@ -31,7 +31,7 @@ def _csv(path: Path) -> list[dict[str, str]] | None:
 
 
 def _tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
-    found = sorted((root / "tasks").glob(f"{pattern}/task.toml"))
+    found = sorted((root / "data" / "tasks").glob(f"{pattern}/task.toml"))
     if not found:
         return None
     return [tomllib.loads(p.read_text(encoding="utf-8")) for p in found]
@@ -50,7 +50,7 @@ def _range_tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
     tasks = _tasks(root, pattern)
     if tasks is None:
         return None
-    feas = root / "tasks" / "feature-feasibility"
+    feas = root / "data" / "tasks" / "feature-feasibility"
     commits: dict[str, int] = {}
     medium = _json(feas / "medium_candidates.json")
     if medium:
@@ -65,10 +65,10 @@ def _range_tasks(root: Path, pattern: str) -> list[dict[str, Any]] | None:
 
 
 def _pilot_results(root: Path) -> list[dict[str, Any]] | None:
-    """results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong.
+    """data/results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/grade.json; chỉ đơn vị đã chấm xong.
 
-    Chỉ đọc thư mục chạy thử; kết quả lượt chạy chính do gói analysis/ tổng hợp."""
-    raw = root / "results" / "raw" / "pilot"
+    Chỉ đọc thư mục chạy thử; kết quả lượt chạy chính do gói code/analysis/ tổng hợp."""
+    raw = root / "data" / "results" / "raw" / "pilot"
     units = []
     for grade in sorted(raw.glob("*/*/*/grade.json")):
         arm, _, rep = grade.parent.name.rpartition("-r")
@@ -87,7 +87,7 @@ def _pilot_results(root: Path) -> list[dict[str, Any]] | None:
 def load(root: Path) -> dict[str, Any]:
     root = Path(root)
     data: dict[str, Any] = {key: _csv(root / RETRO / name) for key, name in RETRO_CSV.items()}
-    screening = root / "tasks" / "screening.json"
+    screening = root / "data" / "tasks" / "screening.json"
     data["screening"] = (
         json.loads(screening.read_text(encoding="utf-8")) if screening.exists() else None
     )
@@ -95,8 +95,8 @@ def load(root: Path) -> dict[str, Any]:
     data["pilots"] = _tasks(root, "p*")
     data["medium"] = _range_tasks(root, "m[0-9]*")
     data["features"] = _range_tasks(root, "f[0-9]*")
-    data["graded_lines"] = _json(root / "tasks" / "graded_lines.json")
-    medium = _json(root / "tasks" / "feature-feasibility" / "medium_candidates.json")
+    data["graded_lines"] = _json(root / "data" / "tasks" / "graded_lines.json")
+    medium = _json(root / "data" / "tasks" / "feature-feasibility" / "medium_candidates.json")
     data["medium_candidates"] = medium["candidates"] if medium else None
     lit = root / "docs" / "report" / "data" / "literature.toml"
     data["literature"] = tomllib.loads(lit.read_text(encoding="utf-8")) if lit.exists() else None

@@ -1,4 +1,4 @@
-"""Số liệu, bảng và hình của thí nghiệm chính, đọc từ results/analysis/main (gói analysis/).
+"""Số liệu, bảng và hình của thí nghiệm chính, đọc từ data/results/analysis/main (gói code/analysis/).
 
 Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết cục theo bản đăng ký), runs.csv
 (một dòng mỗi lượt, dùng cho số mô tả mà summary không có) và figures/*.pdf (chép nguyên).
@@ -510,7 +510,7 @@ def pending_tables(out: Path, pending: Any) -> None:
 
 # ---------- nguồn ----------
 
-ANALYSIS = Path("results/analysis/main")
+ANALYSIS = Path("data/results/analysis/main")
 CASE_FILE = "case_study.csv"
 
 
@@ -526,7 +526,7 @@ def load(root: Path) -> dict[str, Any] | None:
     if (d / CASE_FILE).exists():
         with (d / CASE_FILE).open(newline="", encoding="utf-8") as f:
             case = {r["key"]: int(r["value"]) for r in csv.DictReader(f)}
-    # bài kiểm tra độ phủ của khoảng bootstrap (analysis/calibration/coverage-run.txt):
+    # bài kiểm tra độ phủ của khoảng bootstrap (code/analysis/calibration/coverage-run.txt):
     # một dòng mỗi bộ
     # dữ liệu mô phỏng, cột cuối True khi khoảng chứa giá trị thật
     coverage: list[bool] = []

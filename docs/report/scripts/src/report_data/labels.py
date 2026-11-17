@@ -1,6 +1,6 @@
 """Nhãn nguyên nhân thất bại (prereg-v1 mục 9.8), vòng gán nhãn thứ hai (kết quả chính).
 
-Nguồn: results/analysis/main/labeling/
+Nguồn: data/results/analysis/main/labeling/
 - final-labels.csv: code2 (mã vòng 2), unit_id_r1, label_loi, label_bao, label_final,
   source (agree / An_adjudicated), label_fable (người chấm thứ ba, ngoài bản đăng ký, chỉ mô tả);
 - key-round2-PRIVATE.csv: code2 -> cohort, task_id, tier, arm (chỉ dùng để gộp).
@@ -16,9 +16,9 @@ from report_data import fmt
 
 Numbers = dict[str, str | None]
 
-LABELING = Path("results/analysis/main/labeling")
+LABELING = Path("data/results/analysis/main/labeling")
 
-# Mã nhãn, tên khóa, tên hiển thị (prereg/labeling-guide.md mục 3)
+# Mã nhãn, tên khóa, tên hiển thị (docs/prereg/labeling-guide.md mục 3)
 LABELS = [
     ("hieu_sai", "HieuSai", "hiểu sai yêu cầu"),
     ("lam_thieu", "LamThieu", "làm thiếu"),

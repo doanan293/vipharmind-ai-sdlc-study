@@ -8,8 +8,8 @@ from report_data import build, sources
 
 FIXTURE = Path(__file__).parent / "fixtures" / "root"
 REPO = Path(__file__).resolve().parents[4]
-HAS_REPO_DATA = (REPO / "tasks" / "screening.json").exists() and (
-    REPO / "retrospective" / "out" / "link-check.csv"
+HAS_REPO_DATA = (REPO / "data" / "tasks" / "screening.json").exists() and (
+    REPO / "data" / "retrospective" / "link-check.csv"
 ).exists()
 
 
@@ -87,7 +87,7 @@ def test_pilot_results_counted(tmp_path):
         ("claude-sonnet", "spec", 1, True),
         ("claude-sonnet", "vibe", 1, False),
     ]:
-        d = root / "results" / "raw" / "pilot" / cohort / "p01" / f"{arm}-r{rep}"
+        d = root / "data" / "results" / "raw" / "pilot" / cohort / "p01" / f"{arm}-r{rep}"
         d.mkdir(parents=True)
         (d / "grade.json").write_text(json.dumps({"task_pass": ok}))
     data = sources.load(root)
@@ -150,7 +150,7 @@ def test_tiers_real():
 
 
 @pytest.mark.skipif(
-    not (REPO / "results" / "analysis" / "main" / "summary.json").exists(),
+    not (REPO / "data" / "results" / "analysis" / "main" / "summary.json").exists(),
     reason="chưa có kết quả phân tích chính",
 )
 def test_main_results_numbers_and_tables(tmp_path):
@@ -158,7 +158,7 @@ def test_main_results_numbers_and_tables(tmp_path):
     build.write(data, tmp_path)
     tex = read_numbers_tex(tmp_path / "numbers.tex")
     assert not any(v.startswith(r"\pending") for k, v in tex.items() if k.startswith("Res"))
-    s = json.loads((REPO / "results/analysis/main/summary.json").read_text())
+    s = json.loads((REPO / "data/results/analysis/main/summary.json").read_text())
     h1 = s["estimates"]["h1.primary"]
     assert tex["ResHOneEstPp"] == build.fmt.number(h1["estimate"] * 100, 1)
     assert "-0,0" not in (tmp_path / "tables" / "results_main.tex").read_text()
@@ -175,7 +175,7 @@ def test_missing_analysis_gives_pending_result_tables(tmp_path):
 
 
 def test_passcheck_counts(tmp_path):
-    d = tmp_path / "results" / "analysis" / "main" / "labeling"
+    d = tmp_path / "data" / "results" / "analysis" / "main" / "labeling"
     (d / "returned").mkdir(parents=True)
     head = "ma_luot,dung_that(yes/no),ghi_chu\n"
     (d / "returned" / "passcheck-loi.csv").write_text(head + "p1,yes,\np2,no,x\n")
@@ -193,7 +193,7 @@ def test_passcheck_counts(tmp_path):
 
 
 def test_labels_counts(tmp_path):
-    d = tmp_path / "results" / "analysis" / "main" / "labeling"
+    d = tmp_path / "data" / "results" / "analysis" / "main" / "labeling"
     d.mkdir(parents=True)
     (d / "final-labels.csv").write_text(
         "code2,unit_id_r1,label_loi,label_bao,label_final,source,label_fable\n"

@@ -28,7 +28,7 @@ PENDING = "[CHỜ KẾT QUẢ]"
 N = json.loads(NUMBERS.read_text(encoding="utf-8"))
 # The main analysis (Sonnet, Opus, Codex; detailed prompts). Values the report did not export to numbers.json
 # (cost per pass, verdict counts) are read here; check_numbers.py also accepts the report's generated tables.
-SUMMARY = json.loads((HERE.parents[1] / "results" / "analysis" / "main" / "summary.json").read_text(encoding="utf-8"))
+SUMMARY = json.loads((HERE.parents[1] / "data" / "results" / "analysis" / "main" / "summary.json").read_text(encoding="utf-8"))
 FIGURES = HERE.parent / "report" / "generated" / "figures"
 
 
@@ -911,7 +911,7 @@ for p in PAGES:
     p["secs"] = secs
     p["notes"] = f"Khoảng {SECS_VI[secs]} giây. {script}"
 
-# Result slots still pending: page -> what fills it. The main analysis (results/analysis/main) is filled;
+# Result slots still pending: page -> what fills it. The main analysis (data/results/analysis/main) is filled;
 # rater labels are filled; the exploratory E1 (Haiku) and E2 (brief prompts) are complete (teaser: headline only).
 RESULT_SLOTS: dict[str, str] = {}
 
@@ -961,8 +961,8 @@ def main():
         f"Tổng thời gian nói: {fmt_secs(t)}; một người trình bày (chưa chốt ai), hỏi đáp sau đó.\n\n"
         "| Slide | Trang | Người nói | Thời lượng | Cộng dồn |\n| --- | --- | --- | --- | --- |\n"
         + "\n".join(rows) + "\n\n## Chỗ chờ kết quả\n\n"
-        "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. "
-        "Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) và E1 (Haiku) đã đủ dữ liệu, làm mới bằng refresh-interim.sh. "
+        "Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `data/results/analysis/main`. "
+        "Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) và E1 (Haiku) đã đủ dữ liệu, làm mới bằng code/refresh-interim.sh. "
         + (f"Các slide sau còn `{PENDING}`:\n\n" if RESULT_SLOTS else f"Không slide nào còn `{PENDING}`.\n")
         + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items()) + "\n", encoding="utf-8")
     print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")

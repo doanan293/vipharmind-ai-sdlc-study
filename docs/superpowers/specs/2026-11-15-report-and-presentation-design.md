@@ -41,7 +41,7 @@ Ngọc Bảo (20251227M) thuyết trình, trả lời câu hỏi, gán nhãn ngu
 ## 3. Ràng buộc
 
 - Báo cáo viết bằng LaTeX (An chọn, khoa không có mẫu bắt buộc), build bằng `latexmk` + XeLaTeX, phông
-  Times New Roman 12pt, A4, giống kiểu đề cương `proposal/`.
+  Times New Roman 12pt, A4, giống kiểu đề cương `docs/proposal/`.
 - Slide làm trên template `docs/presentation/template-vi.pptx` (Slidesgo "Introduction to Coding
   Workshop", 16:9). Bản miễn phí bắt buộc giữ slide ghi nguồn Slidesgo; giữ một slide ghi nguồn ở cuối
   phần dự phòng trừ khi An xác nhận có tài khoản Premium.
@@ -55,7 +55,7 @@ Ngọc Bảo (20251227M) thuyết trình, trả lời câu hỏi, gán nhãn ngu
 
 | Phần | Cách | Được | Mất | Chọn |
 | --- | --- | --- | --- | --- |
-| Số liệu trong báo cáo | **A. Sinh tự động**: script đọc `results/`, `retrospective/out/`, sinh bảng `.tex`, hình `.pdf` và file macro số liệu; văn bản chỉ gọi macro | Không lệch số; chạy lại phân tích là báo cáo tự cập nhật; kiểm tra được bằng máy | Thêm một phần việc dựng script | **A** (An đồng ý) |
+| Số liệu trong báo cáo | **A. Sinh tự động**: script đọc `data/results/`, `data/retrospective/`, sinh bảng `.tex`, hình `.pdf` và file macro số liệu; văn bản chỉ gọi macro | Không lệch số; chạy lại phân tích là báo cáo tự cập nhật; kiểm tra được bằng máy | Thêm một phần việc dựng script | **A** (An đồng ý) |
 | | B. Gõ tay | Nhanh lúc đầu | Dễ lệch số, đúng chỗ thầy chấm nặng | |
 | Slide | **ppt-master trên `template-vi.pptx`** | Đúng template An chọn; giống quy trình bài SoICT; ra PPTX sửa tay được | Phải dọn 51 slide mẫu | **ppt-master** (An đồng ý) |
 | | Beamer | Chung công cụ với báo cáo | Bỏ template của An | |
@@ -86,7 +86,7 @@ docs/report/
   main.tex, .latexmkrc, README.md, check.sh
   sections/*.tex          một file mỗi mục
   generated/              do script sinh, có commit: numbers.tex (macro \num...), tables/*.tex, figures/*.pdf
-  scripts/                sinh generated/ từ results/ và retrospective/out/
+  scripts/                sinh generated/ từ data/results/ và data/retrospective/
   references.bib, literature-log.md (đã có)
 ```
 
@@ -113,7 +113,7 @@ tên công cụ và mô hình giữ tiếng Anh. Số thập phân dùng dấu p
 - Quy tắc cao nhất: mọi con số, tên mô hình và tuyên bố trên slide khớp báo cáo; số lấy từ cùng
   `generated/numbers.tex` hoặc file JSON tương đương do cùng script sinh.
 
-### 5.3 Tài liệu nhóm (`team/`)
+### 5.3 Tài liệu nhóm (`docs/team/`)
 
 | File | Nội dung |
 | --- | --- |
@@ -137,11 +137,11 @@ tên công cụ và mô hình giữ tiếng Anh. Số thập phân dùng dấu p
 Đánh dấu "(lựa chọn của trợ lý)" là quyết định do trợ lý đưa ra, An kiểm lại khi đọc.
 
 - **Nguồn số liệu thí nghiệm** (lựa chọn của trợ lý): định dạng kết quả thô của bộ chạy
-  (`results/raw/<cohort>/<task>/<arm>-r<rep>/` với `grade.json`, `meta.json`) được coi là cố định từ
+  (`data/results/raw/<cohort>/<task>/<arm>-r<rep>/` với `grade.json`, `meta.json`) được coi là cố định từ
   thẻ `prereg-v1`. Script báo cáo được dựng và kiểm thử ngay bằng kết quả chạy thử làm dữ liệu mẫu.
 - **Nơi tính thống kê** (lựa chọn của trợ lý): khoảng tin cậy bootstrap, hiệu số, kappa tính trong một
-  gói phân tích riêng `analysis/` (đúng chỗ `results/analysis/` của bản thiết kế nghiên cứu, có kế
-  hoạch riêng). Gói đó xuất `results/analysis/summary.json`. Script báo cáo chỉ đọc file này và kết quả
+  gói phân tích riêng `code/analysis/` (đúng chỗ `data/results/analysis/` của bản thiết kế nghiên cứu, có kế
+  hoạch riêng). Gói đó xuất `data/results/analysis/summary.json`. Script báo cáo chỉ đọc file này và kết quả
   hồi cứu rồi định dạng; không tự tính thống kê.
 - **Số liệu cho slide** (lựa chọn của trợ lý): script báo cáo sinh cùng lúc `generated/numbers.tex` và
   `generated/numbers.json` từ một nguồn. Bước dựng slide chèn số từ `numbers.json`; một script kiểm
@@ -151,9 +151,9 @@ tên công cụ và mô hình giữ tiếng Anh. Số thập phân dùng dấu p
   (`docs/report/progress.tex`) dựng từ chính các mục 1–5 và kết quả chạy thử.
 - **Nguồn sự thật đã có:** quy trình tìm tài liệu và số bài qua từng bước ở
   `docs/report/literature-log.md` (47 → 31 → 18 nguồn mới, cộng 6 nguồn cũ); phễu sàng lọc
-  110 → 43 ở `tasks/SCREENING.md`; số liệu ViPharmind và hồi cứu ở `retrospective/out/summary.md` (nhánh
+  110 → 43 ở `data/tasks/SCREENING.md`; số liệu ViPharmind và hồi cứu ở `data/retrospective/summary.md` (nhánh
   `retrospective`, sẽ gộp vào `main`).
-- **Tài liệu nhóm** nằm ở `team/` gốc repo, như bản thiết kế nghiên cứu mục 8. Đóng góp của Lợi và Bảo
+- **Tài liệu nhóm** nằm ở `docs/team/` gốc repo, như bản thiết kế nghiên cứu mục 8. Đóng góp của Lợi và Bảo
   ghi theo việc thật: số lượt đã gán nhãn, số buổi tập dượt; An cung cấp số liệu này khi xong. Phiếu
   đánh giá chéo do từng thành viên tự điền, trợ lý chỉ soạn mẫu.
 - **Đếm trang** (lựa chọn của trợ lý): 15–20 trang tính từ mục 1 đến hết mục 8; trang bìa, tóm tắt,

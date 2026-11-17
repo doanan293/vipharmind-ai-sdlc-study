@@ -22,5 +22,5 @@ Tổng thời gian nói: 7:00; một người trình bày (chưa chốt ai), h�
 
 ## Chỗ chờ kết quả
 
-Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) và E1 (Haiku) đã đủ dữ liệu, làm mới bằng refresh-interim.sh. Không slide nào còn `[CHỜ KẾT QUẢ]`.
+Kết quả thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết) đã điền từ `data/results/analysis/main`. Nhãn nguyên nhân thất bại đã điền; E2 (đề sơ sài) và E1 (Haiku) đã đủ dữ liệu, làm mới bằng code/refresh-interim.sh. Không slide nào còn `[CHỜ KẾT QUẢ]`.
 

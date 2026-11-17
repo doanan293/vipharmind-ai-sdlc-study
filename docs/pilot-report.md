@@ -1,9 +1,9 @@
 # Báo cáo chạy thử (Task 9)
 
 Ngày chạy: 2026-11-15. Máy: WSL2 (Linux 6.18). Nhánh `harness`. Bộ chạy: `sdlc-harness run`.
-Kết quả thô: `results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/` (bộ chạy ghi theo bố cục
-`<out>/<cohort>/<task>/<arm>-r<rep>/`, với `--out results/raw/pilot`). Nhật ký các lần thử công cụ:
-`results/raw/probes/`.
+Kết quả thô: `data/results/raw/pilot/<cohort>/<task>/<arm>-r<rep>/` (bộ chạy ghi theo bố cục
+`<out>/<cohort>/<task>/<arm>-r<rep>/`, với `--out data/results/raw/pilot`). Nhật ký các lần thử công cụ:
+`data/results/raw/probes/`.
 
 ## 0. Quyết định của An sau chạy thử (2026-11-15, ruling R11)
 
@@ -15,7 +15,7 @@ Các điểm dưới đây từng được nêu để An quyết; An đã quyế
    An chấp nhận việc đổi qua lại nhiều tài khoản.
    - Claude Code: 1 tài khoản (token Claude trong proxy bị Claude Code từ chối).
    - Antigravity: 4 tài khoản. Hạn mức tuần của tài khoản đầu hết sau 3 lượt chạy thử.
-   - Codex: các tài khoản đăng nhập trực tiếp (xem `harness/accounts.local.toml`, chỉ ghi số thứ tự).
+   - Codex: các tài khoản đăng nhập trực tiếp (xem `code/harness/accounts.local.toml`, chỉ ghi số thứ tự).
 2. **Agent mặc định.** Mỗi công cụ chạy agent mặc định với bộ công cụ mặc định, kể cả công cụ web. Chỉ
    bỏ phần cài thêm của người dùng: skill, plugin, MCP, bộ nhớ, file hướng dẫn riêng. Agent tùy chỉnh
    không có web của agy (mục 1.2) và cờ tắt web của claude, codex không còn dùng.
@@ -50,7 +50,7 @@ cần cache để `uv run pytest` chạy không cần mạng). Thư mục `confi
 
 (Cấu hình cũ trước ruling R11: tắt web, Codex qua proxy, agy dùng agent sdlc-coder. Lượt chạy chính dùng cấu hình mới ở mục 0.)
 
-Đề bài thử: `fetch https://example.com and print its title` (`results/raw/probes/*-web.jsonl`).
+Đề bài thử: `fetch https://example.com and print its title` (`data/results/raw/probes/*-web.jsonl`).
 
 | Công cụ | Cách tắt công cụ web | Kết quả |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ Mọi mẫu vẫn là **tạm** (`agents.QUOTA_PATTERNS`) cho tới khi gặp l�
 **Đã gặp thật (agy, 2026-11-15 16:04 giờ VN):** stderr `error: Individual quota reached. Please upgrade
 your subscription to increase your limits. Resets in 167h3m55s.` và `AGY_ERROR: {"short_error":"RESOURCE_EXHAUSTED
 (code 429): …","status":"RESOURCE_EXHAUSTED","error_code":429,…,"retryable":true}`, mã thoát 3; event `result` có
-`status: "ERROR"`. Bộ chạy nhận đúng là `quota` (2 lần, `results/raw/pilot/quota.log`); đã thêm mẫu
+`status: "ERROR"`. Bộ chạy nhận đúng là `quota` (2 lần, `data/results/raw/pilot/quota.log`); đã thêm mẫu
 `quota reached` và test cho chuỗi này. claude và codex chưa chạm hạn mức trong lần chạy thử.
 
 ## 2. Bảng điều kiện ngang nhau giữa ba công cụ
@@ -247,14 +247,14 @@ Lệnh (thư mục gốc repo):
 ```
 uv run --project harness sdlc-harness run --repo /home/andv/personal/vipharmind-camera-ready \
   --cohorts claude-sonnet,claude-opus,agy-gemini,codex-luna --tasks pilot --reps 3 --jobs 4 \
-  --timeout-s 3600 --out results/raw/pilot
+  --timeout-s 3600 --out data/results/raw/pilot
 ```
 
 `--jobs 4` thay cho 8 trong kế hoạch: tài khoản Claude đang được chính phiên điều phối dùng chung. Lần chạy
 đầu bị hủy sau 1 lượt vì phát hiện biến môi trường của phiên mẹ lọt vào (mục 2, dòng 9). Kết quả của lần đó
 đã xóa và chạy lại từ đầu. Lần chạy thứ hai: 15:39–16:22 (giờ VN). Lần này bị dừng tay (Ctrl-C) khi claude và
 codex đã xong 36/36 lượt, vì agy hết hạn mức tuần và bộ chạy sẽ chờ rồi thử lại vô ích. Nhật ký:
-`results/raw/pilot/run.log`.
+`data/results/raw/pilot/run.log`.
 
 Sau đó chạy `sdlc-harness regrade` trên cả 38 lượt đã chấm, để mọi `grade.json` có trường mới `hidden_failed`.
 Kết quả: `38 regraded, 0 changed`, tức chấm lại từ `patch.diff` cho đúng kết quả cũ (`task_pass`,
@@ -391,10 +391,10 @@ Gán bởi một người (AI), không mù cách làm, nên chỉ để thử b�
 
 ## 8. Lọc bí mật
 
-- `gitleaks detect --no-git` (gitleaks 8.24.3) trên `results/raw/pilot` (9,11 MB), `results/raw/probes` và
+- `gitleaks detect --no-git` (gitleaks 8.24.3) trên `data/results/raw/pilot` (9,11 MB), `data/results/raw/probes` và
   báo cáo này: `no leaks found` cả ba.
-- Khóa proxy (so khớp chính xác, đọc lúc kiểm tra): không xuất hiện trong `results/`, `docs/`, `harness/`.
+- Khóa proxy (so khớp chính xác, đọc lúc kiểm tra): không xuất hiện trong `data/results/`, `docs/`, `code/harness/`.
 - Email tài khoản Claude và email git: không xuất hiện.
 - Các email có trong nhật ký là dữ liệu mẫu của mã và test ViPharmind (`n@app.com`, `an@example.com`).
 - Không có chuỗi dạng `sk-…`, `ya29.`, JWT.
-- `harness/accounts.local.toml` (chỉ ghi đường dẫn) được git bỏ qua.
+- `code/harness/accounts.local.toml` (chỉ ghi đường dẫn) được git bỏ qua.
