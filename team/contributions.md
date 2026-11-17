@@ -14,7 +14,7 @@ Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần l�
 của Lợi và Bảo tập trung ở thuyết trình, hỏi đáp và gán nhãn. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
 
-Chỗ ghi **[An điền]**, **[Lợi điền]**, **[Bảo điền]** là thông tin chỉ người đó cung cấp được (số giờ, góp ý). Số liệu khác lấy từ báo cáo.
+Chỗ ghi **[chờ góp ý]** là góp ý của Lợi, Bảo chưa nhận. Số liệu khác lấy từ báo cáo.
 
 ## 1. Đóng góp theo sản phẩm
 
@@ -75,7 +75,6 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: xong 17/11, 282 mục; khớp với Bảo kappa 0,93, với người chấm máy kappa 0,88.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
-- Thời gian ước tính: [Lợi điền] giờ.
 
 ### Trần Ngọc Bảo
 
@@ -87,7 +86,6 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Chuẩn bị và trả lời các nhóm câu hỏi được giao trong `qa-prep.md`.
 - Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: xong 17/11, 282 mục; khớp với Lợi kappa 0,93, với người chấm máy kappa 0,90.
 - Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
-- Thời gian ước tính: [Bảo điền] giờ.
 
 ## 3. Số liệu gán nhãn (vòng 2)
 
