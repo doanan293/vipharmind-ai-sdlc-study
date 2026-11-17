@@ -7,8 +7,7 @@ Mỗi thành viên điền **một phiếu riêng**, đánh giá hai thành viê
 để viết nhận xét hay chọn điểm.
 
 Đánh giá theo việc người đó **được giao** (xem `team/contributions.md`). Ví dụ: Lợi và Bảo không được
-giao viết mã, nên không trừ điểm vì không viết mã; An không được giao thuyết trình, nên không trừ điểm vì
-không thuyết trình.
+giao viết mã, nên không trừ điểm vì không viết mã.
 
 ## Thang điểm
 
@@ -73,9 +72,8 @@ Chữ ký: ______________________
 
 | Người được đánh giá | Điểm TB từ người 1 | Điểm TB từ người 2 | Tự đánh giá (nếu có) | TB của hai người kia |
 | --- | --- | --- | --- | --- |
-| Doãn Văn An | | | | |
-| Lê Xuân Lợi | | | | |
-| Trần Ngọc Bảo | | | | |
+| Doãn Văn An | 5,0 (Lợi) | 5,0 (Bảo) | 5,0 | 5,0 |
+| Lê Xuân Lợi | 4,8 (An) | 4,8 (Bảo) | 4,6 | 4,8 |
+| Trần Ngọc Bảo | 4,8 (An) | 4,8 (Lợi) | 4,8 | 4,8 |
 
-Phiếu gốc nộp kèm, không sửa. Chênh lệch lớn giữa các phiếu (từ 2 điểm trở lên ở một tiêu chí) được ghi lại,
-không tự điều chỉnh.
+Phiếu gốc của từng thành viên lưu tại `team/peer-review-an.md`, `team/peer-review-loi.md`, `team/peer-review-bao.md`, không sửa. Chênh lệch lớn giữa các phiếu (từ 2 điểm trở lên ở một tiêu chí) được ghi lại, không tự điều chỉnh (ở đây không có chênh lệch lớn giữa các phiếu).

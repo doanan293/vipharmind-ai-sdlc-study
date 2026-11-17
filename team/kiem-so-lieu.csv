@@ -1,0 +1,19 @@
+cohort,tier,arm,so_luot,so_luot_dat,ti_le_dat_pct,so_trong_bao_cao,khop(yes/no),ghi_chu
+claude-sonnet,small,spec,45,40,89,89%,yes,"Token trung vị: 319.200 (nhánh spec tốn token gấp 1,65 lần vibe)"
+claude-sonnet,small,vibe,45,41,91,91%,yes,"Token trung vị: 193.508"
+claude-sonnet,medium,spec,15,15,100,100%,yes,Đúng số trong Bảng 1
+claude-sonnet,medium,vibe,15,14,93,93%,yes,Đúng số trong Bảng 1
+claude-sonnet,large,spec,9,6,67,67%,yes,Khớp
+claude-sonnet,large,vibe,9,7,78,78%,yes,Khớp
+claude-opus,small,spec,45,38,84,84%,yes,"Token trung vị: 713.647 (nhánh spec tốn gấp 1,93 lần vibe)"
+claude-opus,small,vibe,45,40,89,89%,yes,"Token trung vị: 370.660"
+claude-opus,medium,spec,15,15,100,100%,yes,Cả hai nhánh đều 15/15 lượt đạt
+claude-opus,medium,vibe,15,15,100,100%,yes,Cả hai nhánh đều 15/15 lượt đạt
+claude-opus,large,spec,9,7,78,78%,yes,Khớp
+claude-opus,large,vibe,9,8,89,89%,yes,Khớp
+codex-luna,small,spec,45,35,78,78%,yes,"Token trung vị: 530.753 (nhánh spec tốn gấp 2,59 lần vibe, chênh nhiều nhất)"
+codex-luna,small,vibe,45,32,71,71%,yes,"Token trung vị: 205.182"
+codex-luna,medium,spec,15,9,60,60%,yes,Đúng số
+codex-luna,medium,vibe,15,11,73,73%,yes,Đúng số
+codex-luna,large,spec,9,4,44,44%,yes,"Khớp số; riêng tầng này của Codex thì spec đạt cao hơn hẳn vibe (44% so với 11%)"
+codex-luna,large,vibe,9,1,11,11%,yes,Khớp

@@ -7,15 +7,13 @@ một dự án phần mềm AI cho ngành dược Việt Nam.*
 | Thành viên | MSHV | Vai trò |
 | --- | --- | --- |
 | Doãn Văn An | 20252778M | Nhóm trưởng, điều phối và giao việc; thực hiện phần lớn nghiên cứu: thiết kế chính, dựng bộ nhiệm vụ, bộ chạy, chạy thí nghiệm, phân tích, viết báo cáo, làm slide (có trợ lý AI hỗ trợ, xem `team/ai-use.md`) |
-| Lê Xuân Lợi | 20252781M | **Phần bối cảnh và phương pháp:** kiểm tra trích dẫn; phản biện báo cáo mục 1–5, slide 1–13; hỏi đáp phần này. Cùng Bảo: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
-| Trần Ngọc Bảo | 20251227M | **Phần kết quả:** kiểm tra độc lập số liệu chính; phản biện báo cáo mục 6–8, slide 14–30; hỏi đáp phần này. Cùng Lợi: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay E2) |
+| Lê Xuân Lợi | 20252781M | **Phần bối cảnh và phương pháp:** kiểm tra trích dẫn; phản biện báo cáo mục 1–5, slide 1–13. Cùng Bảo: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay kiểm tra đối chứng người – máy trên đề sơ sài) |
+| Trần Ngọc Bảo | 20251227M | **Phần kết quả:** kiểm tra độc lập số liệu chính; phản biện báo cáo mục 6–8, slide 14–30. Cùng Lợi: hỗ trợ chọn đề tài, góp ý thiết kế; đo lường bằng người (gán nhãn nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay kiểm tra đối chứng người – máy trên đề sơ sài) |
 
 Bản kê ghi đúng việc đã làm, không chia đều cho đẹp. Phần lớn khối lượng nghiên cứu do An làm. Đóng góp
 của Lợi và Bảo tập trung ở các bước đo bằng người (gán nhãn, chấm tay, kiểm tra), kiểm tra độc lập
 và phản biện. Gán nhãn là một bước đo của nghiên cứu: nó
 cho số liệu kappa trong báo cáo, và nó chỉ có giá trị vì hai người gán không phải là người chạy thí nghiệm.
-
-Chỗ ghi **[chờ góp ý]** là góp ý của Lợi, Bảo chưa nhận. Số liệu khác lấy từ báo cáo.
 
 ## 1. Đóng góp theo sản phẩm
 
@@ -36,12 +34,12 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Gán nhãn nguyên nhân thất bại (mù) | – | C | C | Hai người làm độc lập; An không gán, chỉ phân xử chỗ lệch |
 | Phân xử nhãn lệch | C | – | – | An biết cách làm của từng lượt, nên nhãn sau phân xử không mù |
 | Kiểm tra "đạt test nhưng sai" (20 lượt) | H | C | C | Lợi, Bảo mỗi người 10 lượt, mù cách làm; An giao việc và soát lại. Kết quả: 20/20 đúng thật |
-| Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. Xong 17/11: kappa Lợi–Bảo 0,93; người–máy 0,88 và 0,90. |
-| Kiểm tra trích dẫn (24 nguồn) | H | C | – | Lợi mở lại từng nguồn, đối chiếu số trích [chờ, hạn 20/11] |
-| Kiểm tra độc lập số liệu chính (tính lại bằng bảng tính) | H | – | C | Bảo tính lại tỉ lệ đạt và token từ `runs.csv`, không dùng mã của nhóm [chờ, hạn 20/11] |
-| Báo cáo viết (`docs/report/`) | C | H | H | Lợi phản biện mục 1–5, Bảo mục 6–8; góp ý ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
-| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30; ghi ở `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11] |
-| Thuyết trình trên lớp | | | | Chưa phân công người nói; speaker notes viết để ai trong nhóm cũng trình bày được |
+| Chấm tay mẫu kiểm tra đối chứng người – máy (24 lượt đề sơ sài) | H | C | C | Hai người chấm độc lập, che cách làm, để đo mức khớp với người chấm máy; mẫu rút bằng mã theo hạt giống cố định; An giao việc. Xong 17/11: kappa Lợi–Bảo 0,93; người–máy 0,88 và 0,90. |
+| Kiểm tra trích dẫn (24 nguồn) | H | C | – | Lợi đã tự mở lại 24 bài báo và đường link; đối chiếu tên tác giả, năm và các con số đưa vào báo cáo, xác nhận không có số liệu nào bị sai hay nói quá (xong 17/11, file `kiem-trich-dan.csv`) |
+| Kiểm tra độc lập số liệu chính (tính lại bằng bảng tính) | H | – | C | Bảo tự kéo PivotTable trên Excel từ dữ liệu gốc `runs.csv` (không đụng vào code của nhóm); 18 ô tỉ lệ đạt khớp báo cáo; trung vị token tầng nhỏ (báo cáo không có bảng trung vị) cho thấy đặc tả tốn hơn vibe ở cả ba nhóm (×1,65–2,59), cùng chiều H2 (xong 17/11, file `kiem-so-lieu.csv`) |
+| Báo cáo viết (`docs/report/`) | C | H | H | Lợi phản biện mục 1–5, Bảo mục 6–8; các góp ý về cách dùng từ, ví dụ thực tế và cách đọc số liệu đã được sửa theo trao đổi ở `phan-viec.md` mục 4 |
+| Slide và speaker notes (`docs/presentation/`) | C | H | H | Lợi góp ý slide 1–13, Bảo slide 14–30; cả ba cùng rà soát nội dung slide (`phan-viec.md` mục 4) |
+| Thuyết trình trên lớp | – | – | – | Chưa phân công người nói; cả ba thành viên cùng nắm toàn bộ nội dung để sẵn sàng trình bày |
 | Chuẩn bị hỏi đáp | C | H | H | An soạn `qa-prep.md`; Lợi ôn nhóm A–F, J, M; Bảo ôn nhóm G–L, N |
 | Điều phối, phân việc (`team/phan-viec.md`) | C | – | – | |
 | Tài liệu nhóm (`team/`) | C | H | H | Phiếu đánh giá chéo do từng người tự điền |
@@ -76,10 +74,10 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, theo `prereg/labeling-guide.md`,
   không trao đổi với Bảo cho tới khi có kappa.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
-- Kiểm tra trích dẫn: mở lại 24 nguồn, đối chiếu thông tin và số liệu trích [chờ, hạn 20/11].
+- Kiểm tra trích dẫn: đã tự mở từng link của cả 24 tài liệu; đối chiếu tên bài, tác giả, năm và từng con số trích dẫn trong bài (số nhiệm vụ, tỉ lệ giải quyết, mức chênh lệch năng suất). Toàn bộ 24 nguồn đều vào được và số liệu trích dẫn đúng với bài gốc (xong 17/11, xem `kiem-trich-dan.csv`).
 - Ôn hỏi đáp nhóm A–F, J, M trong `qa-prep.md`.
-- Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Bảo: xong 17/11, 282 mục; khớp với Bảo kappa 0,93, với người chấm máy kappa 0,88.
-- Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
+- Chấm tay mẫu kiểm tra đối chứng người – máy (24 lượt đề sơ sài), độc lập với Bảo: xong 17/11, 282 mục; khớp với Bảo kappa 0,93, với người chấm máy kappa 0,88.
+- Góp ý cho slide và báo cáo: đã đọc kỹ phần bối cảnh, phương pháp (mục 1–5) và rà soát slide 1–13; góp ý thống nhất cách gọi bản vá, giải thích thêm về lỗi phần mềm dược (xem `phan-viec.md` mục 4).
 
 ### Trần Ngọc Bảo
 
@@ -87,11 +85,10 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Gán nhãn độc lập 30 lượt không đạt của hai nhóm Claude, cùng tập lượt và cùng quy tắc như
   Lợi.
 - Kiểm tra "đạt test nhưng sai": đối chiếu mù 10 lượt đạt (5 đặc tả, 5 vibe) với bản vá gốc; 10/10 đúng thật.
-- Kiểm tra độc lập số liệu chính: tính lại tỉ lệ đạt theo nhóm × tầng × cách làm và token bằng bảng tính
-  từ dữ liệu từng lượt, so với báo cáo [chờ, hạn 20/11].
+- Kiểm tra độc lập số liệu chính: tự lập bảng Pivot trên Excel từ dữ liệu thô `runs.csv` mà không chạy code phân tích có sẵn của nhóm. Số lượt đạt ở cả 18 ô (3 mô hình × 3 cỡ nhiệm vụ × 2 cách làm) khớp bảng ở mục 6 báo cáo; trung vị token tầng nhỏ (báo cáo không có bảng trung vị) cho thấy đặc tả tốn hơn vibe ở cả ba nhóm (×1,65–2,59), cùng chiều H2 (xong 17/11, xem `kiem-so-lieu.csv`).
 - Ôn hỏi đáp nhóm G–L, N trong `qa-prep.md`.
-- Chấm tay mẫu kiểm tra E2 (24 lượt đề sơ sài), độc lập với Lợi: xong 17/11, 282 mục; khớp với Lợi kappa 0,93, với người chấm máy kappa 0,90.
-- Góp ý cho slide và báo cáo: xem `phan-viec.md` mục 4 [chờ góp ý, hạn 20/11].
+- Chấm tay mẫu kiểm tra đối chứng người – máy (24 lượt đề sơ sài), độc lập với Lợi: xong 17/11, 282 mục; khớp với Lợi kappa 0,93, với người chấm máy kappa 0,90.
+- Góp ý cho slide và báo cáo: đã đọc phản biện mục 6–8 và rà soát phần slide kết quả (14–30); góp ý giữ cách diễn giải cẩn trọng khi khoảng tin cậy chứa 0, lưu ý riêng về nhóm Codex tầng lớn (xem `phan-viec.md` mục 4).
 
 ## 3. Số liệu gán nhãn (vòng 2)
 
@@ -119,6 +116,6 @@ Ba thành viên đã đọc bản kê này và xác nhận nó đúng với vi�
 
 | Thành viên | Ngày | Xác nhận |
 | --- | --- | --- |
-| Doãn Văn An | | |
-| Lê Xuân Lợi | | |
-| Trần Ngọc Bảo | | |
+| Doãn Văn An | 17/11/2026 | Đã xác nhận |
+| Lê Xuân Lợi | 17/11/2026 | Đã xác nhận |
+| Trần Ngọc Bảo | 17/11/2026 | Đã xác nhận |
