@@ -282,19 +282,19 @@ Both are exploratory ("thăm dò, thêm sau khi thấy kết quả chính") and 
 directories; the confirmatory `sdlc-analysis` above is unchanged.
 
 ```
-R=/home/andv/personal
+R=/home/andv/personal/vipharmind-ai-sdlc-study/.worktrees
 # E1: the locked analysis with claude-haiku as one more cohort -> results/analysis/e1/
-uv run sdlc-e1 --results $R/vipharmind-ai-sdlc-study-run/results/raw/main \
-    $R/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers \
-    $R/vipharmind-ai-sdlc-study-run3/results/raw/haiku \
+uv run sdlc-e1 --results $R/run/results/raw/main \
+    $R/run2/results/raw/main-tiers \
+    $R/run3/results/raw/haiku \
     --seed 20261115 --repo /home/andv/personal/vipharmind --model-bootstrap 999 --jobs 4
 # E2: brief prompt, detail x arm -> results/analysis/e2/
-uv run sdlc-e2 --detailed $R/vipharmind-ai-sdlc-study-run/results/raw/main \
-    $R/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers \
-    $R/vipharmind-ai-sdlc-study-run3/results/raw/haiku \
-    --brief $R/vipharmind-ai-sdlc-study-run3/results/raw/brief
+uv run sdlc-e2 --detailed $R/run/results/raw/main \
+    $R/run2/results/raw/main-tiers \
+    $R/run3/results/raw/haiku \
+    --brief $R/run3/results/raw/brief
 # judge check (a): draw + packets once all 552 brief units are finished; then agreement
-uv run python scripts/draw_human_check.py draw --brief $R/vipharmind-ai-sdlc-study-run3/results/raw/brief
+uv run python scripts/draw_human_check.py draw --brief $R/run3/results/raw/brief
 uv run python scripts/draw_human_check.py kappa --loi sheet-loi.csv --bao sheet-bao.csv
 ```
 

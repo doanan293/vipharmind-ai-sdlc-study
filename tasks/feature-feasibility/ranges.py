@@ -2,7 +2,7 @@
 import json, subprocess, sys
 from datetime import timedelta
 from pathlib import Path
-sys.path.insert(0, "/home/andv/personal/vipharmind-ai-sdlc-study-retro/retrospective/src")
+sys.path.insert(0, "/home/andv/personal/vipharmind-ai-sdlc-study/.worktrees/retro/retrospective/src")
 from retro.gitlog import load_commits
 from retro.specplans import load_spec_plan_files, referenced_code_paths, _links
 

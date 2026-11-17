@@ -1,6 +1,6 @@
 """Print first-parent sequence with plan assignment (latest-added linking plan) and src/test lines."""
 import sys, json
-sys.path.insert(0, "/home/andv/personal/vipharmind-ai-sdlc-study-retro/retrospective/src")
+sys.path.insert(0, "/home/andv/personal/vipharmind-ai-sdlc-study/.worktrees/retro/retrospective/src")
 from pathlib import Path
 from retro.gitlog import load_commits, git
 from retro.specplans import load_spec_plan_files, has_preceding_plan
