@@ -244,7 +244,7 @@ Thẻ `prereg-v1.1` chốt toàn bộ cây tại commit mang thẻ, như thẻ `
 
 ## Kiểm tra bộ chạy (không gọi AI)
 
-Tại commit mang thẻ (bộ chạy gồm commit `6b5bbf9`, bỏ hunk của đường dẫn bị loại khỏi cây khi áp bản vá
+Tại commit mang thẻ (bộ chạy gồm commit `527d7e1`, bỏ hunk của đường dẫn bị loại khỏi cây khi áp bản vá
 gốc của đoạn):
 
 - `sdlc-harness tasks validate --repo /home/andv/personal/vipharmind` thoát với mã 0 (mọi thư mục nhiệm
@@ -252,7 +252,7 @@ gốc của đoạn):
 - `sdlc-harness tasks validate --repo /home/andv/personal/vipharmind --original-patch` chấm bản vá gốc
   `git diff base end` của m01–m05, f08, f14, f15 trên cây mới:
   cả tám nhiệm vụ chấm sạch (mọi test ẩn đạt, không hồi quy, không lỗi chấm), lệnh thoát với mã 0
-  (2026-11-15, khoảng 19:42–19:52, tại commit `603d309` cộng các thay đổi của bản này; m04 chấm trên
+  (2026-11-15, khoảng 19:42–19:52, tại commit `3ae4252` cộng các thay đổi của bản này; m04 chấm trên
   bản vá không sửa tay). Quy tắc thay thế vì vậy không được dùng.
 
 ## Chồng lấn với tầng khác (ràng buộc 7)
@@ -355,7 +355,7 @@ Lý do (Fable, V-5): ở m02 và m03, phần lớn mã của cửa sổ chỉ do
   infrastructure.
 - **Đơn vị đếm tên khác nhau giữa các tầng** (xem mục "Nhiệm vụ tầng lớn" và "Đơn vị của ngưỡng 20 tên").
 - **Bộ chạy:** m04 sửa `backend/docs/superpowers/plans/*.md`; bộ chạy bỏ các đường dẫn `superpowers` khỏi
-  cây, và từ commit `6b5bbf9` bỏ luôn hunk của chúng khi áp bản vá gốc.
+  cây, và từ commit `527d7e1` bỏ luôn hunk của chúng khi áp bản vá gốc.
 
 ## Ghi chú vận hành
 

@@ -1,7 +1,7 @@
 # Scoped re-review of `code/analysis/` before tag `prereg-v1-analysis`
 
 Reviewer: Fable 5.2, 2026-11-16. Scope: the fixes to `code/analysis/REVIEW_fable.md` in commits
-`3701bf3`, `f1451b5`, `6ea3b81`, `7cdf1b1` (`code/analysis/`, `data/tasks/graded_lines.py`,
+`3951a1b`, `57579cd`, `437f76a`, `7cd0317` (`code/analysis/`, `data/tasks/graded_lines.py`,
 `data/tasks/graded_lines.json`, `docs/prereg/prereg-v1.md` section 11). Only pilot and simulated data were
 read. No main result and no `-run*` directory was opened.
 

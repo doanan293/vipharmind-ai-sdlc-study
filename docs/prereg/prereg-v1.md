@@ -52,7 +52,7 @@ Ràng buộc cho `prereg-v1.1`:
 Mã ViPharmind cố định ở commit `3baae61d764f6d83f7205d0d4d97ee52dd8e0dbe` (nhánh main). Mỗi nhiệm vụ là
 một commit; mã nền là commit cha; test ẩn là test do commit đó thêm hoặc sửa. Đề bài: `data/tasks/<id>/prompt.md`
 (do AI soạn, An duyệt gộp; t05, t07, t13 được bổ sung tên giao diện sau khi đối chiếu với test ẩn,
-`data/tasks/PROMPT_AUDIT.md`, commit `e92f346`). An duyệt lại ba đề đã sửa cùng ngày duyệt văn bản này (dòng
+`data/tasks/PROMPT_AUDIT.md`, commit `bc25b7a`). An duyệt lại ba đề đã sửa cùng ngày duyệt văn bản này (dòng
 duyệt ở đầu văn bản).
 
 | Id | Commit | Lớp | Dòng `backend/src` | Nhóm kích thước |
