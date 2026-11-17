@@ -442,9 +442,10 @@ chính An. Rủi ro đạo đức chính là điều khoản dịch vụ (J1) v�
 xử lý.
 
 **N3. [B] Lợi và Bảo đã làm gì trong đề tài?**
-Trả lời thật: An làm toàn bộ nghiên cứu, thí nghiệm, báo cáo, slide. Lợi và Bảo thuyết trình, trả lời câu
-hỏi, và gán nhãn mù 30 lượt thất bại. Việc gán nhãn cần đúng người không chạy thí nghiệm, để
-kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
+Trả lời thật: An làm phần lớn nghiên cứu, thí nghiệm, báo cáo, slide. Lợi và Bảo cùng chọn đề tài, góp ý
+thiết kế, làm các bước đo bằng người (gán nhãn 30 lượt thất bại, kiểm 20 lượt đạt, chấm tay 24 lượt E2),
+Lợi kiểm trích dẫn, Bảo tính lại số liệu chính, cả hai đọc phản biện báo cáo. Các bước đo bằng người cần
+người không chạy thí nghiệm, để kappa có ý nghĩa. Bản kê ở `team/contributions.md`.
 
 **N4. [B] Kết luận chính là gì, và nên tin đến đâu?**
 Với đề chi tiết: H1 chưa kết luận được, Sonnet tầng nhỏ đặc tả trừ vibe −2,2 điểm phần trăm, khoảng tin
