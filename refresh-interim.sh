@@ -11,12 +11,12 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 STUDY="${STUDY:-/home/andv/personal/vipharmind-ai-sdlc-study}"
-R="${RUNS_ROOT:-/home/andv/personal}"
+R="${RUNS_ROOT:-$STUDY/.worktrees}"
 SKILL_DIR="${SKILL_DIR:-$STUDY/.agents/skills/ppt-master}"
-DETAILED=("$R/vipharmind-ai-sdlc-study-run/results/raw/main"
-          "$R/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers"
-          "$R/vipharmind-ai-sdlc-study-run3/results/raw/haiku")
-BRIEF="$R/vipharmind-ai-sdlc-study-run3/results/raw/brief"
+DETAILED=("$R/run/results/raw/main"
+          "$R/run2/results/raw/main-tiers"
+          "$R/run3/results/raw/haiku")
+BRIEF="$R/run3/results/raw/brief"
 HAIKU_UNITS=138
 
 step() { printf '\n== %s\n' "$*"; }
