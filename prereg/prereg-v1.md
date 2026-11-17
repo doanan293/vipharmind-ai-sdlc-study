@@ -574,3 +574,5 @@ Mã băm SHA-256 của `prereg/labeling-guide.md` tại thẻ: `9b124ffaf5816aa0
   (`analysis/scripts/disagreement_packets.py`; lý do của máy đã che từ chỉ cách làm); (2) Lợi mở lại 24 nguồn
   và đối chiếu số liệu trích; (3) Bảo tính lại tỉ lệ đạt theo nhóm × tầng × cách làm bằng bảng tính từ
   `runs.csv`, không dùng mã của nhóm. Kết quả chỉ để mô tả, ghi vào phụ lục.
+- **2026-11-17 (bỏ việc (1)).** An bỏ việc xem lại 19 mục lệch người–máy (và không giao kiểm thứ hai quy tắc
+  nối commit–plan); chỉ giữ việc (2) và (3). Gói đã dựng ở `results/packets/lech-nguoi-may` không dùng.
