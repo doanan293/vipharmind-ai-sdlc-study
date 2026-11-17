@@ -13,30 +13,35 @@ worktree này (`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); khô
    bằng test ẩn.
 2. **Thiết kế.** 23 nhiệm vụ từ commit thật của ViPharmind, ba tầng; hai cách làm chỉ khác lời dặn; ba nhóm
    (Sonnet, Opus, Codex), ba lần lặp, 414 lượt; giả thuyết và mã phân tích chốt trước khi mở kết quả.
-3. **Kết quả chính (đề chi tiết).** H1 chưa kết luận (−2,2 đpt, KTC [−6,7; 0,0]): không thấy lợi ích ở tầng
-   nhỏ. Đặc tả tốn ×1,3–2,2 token, nhưng luôn để lại test. Dấu hiệu có ích duy nhất: Codex ở ba nhiệm vụ lớn
-   (44% so với 11%), chỉ ba nhiệm vụ.
+3. **Kết quả chính (đề chi tiết).** H1 chưa kết luận (−2,2 đpt, KTC [−6,7; 0,0]): dữ liệu không ủng hộ một
+   lợi ích đáng kể ở tầng nhỏ, nhưng chưa loại được một lợi ích nhỏ. Đặc tả tốn ×1,3–2,2 token và để lại test
+   do agent viết ở khoảng ba phần tư số lượt (72–78%). Dấu hiệu có ích duy nhất: Codex ở ba nhiệm vụ lớn
+   (44% so với 11%), chỉ ba nhiệm vụ; KTC của ô này co về một điểm vì ba nhiệm vụ cho cùng hiệu số.
 4. **Xem trước.** Phần lớn lượt hỏng do đề không chốt chi tiết hoặc nối sai mã có sẵn, không phải logic sai.
 5. **Câu hỏi mở (thăm dò, đã xong).** Đề chỉ một hai câu thì quy trình có bù được không? Chỉ nói headline:
    - E2, tầng nhỏ, gộp bốn nhóm: đặc tả hơn vibe +4,2 đpt điểm danh sách hành vi, KTC [+0,7; +8,1], tức một
      lợi ích nhỏ. Gộp cả ba tầng: +2,5 [−0,1; +5,4], KTC chứa 0.
-   - Riêng việc đề sơ sài làm tỉ lệ lượt đạt hết test ẩn giảm khoảng 80 đpt ở cả hai cách làm (−78,6 và −81,0):
-     độ rõ của đề quan trọng hơn quy trình nhiều.
+   - Riêng việc bỏ chi tiết khỏi đề làm điểm danh sách hành vi giảm 35,8 đpt ở nhánh đặc tả và 38,6 đpt ở
+     nhánh vibe: độ rõ của đề quan trọng hơn quy trình nhiều. Tương tác mức chi tiết × cách làm +2,8
+     [−0,1; +5,8], KTC chứa 0.
+   - Slide 23 ghi −81,0 (−78,6): đó là tỉ lệ lượt đạt hết test ẩn. Nếu thầy hỏi, nói rõ con số này không đo
+     độ đúng khi đề sơ sài, vì test ẩn gọi đúng tên hàm mà đề không nêu; báo cáo cuối lấy mức giảm điểm danh
+     sách hành vi làm số chính.
    - E1 (Haiku, đề chi tiết): đặc tả không đạt hơn ở tầng nào (KTC chứa 0), tốn ×1,5 token (×2,1 ở tầng nhỏ).
    - Luôn nói "xu hướng", "gợi ý"; không nói "chứng minh" hay "đặc tả tốt hơn nhiều". E1, E2 thêm sau khi
      thấy kết quả chính nên chỉ là thăm dò.
-6. **Lịch.** Đang làm: Lợi và Bảo chấm tay 24 lượt E2 để kiểm người chấm máy. Đến 24/11: phân tích chi tiết,
-   hồi cứu, kết luận; nộp báo cáo cuối và thuyết trình.
+6. **Lịch.** Lợi và Bảo đã chấm tay xong 24 lượt E2 (17/11) để kiểm người chấm máy. Đến 24/11: phân tích chi
+   tiết, hồi cứu, kết luận; nộp báo cáo cuối và thuyết trình.
 
 ## Giữ lại cho báo cáo cuối
 
 - Số liệu nhãn lỗi (số lượt mỗi nhãn, kappa, chia theo cách làm, nhóm, tầng), người chấm thứ ba.
 - Số E2 theo từng nhóm và từng tầng (Sonnet tầng nhỏ +9,1 [+2,8; +16,1]; Opus, Haiku, Codex có KTC chứa 0;
   tầng vừa, lớn chỉ để tham khảo vì ít nhiệm vụ, chưa thấy lợi), tương tác 2 × 2 (+2,8 [−0,1; +5,8]), độ
-  tin cậy của người chấm máy và kết quả chấm tay của Lợi, Bảo.
+  tin cậy của người chấm máy và kết quả chấm tay của Lợi, Bảo (kappa Lợi–Bảo 0,93; máy–người 0,88 và 0,90).
 - Số E1 theo tầng (nhỏ −4,4, vừa 0, lớn −11,1 đpt; KTC đều chứa 0).
 - Phần hồi cứu (RQ1, RQ2), ca nghiên cứu f15, mối đe dọa đến tính hợp lệ chi tiết.
-- Kết luận chính: viết sau khi có kết quả chấm tay, ở báo cáo cuối.
+- Kết luận chính: ở báo cáo cuối.
 
 ## Câu thầy có thể hỏi
 
@@ -47,7 +52,9 @@ H1–H5.
 
 **Người chấm E2 là Fable, cùng họ Claude với ba nhóm; có thiên vị không?** Có thể, nhất là so với Codex. Nhóm
 giảm bằng cách: Fable không biết lượt thuộc cách làm nào; đối chiếu Fable với test ẩn trên các lượt đề chi
-tiết, nơi test ẩn là thước đo; và Lợi, Bảo chấm tay một mẫu. Số liệu kiểm tra này ở báo cáo cuối.
+tiết, nơi test ẩn là thước đo; và Lợi, Bảo chấm tay một mẫu 24 lượt (xong 17/11): hai người khớp nhau kappa
+0,93, máy khớp từng người kappa 0,88 và 0,90. Mẫu chỉ có 6 lượt Codex, chưa đủ để nói máy có nghiêng về bài
+của Claude hay không. Chi tiết ở báo cáo cuối.
 
 **Test ẩn khắt khe hơn đề bài, tỉ lệ đạt có công bằng không?** Không tuyệt đối: test ẩn kiểm cả chi tiết đề
 không chốt (ví dụ list hay tuple). Điều đó hạ tỉ lệ đạt của cả hai cách làm như nhau, nên ảnh hưởng tới hiệu
@@ -63,8 +70,8 @@ báo cáo cuối.
 có KTC dương. Vì E2 thêm sau khi thấy kết quả chính, nhóm đọc là xu hướng, không phải bằng chứng.
 
 **Vậy kết luận thực tế cho người dùng là gì?** Theo xu hướng ban đầu: viết đề rõ (nêu tên, hành vi cần có)
-quan trọng hơn chọn quy trình. Đề sơ sài làm tỉ lệ test ẩn đạt giảm khoảng 80 đpt ở cả hai cách làm, trong khi
-đặc tả chỉ kéo lại vài điểm. Kết luận chính thức ở báo cáo cuối.
+quan trọng hơn chọn quy trình. Bỏ chi tiết khỏi đề làm điểm danh sách hành vi giảm khoảng 36–39 đpt ở cả hai
+cách làm, trong khi đặc tả chỉ kéo lại vài điểm. Kết luận chính thức ở báo cáo cuối.
 
 **Codex dừng giữa chừng có làm lệch kết quả E2 không?** Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức, ghi
 vào nhật ký của bản đăng ký trước (`prereg/prereg-v1.md`) ngày 16/11.
@@ -72,5 +79,5 @@ Lượt thiếu do hạn mức, không phải do kết quả, và các nhóm Cla
 nhóm không dựa vào Codex để đọc xu hướng. Phân tích độ nhạy ở báo cáo cuối.
 
 **Mô hình yếu (Haiku) có cần quy trình hơn không?** Với đề chi tiết thì không thấy: đặc tả không đạt hơn ở tầng
-nào và tốn thêm token. Với đề sơ sài, Haiku cũng có KTC chứa 0. Giả thuyết "mô hình yếu cần quy trình hơn"
-chưa được dữ liệu ủng hộ.
+nào và tốn thêm token. Với đề sơ sài, Haiku cũng có KTC chứa 0, và ở tầng lớn còn nghiêng về vibe (chỉ tham
+khảo, ba nhiệm vụ). Giả thuyết "mô hình yếu cần quy trình hơn" chưa được dữ liệu ủng hộ.
