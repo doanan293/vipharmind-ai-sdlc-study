@@ -92,7 +92,8 @@ def descriptives(runs: pd.DataFrame, valid: pd.DataFrame) -> dict:
     v = valid
     spec, vibe = v[v["arm"] == "spec"], v[v["arm"] == "vibe"]
     vibe_docs = vibe.assign(
-        any_doc=vibe["patch_design_doc"].astype(bool) | vibe["patch_plan_doc"].astype(bool))
+        any_doc=vibe["patch_design_doc"].astype(bool) | vibe["patch_plan_doc"].astype(bool)
+    )
     sha = runs.dropna(subset=["prompt_sha256"]).groupby(["task_id", "arm"])["prompt_sha256"]
     nuniq = sha.nunique()
     excluded = runs[runs["status"] == "excluded"]
@@ -107,27 +108,33 @@ def descriptives(runs: pd.DataFrame, valid: pd.DataFrame) -> dict:
         "vibe_wrote_design_or_plan": _counts(vibe_docs, ["cohort", "tier"], "any_doc"),
         "vibe_process_artifacts": _counts(vibe, ["cohort", "tier"], "process_artifacts"),
         "pytest_ran": _counts(v, ["cohort", "arm"], "pytest_ran"),
-        "ai_tests_added_mean": v.groupby(["cohort", "arm"])["ai_tests_added"].mean()
-        .reset_index().to_dict("records"),
+        "ai_tests_added_mean": v.groupby(["cohort", "arm"])["ai_tests_added"]
+        .mean()
+        .reset_index()
+        .to_dict("records"),
         "upstream_urls": _counts(v, ["cohort", "arm"], "upstream"),
         "upstream_urls_field_missing": int((~v["upstream_urls_known"].astype(bool)).sum()),
         "pytest_config_touched": _counts(v, ["cohort", "arm"], "pytest_config_touched"),
-        "tool_versions": _counts(v.fillna({"tool_version": "unknown"}),
-                                 ["cohort", "arm", "tool_version"]),
+        "tool_versions": _counts(
+            v.fillna({"tool_version": "unknown"}), ["cohort", "arm", "tool_version"]
+        ),
         "tokens_unsplit_upper_bound": _counts(v, ["cohort"], "tokens_unsplit"),
         "runs_without_cost": int(v["cost_usd"].isna().sum()),
         "prompt_sha256_check": {
             "cells": len(nuniq),
             "cells_with_one_value": int((nuniq == 1).sum()),
-            "violations": [{"task_id": t, "arm": a, "values": int(n)}
-                           for (t, a), n in nuniq.items() if n != 1],
+            "violations": [
+                {"task_id": t, "arm": a, "values": int(n)} for (t, a), n in nuniq.items() if n != 1
+            ],
         },
         "served_model_unknown": _counts(v, ["cohort"], "model_served_unknown"),
         "offtable_model_cost": _counts(v, ["cohort", "arm"], "cost_has_offtable_model"),
-        "offtable_models": sorted({m for ms in v["offtable_models"].dropna() for m in
-                                   str(ms).split(",") if m}),
+        "offtable_models": sorted(
+            {m for ms in v["offtable_models"].dropna() for m in str(ms).split(",") if m}
+        ),
         "codex_runs_with_several_usage_records": int(
-            (pd.to_numeric(v["usage_records"], errors="coerce") > 1).sum()),
+            (pd.to_numeric(v["usage_records"], errors="coerce") > 1).sum()
+        ),
         "shared_cpu_window": shared_cpu_window(v),
         "concurrent_tiers_window": concurrent_tiers_window(v),
     }
@@ -142,9 +149,12 @@ def shared_cpu_window(v: pd.DataFrame) -> dict:
     start = pd.to_datetime(v["started_at"], utc=True, errors="coerce")
     lo, hi = (pd.Timestamp(x) for x in WINDOW_UTC)
     inside = v[(start >= lo) & (start <= hi)]
-    return {"window_utc": list(WINDOW_UTC), "runs_started": len(inside),
-            "timeouts": int(inside["timed_out"].astype(bool).sum()),
-            "by_cohort": _counts(inside, ["cohort"], "timed_out")}
+    return {
+        "window_utc": list(WINDOW_UTC),
+        "runs_started": len(inside),
+        "timeouts": int(inside["timed_out"].astype(bool).sum()),
+        "by_cohort": _counts(inside, ["cohort"], "timed_out"),
+    }
 
 
 def build_summary(
@@ -164,8 +174,11 @@ def build_summary(
     runs = runs.copy()
     runs["tokens_unsplit"] = runs["tokens_split"].map(lambda x: x is False)
     runs["model_served_unknown"] = runs["agent"] == "codex"
-    in_design = (runs["task_id"].isin(tasks["task_id"]) & runs["cohort"].isin(cohorts)
-                 & (runs["rep"] <= reps))
+    in_design = (
+        runs["task_id"].isin(tasks["task_id"])
+        & runs["cohort"].isin(cohorts)
+        & (runs["rep"] <= reps)
+    )
     ignored = runs[~in_design]["unit"].tolist()
     runs = runs[in_design]
     valid = runs[runs["valid"]].copy()
@@ -200,22 +213,30 @@ def build_summary(
             verdicts[f"pass_diff.{key}"] = verdict(e.ci_low, e.ci_high, 1)
             sv = valid[(valid["cohort"] == c) & (valid["tier"] == t)]
             for (tid, arm), g in sv.groupby(["task_id", "arm"]):
-                diff_rows.append({"cohort": c, "tier": t, "task_id": tid, "arm": arm,
-                                  "n_valid": len(g), "pass_rate": g["task_pass"].astype(float)
-                                  .mean(), "hidden_pass_rate": g["hidden_pass_rate"].mean()})
+                diff_rows.append(
+                    {
+                        "cohort": c,
+                        "tier": t,
+                        "task_id": tid,
+                        "arm": arm,
+                        "n_valid": len(g),
+                        "pass_rate": g["task_pass"].astype(float).mean(),
+                        "hidden_pass_rate": g["hidden_pass_rate"].mean(),
+                    }
+                )
             for m, spec_ in SECONDARY.items():
                 e2 = paired_diff(valid, c, t, m, **kw)
                 est[f"secondary.{m}.{key}"] = _est(e2)
                 if spec_ is not None:
                     hyp, direction, margin = spec_
-                    verdicts[f"{hyp}.{m}.{key}"] = verdict(e2.ci_low, e2.ci_high, direction,
-                                                           margin)
+                    verdicts[f"{hyp}.{m}.{key}"] = verdict(e2.ci_low, e2.ci_high, direction, margin)
             for k2, e3 in cost_effectiveness(valid, c, t, **kw).items():
                 est[f"cost_eff.{key}.{k2}"] = _est(e3)
             if (sv["agent"] == "codex").any():
                 # codex: per-call 272k threshold unknown; the same at the > 272k price (bound)
-                for k2, e3 in cost_effectiveness(valid, c, t, cost_col="cost_usd_upper",
-                                                 **kw).items():
+                for k2, e3 in cost_effectiveness(
+                    valid, c, t, cost_col="cost_usd_upper", **kw
+                ).items():
                     est[f"cost_eff_upper.{key}.{k2}"] = _est(e3)
             est[f"variability.{key}"] = variability(sv)
     cells = pd.DataFrame(diff_rows)
@@ -229,8 +250,9 @@ def build_summary(
                 for tid, d in task_diffs(valid, "task_pass", c, t).items():
                     td_rows.append({"cohort": c, "tier": t, "task_id": tid, "pass_diff": d})
     task_diff_table = pd.DataFrame(td_rows, columns=["cohort", "tier", "task_id", "pass_diff"])
-    task_diff_table = task_diff_table.merge(tasks[["task_id", "src_lines"]], on="task_id",
-                                            how="left")
+    task_diff_table = task_diff_table.merge(
+        tasks[["task_id", "src_lines"]], on="task_id", how="left"
+    )
     tables["task_diffs"] = task_diff_table
 
     # pooled per tier (aggregate figure): cohorts complete in that tier
@@ -242,8 +264,8 @@ def build_summary(
             for tid, d in pooled_task_diffs(valid, "task_pass", cs, t).items():
                 pooled_rows.append({"tier": t, "task_id": tid, "pooled_pass_diff": d})
     tables["pooled_task_diffs"] = pd.DataFrame(
-        pooled_rows, columns=["tier", "task_id", "pooled_pass_diff"]).merge(
-        tasks[["task_id", "src_lines"]], on="task_id", how="left")
+        pooled_rows, columns=["tier", "task_id", "pooled_pass_diff"]
+    ).merge(tasks[["task_id", "src_lines"]], on="task_id", how="left")
 
     # --- H1 (confirmatory)
     if (PRIMARY_COHORT, PRIMARY_TIER) in complete:
@@ -268,19 +290,22 @@ def build_summary(
         p = tier_diff(valid, "task_pass", h5_cohorts, "large", "small", **kw)
         est["h5.primary"] = _est(p)
         est["h5.hidden_pass_rate"] = _est(
-            tier_diff(valid, "hidden_pass_rate", h5_cohorts, "large", "small", **kw))
+            tier_diff(valid, "hidden_pass_rate", h5_cohorts, "large", "small", **kw)
+        )
         h5_runs = valid[valid["cohort"].isin(h5_cohorts)]
         model = mixed.fit_h5_model(h5_runs, h5_cohorts, B=model_B, seed=seed, jobs=jobs)
         h5["mixed_model"] = model
         inter = model["interaction"] or {}
-        verdicts["H5"] = h5_verdict(p.ci_low, p.ci_high, inter.get("coef"),
-                                    inter.get("scale", "logit"))
+        verdicts["H5"] = h5_verdict(
+            p.ci_low, p.ci_high, inter.get("coef"), inter.get("scale", "logit")
+        )
         # prereg-v1.1 sensitivity: the same ladder on log(graded_src_lines)
         h5["mixed_model_graded"] = mixed.fit_h5_model(
-            h5_runs, h5_cohorts, x_col="log_graded_src_lines", B=model_B, seed=seed, jobs=jobs)
-        h5["reference_only_tiers"] = [t for t in TIERS
-                                      if len(pooled_task_diffs(valid, "task_pass", h5_cohorts,
-                                                               t)) < 6]
+            h5_runs, h5_cohorts, x_col="log_graded_src_lines", B=model_B, seed=seed, jobs=jobs
+        )
+        h5["reference_only_tiers"] = [
+            t for t in TIERS if len(pooled_task_diffs(valid, "task_pass", h5_cohorts, t)) < 6
+        ]
     else:
         est["h5.primary"] = None
         h5["reason"] = "no cohort is complete in all three tiers"
@@ -312,10 +337,12 @@ def build_summary(
         for grp in ("small", "medium", "large"):
             sub = valid[(valid["tier"] == "small") & (valid["size_group"] == grp)]
             est[f"exploratory.size_group.{c}.{grp}"] = _est(
-                paired_diff(sub, c, "small", "task_pass", **kw))
+                paired_diff(sub, c, "small", "task_pass", **kw)
+            )
 
     est["variability.all_complete"] = variability(
-        valid[[(c, t) in complete for c, t in zip(valid["cohort"], valid["tier"])]])
+        valid[[(c, t) in complete for c, t in zip(valid["cohort"], valid["tier"])]]
+    )
 
     # number of secondary comparisons: every verdict except H1 and its own H1-format copy
     h1_copy = f"pass_diff.{PRIMARY_COHORT}.{PRIMARY_TIER}"
@@ -334,8 +361,7 @@ def build_summary(
             "ignored_units_outside_design": ignored,
         },
         "completeness": comp.to_dict("records"),
-        "not_run_units": pending[["cohort", "task_id", "arm", "rep", "status"]]
-        .to_dict("records"),
+        "not_run_units": pending[["cohort", "task_id", "arm", "rep", "status"]].to_dict("records"),
         "h5": h5,
         "case_study": case_study(valid, tasks, complete),
         "overlap": overlap,
@@ -349,8 +375,6 @@ def build_summary(
 
 def _mean(s: pd.Series):
     return float(s.astype(float).mean()) if len(s) else None
-
-
 
 
 def case_study(valid: pd.DataFrame, tasks: pd.DataFrame, complete: set) -> dict | None:
@@ -379,8 +403,10 @@ def case_study(valid: pd.DataFrame, tasks: pd.DataFrame, complete: set) -> dict 
         lo = "vibe" if hi == "spec" else "spec"
         p = runs[(runs["arm"] == hi) & runs["task_pass"].astype(bool)]
         f = runs[(runs["arm"] == lo) & ~runs["task_pass"].astype(bool)]
-        picks = {hi: p["unit"].iloc[0] if len(p) else None,
-                 lo: f["unit"].iloc[0] if len(f) else None}
+        picks = {
+            hi: p["unit"].iloc[0] if len(p) else None,
+            lo: f["unit"].iloc[0] if len(f) else None,
+        }
     for arm in ("spec", "vibe"):
         if picks.get(arm) is None:
             r = runs[runs["arm"] == arm]
@@ -398,8 +424,9 @@ def concurrent_tiers_window(v: pd.DataFrame) -> dict:
     start = pd.to_datetime(v["started_at"], utc=True, errors="coerce")
     lo = pd.Timestamp(CONCURRENT_START_UTC)
     small = v["tier"] == "small"
-    ends = start[small] + pd.to_timedelta(pd.to_numeric(v.loc[small, "wall_s"], errors="coerce"),
-                                          unit="s")
+    ends = start[small] + pd.to_timedelta(
+        pd.to_numeric(v.loc[small, "wall_s"], errors="coerce"), unit="s"
+    )
     hi = ends.max() if len(ends) and ends.notna().any() else None
     if hi is None or hi < lo:
         return {"window_utc": [CONCURRENT_START_UTC, None], "note": "no small-tier run after start"}

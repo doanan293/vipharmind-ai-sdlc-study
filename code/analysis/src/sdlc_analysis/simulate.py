@@ -6,13 +6,45 @@ import numpy as np
 import pandas as pd
 
 # t01-t15, m01-m05, f08, f14, f15: src_lines from data/tasks/*/task.toml
-MAIN_SRC = [311, 197, 198, 73, 186, 67, 232, 43, 120, 141, 102, 45, 148, 68, 121,
-            478, 335, 413, 362, 515, 764, 1464, 1367]
+MAIN_SRC = [
+    311,
+    197,
+    198,
+    73,
+    186,
+    67,
+    232,
+    43,
+    120,
+    141,
+    102,
+    45,
+    148,
+    68,
+    121,
+    478,
+    335,
+    413,
+    362,
+    515,
+    764,
+    1464,
+    1367,
+]
 MAIN_TIER = ["small"] * 15 + ["medium"] * 5 + ["large"] * 3
 
 
-def simulate(n_tasks=60, cohorts=("a", "b", "c"), reps=3, beta_int=1.0, seed=0, sd0=0.8,
-             sd1=0.4, src=None, tiers=None) -> pd.DataFrame:
+def simulate(
+    n_tasks=60,
+    cohorts=("a", "b", "c"),
+    reps=3,
+    beta_int=1.0,
+    seed=0,
+    sd0=0.8,
+    sd1=0.4,
+    src=None,
+    tiers=None,
+) -> pd.DataFrame:
     """Valid runs from pass ~ arm x log(src) + cohort + (1 + arm | task):
     intercept -0.2, arm 0.5, log(src) -0.8, interaction `beta_int` (log src centred),
     cohort effects spread over [-0.5, 0.5], task SDs `sd0` (intercept) and `sd1` (arm)."""
@@ -34,10 +66,18 @@ def simulate(n_tasks=60, cohorts=("a", "b", "c"), reps=3, beta_int=1.0, seed=0, 
                 eta += u0[t] + u1[t] * arm
                 p = 1 / (1 + np.exp(-eta))
                 for r in range(reps):
-                    rows.append({"cohort": c, "task_id": f"x{t:03d}", "arm": "spec" if arm else
-                                 "vibe", "rep": r + 1, "src_lines": int(src[t]),
-                                 "log_src_lines": float(np.log(src[t])), "tier": tiers[t],
-                                 "task_pass": bool(rng.random() < p)})
+                    rows.append(
+                        {
+                            "cohort": c,
+                            "task_id": f"x{t:03d}",
+                            "arm": "spec" if arm else "vibe",
+                            "rep": r + 1,
+                            "src_lines": int(src[t]),
+                            "log_src_lines": float(np.log(src[t])),
+                            "tier": tiers[t],
+                            "task_pass": bool(rng.random() < p),
+                        }
+                    )
     return pd.DataFrame(rows)
 
 

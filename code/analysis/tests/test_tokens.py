@@ -35,7 +35,9 @@ CLAUDE_RESULT = {
 
 
 def test_claude_split_from_model_usage_matches_reported_list_cost():
-    toks = parse_tokens("claude", jl({"type": "system", "model": "claude-sonnet-5-5"}, CLAUDE_RESULT))
+    toks = parse_tokens(
+        "claude", jl({"type": "system", "model": "claude-sonnet-5-5"}, CLAUDE_RESULT)
+    )
     assert toks == [
         ModelTokens(
             model="claude-sonnet-5-5",
@@ -62,13 +64,14 @@ def test_claude_without_result_sums_assistant_messages_once_per_message_id():
             "output_tokens": out,
             "cache_creation": {"ephemeral_5m_input_tokens": 40, "ephemeral_1h_input_tokens": 60},
         }
-        return {"type": "assistant", "message": {"id": mid, "model": "claude-opus-5-5", "usage": usage}}
+        return {
+            "type": "assistant",
+            "message": {"id": mid, "model": "claude-opus-5-5", "usage": usage},
+        }
 
     # a message streamed twice (two content blocks) carries the same usage: count it once
     toks = parse_tokens("claude", jl(msg("a", 5), msg("a", 5), msg("b", 7)))
-    assert toks == [
-        ModelTokens("claude-opus-5-5", 4, 2000, 80, 120, 12, None, True, "messages")
-    ]
+    assert toks == [ModelTokens("claude-opus-5-5", 4, 2000, 80, 120, 12, None, True, "messages")]
 
 
 def test_agy_result_adds_cache_reads_and_keeps_thinking_inside_output():
@@ -104,8 +107,14 @@ def test_agy_without_result_sums_finished_response_steps():
             },
         }
 
-    active = {"event": "step_update", "step_update": {"state": "ACTIVE", "step_type": "agent_response",
-                                                       "usage": {"input_tokens": 999}}}
+    active = {
+        "event": "step_update",
+        "step_update": {
+            "state": "ACTIVE",
+            "step_type": "agent_response",
+            "usage": {"input_tokens": 999},
+        },
+    }
     toks = parse_tokens("agy", jl(step(1, 100, 5), active, step(2, 200, 6)))
     assert toks[0].input_uncached == 300 and toks[0].cache_read == 20 and toks[0].output == 11
     assert toks[0].source == "steps"
@@ -170,10 +179,20 @@ def test_price_table_is_the_frozen_prereg_table():
 
 def test_commands_and_pytest_detection_per_agent():
     claude = jl(
-        {"type": "assistant", "message": {"id": "m", "content": [
-            {"type": "tool_use", "name": "Bash", "input": {"command": "cd backend && uv run pytest -q"}},
-            {"type": "text", "text": "pytest"},
-        ]}},
+        {
+            "type": "assistant",
+            "message": {
+                "id": "m",
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "name": "Bash",
+                        "input": {"command": "cd backend && uv run pytest -q"},
+                    },
+                    {"type": "text", "text": "pytest"},
+                ],
+            },
+        },
         # tool output that mentions pytest is not a command
         {"type": "user", "message": {"content": [{"type": "tool_result", "content": "pytest ok"}]}},
     )
@@ -181,6 +200,14 @@ def test_commands_and_pytest_detection_per_agent():
     assert pytest_ran("claude", claude) is True
     codex = jl({"type": "item.completed", "item": {"type": "command_execution", "command": "ls"}})
     assert pytest_ran("codex", codex) is False
-    agy = jl({"event": "step_update", "step_update": {"state": "DONE", "step_type": "tool",
-              "tool_info": {"parameters": {"CommandLine": "python -m pytest tests"}}}})
+    agy = jl(
+        {
+            "event": "step_update",
+            "step_update": {
+                "state": "DONE",
+                "step_type": "tool",
+                "tool_info": {"parameters": {"CommandLine": "python -m pytest tests"}},
+            },
+        }
+    )
     assert pytest_ran("agy", agy) is True

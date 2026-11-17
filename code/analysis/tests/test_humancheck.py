@@ -27,8 +27,9 @@ def brief_study(tmp_path_factory):
 
 
 def _sheet(verdicts, code="h1"):
-    return pd.DataFrame({"unit_code": code, "item_n": range(1, len(verdicts) + 1),
-                         "verdict": verdicts})
+    return pd.DataFrame(
+        {"unit_code": code, "item_n": range(1, len(verdicts) + 1), "verdict": verdicts}
+    )
 
 
 def test_kappa_known_values():
@@ -84,8 +85,15 @@ def test_judge_sheet_reads_judge_json(brief_study):
 def test_script_refuses_unfinished_and_force_builds_packets(brief_study, tmp_path):
     tasks_dir, brief, _, _ = brief_study
     mod = _script()
-    base = ["draw", "--brief", str(brief), "--tasks", str(tasks_dir),
-            "--cohorts", ",".join(se.COHORTS)]
+    base = [
+        "draw",
+        "--brief",
+        str(brief),
+        "--tasks",
+        str(tasks_dir),
+        "--cohorts",
+        ",".join(se.COHORTS),
+    ]
     out, key = tmp_path / "packets", tmp_path / "key.csv"
     with pytest.raises(SystemExit, match="not drawing yet"):
         mod.main(base + ["--out", str(out), "--key", str(key)])
@@ -103,8 +111,10 @@ def test_script_refuses_unfinished_and_force_builds_packets(brief_study, tmp_pat
         assert "[exact]" not in (d / "checklist.md").read_text()
         assert "docs/design.md" not in (d / "change.diff").read_text()
         assert "a.py" in (d / "change.diff").read_text()
-        assert not any(w in " ".join(p.name for p in (out / rater).rglob("*"))
-                       for w in ("spec", "vibe", "claude-", "codex"))
+        assert not any(
+            w in " ".join(p.name for p in (out / rater).rglob("*"))
+            for w in ("spec", "vibe", "claude-", "codex")
+        )
     with pytest.raises(SystemExit, match="exists"):
         mod.main(base + ["--force", "--out", str(out), "--key", str(key)])
     # kappa subcommand: identical sheets agree fully with each other
@@ -113,18 +123,39 @@ def test_script_refuses_unfinished_and_force_builds_packets(brief_study, tmp_pat
     s.to_csv(tmp_path / "a.csv", index=False)
     s.to_csv(tmp_path / "b.csv", index=False)
     rep_path = tmp_path / "agree.json"
-    assert mod.main(["kappa", "--key", str(key), "--loi", str(tmp_path / "a.csv"),
-                     "--bao", str(tmp_path / "b.csv"), "--out", str(rep_path)]) == 0
+    assert (
+        mod.main(
+            [
+                "kappa",
+                "--key",
+                str(key),
+                "--loi",
+                str(tmp_path / "a.csv"),
+                "--bao",
+                str(tmp_path / "b.csv"),
+                "--out",
+                str(rep_path),
+            ]
+        )
+        == 0
+    )
     rep = json.loads(rep_path.read_text())
-    assert rep["loi~bao"]["agreement"] == 1.0 and rep["loi~judge"]["n_items"] == 4 * (12 - len(rep["units_without_judge"]))
+    assert rep["loi~bao"]["agreement"] == 1.0 and rep["loi~judge"]["n_items"] == 4 * (
+        12 - len(rep["units_without_judge"])
+    )
 
 
 def test_finished_check_ignores_only_stopped_cohorts():
     import pandas as pd
-    cov = pd.DataFrame([
-        {"detail": "brief", "cohort": "a", "expected": 4, "not_finished": 0},
-        {"detail": "brief", "cohort": "b", "expected": 4, "not_finished": 3},
-    ])
-    assert humancheck.finished_check(cov, 8) == ["3 brief units not finished (run, pending or missing)"]
+
+    cov = pd.DataFrame(
+        [
+            {"detail": "brief", "cohort": "a", "expected": 4, "not_finished": 0},
+            {"detail": "brief", "cohort": "b", "expected": 4, "not_finished": 3},
+        ]
+    )
+    assert humancheck.finished_check(cov, 8) == [
+        "3 brief units not finished (run, pending or missing)"
+    ]
     assert humancheck.finished_check(cov, 8, frozenset({"b"})) == []
     assert humancheck.finished_check(cov, 8, frozenset({"a"}))

@@ -12,8 +12,17 @@ from sdlc_analysis.labels import (
 
 
 def test_label_set_is_the_locked_prereg_set():
-    assert LABELS == ("hieu_sai", "lam_thieu", "sai_giao_dien", "hong_chuc_nang_cu", "loi_logic",
-                      "khong_hoan_thanh", "de_bai_thieu", "sai_api_co_san", "loi_moi_truong")
+    assert LABELS == (
+        "hieu_sai",
+        "lam_thieu",
+        "sai_giao_dien",
+        "hong_chuc_nang_cu",
+        "loi_logic",
+        "khong_hoan_thanh",
+        "de_bai_thieu",
+        "sai_api_co_san",
+        "loi_moi_truong",
+    )
 
 
 def test_kappa_textbook_example():
@@ -33,12 +42,20 @@ def test_kappa_perfect_and_chance():
 
 
 def test_kappa_report_from_two_sheets(tmp_path):
-    a = pd.DataFrame({"unit_id": ["u1", "u2", "u3", "u4"],
-                      "label": ["hieu_sai", "loi_logic", "lam_thieu", "loi_logic"],
-                      "note": ["", "lộ cách làm", "", ""]})
-    b = pd.DataFrame({"unit_id": ["u4", "u3", "u2", "u1"],
-                      "label": ["loi_logic", "lam_thieu", "hieu_sai", "hieu_sai"],
-                      "note": ["", "", "Lộ cách làm: plan", ""]})
+    a = pd.DataFrame(
+        {
+            "unit_id": ["u1", "u2", "u3", "u4"],
+            "label": ["hieu_sai", "loi_logic", "lam_thieu", "loi_logic"],
+            "note": ["", "lộ cách làm", "", ""],
+        }
+    )
+    b = pd.DataFrame(
+        {
+            "unit_id": ["u4", "u3", "u2", "u1"],
+            "label": ["loi_logic", "lam_thieu", "hieu_sai", "hieu_sai"],
+            "note": ["", "", "Lộ cách làm: plan", ""],
+        }
+    )
     pa, pb = tmp_path / "a.csv", tmp_path / "b.csv"
     a.to_csv(pa, index=False)
     b.to_csv(pb, index=False)
@@ -53,7 +70,9 @@ def test_kappa_report_from_two_sheets(tmp_path):
 def test_labeling_template_covers_failing_claude_runs_only(study):
     runs = study[3]
     sheet, key = labeling_template(runs[runs["valid"]], seed=20261115)
-    v = runs[runs["valid"] & runs["cohort"].str.startswith("claude") & ~runs["task_pass"].astype(bool)]
+    v = runs[
+        runs["valid"] & runs["cohort"].str.startswith("claude") & ~runs["task_pass"].astype(bool)
+    ]
     assert len(sheet) == len(v) == len(key)
     assert list(sheet.columns) == ["unit_id", "label", "note"]
     assert sheet["unit_id"].is_unique
@@ -82,8 +101,13 @@ def test_passing_sample_allocation_and_reproducibility(study):
     assert all(s["task_pass"].astype(bool)) and set(s["cohort"]) <= {"claude-sonnet", "claude-opus"}
     by = s.groupby(["arm", "tier"]).size().to_dict()
     # spec passes per tier: 60, 25, 18 -> 6, 2, 2; vibe: 45, 10, 3 -> 8, 2, 0
-    assert by == {("spec", "small"): 6, ("spec", "medium"): 2, ("spec", "large"): 2,
-                  ("vibe", "small"): 8, ("vibe", "medium"): 2}
+    assert by == {
+        ("spec", "small"): 6,
+        ("spec", "medium"): 2,
+        ("spec", "large"): 2,
+        ("vibe", "small"): 8,
+        ("vibe", "medium"): 2,
+    }
     assert passing_sample(valid, seed=20261115)["unit"].tolist() == s["unit"].tolist()
     assert not s.duplicated("unit").any()
     assert syn  # fixture module in use

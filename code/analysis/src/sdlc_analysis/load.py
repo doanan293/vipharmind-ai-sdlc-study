@@ -203,7 +203,8 @@ def read_unit(unit_dir: Path, tasks: dict[str, dict]) -> dict | None:
     # codex: number of usage records summed (one per run so far; >1 could mean cumulative counts)
     row["usage_records"] = (
         sum(1 for e in events(transcript) if e.get("type") == "turn.completed")
-        if agent == "codex" else None
+        if agent == "codex"
+        else None
     )
     if grade is not None:
         hp, ht = _num(grade.get("hidden_passed")), _num(grade.get("hidden_total"))
@@ -245,9 +246,19 @@ def read_unit(unit_dir: Path, tasks: dict[str, dict]) -> dict | None:
     return row
 
 
-BOOL_COLS = ("task_pass", "regression_any", "process_artifacts", "pytest_config_touched",
-             "architecture_pass", "patch_design_doc", "patch_plan_doc", "pytest_ran",
-             "grader_timeout", "tokens_split", "cost_has_offtable_model")
+BOOL_COLS = (
+    "task_pass",
+    "regression_any",
+    "process_artifacts",
+    "pytest_config_touched",
+    "architecture_pass",
+    "patch_design_doc",
+    "patch_plan_doc",
+    "pytest_ran",
+    "grader_timeout",
+    "tokens_split",
+    "cost_has_offtable_model",
+)
 
 
 def load_runs(results_dir: Path | list[Path], tasks: pd.DataFrame) -> pd.DataFrame:

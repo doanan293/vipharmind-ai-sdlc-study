@@ -32,8 +32,12 @@ def _save(fig, out: Path, name: str) -> list[str]:
     paths = []
     for ext in ("pdf", "png"):
         p = out / f"{name}.{ext}"
-        fig.savefig(p, dpi=200, bbox_inches="tight", metadata={"CreationDate": None}
-                    if ext == "pdf" else None)
+        fig.savefig(
+            p,
+            dpi=200,
+            bbox_inches="tight",
+            metadata={"CreationDate": None} if ext == "pdf" else None,
+        )
         paths.append(p.name)
     plt.close(fig)
     return paths
@@ -48,30 +52,48 @@ def effect_vs_size(task_diffs: pd.DataFrame, pooled: pd.DataFrame, out: Path) ->
     for tier, (color, marker) in TIER_STYLE.items():
         td = task_diffs[task_diffs["tier"] == tier]
         if len(td):
-            ax.scatter(td["src_lines"], td["pass_diff"], s=14, marker=marker, color=color,
-                       alpha=0.25, linewidths=0)
+            ax.scatter(
+                td["src_lines"],
+                td["pass_diff"],
+                s=14,
+                marker=marker,
+                color=color,
+                alpha=0.25,
+                linewidths=0,
+            )
         pt = pooled[pooled["tier"] == tier]
         if len(pt):
-            ax.scatter(pt["src_lines"], pt["pooled_pass_diff"], s=42, marker=marker,
-                       color=color, edgecolors="white", linewidths=1.2,
-                       label=f"{tier} tier ({len(pt)} tasks)")
+            ax.scatter(
+                pt["src_lines"],
+                pt["pooled_pass_diff"],
+                s=42,
+                marker=marker,
+                color=color,
+                edgecolors="white",
+                linewidths=1.2,
+                label=f"{tier} tier ({len(pt)} tasks)",
+            )
     ax.set_xscale("log")
     ax.xaxis.set_major_formatter(ScalarFormatter())
     ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_xticks([25, 50, 100, 200, 400, 800, 1600])
     ax.set_ylim(-1.05, 1.05)
-    ax.set_xlabel("backend/src lines changed by the original patch (log scale)", color=INK,
-                  fontsize=9)
+    ax.set_xlabel(
+        "backend/src lines changed by the original patch (log scale)", color=INK, fontsize=9
+    )
     ax.set_ylabel("pass rate, spec minus vibe", color=INK, fontsize=9)
-    ax.set_title("Effect vs task size (solid: mean over cohorts; faint: each cohort)",
-                 fontsize=10, color=INK, loc="left")
+    ax.set_title(
+        "Effect vs task size (solid: mean over cohorts; faint: each cohort)",
+        fontsize=10,
+        color=INK,
+        loc="left",
+    )
     if len(pooled):
         ax.legend(frameon=False, fontsize=8, loc="lower right")
     return _save(fig, out, "effect_vs_size")
 
 
-def pass_diff_forest(estimates: dict, cohorts: list[str], tiers: list[str], out: Path
-                     ) -> list[str]:
+def pass_diff_forest(estimates: dict, cohorts: list[str], tiers: list[str], out: Path) -> list[str]:
     rows = [(c, t, estimates.get(f"pass_diff.{c}.{t}")) for t in tiers for c in cohorts]
     rows = [r for r in rows if r[2] and r[2].get("estimate") is not None]
     fig, ax = plt.subplots(figsize=(6.4, 0.35 * max(len(rows), 2) + 1.0))
@@ -82,13 +104,21 @@ def pass_diff_forest(estimates: dict, cohorts: list[str], tiers: list[str], out:
     for i, (c, t, e) in enumerate(rows):
         color, _ = TIER_STYLE[t]
         y = len(rows) - 1 - i
-        ax.plot([e["ci_low"], e["ci_high"]], [y, y], color=color, linewidth=2,
-                solid_capstyle="round")
-        ax.scatter([e["estimate"]], [y], color=color, marker=COHORT_MARK.get(c, "o"), s=40,
-                   zorder=3, edgecolors="white", linewidths=1)
+        ax.plot(
+            [e["ci_low"], e["ci_high"]], [y, y], color=color, linewidth=2, solid_capstyle="round"
+        )
+        ax.scatter(
+            [e["estimate"]],
+            [y],
+            color=color,
+            marker=COHORT_MARK.get(c, "o"),
+            s=40,
+            zorder=3,
+            edgecolors="white",
+            linewidths=1,
+        )
     ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([f"{c} / {t} (n={r['n_tasks']})" for c, t, r in reversed(rows)],
-                       fontsize=8)
+    ax.set_yticklabels([f"{c} / {t} (n={r['n_tasks']})" for c, t, r in reversed(rows)], fontsize=8)
     ax.set_xlim(-1.05, 1.05)
     ax.set_xlabel("pass rate, spec minus vibe (95% bootstrap CI)", color=INK, fontsize=9)
     ax.set_title("Pass-rate difference by cohort and tier", fontsize=10, color=INK, loc="left")
@@ -96,8 +126,12 @@ def pass_diff_forest(estimates: dict, cohorts: list[str], tiers: list[str], out:
 
 
 def two_by_two_rates(estimates: dict, tier: str, out: Path) -> list[str]:
-    keys = [("claude-sonnet", "spec"), ("claude-sonnet", "vibe"), ("claude-opus", "spec"),
-            ("claude-opus", "vibe")]
+    keys = [
+        ("claude-sonnet", "spec"),
+        ("claude-sonnet", "vibe"),
+        ("claude-opus", "spec"),
+        ("claude-opus", "vibe"),
+    ]
     vals = [estimates.get(f"h4.{tier}.rate.{c}.{a}") for c, a in keys]
     if not all(vals):
         return []
@@ -105,11 +139,9 @@ def two_by_two_rates(estimates: dict, tier: str, out: Path) -> list[str]:
     _style(ax)
     for j, (c, mark) in enumerate((("claude-sonnet", "o"), ("claude-opus", "s"))):
         ys = [vals[2 * j]["estimate"], vals[2 * j + 1]["estimate"]]
-        ax.plot([0, 1], ys, color=SERIES[j], linewidth=2, marker=mark, markersize=8,
-                label=c)
+        ax.plot([0, 1], ys, color=SERIES[j], linewidth=2, marker=mark, markersize=8, label=c)
         for x, v in zip((0, 1), (vals[2 * j], vals[2 * j + 1])):
-            ax.plot([x, x], [v["ci_low"], v["ci_high"]], color=SERIES[j], linewidth=1,
-                    alpha=0.6)
+            ax.plot([x, x], [v["ci_low"], v["ci_high"]], color=SERIES[j], linewidth=1, alpha=0.6)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["spec", "vibe"])
     ax.set_xlim(-0.4, 1.4)
@@ -120,8 +152,7 @@ def two_by_two_rates(estimates: dict, tier: str, out: Path) -> list[str]:
     return _save(fig, out, f"two_by_two_{tier}")
 
 
-def cost_per_pass(estimates: dict, cohorts: list[str], tiers: list[str], out: Path
-                  ) -> list[str]:
+def cost_per_pass(estimates: dict, cohorts: list[str], tiers: list[str], out: Path) -> list[str]:
     rows = []
     for t in tiers:
         for c in cohorts:
@@ -140,9 +171,16 @@ def cost_per_pass(estimates: dict, cohorts: list[str], tiers: list[str], out: Pa
             if arm != a:
                 continue
             x = labels.index(lbl) + (j - 0.5) * w
-            ax.bar(x, e["estimate"], width=w - 0.04, color=SERIES[j],
-                   hatch="//" if a == "vibe" else None, edgecolor="white", linewidth=0.5,
-                   label=a if lbl == next(r[0] for r in rows if r[1] == a) else None)
+            ax.bar(
+                x,
+                e["estimate"],
+                width=w - 0.04,
+                color=SERIES[j],
+                hatch="//" if a == "vibe" else None,
+                edgecolor="white",
+                linewidth=0.5,
+                label=a if lbl == next(r[0] for r in rows if r[1] == a) else None,
+            )
             if e.get("ci_low") is not None:
                 ax.plot([x, x], [e["ci_low"], e["ci_high"]], color=INK, linewidth=1)
     ax.set_xticks(range(len(labels)))

@@ -39,8 +39,11 @@ def table_model(model: str | None) -> str | None:
         return None
     if model in PRICES:
         return model
-    hits = [k for k in PRICES if ">" not in k and model.startswith(k)
-            and SUFFIX_RE.match(model[len(k):])]
+    hits = [
+        k
+        for k in PRICES
+        if ">" not in k and model.startswith(k) and SUFFIX_RE.match(model[len(k) :])
+    ]
     return max(hits, key=len) if hits else None
 
 

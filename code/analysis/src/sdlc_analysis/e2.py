@@ -44,18 +44,25 @@ E2_COHORTS = ("claude-sonnet", "claude-opus", "claude-haiku", "codex-luna")
 DETAILS = ("detailed", "brief")
 JUDGE_MODEL = "claude-fable-5-2"
 E2_OUT = REPO / "data" / "results" / "analysis" / "e2"
-EXPLORATORY_NOTE = "thăm dò, thêm sau khi thấy kết quả chính (exploratory, added after the main " \
+EXPLORATORY_NOTE = (
+    "thăm dò, thêm sau khi thấy kết quả chính (exploratory, added after the main "
     "results were seen); no significance thresholds, read by sign and magnitude"
+)
 SCORE_METRICS = ("score", "score_core")
 # automatic metrics of the 2 x 2 (prereg-v1.2): the four the analysis names, then the rest of
 # the automatic metrics (descriptive), then the hidden-test metrics (flagged, see NOTES)
-AUTO_METRICS = ("regression_any", "regressions_n", "ai_tests_added", "ai_changed_line_coverage",
-                "tokens_total")
+AUTO_METRICS = (
+    "regression_any",
+    "regressions_n",
+    "ai_tests_added",
+    "ai_changed_line_coverage",
+    "tokens_total",
+)
 AUTO_EXTRA = ("static_errors", "architecture_pass", "patch_lines", "wall_s")
 HIDDEN_METRICS = ("hidden_pass_rate", "task_pass")
 NOTES = {
     "hidden_pass_rate": "not a correctness measure under the brief prompt: hidden tests call names "
-                        "the brief does not give (prereg-v1.2, E2 metric 1)",
+    "the brief does not give (prereg-v1.2, E2 metric 1)",
     "task_pass": "not a correctness measure under the brief prompt (same reason)",
     "score": "detailed-prompt cells use only judged detailed units",
     "score_core": "sensitivity: items tagged [exact] left out",
@@ -89,10 +96,17 @@ def judge_fields(unit_dir: Path, checklist_sha: dict[str, str]) -> dict:
     (other judge model or a checklist other than the frozen one) or ok. Only ok carries a score."""
     j = _read_json(unit_dir / "judge.json")
     meta = _read_json(unit_dir / "meta.json") or {}
-    row = {"prompt_file": meta.get("prompt_file") or "prompt.md",
-           "judge_status": "none", "score": None, "score_core": None, "judge_n_items": None,
-           "judge_n_met": None, "judge_n_unclear": None, "judge_all_met": None,
-           "judge_reject_reason": None}
+    row = {
+        "prompt_file": meta.get("prompt_file") or "prompt.md",
+        "judge_status": "none",
+        "score": None,
+        "score_core": None,
+        "judge_n_items": None,
+        "judge_n_met": None,
+        "judge_n_unclear": None,
+        "judge_all_met": None,
+        "judge_reject_reason": None,
+    }
     if j is None:
         if (unit_dir / "judge.json").exists():
             row["judge_status"] = "unreadable"
@@ -110,16 +124,23 @@ def judge_fields(unit_dir: Path, checklist_sha: dict[str, str]) -> dict:
         row.update(judge_status="rejected", judge_reject_reason="; ".join(reasons))
         return row
     n, met = j.get("n_items"), j.get("n_met")
-    row.update(judge_status="ok", score=float(j["score"]),
-               score_core=float(j["score_core"]) if isinstance(j.get("score_core"), (int, float))
-               else None,
-               judge_n_items=n, judge_n_met=met, judge_n_unclear=j.get("n_unclear"),
-               judge_all_met=bool(n and met == n))
+    row.update(
+        judge_status="ok",
+        score=float(j["score"]),
+        score_core=float(j["score_core"])
+        if isinstance(j.get("score_core"), (int, float))
+        else None,
+        judge_n_items=n,
+        judge_n_met=met,
+        judge_n_unclear=j.get("n_unclear"),
+        judge_all_met=bool(n and met == n),
+    )
     return row
 
 
-def _load_condition(roots: list[Path], tasks: pd.DataFrame, detail: str,
-                    checklist_sha: dict[str, str]) -> pd.DataFrame:
+def _load_condition(
+    roots: list[Path], tasks: pd.DataFrame, detail: str, checklist_sha: dict[str, str]
+) -> pd.DataFrame:
     if not roots:
         return pd.DataFrame()
     with unpriced_cohort_cost_unknown():
@@ -138,23 +159,34 @@ def _load_condition(roots: list[Path], tasks: pd.DataFrame, detail: str,
     return runs
 
 
-def load_e2(detailed_roots: list[Path], brief_roots: list[Path], tasks_dir: Path,
-            task_ids: list[str] | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_e2(
+    detailed_roots: list[Path],
+    brief_roots: list[Path],
+    tasks_dir: Path,
+    task_ids: list[str] | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(tasks, runs): one row per unit directory of either condition, with `detail`, the judge
     columns (`score` is NaN unless judge_status is ok and the unit is valid) and `root`."""
     tasks = load_tasks(tasks_dir, task_ids)
     sha = _checklist_sha(tasks_dir)
-    parts = [_load_condition(list(detailed_roots), tasks, "detailed", sha),
-             _load_condition(list(brief_roots), tasks, "brief", sha)]
-    runs = pd.concat([p for p in parts if not p.empty], ignore_index=True) if any(
-        not p.empty for p in parts) else pd.DataFrame()
+    parts = [
+        _load_condition(list(detailed_roots), tasks, "detailed", sha),
+        _load_condition(list(brief_roots), tasks, "brief", sha),
+    ]
+    runs = (
+        pd.concat([p for p in parts if not p.empty], ignore_index=True)
+        if any(not p.empty for p in parts)
+        else pd.DataFrame()
+    )
     if runs.empty:
         return tasks, runs
-    runs["prompt_file_mismatch"] = (
-        (runs["detail"] == "brief") != (runs["prompt_file"] == "brief.md"))
+    runs["prompt_file_mismatch"] = (runs["detail"] == "brief") != (
+        runs["prompt_file"] == "brief.md"
+    )
     for m in SCORE_METRICS:  # a score counts only on a valid unit with an accepted judgement
         runs[m] = pd.to_numeric(runs[m], errors="coerce").where(
-            runs["valid"].astype(bool) & (runs["judge_status"] == "ok"))
+            runs["valid"].astype(bool) & (runs["judge_status"] == "ok")
+        )
     runs["judged"] = runs["valid"].astype(bool) & runs["score"].notna()
     for c in ("hidden_total", "hidden_passed", "hidden_pass_rate", "task_pass"):
         if c not in runs:
@@ -168,43 +200,54 @@ def load_e2(detailed_roots: list[Path], brief_roots: list[Path], tasks_dir: Path
 # --------------------------------------------------------------------------- coverage
 
 
-def coverage(runs: pd.DataFrame, tasks: pd.DataFrame, cohorts: list[str], reps: int
-             ) -> pd.DataFrame:
+def coverage(
+    runs: pd.DataFrame, tasks: pd.DataFrame, cohorts: list[str], reps: int
+) -> pd.DataFrame:
     """Per (detail, cohort, tier, arm): units the design calls for, present, graded (valid),
     excluded system errors, not yet finished, judged, graded but without an accepted judgement."""
     keys = ["cohort", "task_id", "arm", "rep"]
     rows = []
     for detail in DETAILS:
         exp = expected_units(tasks, cohorts, reps)
-        sub = runs[runs["detail"] == detail] if not runs.empty else pd.DataFrame(
-            columns=keys + ["status", "judged", "judge_status", "valid"])
+        sub = (
+            runs[runs["detail"] == detail]
+            if not runs.empty
+            else pd.DataFrame(columns=keys + ["status", "judged", "judge_status", "valid"])
+        )
         st = unit_status(exp, sub)
-        extra = sub[keys + ["judged", "judge_status"]] if len(sub) else pd.DataFrame(
-            columns=keys + ["judged", "judge_status"])
+        extra = (
+            sub[keys + ["judged", "judge_status"]]
+            if len(sub)
+            else pd.DataFrame(columns=keys + ["judged", "judge_status"])
+        )
         st = st.merge(extra, on=keys, how="left")
         for (c, tier, arm), g in st.groupby(["cohort", "tier", "arm"], sort=False):
             graded = g["status"] == "done"
             judged = g["judged"].fillna(False).astype(bool)
             js = g["judge_status"].fillna("none")
-            rows.append({
-                "detail": detail, "cohort": c, "tier": tier, "arm": arm,
-                "expected": len(g),
-                "present": int((g["status"] != "missing").sum()),
-                "graded": int(graded.sum()),
-                "excluded_error": int((g["status"] == "excluded").sum()),
-                "not_finished": int((~g["status"].isin(["done", "excluded"])).sum()),
-                "judged": int(judged.sum()),
-                "graded_not_judged": int((graded & ~judged).sum()),
-                "judge_rejected": int((graded & (js == "rejected")).sum()),
-                "judge_unreadable": int((graded & (js == "unreadable")).sum()),
-            })
+            rows.append(
+                {
+                    "detail": detail,
+                    "cohort": c,
+                    "tier": tier,
+                    "arm": arm,
+                    "expected": len(g),
+                    "present": int((g["status"] != "missing").sum()),
+                    "graded": int(graded.sum()),
+                    "excluded_error": int((g["status"] == "excluded").sum()),
+                    "not_finished": int((~g["status"].isin(["done", "excluded"])).sum()),
+                    "judged": int(judged.sum()),
+                    "graded_not_judged": int((graded & ~judged).sum()),
+                    "judge_rejected": int((graded & (js == "rejected")).sum()),
+                    "judge_unreadable": int((graded & (js == "unreadable")).sum()),
+                }
+            )
     return pd.DataFrame(rows)
 
 
 def coverage_totals(cov: pd.DataFrame) -> list[dict]:
     num = [c for c in cov.columns if c not in ("detail", "cohort", "tier", "arm")]
-    return cov.groupby(["detail", "cohort"], sort=False)[num].sum().reset_index().to_dict(
-        "records")
+    return cov.groupby(["detail", "cohort"], sort=False)[num].sum().reset_index().to_dict("records")
 
 
 # --------------------------------------------------------------------------- estimators
@@ -214,8 +257,9 @@ def _all_tiers(runs: pd.DataFrame) -> pd.DataFrame:
     return runs.assign(tier="all")
 
 
-def brief_arm_diffs(valid: pd.DataFrame, metric: str, cohorts: list[str], tiers: list[str], *,
-                    B: int, seed: int) -> dict[str, Estimate]:
+def brief_arm_diffs(
+    valid: pd.DataFrame, metric: str, cohorts: list[str], tiers: list[str], *, B: int, seed: int
+) -> dict[str, Estimate]:
     """E2 primary form: within the brief condition, spec minus vibe of `metric`, per cohort and
     pooled, over all tasks (and per tier). Reuses the locked prereg-v1 estimators."""
     b = valid[valid["detail"] == "brief"]
@@ -249,8 +293,7 @@ def detail_arm_table(valid: pd.DataFrame, metric: str, cohort: str) -> pd.DataFr
     return m[list(COLS4)].dropna()
 
 
-def pooled_detail_arm_table(valid: pd.DataFrame, metric: str, cohorts: list[str]
-                            ) -> pd.DataFrame:
+def pooled_detail_arm_table(valid: pd.DataFrame, metric: str, cohorts: list[str]) -> pd.DataFrame:
     """Per task: each of the four columns averaged over the cohorts that have all four cells for
     that task (each cohort one weight), so the pooled interaction is the mean of the cohorts'
     interactions in every task."""
@@ -281,21 +324,26 @@ def interaction(table: pd.DataFrame, *, B: int, seed: int) -> dict[str, Estimate
     out["detail_effect.spec"] = boot_stat(data, _diff(b, d), B=B, seed=seed)
     out["detail_effect.vibe"] = boot_stat(data, _diff(b + 1, d + 1), B=B, seed=seed)
     out["interaction"] = boot_stat(
-        data, lambda x: ((x[..., b] - x[..., b + 1]) - (x[..., d] - x[..., d + 1])).mean(-1),
-        B=B, seed=seed)
+        data,
+        lambda x: ((x[..., b] - x[..., b + 1]) - (x[..., d] - x[..., d + 1])).mean(-1),
+        B=B,
+        seed=seed,
+    )
     for e in out.values():
         e.extra["reference_only"] = len(table) < 6
     return out
 
 
-def interaction_all(valid: pd.DataFrame, metric: str, cohorts: list[str], *, B: int, seed: int
-                    ) -> dict[str, Estimate]:
+def interaction_all(
+    valid: pd.DataFrame, metric: str, cohorts: list[str], *, B: int, seed: int
+) -> dict[str, Estimate]:
     out = {}
     for c in cohorts:
         for k, e in interaction(detail_arm_table(valid, metric, c), B=B, seed=seed).items():
             out[f"{c}.{k}"] = e
-    for k, e in interaction(pooled_detail_arm_table(valid, metric, cohorts), B=B,
-                            seed=seed).items():
+    for k, e in interaction(
+        pooled_detail_arm_table(valid, metric, cohorts), B=B, seed=seed
+    ).items():
         e.extra["cohorts"] = list(cohorts)
         out[f"pooled.{k}"] = e
     return out
@@ -304,8 +352,9 @@ def interaction_all(valid: pd.DataFrame, metric: str, cohorts: list[str], *, B: 
 # --------------------------------------------------------------------------- judge validity
 
 
-def judge_validity(valid: pd.DataFrame, *, B: int, seed: int,
-                   reference: str = "hidden_all_pass") -> dict:
+def judge_validity(
+    valid: pd.DataFrame, *, B: int, seed: int, reference: str = "hidden_all_pass"
+) -> dict:
     """prereg-v1.2 (b): on judged detailed-prompt units, agreement between "every checklist item
     met" and passing every hidden test (`reference`). Counts, raw agreement with a task-bootstrap
     interval, Cohen's kappa, and the two conditional rates."""
@@ -319,32 +368,43 @@ def judge_validity(valid: pd.DataFrame, *, B: int, seed: int,
     agree = (j == r).astype(float)
     per_task = d.assign(_a=agree).groupby("task_id")["_a"].agg(["sum", "size"])
     k = cohen_kappa(j.map(str), r.map(str))
-    out.update({
-        "n_tasks": len(per_task),
-        "both_pass": int((j & r).sum()), "judge_only": int((j & ~r).sum()),
-        "tests_only": int((~j & r).sum()), "neither": int((~j & ~r).sum()),
-        "agreement": boot_ratio(per_task["sum"].to_numpy(), per_task["size"].to_numpy(),
-                                B=B, seed=seed).to_dict(),
-        "kappa": k["kappa"], "pe": k["pe"],
-        "p_all_met_given_pass": float(j[r].mean()) if r.any() else None,
-        "p_not_all_met_given_fail": float((~j[~r]).mean()) if (~r).any() else None,
-        "spearman_score_vs_hidden_pass_rate": _spearman(d["score"], d["hidden_pass_rate"]),
-    })
+    out.update(
+        {
+            "n_tasks": len(per_task),
+            "both_pass": int((j & r).sum()),
+            "judge_only": int((j & ~r).sum()),
+            "tests_only": int((~j & r).sum()),
+            "neither": int((~j & ~r).sum()),
+            "agreement": boot_ratio(
+                per_task["sum"].to_numpy(), per_task["size"].to_numpy(), B=B, seed=seed
+            ).to_dict(),
+            "kappa": k["kappa"],
+            "pe": k["pe"],
+            "p_all_met_given_pass": float(j[r].mean()) if r.any() else None,
+            "p_not_all_met_given_fail": float((~j[~r]).mean()) if (~r).any() else None,
+            "spearman_score_vs_hidden_pass_rate": _spearman(d["score"], d["hidden_pass_rate"]),
+        }
+    )
     out["by_cohort"] = {}
     for c, g in d.groupby("cohort"):
         jj, rr = g["judge_all_met"].astype(bool), g[reference].astype(bool)
         kk = cohen_kappa(jj.map(str), rr.map(str))
-        out["by_cohort"][c] = {"n_units": len(g), "agreement": float((jj == rr).mean()),
-                               "kappa": kk["kappa"], "both_pass": int((jj & rr).sum()),
-                               "judge_only": int((jj & ~rr).sum()),
-                               "tests_only": int((~jj & rr).sum()),
-                               "neither": int((~jj & ~rr).sum())}
+        out["by_cohort"][c] = {
+            "n_units": len(g),
+            "agreement": float((jj == rr).mean()),
+            "kappa": kk["kappa"],
+            "both_pass": int((jj & rr).sum()),
+            "judge_only": int((jj & ~rr).sum()),
+            "tests_only": int((~jj & rr).sum()),
+            "neither": int((~jj & ~rr).sum()),
+        }
     return out
 
 
 def _spearman(a: pd.Series, b: pd.Series):
-    x = pd.DataFrame({"a": pd.to_numeric(a, errors="coerce"),
-                      "b": pd.to_numeric(b, errors="coerce")}).dropna()
+    x = pd.DataFrame(
+        {"a": pd.to_numeric(a, errors="coerce"), "b": pd.to_numeric(b, errors="coerce")}
+    ).dropna()
     if len(x) < 3 or x["a"].nunique() < 2 or x["b"].nunique() < 2:
         return None
     return float(x["a"].rank().corr(x["b"].rank()))
@@ -370,18 +430,45 @@ def estimates_table(est: dict) -> pd.DataFrame:
     rows = []
     for k, e in est.items():
         if isinstance(e, dict) and "estimate" in e:
-            rows.append({"key": k, "estimate": e["estimate"], "ci_low": e["ci_low"],
-                         "ci_high": e["ci_high"], "n_tasks": e["n_tasks"],
-                         "n_undefined": e.get("n_undefined"),
-                         "reference_only": e.get("reference_only")})
-    return pd.DataFrame(rows, columns=["key", "estimate", "ci_low", "ci_high", "n_tasks",
-                                       "n_undefined", "reference_only"])
+            rows.append(
+                {
+                    "key": k,
+                    "estimate": e["estimate"],
+                    "ci_low": e["ci_low"],
+                    "ci_high": e["ci_high"],
+                    "n_tasks": e["n_tasks"],
+                    "n_undefined": e.get("n_undefined"),
+                    "reference_only": e.get("reference_only"),
+                }
+            )
+    return pd.DataFrame(
+        rows,
+        columns=[
+            "key",
+            "estimate",
+            "ci_low",
+            "ci_high",
+            "n_tasks",
+            "n_undefined",
+            "reference_only",
+        ],
+    )
 
 
-def build_e2(runs: pd.DataFrame, tasks: pd.DataFrame, cohorts: list[str], reps: int, *,
-             B: int = B_E2, seed: int = SEED_DEFAULT) -> tuple[dict, dict[str, pd.DataFrame]]:
-    in_design = (runs["task_id"].isin(tasks["task_id"]) & runs["cohort"].isin(cohorts)
-                 & (runs["rep"] <= reps))
+def build_e2(
+    runs: pd.DataFrame,
+    tasks: pd.DataFrame,
+    cohorts: list[str],
+    reps: int,
+    *,
+    B: int = B_E2,
+    seed: int = SEED_DEFAULT,
+) -> tuple[dict, dict[str, pd.DataFrame]]:
+    in_design = (
+        runs["task_id"].isin(tasks["task_id"])
+        & runs["cohort"].isin(cohorts)
+        & (runs["rep"] <= reps)
+    )
     ignored = runs.loc[~in_design, "unit"].tolist()
     runs = runs[in_design].copy()
     valid = runs[runs["valid"].astype(bool)].copy()
@@ -400,22 +487,39 @@ def build_e2(runs: pd.DataFrame, tasks: pd.DataFrame, cohorts: list[str], reps: 
         for k, e in interaction_all(valid, m, cohorts, B=B, seed=seed).items():
             est[f"x2.{m}.{k}"] = e.to_dict()
 
-    validity = {"hidden_all_pass": judge_validity(valid, B=B, seed=seed),
-                "task_pass": judge_validity(valid, B=B, seed=seed, reference="task_pass")}
+    validity = {
+        "hidden_all_pass": judge_validity(valid, B=B, seed=seed),
+        "task_pass": judge_validity(valid, B=B, seed=seed, reference="task_pass"),
+    }
     unjudged = runs[runs["valid"].astype(bool) & ~runs["judged"].astype(bool)][
-        ["unit", "detail", "cohort", "task_id", "arm", "rep", "judge_status",
-         "judge_reject_reason", "root"]]
+        [
+            "unit",
+            "detail",
+            "cohort",
+            "task_id",
+            "arm",
+            "rep",
+            "judge_status",
+            "judge_reject_reason",
+            "root",
+        ]
+    ]
     metrics = list(dict.fromkeys(list(SCORE_METRICS) + x_metrics))
     summary = {
         "meta": {
             "analysis": "E2 of prereg-v1.2 (brief prompt; detail x arm)",
             "exploratory": EXPLORATORY_NOTE,
-            "bootstrap": {"B": B, "seed": seed, "ci": CI_TYPE,
-                          "task_set": "all tasks of the three tiers together (key suffix .all); "
-                                      "per tier under .<tier>"},
+            "bootstrap": {
+                "B": B,
+                "seed": seed,
+                "ci": CI_TYPE,
+                "task_set": "all tasks of the three tiers together (key suffix .all); "
+                "per tier under .<tier>",
+            },
             "sign": SIGN,
             "notes": NOTES,
-            "cohorts": cohorts, "reps": reps,
+            "cohorts": cohorts,
+            "reps": reps,
             "tasks": tasks[["task_id", "tier"]].to_dict("records"),
             "judge_model": JUDGE_MODEL,
             "score_on_detailed": bool(detailed_judged),
@@ -425,8 +529,9 @@ def build_e2(runs: pd.DataFrame, tasks: pd.DataFrame, cohorts: list[str], reps: 
         "coverage_totals": coverage_totals(cov),
         "coverage": cov.to_dict("records"),
         "unjudged_valid_units": len(unjudged),
-        "prompt_file_mismatch": runs.loc[runs["prompt_file_mismatch"].astype(bool), "unit"]
-        .tolist(),
+        "prompt_file_mismatch": runs.loc[
+            runs["prompt_file_mismatch"].astype(bool), "unit"
+        ].tolist(),
         "estimates": est,
         "judge_validity": validity,
     }
@@ -460,40 +565,69 @@ def fig_score_diff(est: dict, cohorts: list[str], out: Path) -> list[str]:
     ax.axvline(0, color=MUTED, linewidth=1)
     for i, (name, m, j, e) in enumerate(rows):
         y = len(rows) - 1 - i
-        ax.plot([e["ci_low"], e["ci_high"]], [y, y], color=SERIES[j], linewidth=2,
-                solid_capstyle="round")
-        ax.scatter([e["estimate"]], [y], color=SERIES[j], marker=COHORT_MARK.get(name, "o"),
-                   s=40, zorder=3, edgecolors="white", linewidths=1)
+        ax.plot(
+            [e["ci_low"], e["ci_high"]],
+            [y, y],
+            color=SERIES[j],
+            linewidth=2,
+            solid_capstyle="round",
+        )
+        ax.scatter(
+            [e["estimate"]],
+            [y],
+            color=SERIES[j],
+            marker=COHORT_MARK.get(name, "o"),
+            s=40,
+            zorder=3,
+            edgecolors="white",
+            linewidths=1,
+        )
     ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([f"{n} / {m} (n={e['n_tasks']})" for n, m, _, e in reversed(rows)],
-                       fontsize=8)
+    ax.set_yticklabels(
+        [f"{n} / {m} (n={e['n_tasks']})" for n, m, _, e in reversed(rows)], fontsize=8
+    )
     ax.set_xlim(-1.05, 1.05)
-    ax.set_xlabel("checklist score, spec minus vibe, brief prompt (95% bootstrap CI)",
-                  color=INK, fontsize=9)
-    ax.set_title("E2 (exploratory): checklist score difference", fontsize=10, color=INK,
-                 loc="left")
+    ax.set_xlabel(
+        "checklist score, spec minus vibe, brief prompt (95% bootstrap CI)", color=INK, fontsize=9
+    )
+    ax.set_title("E2 (exploratory): checklist score difference", fontsize=10, color=INK, loc="left")
     return _save(fig, out, "e2_score_diff")
 
 
 def fig_detail_by_arm(est: dict, cohorts: list[str], metric: str, out: Path) -> list[str]:
     from sdlc_analysis.figures import INK, SERIES, _save, _style, plt
 
-    names = [n for n in list(cohorts) + ["pooled"]
-             if all(est.get(f"x2.{metric}.{n}.mean.{c}", {}) and
-                    est[f"x2.{metric}.{n}.mean.{c}"].get("estimate") is not None for c in COLS4)]
+    names = [
+        n
+        for n in list(cohorts) + ["pooled"]
+        if all(
+            est.get(f"x2.{metric}.{n}.mean.{c}", {})
+            and est[f"x2.{metric}.{n}.mean.{c}"].get("estimate") is not None
+            for c in COLS4
+        )
+    ]
     if not names:
         return []
-    fig, axes = plt.subplots(1, len(names), figsize=(2.2 * len(names) + 0.6, 3.0), sharey=True,
-                             squeeze=False)
+    fig, axes = plt.subplots(
+        1, len(names), figsize=(2.2 * len(names) + 0.6, 3.0), sharey=True, squeeze=False
+    )
     for ax, n in zip(axes[0], names):
         _style(ax)
         for j, arm in enumerate(ARMS):
             vals = [est[f"x2.{metric}.{n}.mean.{d}_{arm}"] for d in DETAILS]
-            ax.plot([0, 1], [v["estimate"] for v in vals], color=SERIES[j], linewidth=2,
-                    marker="os"[j], markersize=6, label=arm)
+            ax.plot(
+                [0, 1],
+                [v["estimate"] for v in vals],
+                color=SERIES[j],
+                linewidth=2,
+                marker="os"[j],
+                markersize=6,
+                label=arm,
+            )
             for x, v in zip((0, 1), vals):
-                ax.plot([x, x], [v["ci_low"], v["ci_high"]], color=SERIES[j], linewidth=1,
-                        alpha=0.6)
+                ax.plot(
+                    [x, x], [v["ci_low"], v["ci_high"]], color=SERIES[j], linewidth=1, alpha=0.6
+                )
         ax.set_xticks([0, 1])
         ax.set_xticklabels(list(DETAILS), fontsize=8)
         ax.set_xlim(-0.4, 1.4)
@@ -501,8 +635,13 @@ def fig_detail_by_arm(est: dict, cohorts: list[str], metric: str, out: Path) -> 
         ax.set_title(f"{n} (n={n_t})", fontsize=9, color=INK, loc="left")
     axes[0][0].set_ylabel(f"{metric} (mean over tasks)", fontsize=9, color=INK)
     axes[0][0].legend(frameon=False, fontsize=8)
-    fig.suptitle(f"E2 (exploratory): prompt detail x arm, {metric}", fontsize=10, color=INK,
-                 x=0.02, ha="left")
+    fig.suptitle(
+        f"E2 (exploratory): prompt detail x arm, {metric}",
+        fontsize=10,
+        color=INK,
+        x=0.02,
+        ha="left",
+    )
     return _save(fig, out, f"e2_detail_x_arm_{metric}")
 
 
@@ -511,8 +650,13 @@ def fig_detail_by_arm(est: dict, cohorts: list[str], metric: str, out: Path) -> 
 
 def parse_args(argv=None) -> argparse.Namespace:
     p = argparse.ArgumentParser(prog="sdlc-e2", description=__doc__.splitlines()[0])
-    p.add_argument("--detailed", type=Path, nargs="*", default=[],
-                   help="detailed-prompt roots (main, main-tiers, E1 haiku)")
+    p.add_argument(
+        "--detailed",
+        type=Path,
+        nargs="*",
+        default=[],
+        help="detailed-prompt roots (main, main-tiers, E1 haiku)",
+    )
     p.add_argument("--brief", type=Path, nargs="+", required=True, help="brief-prompt root(s)")
     p.add_argument("--tasks", type=Path, default=REPO / "data" / "tasks")
     p.add_argument("--out", type=Path, default=E2_OUT)
@@ -528,8 +672,9 @@ def main(argv=None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     a = parse_args(sys.argv[1:] if argv is None else argv)
     cohorts = [c for c in a.cohorts.split(",") if c]
-    tasks, runs = load_e2(a.detailed, a.brief, a.tasks,
-                          a.task_ids.split(",") if a.task_ids else None)
+    tasks, runs = load_e2(
+        a.detailed, a.brief, a.tasks, a.task_ids.split(",") if a.task_ids else None
+    )
     if runs.empty:
         raise SystemExit("no run units found")
     summary, tables = build_e2(runs, tasks, cohorts, a.reps, B=a.bootstrap, seed=a.seed)
@@ -542,12 +687,19 @@ def main(argv=None) -> int:
     for m in ("score", "regression_any", "ai_tests_added"):
         figs += fig_detail_by_arm(summary["estimates"], cohorts, m, out / "figures")
     summary["figures"] = figs
-    summary["meta"]["roots"] = {"detailed": [str(p) for p in a.detailed],
-                                "brief": [str(p) for p in a.brief]}
+    summary["meta"]["roots"] = {
+        "detailed": [str(p) for p in a.detailed],
+        "brief": [str(p) for p in a.brief],
+    }
     (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n")
     tot = summary["coverage_totals"]
-    log.info("E2: %d units loaded (%d graded, %d judged) -> %s", len(runs),
-             sum(r["graded"] for r in tot), sum(r["judged"] for r in tot), out)
+    log.info(
+        "E2: %d units loaded (%d graded, %d judged) -> %s",
+        len(runs),
+        sum(r["graded"] for r in tot),
+        sum(r["judged"] for r in tot),
+        out,
+    )
     return 0
 
 

@@ -43,10 +43,13 @@ EXACT = "[exact]"
 
 def shown_checklist(text: str) -> str:
     """The checklist as the judge sees it (harness judge_prompt): [exact] tags removed."""
-    return "\n".join(
-        line.rstrip()[: -len(EXACT)].rstrip() if line.rstrip().endswith(EXACT) else line
-        for line in text.strip().splitlines()
-    ) + "\n"
+    return (
+        "\n".join(
+            line.rstrip()[: -len(EXACT)].rstrip() if line.rstrip().endswith(EXACT) else line
+            for line in text.strip().splitlines()
+        )
+        + "\n"
+    )
 
 
 def readme(judge_md: str) -> str:
@@ -82,8 +85,10 @@ def cmd_draw(a) -> int:
     problems = humancheck.finished_check(cov, EXPECTED_BRIEF, stopped)
     if stopped:
         b = cov[(cov["detail"] == "brief") & cov["cohort"].isin(stopped)]
-        print(f"collection stopped for {sorted(stopped)}: "
-              f"{int(b['not_finished'].sum())} of their units never finished, sampled from the rest")
+        print(
+            f"collection stopped for {sorted(stopped)}: "
+            f"{int(b['not_finished'].sum())} of their units never finished, sampled from the rest"
+        )
     if expected != EXPECTED_BRIEF:
         problems.append(f"design gives {expected} units, prereg-v1.2 says {EXPECTED_BRIEF}")
     if problems and not a.force:
@@ -103,13 +108,16 @@ def cmd_draw(a) -> int:
             patch = (Path(r["root"]) / r["unit"] / "patch.diff").read_text(errors="replace")
             (d / "change.diff").write_text(strip_process(patch))
             (d / "checklist.md").write_text(
-                shown_checklist((a.tasks / r["task_id"] / "checklist.md").read_text()))
+                shown_checklist((a.tasks / r["task_id"] / "checklist.md").read_text())
+            )
         humancheck.blank_sheet(key, n_items).to_csv(base / f"sheet-{rater}.csv", index=False)
         (base / "HUONG-DAN.md").write_text(readme(judge_md))
     key_path.parent.mkdir(parents=True, exist_ok=True)
     key.to_csv(key_path, index=False)
-    print(f"{len(key)} units x {len(RATERS)} raters -> {out}; key -> {key_path}"
-          + (" (FORCED: brief condition not finished)" if problems else ""))
+    print(
+        f"{len(key)} units x {len(RATERS)} raters -> {out}; key -> {key_path}"
+        + (" (FORCED: brief condition not finished)" if problems else "")
+    )
     return 0
 
 
@@ -138,11 +146,17 @@ def parse_args(argv=None):
     d.add_argument("--seed", type=int, default=SEED_DEFAULT)
     d.add_argument("--cohorts", default=",".join(e2.E2_COHORTS))
     d.add_argument("--reps", type=int, default=3)
-    d.add_argument("--collection-stopped", default="",
-                   help="cohorts whose data collection was ended for good (logged in prereg-v1 "
-                        "11); their unfinished units do not block the draw")
-    d.add_argument("--force", action="store_true",
-                   help="testing only: draw from unfinished data into a scratch --out/--key")
+    d.add_argument(
+        "--collection-stopped",
+        default="",
+        help="cohorts whose data collection was ended for good (logged in prereg-v1 "
+        "11); their unfinished units do not block the draw",
+    )
+    d.add_argument(
+        "--force",
+        action="store_true",
+        help="testing only: draw from unfinished data into a scratch --out/--key",
+    )
     k = sub.add_parser("kappa")
     k.add_argument("--key", type=Path, default=KEY)
     k.add_argument("--loi", type=Path, required=True)

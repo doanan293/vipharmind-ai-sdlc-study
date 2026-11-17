@@ -27,3 +27,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# script dựng gói việc một lần, chuỗi hướng dẫn tiếng Việt dài
+"scripts/*" = ["E501"]

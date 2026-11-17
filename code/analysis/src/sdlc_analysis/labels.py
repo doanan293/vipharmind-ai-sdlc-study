@@ -7,8 +7,17 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-LABELS = ("hieu_sai", "lam_thieu", "sai_giao_dien", "hong_chuc_nang_cu", "loi_logic",
-          "khong_hoan_thanh", "de_bai_thieu", "sai_api_co_san", "loi_moi_truong")
+LABELS = (
+    "hieu_sai",
+    "lam_thieu",
+    "sai_giao_dien",
+    "hong_chuc_nang_cu",
+    "loi_logic",
+    "khong_hoan_thanh",
+    "de_bai_thieu",
+    "sai_api_co_san",
+    "loi_moi_truong",
+)
 CLAUDE = ("claude-sonnet", "claude-opus")
 TIER_ORDER = ("small", "medium", "large")
 REVEALED = "lộ cách làm"
@@ -32,13 +41,16 @@ def labeling_template(valid: pd.DataFrame, seed: int) -> tuple[pd.DataFrame, pd.
     ids = [unit_label_id(u, seed) for u in shuffled["unit"]]
     if len(set(ids)) != len(ids):
         raise ValueError("label id collision; change the id length")
-    sheet = pd.DataFrame({
-        "unit_id": ids,
-        "label": "",
-        "note": [TIMEOUT_NOTE if t else "" for t in shuffled["timed_out"].astype(bool)],
-    })
+    sheet = pd.DataFrame(
+        {
+            "unit_id": ids,
+            "label": "",
+            "note": [TIMEOUT_NOTE if t else "" for t in shuffled["timed_out"].astype(bool)],
+        }
+    )
     key = pd.DataFrame({"unit_id": ids}).join(
-        shuffled[["unit", "cohort", "task_id", "tier", "arm", "rep", "timed_out"]])
+        shuffled[["unit", "cohort", "task_id", "tier", "arm", "rep", "timed_out"]]
+    )
     return sheet, key
 
 
@@ -83,9 +95,12 @@ def kappa_report(path_a: Path, path_b: Path) -> dict:
         "n_only_a": len(set(la.index) - set(lb.index)),
         "n_only_b": len(set(lb.index) - set(la.index)),
         "crosstab": {r: {c: int(ct.loc[r, c]) for c in ct.columns} for r in ct.index},
-        "revealed_arm": {"rater_a": int(ra.sum()), "rater_b": int(rb.sum()),
-                         "either": int((ra | rb).sum()),
-                         "share_either": float((ra | rb).mean()) if both else None},
+        "revealed_arm": {
+            "rater_a": int(ra.sum()),
+            "rater_b": int(rb.sum()),
+            "either": int((ra | rb).sum()),
+            "share_either": float((ra | rb).mean()) if both else None,
+        },
         "disagreements": [u for u in both if la.loc[u, "label"] != lb.loc[u, "label"]],
         "invalid_labels": invalid,
     }
@@ -99,8 +114,10 @@ def _allocate(counts: dict[str, int], n: int) -> dict[str, int]:
     quota = {k: n * c / total for k, c in counts.items()}
     alloc = {k: int(np.floor(q)) for k, q in quota.items()}
     rest = n - sum(alloc.values())
-    order = sorted(counts, key=lambda k: (-(quota[k] - alloc[k]), TIER_ORDER.index(k)
-                                          if k in TIER_ORDER else 99))
+    order = sorted(
+        counts,
+        key=lambda k: (-(quota[k] - alloc[k]), TIER_ORDER.index(k) if k in TIER_ORDER else 99),
+    )
     for k in order[:rest]:
         alloc[k] += 1
     return alloc

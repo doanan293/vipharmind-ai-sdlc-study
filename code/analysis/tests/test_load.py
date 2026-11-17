@@ -20,7 +20,7 @@ def test_task_selection_and_pilot_flag(tmp_path):
     d.mkdir()
     (d / "task.toml").write_text(
         'id = "p01"\ncommit = "c"\nparent = "p"\nlayer = "domain"\nsrc_lines = 201\n'
-        'hidden_tests = []\npilot = true\nbaseline_radon_mi = 49.6\n'
+        "hidden_tests = []\npilot = true\nbaseline_radon_mi = 49.6\n"
     )
     assert load_tasks(tmp_path).empty  # pilots are left out unless named
     t = load_tasks(tmp_path, ["p01"])

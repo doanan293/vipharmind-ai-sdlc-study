@@ -31,8 +31,9 @@ def unit_code(unit: str, seed: int) -> str:
     return "h" + hashlib.sha256(f"{seed}:human-check:{unit}".encode()).hexdigest()[:8]
 
 
-def finished_check(cov: pd.DataFrame, expected_total: int,
-                   stopped: frozenset[str] = frozenset()) -> list[str]:
+def finished_check(
+    cov: pd.DataFrame, expected_total: int, stopped: frozenset[str] = frozenset()
+) -> list[str]:
     """Reasons the draw must wait: the brief condition is not fully finished (every expected unit
     graded, or excluded after its system-error reruns). Empty list = ready.
 
@@ -41,16 +42,18 @@ def finished_check(cov: pd.DataFrame, expected_total: int,
     b = cov[cov["detail"] == "brief"]
     problems = []
     if int(b["expected"].sum()) != expected_total:
-        problems.append(f"design has {int(b['expected'].sum())} brief units, expected "
-                        f"{expected_total}")
+        problems.append(
+            f"design has {int(b['expected'].sum())} brief units, expected {expected_total}"
+        )
     nf = int(b.loc[~b["cohort"].isin(stopped), "not_finished"].sum())
     if nf:
         problems.append(f"{nf} brief units not finished (run, pending or missing)")
     return problems
 
 
-def draw(valid_brief: pd.DataFrame, cohorts: list[str], seed: int,
-         per_stratum: int = PER_STRATUM) -> pd.DataFrame:
+def draw(
+    valid_brief: pd.DataFrame, cohorts: list[str], seed: int, per_stratum: int = PER_STRATUM
+) -> pd.DataFrame:
     """The private key: one row per drawn unit, in packet order."""
     v = valid_brief.sort_values(["cohort", "task_id", "arm", "rep"]).reset_index(drop=True)
     rng = np.random.default_rng(seed)
@@ -70,8 +73,11 @@ def draw(valid_brief: pd.DataFrame, cohorts: list[str], seed: int,
 
 
 def blank_sheet(key: pd.DataFrame, n_items: dict[str, int]) -> pd.DataFrame:
-    rows = [{"unit_code": r["unit_code"], "item_n": n, "verdict": "", "note": ""}
-            for r in key.to_dict("records") for n in range(1, n_items[r["task_id"]] + 1)]
+    rows = [
+        {"unit_code": r["unit_code"], "item_n": n, "verdict": "", "note": ""}
+        for r in key.to_dict("records")
+        for n in range(1, n_items[r["task_id"]] + 1)
+    ]
     return pd.DataFrame(rows, columns=SHEET_COLS)
 
 
@@ -93,8 +99,9 @@ def judge_sheet(key: pd.DataFrame) -> pd.DataFrame:
         except (OSError, ValueError):
             continue
         for it in j.get("items", []):
-            rows.append({"unit_code": r["unit_code"], "item_n": int(it["n"]),
-                         "verdict": str(it["verdict"])})
+            rows.append(
+                {"unit_code": r["unit_code"], "item_n": int(it["n"]), "verdict": str(it["verdict"])}
+            )
     return pd.DataFrame(rows, columns=["unit_code", "item_n", "verdict"])
 
 
@@ -108,8 +115,10 @@ def item_agreement(a: pd.DataFrame, b: pd.DataFrame) -> dict:
     return {
         "n_items": len(m),
         "n_units": int(m["unit_code"].nunique()),
-        "agreement": three["po"], "kappa": three["kappa"],
-        "agreement_binary": binary["po"], "kappa_binary": binary["kappa"],
+        "agreement": three["po"],
+        "kappa": three["kappa"],
+        "agreement_binary": binary["po"],
+        "kappa_binary": binary["kappa"],
         "crosstab": {r: {c: int(ct.loc[r, c]) for c in ct.columns} for r in ct.index},
         "invalid_or_blank_a": int((~a["verdict"].isin(VERDICTS)).sum()),
         "invalid_or_blank_b": int((~b["verdict"].isin(VERDICTS)).sum()),
@@ -121,7 +130,7 @@ def agreement_report(sheets: dict[str, pd.DataFrame], judge: pd.DataFrame | None
     names = list(sheets)
     out = {}
     for i, x in enumerate(names):
-        for y in names[i + 1:]:
+        for y in names[i + 1 :]:
             out[f"{x}~{y}"] = item_agreement(sheets[x], sheets[y])
         if judge is not None:
             out[f"{x}~judge"] = item_agreement(sheets[x], judge)

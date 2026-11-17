@@ -1,4 +1,6 @@
-"""Số liệu, bảng và hình của thí nghiệm chính, đọc từ data/results/analysis/main (gói code/analysis/).
+"""Số liệu, bảng và hình của thí nghiệm chính.
+
+Đọc từ data/results/analysis/main (gói code/analysis/).
 
 Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết cục theo bản đăng ký), runs.csv
 (một dòng mỗi lượt, dùng cho số mô tả mà summary không có) và figures/*.pdf (chép nguyên).

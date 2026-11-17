@@ -12,8 +12,9 @@ import pandas as pd
 
 
 def _git(repo: Path, *args: str) -> str:
-    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
-                          text=True).stdout
+    return subprocess.run(
+        ["git", "-C", str(repo), *args], check=True, capture_output=True, text=True
+    ).stdout
 
 
 def commit_sets(tasks: pd.DataFrame, repo: Path) -> dict[str, set[str]]:
@@ -33,13 +34,14 @@ def cross_tier_overlaps(tasks: pd.DataFrame, sets: dict[str, set[str]]) -> list[
     ids = sorted(sets)
     pairs = []
     for i, a in enumerate(ids):
-        for b in ids[i + 1:]:
+        for b in ids[i + 1 :]:
             if tier[a] == tier[b]:
                 continue
             shared = sets[a] & sets[b]
             if shared:
-                pairs.append({"a": a, "b": b, "tiers": [tier[a], tier[b]],
-                              "shared_commits": sorted(shared)})
+                pairs.append(
+                    {"a": a, "b": b, "tiers": [tier[a], tier[b]], "shared_commits": sorted(shared)}
+                )
     return pairs
 
 

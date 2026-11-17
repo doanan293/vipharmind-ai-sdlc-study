@@ -58,7 +58,9 @@ def hidden_tests(repo: Path, task_toml: Path) -> dict[str, str]:
     for path in meta["hidden_tests"]:
         out[Path(path).name] = subprocess.run(
             ["git", "-C", str(repo), "show", f"{meta['commit']}:{path}"],
-            check=True, capture_output=True, text=True,
+            check=True,
+            capture_output=True,
+            text=True,
         ).stdout
     return out
 

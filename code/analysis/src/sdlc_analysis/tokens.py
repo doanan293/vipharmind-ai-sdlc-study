@@ -118,8 +118,10 @@ def _claude(evs: list[dict]) -> list[ModelTokens]:
     per_msg: dict[str, tuple[str | None, dict]] = {}
     for e in evs:
         msg = e.get("message")
-        if e.get("type") == "assistant" and isinstance(msg, dict) and isinstance(
-            msg.get("usage"), dict
+        if (
+            e.get("type") == "assistant"
+            and isinstance(msg, dict)
+            and isinstance(msg.get("usage"), dict)
         ):
             per_msg[str(msg.get("id"))] = (msg.get("model"), msg["usage"])
     by_model: dict[str | None, list[int]] = {}
@@ -132,8 +134,13 @@ def _claude(evs: list[dict]) -> list[ModelTokens]:
         )
         acc = by_model.setdefault(model, [0, 0, 0, 0, 0])
         for k, v in enumerate(
-            (_i(u, "input_tokens"), _i(u, "cache_read_input_tokens"), five, hour,
-             _i(u, "output_tokens"))
+            (
+                _i(u, "input_tokens"),
+                _i(u, "cache_read_input_tokens"),
+                five,
+                hour,
+                _i(u, "output_tokens"),
+            )
         ):
             acc[k] += v
     return [ModelTokens(m, *acc, None, True, "messages") for m, acc in by_model.items()]
@@ -192,8 +199,11 @@ def _codex(evs: list[dict]) -> list[ModelTokens]:
         return []
     inp = sum(_i(u, "input_tokens") for u in done)
     cached = sum(_i(u, "cached_input_tokens") for u in done)
-    reasoning = [u["reasoning_output_tokens"] for u in done
-                 if isinstance(u.get("reasoning_output_tokens"), int)]
+    reasoning = [
+        u["reasoning_output_tokens"]
+        for u in done
+        if isinstance(u.get("reasoning_output_tokens"), int)
+    ]
     model = next((e["model"] for e in evs if isinstance(e.get("model"), str)), None)
     return [
         ModelTokens(

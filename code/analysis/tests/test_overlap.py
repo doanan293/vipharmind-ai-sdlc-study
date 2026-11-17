@@ -6,8 +6,9 @@ from sdlc_analysis.overlap import commit_sets, cross_tier_overlaps, overlap_task
 
 
 def git(repo, *args):
-    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
-                          text=True).stdout.strip()
+    return subprocess.run(
+        ["git", "-C", str(repo), *args], check=True, capture_output=True, text=True
+    ).stdout.strip()
 
 
 def test_overlap_from_git_history(tmp_path):
@@ -20,15 +21,29 @@ def test_overlap_from_git_history(tmp_path):
         git(repo, "add", "f")
         git(repo, "-c", "user.name=x", "-c", "user.email=x@x", "commit", "-qm", f"c{i}")
         shas.append(git(repo, "rev-parse", "HEAD"))
-    tasks = pd.DataFrame([
-        {"task_id": "s1", "tier": "small", "kind": "commit", "commit": shas[2][:12], "base": ""},
-        {"task_id": "s2", "tier": "small", "kind": "commit", "commit": shas[5], "base": ""},
-        {"task_id": "s3", "tier": "small", "kind": "commit", "commit": shas[3], "base": ""},
-        {"task_id": "m1", "tier": "medium", "kind": "range", "commit": shas[5], "base": shas[3]},
-        {"task_id": "L1", "tier": "large", "kind": "range", "commit": shas[3], "base": shas[1]},
-        # same-tier overlap does not count
-        {"task_id": "L2", "tier": "large", "kind": "range", "commit": shas[4], "base": shas[2]},
-    ])
+    tasks = pd.DataFrame(
+        [
+            {
+                "task_id": "s1",
+                "tier": "small",
+                "kind": "commit",
+                "commit": shas[2][:12],
+                "base": "",
+            },
+            {"task_id": "s2", "tier": "small", "kind": "commit", "commit": shas[5], "base": ""},
+            {"task_id": "s3", "tier": "small", "kind": "commit", "commit": shas[3], "base": ""},
+            {
+                "task_id": "m1",
+                "tier": "medium",
+                "kind": "range",
+                "commit": shas[5],
+                "base": shas[3],
+            },
+            {"task_id": "L1", "tier": "large", "kind": "range", "commit": shas[3], "base": shas[1]},
+            # same-tier overlap does not count
+            {"task_id": "L2", "tier": "large", "kind": "range", "commit": shas[4], "base": shas[2]},
+        ]
+    )
     sets = commit_sets(tasks, repo)
     assert sets["s1"] == {shas[2]}
     assert sets["L1"] == {shas[2], shas[3]}

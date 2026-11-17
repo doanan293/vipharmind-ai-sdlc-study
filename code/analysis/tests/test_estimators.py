@@ -55,8 +55,9 @@ def test_varying_task_effects_interval_covers_truth(jitter_study):
 
 def test_task_enters_only_with_a_valid_run_in_each_arm(study):
     runs = valid(study[3])
-    drop = ~((runs["cohort"] == "claude-opus") & (runs["task_id"] == "t07")
-             & (runs["arm"] == "vibe"))
+    drop = ~(
+        (runs["cohort"] == "claude-opus") & (runs["task_id"] == "t07") & (runs["arm"] == "vibe")
+    )
     d = task_diffs(runs[drop], "task_pass", "claude-opus", "small")
     assert "t07" not in d.index and len(d) == 14
 
@@ -65,14 +66,16 @@ def test_secondary_metrics_recover_known_differences(study):
     runs = valid(study[3])
     get = lambda m: paired_diff(runs, "claude-sonnet", "small", m, B=B).estimate
     assert get("tokens_total") == syn.run_tokens("claude-sonnet", "spec") - syn.run_tokens(
-        "claude-sonnet", "vibe")
+        "claude-sonnet", "vibe"
+    )
     assert get("wall_s") == pytest.approx(300)
     assert get("static_errors") == pytest.approx(-4)
     assert get("regression_any") == pytest.approx(-2 / 3)
     assert get("radon_mi_delta") == pytest.approx(-2)
     assert get("hidden_pass_rate") == pytest.approx(0.1)
-    assert get("cost_usd") == pytest.approx(syn.run_cost("claude-sonnet", "spec")
-                                            - syn.run_cost("claude-sonnet", "vibe"))
+    assert get("cost_usd") == pytest.approx(
+        syn.run_cost("claude-sonnet", "spec") - syn.run_cost("claude-sonnet", "vibe")
+    )
 
 
 def test_null_metric_values_are_dropped_and_counted(study):
@@ -111,7 +114,8 @@ def test_two_by_two(study):
     assert r["diff_of_diffs"].estimate == pytest.approx(1 / 3)
     assert r["sonnet_spec_minus_opus_vibe.pass"].estimate == pytest.approx(0)
     assert r["sonnet_spec_minus_opus_vibe.cost_usd"].estimate == pytest.approx(
-        syn.run_cost("claude-sonnet", "spec") - syn.run_cost("claude-opus", "vibe"))
+        syn.run_cost("claude-sonnet", "spec") - syn.run_cost("claude-opus", "vibe")
+    )
 
 
 def test_two_by_two_joint_resampling_cancels_shared_task_noise(jitter_study):
@@ -121,7 +125,8 @@ def test_two_by_two_joint_resampling_cancels_shared_task_noise(jitter_study):
     r = two_by_two(runs, "small", B=B)
     s = paired_diff(runs, "claude-sonnet", "small", "task_pass", B=B)
     assert (r["diff_of_diffs"].ci_low, r["diff_of_diffs"].ci_high) == pytest.approx(
-        (s.ci_low, s.ci_high))
+        (s.ci_low, s.ci_high)
+    )
 
 
 def test_cost_effectiveness(study):
@@ -167,8 +172,9 @@ def test_pooling_with_a_cohort_missing_a_task_averages_the_cohorts_present(study
     # rule (README): a task's pooled difference is the mean over the cohorts that have it
     runs = valid(study[3])
     cohorts = ["claude-sonnet", "claude-opus", "agy-gemini"]
-    drop = ~((runs["cohort"] == "claude-sonnet") & (runs["task_id"] == "t07")
-             & (runs["arm"] == "vibe"))
+    drop = ~(
+        (runs["cohort"] == "claude-sonnet") & (runs["task_id"] == "t07") & (runs["arm"] == "vibe")
+    )
     p = pooled_task_diffs(runs[drop], "task_pass", cohorts, "small")
     assert len(p) == 15
     assert p["t07"] == pytest.approx(0.0)  # opus 0 and agy 0; sonnet (1/3) has no t07

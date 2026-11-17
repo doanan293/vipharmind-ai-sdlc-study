@@ -69,8 +69,7 @@ def _formula(df: pd.DataFrame) -> str:
 
 def _fit_glmm(df: pd.DataFrame, vc: dict, formula: str, seed: int = 0):
     """One variational fit; `seed` fixes statsmodels' random starting SDs (reproducible)."""
-    model = BinomialBayesMixedGLM.from_formula(formula, vc, df, vcp_p=VC_PRIOR_SD,
-                                               fe_p=FE_PRIOR_SD)
+    model = BinomialBayesMixedGLM.from_formula(formula, vc, df, vcp_p=VC_PRIOR_SD, fe_p=FE_PRIOR_SD)
     return model.fit_vb(rng=seed)
 
 
@@ -131,8 +130,15 @@ def ols_task_diffs(diffs: pd.DataFrame) -> dict:
     log size. `diffs` has one row per (cohort, task) with columns `diff` and `log_src_lines`."""
     per_task = diffs.groupby("task_id").agg(diff=("diff", "mean"), x=("log_src_lines", "first"))
     coef, se, lo, hi = ols_slope(per_task)
-    return {"coef": coef, "se": se, "ci_low": lo, "ci_high": hi, "scale": "difference",
-            "n_tasks": len(per_task), "ci_type": "t-based 95% OLS interval"}
+    return {
+        "coef": coef,
+        "se": se,
+        "ci_low": lo,
+        "ci_high": hi,
+        "scale": "difference",
+        "n_tasks": len(per_task),
+        "ci_type": "t-based 95% OLS interval",
+    }
 
 
 # --- cluster bootstrap of the whole fit ---------------------------------------------------
@@ -144,8 +150,9 @@ def resample_tasks(df: pd.DataFrame, B: int, seed: int) -> list[list[str]]:
     rng = np.random.default_rng(seed)
     tiers = df.groupby("task_id")["tier"].first()
     by_tier = [sorted(tiers[tiers == t].index) for t in TIER_ORDER if (tiers == t).any()]
-    by_tier += [sorted(tiers[~tiers.isin(TIER_ORDER)].index)] if (~tiers.isin(TIER_ORDER)).any() \
-        else []
+    by_tier += (
+        [sorted(tiers[~tiers.isin(TIER_ORDER)].index)] if (~tiers.isin(TIER_ORDER)).any() else []
+    )
     draws = []
     for _ in range(B):
         d: list[str] = []
@@ -204,8 +211,9 @@ def _refit_chunk(args) -> list[tuple[float, bool]]:
     return out
 
 
-def bootstrap_interaction(df: pd.DataFrame, level: int, formula: str, B: int, seed: int,
-                          jobs: int = 1) -> dict:
+def bootstrap_interaction(
+    df: pd.DataFrame, level: int, formula: str, B: int, seed: int, jobs: int = 1
+) -> dict:
     draws = resample_tasks(df, B, seed)
     seeds = [seed + 1 + b for b in range(B)]
     chunks = max(1, min(jobs, B))
@@ -222,7 +230,7 @@ def bootstrap_interaction(df: pd.DataFrame, level: int, formula: str, B: int, se
             flat[i + j * chunks] = r
     coefs = np.array([c for c, _ in flat], dtype=float)
     ok = np.isfinite(coefs)
-    lo, hi = (np.percentile(coefs[ok], [2.5, 97.5]) if ok.any() else (np.nan, np.nan))
+    lo, hi = np.percentile(coefs[ok], [2.5, 97.5]) if ok.any() else (np.nan, np.nan)
     return {
         "ci_low": float(lo) if ok.any() else None,
         "ci_high": float(hi) if ok.any() else None,
@@ -230,12 +238,11 @@ def bootstrap_interaction(df: pd.DataFrame, level: int, formula: str, B: int, se
         "B": B,
         "seed": seed,
         "n_failed": int((~ok).sum()),
-        "n_not_converged": (nnc := int(sum(1 for c, conv in flat
-                                           if np.isfinite(c) and not conv))),
+        "n_not_converged": (nnc := int(sum(1 for c, conv in flat if np.isfinite(c) and not conv))),
         "share_not_converged": nnc / B if B else None,
         "reportable": B >= B_MODEL_DEFAULT,
         "ci_type": "cluster bootstrap of the whole fit: tasks resampled with replacement within "
-                   "tier, chosen level refitted, percentile 2.5-97.5",
+        "tier, chosen level refitted, percentile 2.5-97.5",
     }
 
 
@@ -271,23 +278,41 @@ def fit_h5_model(
     runs = runs[runs[x_col].notna()]
     df = _prepare(runs, x_col)
     formula = _formula(df)
-    attempts = [{"level": 0, "model": LEVEL_NAMES[0], "ok": False,
-                 "reason": "not available: statsmodels BinomialBayesMixedGLM fits independent "
-                           "variance components only (no correlated random effects)"}]
-    out = {"n_runs": len(df), "n_tasks": int(df["task_id"].nunique()),
-           "cohorts": list(cohorts), "size_variable": x_col, "tasks_without_size": no_x,
-           "fixed_formula": formula,
-           "log_size_centre": float(df.groupby("task_id")["x_raw"].first().mean())
-           if len(df) else None}
+    attempts = [
+        {
+            "level": 0,
+            "model": LEVEL_NAMES[0],
+            "ok": False,
+            "reason": "not available: statsmodels BinomialBayesMixedGLM fits independent "
+            "variance components only (no correlated random effects)",
+        }
+    ]
+    out = {
+        "n_runs": len(df),
+        "n_tasks": int(df["task_id"].nunique()),
+        "cohorts": list(cohorts),
+        "size_variable": x_col,
+        "tasks_without_size": no_x,
+        "fixed_formula": formula,
+        "log_size_centre": float(df.groupby("task_id")["x_raw"].first().mean())
+        if len(df)
+        else None,
+    }
     if df.empty:
         out.update(model_level=None, attempts=attempts, interaction=None)
         return out
     chosen = None
     for level in (1, 2):
         res, reason = _fit_level(df, level, formula, seed)
-        attempts.append({"level": level, "model": LEVEL_NAMES[level], "ok": reason is None,
-                         "reason": reason,
-                         "random_effect_sd": None if res is None else random_sds(res)})
+        attempts.append(
+            {
+                "level": level,
+                "model": LEVEL_NAMES[level],
+                "ok": reason is None,
+                "reason": reason,
+                "random_effect_sd": None if res is None else random_sds(res),
+            }
+        )
         if reason is None:
             chosen = (level, res)
             break
@@ -298,13 +323,23 @@ def fit_h5_model(
         coef = float(res.fe_mean[i])
         boot = bootstrap_interaction(df, level, formula, B, seed, jobs)
         out.update(
-            model_level=level, model=LEVEL_NAMES[level], attempts=attempts,
-            interaction={"coef": coef, "se": boot["se"], "ci_low": boot["ci_low"],
-                         "ci_high": boot["ci_high"], "scale": "logit",
-                         "vb_posterior_sd": float(res.fe_sd[i]), "bootstrap": boot,
-                         "ci_type": boot["ci_type"]},
-            fixed_effects={n: {"coef": float(m), "vb_posterior_sd": float(s)}
-                           for n, m, s in zip(names, res.fe_mean, res.fe_sd)},
+            model_level=level,
+            model=LEVEL_NAMES[level],
+            attempts=attempts,
+            interaction={
+                "coef": coef,
+                "se": boot["se"],
+                "ci_low": boot["ci_low"],
+                "ci_high": boot["ci_high"],
+                "scale": "logit",
+                "vb_posterior_sd": float(res.fe_sd[i]),
+                "bootstrap": boot,
+                "ci_type": boot["ci_type"],
+            },
+            fixed_effects={
+                n: {"coef": float(m), "vb_posterior_sd": float(s)}
+                for n, m, s in zip(names, res.fe_mean, res.fe_sd)
+            },
             random_effect_sd=random_sds(res),
         )
         return out
@@ -313,9 +348,19 @@ def fit_h5_model(
     attempts.append({"level": 3, "model": LEVEL_NAMES[3], "ok": True, "reason": None})
     ols = ols_task_diffs(table)
     boot = bootstrap_interaction(df, 3, formula, B, seed, 1)
-    out.update(model_level=3, model=LEVEL_NAMES[3], attempts=attempts,
-               interaction={**ols, "se": boot["se"], "ci_low": boot["ci_low"],
-                            "ci_high": boot["ci_high"], "ols_se": ols["se"],
-                            "ols_ci": [ols["ci_low"], ols["ci_high"]], "bootstrap": boot,
-                            "ci_type": boot["ci_type"]})
+    out.update(
+        model_level=3,
+        model=LEVEL_NAMES[3],
+        attempts=attempts,
+        interaction={
+            **ols,
+            "se": boot["se"],
+            "ci_low": boot["ci_low"],
+            "ci_high": boot["ci_high"],
+            "ols_se": ols["se"],
+            "ols_ci": [ols["ci_low"], ols["ci_high"]],
+            "bootstrap": boot,
+            "ci_type": boot["ci_type"],
+        },
+    )
     return out

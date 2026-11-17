@@ -18,8 +18,9 @@ def haiku_study(tmp_path_factory):
         for tid in tasks:
             for arm in ("spec", "vibe"):
                 for rep in (1, 2, 3):
-                    syn.write_unit(tmp, "claude-sonnet", tid, tier, arm, rep,
-                                   arm == "spec" and rep == 1)
+                    syn.write_unit(
+                        tmp, "claude-sonnet", tid, tier, arm, rep, arm == "spec" and rep == 1
+                    )
     haiku = root / "haiku"
     haiku.mkdir()
     (tmp / "claude-sonnet").rename(haiku / "claude-haiku")
@@ -60,8 +61,24 @@ def test_e1_argv_defaults():
 def test_e1_runs_the_locked_analysis_with_haiku(haiku_study, tmp_path):
     tasks_dir, results, haiku = haiku_study
     out = tmp_path / "e1"
-    assert e1.main(["--results", str(results), str(haiku), "--tasks", str(tasks_dir),
-                    "--out", str(out), "--bootstrap", "200", "--model-bootstrap", "2"]) == 0
+    assert (
+        e1.main(
+            [
+                "--results",
+                str(results),
+                str(haiku),
+                "--tasks",
+                str(tasks_dir),
+                "--out",
+                str(out),
+                "--bootstrap",
+                "200",
+                "--model-bootstrap",
+                "2",
+            ]
+        )
+        == 0
+    )
     s = json.loads((out / "summary.json").read_text())
     assert "exploratory" in s["meta"]["exploratory"]
     assert s["meta"]["cohorts"] == list(e1.E1_COHORTS)

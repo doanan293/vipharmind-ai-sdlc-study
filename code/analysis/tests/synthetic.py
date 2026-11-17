@@ -14,8 +14,12 @@ COHORTS = {
     "codex-luna": ("codex", "gpt-6-luna"),
 }
 TIERS = {
-    "small": {f"t{i:02d}": n for i, n in enumerate(
-        [40, 45, 60, 70, 80, 100, 120, 130, 150, 170, 180, 200, 220, 250, 310], start=1)},
+    "small": {
+        f"t{i:02d}": n
+        for i, n in enumerate(
+            [40, 45, 60, 70, 80, 100, 120, 130, 150, 170, 180, 200, 220, 250, 310], start=1
+        )
+    },
     "medium": {f"m{i:02d}": n for i, n in enumerate([320, 380, 450, 520, 650], start=1)},
     "large": {f"f{i:02d}": n for i, n in enumerate([760, 900, 1300], start=1)},
 }
@@ -58,19 +62,22 @@ def write_tasks(tasks_dir: Path) -> None:
     for tier, tasks in TIERS.items():
         for tid, lines in tasks.items():
             g = graded_lines(tid, lines)
-            graded[tid] = {"graded_src_lines": g} if g is not None else {
-                "graded_src_lines": None, "error": "synthetic: not measurable"}
+            graded[tid] = (
+                {"graded_src_lines": g}
+                if g is not None
+                else {"graded_src_lines": None, "error": "synthetic: not measurable"}
+            )
     tasks_dir.mkdir(parents=True, exist_ok=True)
     (tasks_dir / "graded_lines.json").write_text(json.dumps(graded))
     for tier, tasks in TIERS.items():
         for tid, lines in tasks.items():
             d = tasks_dir / tid
             d.mkdir(parents=True, exist_ok=True)
-            kind = '' if tier == "small" else 'kind = "range"\nbase = "b' + tid + '"\n'
+            kind = "" if tier == "small" else 'kind = "range"\nbase = "b' + tid + '"\n'
             parent = f'parent = "p{tid}"\n' if tier == "small" else ""
             (d / "task.toml").write_text(
                 f'id = "{tid}"\ncommit = "c{tid}"\n{kind}{parent}layer = "domain"\n'
-                f"src_lines = {lines}\nhidden_tests = [\"backend/tests/test_{tid}.py\"]\n"
+                f'src_lines = {lines}\nhidden_tests = ["backend/tests/test_{tid}.py"]\n'
                 f'pilot = false\ntier = "{tier}"\n'
                 f"baseline_radon_cc = 2.0\nbaseline_radon_mi = {BASE_MI}\n"
             )
@@ -81,14 +88,30 @@ def _claude_transcript(model: str, mult: int, arm: str) -> str:
     cmd = "cd backend && uv run pytest -q" if arm == "spec" else "ls"
     ev = [
         {"type": "system", "model": model},
-        {"type": "assistant", "message": {"id": "m1", "model": model, "content": [
-            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}},
-        {"type": "result", "num_turns": 5, "usage": {}, "modelUsage": {model: {
-            "inputTokens": t["input"], "cacheReadInputTokens": t["cache_read"],
-            "cacheCreationInputTokens": t["cache_write_1h"],
-            "cacheCreationEphemeral5mInputTokens": 0,
-            "cacheCreationEphemeral1hInputTokens": t["cache_write_1h"],
-            "outputTokens": t["output"], "thinkingTokens": 10}}},
+        {
+            "type": "assistant",
+            "message": {
+                "id": "m1",
+                "model": model,
+                "content": [{"type": "tool_use", "name": "Bash", "input": {"command": cmd}}],
+            },
+        },
+        {
+            "type": "result",
+            "num_turns": 5,
+            "usage": {},
+            "modelUsage": {
+                model: {
+                    "inputTokens": t["input"],
+                    "cacheReadInputTokens": t["cache_read"],
+                    "cacheCreationInputTokens": t["cache_write_1h"],
+                    "cacheCreationEphemeral5mInputTokens": 0,
+                    "cacheCreationEphemeral1hInputTokens": t["cache_write_1h"],
+                    "outputTokens": t["output"],
+                    "thinkingTokens": 10,
+                }
+            },
+        },
     ]
     return "\n".join(json.dumps(e) for e in ev) + "\n"
 
@@ -98,8 +121,14 @@ def _codex_transcript(mult: int, arm: str) -> str:
     cmd = "uv run pytest" if arm == "spec" else "ls"
     ev = [
         {"type": "item.completed", "item": {"type": "command_execution", "command": cmd}},
-        {"type": "turn.completed", "usage": {"input_tokens": t["input"],
-         "cached_input_tokens": t["cached"], "output_tokens": t["output"]}},
+        {
+            "type": "turn.completed",
+            "usage": {
+                "input_tokens": t["input"],
+                "cached_input_tokens": t["cached"],
+                "output_tokens": t["output"],
+            },
+        },
     ]
     return "\n".join(json.dumps(e) for e in ev) + "\n"
 
@@ -109,10 +138,24 @@ def _agy_transcript(model: str, mult: int, arm: str) -> str:
     cmd = "uv run pytest" if arm == "spec" else "ls"
     ev = [
         {"event": "init", "init": {"model": model}},
-        {"event": "step_update", "step_update": {"state": "DONE", "step_type": "tool",
-         "tool_info": {"parameters": {"CommandLine": cmd}}}},
-        {"event": "result", "result": {"usage": {"input_tokens": t["input"],
-         "cache_read_tokens": t["cache_read"], "output_tokens": t["output"]}}},
+        {
+            "event": "step_update",
+            "step_update": {
+                "state": "DONE",
+                "step_type": "tool",
+                "tool_info": {"parameters": {"CommandLine": cmd}},
+            },
+        },
+        {
+            "event": "result",
+            "result": {
+                "usage": {
+                    "input_tokens": t["input"],
+                    "cache_read_tokens": t["cache_read"],
+                    "output_tokens": t["output"],
+                }
+            },
+        },
     ]
     return "\n".join(json.dumps(e) for e in ev) + "\n"
 
@@ -122,12 +165,18 @@ def run_cost(cohort: str, arm: str) -> float:
     m = 2 if arm == "spec" else 1
     if cohort == "claude-sonnet":
         t = CLAUDE_TOK
-        return m * (t["input"] * 2 + t["cache_read"] * 0.1 + t["cache_write_1h"] * 4
-                    + t["output"] * 10) / 1e6
+        return (
+            m
+            * (t["input"] * 2 + t["cache_read"] * 0.1 + t["cache_write_1h"] * 4 + t["output"] * 10)
+            / 1e6
+        )
     if cohort == "claude-opus":
         t = CLAUDE_TOK
-        return m * (t["input"] * 4 + t["cache_read"] * 0.2 + t["cache_write_1h"] * 8
-                    + t["output"] * 20) / 1e6
+        return (
+            m
+            * (t["input"] * 4 + t["cache_read"] * 0.2 + t["cache_write_1h"] * 8 + t["output"] * 20)
+            / 1e6
+        )
     if cohort == "agy-gemini":
         t = AGY_TOK
         return m * (t["input"] * 0.75 + t["cache_read"] * 0.075 + t["output"] * 3.75) / 1e6
@@ -144,20 +193,40 @@ def run_tokens(cohort: str, arm: str) -> int:
     return m * (CODEX_TOK["input"] + CODEX_TOK["output"])
 
 
-def write_unit(results: Path, cohort: str, tid: str, tier: str, arm: str, rep: int,
-               passed: bool, status: str = "done") -> None:
+def write_unit(
+    results: Path,
+    cohort: str,
+    tid: str,
+    tier: str,
+    arm: str,
+    rep: int,
+    passed: bool,
+    status: str = "done",
+) -> None:
     agent, model = COHORTS[cohort]
     d = results / cohort / tid / f"{arm}-r{rep}"
     d.mkdir(parents=True, exist_ok=True)
     key = (cohort, tid, arm, rep)
     mult = 2 if arm == "spec" else 1
     meta = {
-        "cohort": cohort, "task_id": tid, "arm": arm, "rep": rep, "agent": agent,
-        "tool_version": "1.0", "model": model, "model_served": model, "effort": "medium",
-        "wall_s": 900.0 if arm == "spec" else 600.0, "timed_out": False, "returncode": 0,
-        "agent_exit": "ok", "error_attempts": 0, "tier": tier,
+        "cohort": cohort,
+        "task_id": tid,
+        "arm": arm,
+        "rep": rep,
+        "agent": agent,
+        "tool_version": "1.0",
+        "model": model,
+        "model_served": model,
+        "effort": "medium",
+        "wall_s": 900.0 if arm == "spec" else 600.0,
+        "timed_out": False,
+        "returncode": 0,
+        "agent_exit": "ok",
+        "error_attempts": 0,
+        "tier": tier,
         "usage": {"input_tokens": 1, "output_tokens": 1, "turns": 10 * mult},
-        "status": status, "prompt_sha256": f"sha-{tid}-{arm}",
+        "status": status,
+        "prompt_sha256": f"sha-{tid}-{arm}",
         "upstream_urls": ["https://github.com/x/vipharmind"] if key == UPSTREAM else [],
     }
     if status == "error":

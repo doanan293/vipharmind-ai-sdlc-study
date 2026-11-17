@@ -61,8 +61,10 @@ def test_missing_judge_is_excluded_not_imputed(e2_study):
     # imputing 0 for the two unjudged t01 vibe runs would pull this cell mean to 0.25 / 3
     t = e2.detail_arm_table(runs[runs["valid"].astype(bool)], "score", "claude-sonnet")
     assert t.loc["t01", "brief_vibe"] == pytest.approx(0.25)
-    assert "t02" not in e2.detail_arm_table(runs[runs["valid"].astype(bool)], "score",
-                                            "codex-luna").index
+    assert (
+        "t02"
+        not in e2.detail_arm_table(runs[runs["valid"].astype(bool)], "score", "codex-luna").index
+    )
 
 
 def test_coverage_counts(e2_summary):
@@ -99,23 +101,29 @@ def test_bootstrap_matches_locked_scheme():
     t = pd.DataFrame({c: [0.1 * i + j for i in range(8)] for j, c in enumerate(e2.COLS4)})
     t.iloc[3, 2] = 2.0
     got = e2.interaction(t, B=999, seed=20261115)["interaction"]
-    ref = boot_stat(t.to_numpy(), lambda x: ((x[..., 2] - x[..., 3]) - (x[..., 0] - x[..., 1]))
-                    .mean(-1), B=999, seed=20261115)
+    ref = boot_stat(
+        t.to_numpy(),
+        lambda x: ((x[..., 2] - x[..., 3]) - (x[..., 0] - x[..., 1])).mean(-1),
+        B=999,
+        seed=20261115,
+    )
     assert (got.estimate, got.ci_low, got.ci_high) == (ref.estimate, ref.ci_low, ref.ci_high)
 
 
 def test_judge_validity_counts():
-    v = pd.DataFrame({
-        "detail": ["detailed"] * 6 + ["brief"],
-        "judged": [True, True, True, True, True, False, True],
-        "task_id": ["a", "a", "b", "b", "c", "c", "c"],
-        "cohort": ["x"] * 7,
-        "judge_all_met": [True, False, True, False, False, None, True],
-        "hidden_all_pass": [True, False, False, True, False, True, True],
-        "task_pass": [True, False, False, True, False, True, True],
-        "score": [1.0, 0.5, 1.0, 0.75, 0.25, None, 1.0],
-        "hidden_pass_rate": [1.0, 0.4, 0.8, 1.0, 0.1, 1.0, 1.0],
-    })
+    v = pd.DataFrame(
+        {
+            "detail": ["detailed"] * 6 + ["brief"],
+            "judged": [True, True, True, True, True, False, True],
+            "task_id": ["a", "a", "b", "b", "c", "c", "c"],
+            "cohort": ["x"] * 7,
+            "judge_all_met": [True, False, True, False, False, None, True],
+            "hidden_all_pass": [True, False, False, True, False, True, True],
+            "task_pass": [True, False, False, True, False, True, True],
+            "score": [1.0, 0.5, 1.0, 0.75, 0.25, None, 1.0],
+            "hidden_pass_rate": [1.0, 0.4, 0.8, 1.0, 0.1, 1.0, 1.0],
+        }
+    )
     r = e2.judge_validity(v, B=200, seed=1)
     assert r["n_units"] == 5
     assert (r["both_pass"], r["judge_only"], r["tests_only"], r["neither"]) == (1, 1, 1, 2)
@@ -128,13 +136,36 @@ def test_judge_validity_counts():
 def test_cli_writes_outputs(e2_study, tmp_path):
     tasks_dir, detailed, brief, _, _ = e2_study
     out = tmp_path / "e2"
-    assert e2.main(["--detailed", str(detailed), "--brief", str(brief), "--tasks",
-                    str(tasks_dir), "--out", str(out), "--bootstrap", "200",
-                    "--cohorts", ",".join(se.COHORTS)]) == 0
+    assert (
+        e2.main(
+            [
+                "--detailed",
+                str(detailed),
+                "--brief",
+                str(brief),
+                "--tasks",
+                str(tasks_dir),
+                "--out",
+                str(out),
+                "--bootstrap",
+                "200",
+                "--cohorts",
+                ",".join(se.COHORTS),
+            ]
+        )
+        == 0
+    )
     s = json.loads((out / "summary.json").read_text())
     assert s["meta"]["bootstrap"]["B"] == 200 and "thăm dò" in s["meta"]["exploratory"]
-    for f in ("runs.csv", "coverage.csv", "unjudged_units.csv", "task_cells.csv",
-              "estimates.csv", "figures/e2_score_diff.png", "figures/e2_detail_x_arm_score.pdf"):
+    for f in (
+        "runs.csv",
+        "coverage.csv",
+        "unjudged_units.csv",
+        "task_cells.csv",
+        "estimates.csv",
+        "figures/e2_score_diff.png",
+        "figures/e2_detail_x_arm_score.pdf",
+    ):
         assert (out / f).is_file(), f
     assert e2.B_E2 == 9999 and e2.parse_args(["--brief", "x"]).bootstrap == 9999
 

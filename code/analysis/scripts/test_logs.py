@@ -21,8 +21,9 @@ packet, key, tasks, repo = map(Path, sys.argv[1:5])
 roots = [Path(p) for p in sys.argv[5:]]
 work_root = Path("/tmp/sdlc-testlogs")
 work_root.mkdir(exist_ok=True)
-cfg = RunConfig(repo=repo, tasks_dir=tasks, cohorts={}, work_root=work_root,
-                cache_dir=Path(".work/reference"))
+cfg = RunConfig(
+    repo=repo, tasks_dir=tasks, cohorts={}, work_root=work_root, cache_dir=Path(".work/reference")
+)
 
 
 def one(row: dict) -> str:
@@ -35,16 +36,32 @@ def one(row: dict) -> str:
         backend = work.parent / "graded" / "backend"
         files = [p.removeprefix("backend/") for p in task.hidden_tests]
         proc = subprocess.run(
-            ["uv", "run", "--frozen", "pytest", "-p", "no:cacheprovider", "-q", "--tb=short",
-             "-o", "console_output_style=classic", *files],
-            check=False, cwd=backend, capture_output=True, text=True, timeout=900,
+            [
+                "uv",
+                "run",
+                "--frozen",
+                "pytest",
+                "-p",
+                "no:cacheprovider",
+                "-q",
+                "--tb=short",
+                "-o",
+                "console_output_style=classic",
+                *files,
+            ],
+            check=False,
+            cwd=backend,
+            capture_output=True,
+            text=True,
+            timeout=900,
         )
         out = (proc.stdout + proc.stderr).splitlines()
         text = "\n".join(out if len(out) <= 400 else out[:60] + ["... (cut) ..."] + out[-330:])
         for rater in ("loi", "bao"):
             log = packet / rater / row["unit_id"] / "test-log.txt"
-            log.write_text(log.read_text() + "\n===== pytest output of the hidden tests =====\n"
-                           + text + "\n")
+            log.write_text(
+                log.read_text() + "\n===== pytest output of the hidden tests =====\n" + text + "\n"
+            )
         return f"ok {row['unit_id']}"
     except Exception as e:  # noqa: BLE001
         return f"FAIL {row['unit_id']} {type(e).__name__}: {e}"

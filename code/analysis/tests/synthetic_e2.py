@@ -22,8 +22,10 @@ MET = {
     ("detailed", "codex-luna", "vibe"): (1, 2, 3),  # 0.75 / 1.0
 }
 EXACT = (4,)
-NO_JUDGE = [("brief", "claude-sonnet", "t01", "vibe", 1), ("brief", "claude-sonnet", "t01",
-                                                            "vibe", 2)]
+NO_JUDGE = [
+    ("brief", "claude-sonnet", "t01", "vibe", 1),
+    ("brief", "claude-sonnet", "t01", "vibe", 2),
+]
 # every rep of one cell unjudged: the task drops out of codex's brief score estimate
 NO_JUDGE_CELL = ("brief", "codex-luna", "t02", "spec")
 REJECTED = ("brief", "claude-sonnet", "t03", "spec", 1)  # judged by another model
@@ -32,18 +34,32 @@ BRIEF_SPEC_TESTS = 6  # brief sonnet spec runs add 6 tests (detailed: 4) -> inte
 
 
 def checklist(tid: str) -> str:
-    return (f"# Checklist {tid}\nSource: hidden tests\n\n1. Does a.\n2. Does b.\n3. Does c.\n"
-            "4. Returns the literal \"x\". [exact]\n")
+    return (
+        f"# Checklist {tid}\nSource: hidden tests\n\n1. Does a.\n2. Does b.\n3. Does c.\n"
+        '4. Returns the literal "x". [exact]\n'
+    )
 
 
 def judge_json(met: tuple[int, ...], model: str = "claude-fable-5-2") -> dict:
-    items = [{"n": n, "verdict": "met" if n in met else ("unclear" if n == 2 else "not_met"),
-              "reason": "r"} for n in range(1, 5)]
+    items = [
+        {
+            "n": n,
+            "verdict": "met" if n in met else ("unclear" if n == 2 else "not_met"),
+            "reason": "r",
+        }
+        for n in range(1, 5)
+    ]
     core = [n for n in range(1, 5) if n not in EXACT]
-    return {"judge_model": model, "items": items, "n_items": 4, "n_met": len(met),
-            "n_unclear": sum(i["verdict"] == "unclear" for i in items),
-            "score": len(met) / 4, "exact_items": list(EXACT),
-            "score_core": sum(n in met for n in core) / len(core)}
+    return {
+        "judge_model": model,
+        "items": items,
+        "n_items": 4,
+        "n_met": len(met),
+        "n_unclear": sum(i["verdict"] == "unclear" for i in items),
+        "score": len(met) / 4,
+        "exact_items": list(EXACT),
+        "score_core": sum(n in met for n in core) / len(core),
+    }
 
 
 def write_e2(root: Path) -> tuple[Path, Path, Path]:
@@ -70,8 +86,7 @@ def write_e2(root: Path) -> tuple[Path, Path, Path]:
                             (d / "meta.json").write_text(json.dumps(meta))
                             if status != "done":
                                 continue
-                            if (detail == "brief" and cohort == "claude-sonnet"
-                                    and arm == "spec"):
+                            if detail == "brief" and cohort == "claude-sonnet" and arm == "spec":
                                 g = json.loads((d / "grade.json").read_text())
                                 g["ai_tests_added"] = BRIEF_SPEC_TESTS
                                 (d / "grade.json").write_text(json.dumps(g))

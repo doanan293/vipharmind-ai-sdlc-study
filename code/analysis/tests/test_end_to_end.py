@@ -15,10 +15,27 @@ def out(study, tmp_path_factory):
     a.to_csv(labels / "a.csv", index=False)
     a.to_csv(labels / "b.csv", index=False)
     o = tmp_path_factory.mktemp("out")
-    assert main(["--results", str(results), "--tasks", str(tasks_dir), "--out", str(o),
-                 "--bootstrap", "500", "--model-bootstrap", "5", "--draw-passing-sample",
-                 "--labels", str(labels / "a.csv"),
-                 str(labels / "b.csv")]) == 0
+    assert (
+        main(
+            [
+                "--results",
+                str(results),
+                "--tasks",
+                str(tasks_dir),
+                "--out",
+                str(o),
+                "--bootstrap",
+                "500",
+                "--model-bootstrap",
+                "5",
+                "--draw-passing-sample",
+                "--labels",
+                str(labels / "a.csv"),
+                str(labels / "b.csv"),
+            ]
+        )
+        == 0
+    )
     return o, json.loads((o / "summary.json").read_text())
 
 
@@ -26,8 +43,16 @@ def test_passing_sample_is_drawn_only_when_asked_and_never_silently_redrawn(out,
     _, s = out
     tasks_dir, results, _, _ = study
     assert s["passing_sample"] == {"drawn": True}
-    base = ["--results", str(results), "--tasks", str(tasks_dir), "--bootstrap", "50",
-            "--model-bootstrap", "2"]
+    base = [
+        "--results",
+        str(results),
+        "--tasks",
+        str(tasks_dir),
+        "--bootstrap",
+        "50",
+        "--model-bootstrap",
+        "2",
+    ]
     # without the flag: no sample is written
     fresh = tmp_path / "fresh"
     main(base + ["--out", str(fresh)])
@@ -44,14 +69,27 @@ def test_passing_sample_is_drawn_only_when_asked_and_never_silently_redrawn(out,
 
 def test_outputs_exist(out):
     o, s = out
-    for f in ("runs.csv", "runs.parquet", "task_diffs.csv", "pooled_task_diffs.csv",
-              "passing_sample.csv", "labeling/sheet-template.csv", "labeling/key-PRIVATE.csv",
-              "figures/effect_vs_size.pdf", "figures/effect_vs_size.png",
-              "figures/pass_diff_by_cohort.pdf", "figures/two_by_two_small.png",
-              "figures/cost_per_pass.pdf"):
+    for f in (
+        "runs.csv",
+        "runs.parquet",
+        "task_diffs.csv",
+        "pooled_task_diffs.csv",
+        "passing_sample.csv",
+        "labeling/sheet-template.csv",
+        "labeling/key-PRIVATE.csv",
+        "figures/effect_vs_size.pdf",
+        "figures/effect_vs_size.png",
+        "figures/pass_diff_by_cohort.pdf",
+        "figures/two_by_two_small.png",
+        "figures/cost_per_pass.pdf",
+    ):
         assert (o / f).is_file(), f
     assert len(pd.read_parquet(o / "runs.parquet")) == 552
-    assert s["meta"]["bootstrap"] == {"B": 500, "seed": 20261115, "ci": s["meta"]["bootstrap"]["ci"]}
+    assert s["meta"]["bootstrap"] == {
+        "B": 500,
+        "seed": 20261115,
+        "ci": s["meta"]["bootstrap"]["ci"],
+    }
 
 
 def test_h1_confirmatory(out):
@@ -69,8 +107,9 @@ def test_completeness_drives_pooling(out):
     inc = s["estimates"]["descriptive_incomplete.codex-luna.large"]
     assert inc["not_run_or_pending"] == 1 and inc["valid_runs"] == 17
     assert s["h5"]["cohorts"] == ["claude-sonnet", "claude-opus", "agy-gemini"]
-    assert s["not_run_units"] == [{"cohort": "codex-luna", "task_id": "f02", "arm": "spec",
-                                   "rep": 2, "status": "deferred"}]
+    assert s["not_run_units"] == [
+        {"cohort": "codex-luna", "task_id": "f02", "arm": "spec", "rep": 2, "status": "deferred"}
+    ]
     assert s["estimates"]["pooled.pass_diff.small"]["estimate"] == pytest.approx(1 / 6)
     assert s["estimates"]["pooled.pass_diff.large"]["estimate"] == pytest.approx(7 / 9)
 
@@ -149,7 +188,8 @@ def test_cost_effectiveness_and_descriptives(out):
     e = s["estimates"]
     c = syn.run_cost("claude-sonnet", "spec")
     assert e["cost_eff.claude-sonnet.small.spec.cost_per_pass"]["estimate"] == pytest.approx(
-        45 * c / 30)
+        45 * c / 30
+    )
     assert e["cost_eff.agy-gemini.medium.vibe.cost_per_pass"]["estimate"] is None
     d = s["descriptives"]
     assert d["excluded_by_arm"] == {"vibe": 1}
@@ -179,16 +219,25 @@ def test_overlap_sensitivity_drops_listed_tasks(study):
     from sdlc_analysis.report import build_summary
 
     _, _, tasks, runs = study
-    s, _ = build_summary(runs, tasks, list(syn.COHORTS), 3, B=200, seed=1, model_B=2,
-                         overlap={"pairs": [], "tasks": ["t01", "f01"]})
+    s, _ = build_summary(
+        runs,
+        tasks,
+        list(syn.COHORTS),
+        3,
+        B=200,
+        seed=1,
+        model_B=2,
+        overlap={"pairs": [], "tasks": ["t01", "f01"]},
+    )
     e = s["estimates"]["sensitivity.overlap.h5"]
     assert e["tasks_dropped"] == ["f01", "t01"]
     assert e["n_tasks"] == {"large": 2, "small": 14}
     assert e["estimate"] == pytest.approx(2 / 3)  # effects are constant within tiers
 
 
-@pytest.mark.parametrize(("scale", "expected"), [("logit", "supported"),
-                                                  ("difference", "inconclusive")])
+@pytest.mark.parametrize(
+    ("scale", "expected"), [("logit", "supported"), ("difference", "inconclusive")]
+)
 def test_report_h5_verdict_uses_the_model_scale(study, monkeypatch, scale, expected):
     """Review N3: the H5 verdict through build_summary. The synthetic primary CI is above 0;
     a positive logit-scale interaction makes H5 supported, a difference-scale one cannot."""
@@ -196,8 +245,11 @@ def test_report_h5_verdict_uses_the_model_scale(study, monkeypatch, scale, expec
     from sdlc_analysis.report import build_summary
 
     def stub(runs, cohorts, **kw):
-        return {"model_level": 1 if scale == "logit" else 3, "attempts": [],
-                "interaction": {"coef": 0.4, "scale": scale, "ci_low": 0.1, "ci_high": 0.7}}
+        return {
+            "model_level": 1 if scale == "logit" else 3,
+            "attempts": [],
+            "interaction": {"coef": 0.4, "scale": scale, "ci_low": 0.1, "ci_high": 0.7},
+        }
 
     monkeypatch.setattr(mixed, "fit_h5_model", stub)
     _, _, tasks, runs = study

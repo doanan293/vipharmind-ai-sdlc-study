@@ -1,8 +1,10 @@
 """Hai thí nghiệm thăm dò của prereg-v1.2: E2 (đề sơ sài, 2 x 2) và E1 (Haiku theo thiết kế gốc).
 
 Nguồn (trong gốc repo, do code/refresh-interim.sh sinh):
-- data/results/analysis/e2-interim/: summary.json, runs.csv của sdlc-e2 (có thể chưa đủ lượt: sơ bộ);
-- data/results/analysis/e1/summary.json của sdlc-e1 (cùng định dạng với thí nghiệm chính), nếu đã chạy.
+- data/results/analysis/e2-interim/: summary.json, runs.csv của sdlc-e2 (có thể chưa đủ lượt:
+  sơ bộ);
+- data/results/analysis/e1/summary.json của sdlc-e1 (cùng định dạng với thí nghiệm chính),
+  nếu đã chạy.
 Mọi khóa thiếu nguồn hoặc chưa có ước lượng là None (\\pending). Hiệu số tính bằng điểm phần trăm.
 Câu đọc kết quả (ETwoReading...) sinh theo dấu của khoảng tin cậy và phạm vi dữ liệu, để văn bản tự
 cập nhật khi chạy lại.
@@ -45,8 +47,8 @@ X2 = [
     ("tokens_total", "Tokens", "Token (triệu)", 1e-6, 2),
     ("wall_s", "Wall", "Thời gian (phút)", 1 / 60, 1),
 ]
-# chỉ số có thêm macro trung bình bốn ô và tác động của đề sơ sài trong từng nhánh (sơ sài trừ chi tiết,
-# lấy trị tuyệt đối: văn bản tự nói giảm hay tăng)
+# chỉ số có thêm macro trung bình bốn ô và tác động của đề sơ sài trong từng nhánh
+# (sơ sài trừ chi tiết, lấy trị tuyệt đối: văn bản tự nói giảm hay tăng)
 X2_DETAIL = [
     ("score", "Score"),
     ("task_pass", "Pass"),
@@ -195,7 +197,8 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
     out["ETwoStatus"] = done if complete else "sơ bộ"
     out["ETwoLabel"] = (
         f"thu thập xong (tới {cutoff}){'; Codex dừng ở tầng nhỏ' if stopped_nf else ''}"
-        if complete else f"SƠ BỘ — dữ liệu tính đến {cutoff}"
+        if complete
+        else f"SƠ BỘ — dữ liệu tính đến {cutoff}"
     )
     tiers = [vn for tier, _, vn in TIERS[1:] if _est(E, f"primary.score.pooled.{tier}")]
     out["ETwoScope"] = _tier_list(tiers) if tiers else None
@@ -221,7 +224,9 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
         for tier, t, _ in TIERS[2:]:
             e = E.get(f"primary.score.{cohort}.{tier}") or {}
             e = e if e.get("estimate") is not None else {}
-            out[f"ETwo{c}{t}RefPp"], out[f"ETwo{c}{t}RefLowPp"], out[f"ETwo{c}{t}RefHighPp"] = _ci(e)
+            out[f"ETwo{c}{t}RefPp"], out[f"ETwo{c}{t}RefLowPp"], out[f"ETwo{c}{t}RefHighPp"] = _ci(
+                e
+            )
     for metric, m in X2_DETAIL:
         for arm, a in (("spec", "Spec"), ("vibe", "Vibe")):
             e = _est(E, f"x2.{metric}.pooled.detail_effect.{arm}")
@@ -234,7 +239,9 @@ def e2_numbers(src: dict[str, Any]) -> Numbers:
         cs = [
             c
             for c in s["coverage"]
-            if c["detail"] == detail and c["cohort"] in cohorts and (tier is None or c["tier"] == tier)
+            if c["detail"] == detail
+            and c["cohort"] in cohorts
+            and (tier is None or c["tier"] == tier)
         ]
         return fmt.number(sum(int(c[key]) for c in cs))
 

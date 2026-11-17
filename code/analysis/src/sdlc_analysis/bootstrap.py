@@ -93,7 +93,11 @@ def boot_ratio(num, den, *, B: int = B_DEFAULT, seed: int = SEED_DEFAULT) -> Est
 
 
 def boot_independent_diff(
-    a, b, *, B: int = B_DEFAULT, seed: int = SEED_DEFAULT,
+    a,
+    b,
+    *,
+    B: int = B_DEFAULT,
+    seed: int = SEED_DEFAULT,
     stat: Callable[[np.ndarray], np.ndarray] | None = None,
 ) -> Estimate:
     """stat(a) - stat(b), each group resampled on its own (tiers: prereg 9.1). One generator

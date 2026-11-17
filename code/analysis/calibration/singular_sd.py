@@ -51,8 +51,10 @@ def main():
     for thr in (0.25, 0.30, 0.35, 0.40):
         rates = d.assign(f=d["fit_slope_sd"] < thr).groupby("true_slope_sd")["f"].mean()
         print(f"slope SD < {thr}: fires at", rates.round(2).to_dict())
-    print("ELBO(level 2) >= ELBO(level 1):",
-          d.assign(f=d["elbo1_minus_elbo2"] <= 0).groupby("true_slope_sd")["f"].mean().to_dict())
+    print(
+        "ELBO(level 2) >= ELBO(level 1):",
+        d.assign(f=d["elbo1_minus_elbo2"] <= 0).groupby("true_slope_sd")["f"].mean().to_dict(),
+    )
 
 
 if __name__ == "__main__":

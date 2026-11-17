@@ -49,8 +49,9 @@ không chia sẻ ra ngoài nhóm.
 
 
 def git(repo: Path, *args: str) -> str:
-    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
-                          text=True).stdout
+    return subprocess.run(
+        ["git", "-C", str(repo), *args], check=True, capture_output=True, text=True
+    ).stdout
 
 
 def main() -> None:
@@ -85,7 +86,9 @@ def main() -> None:
                 plan = has_preceding_plan(c, plans)
                 d = base / code
                 d.mkdir()
-                (d / "commit.txt").write_text(git(repo, "show", "--stat", "--format=%s%n%n%b", c.sha))
+                (d / "commit.txt").write_text(
+                    git(repo, "show", "--stat", "--format=%s%n%n%b", c.sha)
+                )
                 if plan:
                     (d / "plan.md").write_text(git(repo, "show", f"{plan.added_sha}:{plan.path}"))
                 w.writerow([code, c.subject, plan.path if plan else "", "", ""])

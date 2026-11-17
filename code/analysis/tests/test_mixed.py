@@ -110,8 +110,16 @@ def test_level_3_ols_on_task_differences_is_exact_on_a_line():
     for i, src in enumerate([50, 100, 200, 400, 800, 1600]):
         d = 0.1 + 0.2 * np.log(src)
         for c in ("a", "b"):
-            rows.append({"cohort": c, "task_id": f"x{i}", "src_lines": src,
-                         "log_src_lines": np.log(src), "tier": "small", "diff": d})
+            rows.append(
+                {
+                    "cohort": c,
+                    "task_id": f"x{i}",
+                    "src_lines": src,
+                    "log_src_lines": np.log(src),
+                    "tier": "small",
+                    "diff": d,
+                }
+            )
     res = mixed.ols_task_diffs(pd.DataFrame(rows))
     assert res["coef"] == pytest.approx(0.2) and res["se"] == pytest.approx(0, abs=1e-9)
 
@@ -139,13 +147,23 @@ def test_interval_coverage_on_the_23_task_design():
     jobs = int(os.environ.get("SDLC_COVERAGE_JOBS", "1"))
     hits, rows = 0, []
     for s in range(n):
-        res = mixed.fit_h5_model(main_design(seed=1000 + s, beta_int=0.5), ["a", "b", "c", "d"],
-                                 B=B, seed=s, jobs=jobs)
+        res = mixed.fit_h5_model(
+            main_design(seed=1000 + s, beta_int=0.5), ["a", "b", "c", "d"], B=B, seed=s, jobs=jobs
+        )
         i = res["interaction"]
         hit = i["ci_low"] <= 0.5 <= i["ci_high"]
         hits += hit
-        rows.append((s, res["model_level"], i["coef"], i["ci_low"], i["ci_high"],
-                     i.get("vb_posterior_sd"), hit))
+        rows.append(
+            (
+                s,
+                res["model_level"],
+                i["coef"],
+                i["ci_low"],
+                i["ci_high"],
+                i.get("vb_posterior_sd"),
+                hit,
+            )
+        )
         print(*rows[-1], flush=True)
     print("coverage", hits / n)
     assert hits / n >= 0.80

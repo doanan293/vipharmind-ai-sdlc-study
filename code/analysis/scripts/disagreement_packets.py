@@ -14,7 +14,7 @@ import re
 import sys
 from pathlib import Path
 
-LEAK = re.compile(r"\b(design|plan|spec|vibe)(\.md)?\b", re.I)
+LEAK = re.compile(r"\b(design|plan|spec|vibe)(\.md)?\b", re.IGNORECASE)
 
 GUIDE = """# Xem lại chỗ lệch giữa người chấm và máy chấm (E2)
 
@@ -63,12 +63,19 @@ def main() -> None:
             lv, bv = loi.get((code, n), ""), bao.get((code, n), "")
             if lv == jv and bv == jv:
                 continue
-            rows.append({
-                "unit_code": code, "item_n": n, "noi_dung_muc": items.get(n, ""),
-                "loi": lv, "bao": bv, "may": jv,
-                "ly_do_may": LEAK.sub("[…]", str(it.get("reason", ""))),
-                "nguyen_nhan": "", "ghi_chu": "",
-            })
+            rows.append(
+                {
+                    "unit_code": code,
+                    "item_n": n,
+                    "noi_dung_muc": items.get(n, ""),
+                    "loi": lv,
+                    "bao": bv,
+                    "may": jv,
+                    "ly_do_may": LEAK.sub("[…]", str(it.get("reason", ""))),
+                    "nguyen_nhan": "",
+                    "ghi_chu": "",
+                }
+            )
     rows.sort(key=lambda r: (r["unit_code"], r["item_n"]))
     for rater in ("loi", "bao"):
         d = out / rater

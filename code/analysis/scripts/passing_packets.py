@@ -47,12 +47,16 @@ def reference_diff(repo: Path, task_toml: Path) -> str:
     parent = meta.get("parent") or f"{commit}^"
     files = subprocess.run(
         ["git", "-C", str(repo), "diff", "--name-only", parent, commit],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     ).stdout.split()
     src = [f for f in files if "/tests/" not in f and not f.startswith("tests/")]
     return subprocess.run(
         ["git", "-C", str(repo), "diff", parent, commit, "--", *src],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     ).stdout
 
 
