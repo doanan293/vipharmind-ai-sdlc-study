@@ -2,8 +2,8 @@
 
 \textit{Độ đúng (H1).} Ở phép thử xác nhận (Sonnet, tầng nhỏ), nhánh theo đặc tả đạt \NumResHOneSpecPct{}\%
 và nhánh vibe đạt \NumResHOneVibePct{}\%: hiệu số \NumResHOneEstPp{} điểm phần trăm (đpt), khoảng tin cậy
-95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]. Khoảng tin cậy chứa 0 nên H1 chưa kết luận được, nhưng cận trên
-bằng 0: dữ liệu không để chỗ cho một lợi ích dương nào ở tầng nhỏ với nhóm này. Hình~\ref{fig:by-cohort}
+95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}]. Khoảng tin cậy chứa 0 nên H1 chưa kết luận được. Cận trên bằng 0
+nên dữ liệu không ủng hộ một lợi ích đáng kể ở tầng nhỏ với nhóm này, nhưng chưa loại được một lợi ích nhỏ. Hình~\ref{fig:by-cohort}
 cho hiệu số của từng nhóm và từng tầng. Với hai mô hình Claude, hiệu số âm hoặc bằng không ở mọi tầng; cả
 hai gần trần khi đề đã nêu đủ tên và chữ ký.
 
@@ -56,8 +56,8 @@ $\times$ cách làm); E1 chạy thêm Claude Haiku 5.5 để xem mô hình yếu
 Với đề sơ sài, điểm của nhánh đặc tả hơn nhánh vibe \NumETwoPooledSmallPp{} đpt
 [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}] ở tầng nhỏ khi gộp bốn nhóm; gộp cả ba tầng, hiệu số
 còn \NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}]. Trong khi đó, chỉ riêng
-việc đổi đề chi tiết sang đề sơ sài làm tỉ lệ lượt đạt hết test ẩn thay đổi \NumETwoXHiddenDetailSpec{} đpt ở nhánh
-đặc tả và \NumETwoXHiddenDetailVibe{} đpt ở nhánh vibe. Ở E1, với đề chi tiết, Haiku theo đặc tả không đạt
+việc đổi đề chi tiết sang đề sơ sài làm điểm danh sách hành vi thay đổi \NumETwoXScoreDetailSpec{} đpt ở nhánh
+đặc tả và \NumETwoXScoreDetailVibe{} đpt ở nhánh vibe. Ở E1, với đề chi tiết, Haiku theo đặc tả không đạt
 nhiều hơn ở tầng nào (khoảng tin cậy đều chứa 0) mà tốn gấp \NumEOneTokenRatio{} lần token. Vì là thăm dò,
 nhóm chỉ đọc đây là xu hướng: khi đề sơ sài, đặc tả có lợi nhỏ ở nhiệm vụ nhỏ, còn độ rõ của đề quan trọng
 hơn quy trình nhiều. Số theo từng nhóm, từng tầng và kiểm tra người chấm máy ở báo cáo cuối kỳ.

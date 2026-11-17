@@ -706,7 +706,7 @@ def _(r):
     set_text(r, "shape-1671", ["Đã xong"])
     set_text(r, "shape-1668", ["Lợi, Bảo chấm tay", "24 lượt E2, kappa 0,93;", "máy khớp 0,88 / 0,90"], size=16)
     set_text(r, "shape-1672", ["Đến 24/11"])
-    set_text(r, "shape-1669", ["Lợi, Bảo duyệt slide,", "báo cáo; An duyệt", "lần cuối, nộp"], size=16)
+    set_text(r, "shape-1669", ["Lợi kiểm trích dẫn,", "Bảo tính lại số liệu;", "An duyệt, nộp"], size=16)
     set_text(r, "shape-1667", ["Hạn chế"])
     set_text(r, "shape-1670", ["Một dự án; ít", "nhiệm vụ lớn; đề", "gần như đặc tả"], size=16)
 
@@ -823,7 +823,7 @@ def _(r):
 
 # Báo cáo lần 1 (17/11): chỉ giữ các trang teaser, theo thứ tự này.
 LAN1 = ["p01_title", "p03_motivation", "p04_rq", "p08_arms", "p10_tiers", "p15_h1", "p16_rq4", "p17_h2h3",
-        "p22_labels", "p23_explore", "p24_next", "p26_thanks"]
+        "p22_labels", "p23_explore", "p24_next", "p26_thanks", "p30_attribution"]
 PAGES[:] = [next(p for p in PAGES if p["stem"] == stem) for stem in LAN1]
 
 
@@ -897,15 +897,17 @@ TALK = {
         f"hơn, tốn gấp {N['EOneTokenRatio']} lần token. Cuối cùng là việc còn lại."),
     "p24_next": (40,
         "Chấm tay đã xong: Lợi và Bảo chấm độc lập 24 lượt E2. Hai bạn khớp nhau với kappa "
-        "0,93, máy chấm khớp từng bạn 0,88 và 0,90, lệch chủ yếu do máy khắt khe hơn. Trước 24 tháng 11, Lợi và "
-        "Bảo duyệt slide, báo cáo, An duyệt lần cuối rồi nộp. Hạn chế: một dự án, ít nhiệm vụ lớn, và đề chi "
+        "0,93, máy chấm khớp từng bạn 0,88 và 0,90, lệch chủ yếu do máy khắt khe hơn. Trước 24 tháng 11, "
+        "Lợi kiểm lại trích dẫn, Bảo tính lại độc lập số liệu chính, An duyệt lần cuối rồi nộp. Hạn chế: một dự án, ít nhiệm vụ lớn, và đề chi "
         "tiết gần như đã là đặc tả."),
     "p26_thanks": (10,
         "Phần trình bày của nhóm em đến đây là hết. Em cảm ơn thầy và xin nhận câu hỏi."),
 }
 for p in PAGES:
-    secs, script = TALK[p["stem"]]
     p["speaker"] = "Người trình bày"
+    if p["stem"] not in TALK:  # slide ghi nguồn: không nói, giữ ghi chú gốc
+        continue
+    secs, script = TALK[p["stem"]]
     p["secs"] = secs
     p["notes"] = f"Khoảng {SECS_VI[secs]} giây. {script}"
 

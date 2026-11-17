@@ -18,6 +18,7 @@ Tổng thời gian nói: 7:00; một người trình bày (chưa chốt ai), h�
 | 10 | `p23_explore` | Người trình bày | 1:05 | 6:10 |
 | 11 | `p24_next` | Người trình bày | 0:40 | 6:50 |
 | 12 | `p26_thanks` | Người trình bày | 0:10 | 7:00 |
+| 13 | `p30_attribution` | Người trình bày | – | – |
 
 ## Chỗ chờ kết quả
 

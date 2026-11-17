@@ -1,7 +1,7 @@
 # Báo cáo lần 1 (17/11): ghi chú cho An
 
 Bản nộp lần 1 là bản rút gọn (nhánh `report-lan1`): `docs/report/main.pdf` (9 trang) và
-`docs/presentation/vipharmind-slides.pdf` (12 slide). Báo cáo cuối: 24/11 (nhánh `report`).
+`docs/presentation/vipharmind-slides.pdf` (12 slide nói, thêm 1 slide ghi nguồn Slidesgo). Báo cáo cuối: 24/11 (nhánh `report`).
 E1 (Haiku, 138/138 lượt) và E2 (đề sơ sài) đã chạy xong; nhóm Codex của E2 dừng ở 78/90 lượt tầng nhỏ vì
 hết hạn mức, các nhóm Claude đủ. Số trên PDF và slide sinh từ `SKIP_E1=1 bash refresh-interim.sh` trong
 worktree này (`/home/andv/personal/vipharmind-ai-sdlc-study-report-lan1`); không cần chạy lại trước buổi gặp.
