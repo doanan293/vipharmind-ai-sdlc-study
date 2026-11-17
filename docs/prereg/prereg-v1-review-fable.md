@@ -1,7 +1,7 @@
 # Phản biện độc lập `prereg-v1` (Fable 5.2)
 
 Ngày: 2026-11-15. Đối tượng: `docs/prereg/prereg-v1.md` (128 dòng, chưa commit, chưa gắn thẻ) tại HEAD
-`38b7e83` của nhánh `harness`. Đối chiếu với bản thiết kế, `data/tasks/`, `code/prompts/`, `code/harness/`,
+`4a8fd2c` của nhánh `harness`. Đối chiếu với bản thiết kế, `data/tasks/`, `code/prompts/`, `code/harness/`,
 `docs/pilot-report.md`, `data/tasks/PROMPT_AUDIT.md`, `docs/team/labeling/guide.md` (chỉ có trên nhánh `report`) và
 hai sổ ghi SDD. Người phản biện chỉ đọc, không chạy lượt AI nào.
 
@@ -474,7 +474,7 @@ t13 chỉ có 2 test ẩn."
 P:18–19 nói "An duyệt gộp" và t05, t07, t13 được bổ sung sau. Ruling R12 ghi "Prompt edits need An's
 re-approval at prereg-v1". Chưa thấy bản ghi nào về lần duyệt lại này (`data/tasks/REVIEW.md` chỉ có duyệt gộp
 ngày 2026-11-15 cho bản nháp đầu). Thêm một câu xác nhận, hoặc ghi vào `data/tasks/REVIEW.md` trước thẻ: "An
-duyệt lại ba đề đã sửa (commit `e92f346`) ngày <ngày>."
+duyệt lại ba đề đã sửa (commit `bc25b7a`) ngày <ngày>."
 
 ---
 

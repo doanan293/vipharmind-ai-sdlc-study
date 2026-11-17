@@ -364,7 +364,7 @@ An's verdict: approved in bulk 2026-11-15 with the Fable edits (EXTRA_REVIEW_fab
 - **harness note**: the range also edits `backend/docs/superpowers/plans/2026-09-12-pharma-agent-platform.md`.
   `prepare_workspace` strips `superpowers` directories, so the old `original_patch_errors` failed at
   `git apply` before grading; it was graded with the diff limited to
-  `':(exclude,glob)**/superpowers/**'`. Harness commit `6b5bbf9` (drop stripped-contaminant hunks
+  `':(exclude,glob)**/superpowers/**'`. Harness commit `527d7e1` (drop stripped-contaminant hunks
   when applying the original range patch) addresses this; `tasks validate --original-patch` re-run on
   2026-11-15 with the task directory and the unmodified diff: clean.
 - Unchanged from the old draft's m02 (draft prompt and audit).

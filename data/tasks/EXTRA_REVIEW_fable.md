@@ -232,7 +232,7 @@ it cannot be fixed without describing approach or tests; a module-level `from al
 upgrade` is unusual. Leave. #2 and #3 leave.
 
 Before the task directory is accepted: `tasks validate --original-patch` must pass for m04 on the
-unmodified harness path (it was graded with a hand-limited diff; harness commit `6b5bbf9` is meant to
+unmodified harness path (it was graded with a hand-limited diff; harness commit `527d7e1` is meant to
 cover this but was not re-run).
 
 ---
