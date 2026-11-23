@@ -236,7 +236,7 @@ def page(stem, src, part, secs, notes):
 
 @page("p01_title", 1, OPEN, 20,
       f"Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
-      f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết là phương pháp.")
+      f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết, một ca cụ thể.")
 def _(r):
     set_text(r, "shape-1431", ["Spec-driven development", "so với vibe coding"], size=46, role="title")
     set_text(r, "shape-1430", ["Nghiên cứu tình huống và thực nghiệm đối chứng trên",
@@ -262,9 +262,29 @@ def _(r):
     set_text(r, "shape-1484", ["Bối cảnh, nghiên cứu liên quan, thiết kế"])
 
 
+@page("p02_hook", 26, OPEN, 50,
+      f"(Chuyển người nếu chia ba phần: đây là phần một.) Bắt đầu bằng một lượt chạy thật. Agent nhận một "
+      f"nhiệm vụ cỡ một tính năng và làm đúng quy trình spec-driven: viết spec {N['ResCaseDesignLines']} dòng, "
+      f"chia plan thành {N['ResCasePlanTasks']} task, tự viết {N['ResCaseSpecTests']} test, và mọi test đó "
+      f"đều đạt. Nhưng khi chấm bằng hidden test, cả {N['ResCaseReps']} lượt đều trượt. Làm đủ quy trình mà "
+      f"vẫn trượt, vì sao? Nhóm em sẽ quay lại câu hỏi này ở giữa bài.")
+def _(r):
+    set_text(r, "shape-2285", ["Làm đủ quy trình, vẫn trượt"])
+    set_text(r, "shape-2287", ["Spec"], role="head")
+    set_text(r, "shape-2286", ["Agent viết spec", f"{N['ResCaseDesignLines']} dòng cho", "một tính năng"],
+             size=16)
+    set_text(r, "shape-2289", ["Plan"], role="head")
+    set_text(r, "shape-2288", [f"Chia {N['ResCasePlanTasks']} task,", "làm lần lượt", "theo TDD"], size=16)
+    set_text(r, "shape-2291", ["Test của agent"], role="head")
+    set_text(r, "shape-2290", [f"Tự viết {N['ResCaseSpecTests']} test mới:", "tất cả đều đạt ✓"], size=17)
+    set_text(r, "shape-2293", ["Hidden test"], role="head")
+    set_text(r, "shape-2292", [f"Trượt: {N['ResCaseSpecPassed']}/{N['ResCaseReps']} lượt đạt ✗",
+                               "Vì sao?"], size=20, role="numo")
+
+
 @page("p03_motivation", 7, METHOD, 40,
-      f"Coding agent tự đọc mã, sửa file, chạy test. Phổ biến nhất là vibe coding: vài câu ngắn, phần đề bỏ "
-      f"ngỏ thì agent tự đoán. Spec-driven development hứa bù chỗ đó; một hiện thực được dùng rộng rãi là Superpowers, một repo "
+      f"Ca đó chạm vào một lời hứa lớn. Cách giao việc phổ biến nhất cho coding agent là vibe coding: vài câu "
+      f"ngắn, phần đề bỏ ngỏ thì agent tự đoán. Spec-driven development hứa bù chỗ đó; một hiện thực được dùng rộng rãi là Superpowers, một repo "
       f"GitHub khoảng ba trăm hai mươi tư nghìn sao, tự giới thiệu là một framework skill cho agent và một "
       f"phương pháp phát triển phần mềm. Theo đó agent viết spec, "
       f"plan, viết test trước rồi cài đặt và kiểm lại. Nhưng bằng chứng còn ít, chưa có thí "
@@ -819,7 +839,7 @@ def _(r):
 # part and seconds here override the ones in @page. Backup pages have 0 seconds.
 MAX_TALK = 855  # 14:15 of a 15-minute slot; the rest is for slide changes
 ORDER: list[tuple[str, str, int]] = [
-    ("p01_title", OPEN, 15), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 40),
+    ("p01_title", OPEN, 15), ("p02_hook", OPEN, 50), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 35),
     ("p04b_related", METHOD, 30), ("p06_vipharmind", METHOD, 30), ("p07_retro", METHOD, 35),
     ("p08_arms", METHOD, 25), ("p10_tiers", METHOD, 40), ("p11_grading", METHOD, 30),
     ("p12_prereg", METHOD, 25), ("p13_threats", METHOD, 30),
