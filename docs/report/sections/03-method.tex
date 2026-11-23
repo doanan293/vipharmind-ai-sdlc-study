@@ -70,14 +70,14 @@ lọc được xáo ngẫu nhiên (hạt giống 20261115) với quota theo lớ
 \texttt{application} \NumTasksApplication{}, \texttt{domain} \NumTasksDomain{}, \texttt{infrastructure}
 \NumTasksInfrastructure{}). Phần thay đổi ở \texttt{backend/src} dài từ \NumTaskSrcLinesMin{} đến
 \NumTaskSrcLinesMax{} dòng. Chạy thử cho thấy Claude gần đạt trần ở tầng này với cả hai cách làm, nên nghiên
-cứu thêm hai tầng lớn hơn, cắt từ 16 đoạn commit của các plan backend: tầng vừa \texttt{m01}--\texttt{m05}
-(\NumMediumSrcLinesMin{} đến \NumMediumSrcLinesMax{} dòng) và tầng lớn \texttt{f08}, \texttt{f14},
-\texttt{f15} (\NumFeatureSrcLinesMin{} đến \NumFeatureSrcLinesMax{} dòng).
+cứu thêm hai tầng lớn hơn, cắt từ 16 đoạn commit của các plan backend: tầng vừa \NumMediumTasks{} nhiệm vụ
+(\NumMediumSrcLinesMin{} đến \NumMediumSrcLinesMax{} dòng) và tầng lớn \NumFeatureTasks{} nhiệm vụ
+(\NumFeatureSrcLinesMin{} đến \NumFeatureSrcLinesMax{} dòng).
 
 Đề bài viết bằng tiếng Anh, từ năm đến mười câu, nêu việc cần làm và giao diện phải giữ, không nêu cách cài
 đặt và không nhắc tới test. Trợ lý AI soạn nháp, tác giả dự án duyệt. Một lượt đối chiếu tự động mọi tên công
-khai mà hidden test dùng với base commit và đề bài tìm ra tên thiếu ở ba đề (\texttt{t05}, \texttt{t07},
-\texttt{t13}); ba đề được bổ sung trước khi chốt. Đề tầng vừa và lớn có thêm mục ``giao diện bắt buộc'' và
+khai mà hidden test dùng với base commit và đề bài tìm ra tên thiếu ở ba đề tầng nhỏ; ba đề này được bổ
+sung trước khi chốt. Đề tầng vừa và lớn có thêm mục ``giao diện bắt buộc'' và
 được một agent AI độc lập phản biện trước khi chốt. Danh sách đủ nhiệm vụ ở Phụ lục~\ref{app:tasks}.
 
 Hai cách làm nhận cùng đề bài, mô hình, công cụ và giới hạn thời gian; chỉ khác prompt quy trình đặt trước đề bài

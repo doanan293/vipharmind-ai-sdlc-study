@@ -392,7 +392,7 @@ hướng với thí nghiệm chính, và tầng nhỏ tốn 3,3 so với 1,5 tri
 quả chính nên chỉ là thăm dò (mục 4.3).
 
 **L7. [B] Sao ở tầng lớn đặc tả lại kém hơn với Sonnet, Opus?**
-Hiệu số tầng lớn là −11,1 pp ở cả hai nhóm, chỉ tham khảo vì ba nhiệm vụ. Ca `f15` (mục 4.3) cho một cơ
+Hiệu số tầng lớn là −11,1 pp ở cả hai nhóm, chỉ tham khảo vì ba nhiệm vụ. Ca nhiệm vụ tập tài liệu (mục 4.3; mã nội bộ f15) cho một cơ
 chế cụ thể. Đề nêu tên `deleted_with_releases()` nhưng không nói trả về gì.
 Bản thiết kế của agent chốt là danh sách đối tượng, trong khi bản gốc trả về danh sách mã; kế hoạch và test
 của agent đều dựa trên quyết định đó nên đều đạt, còn hidden test thì trượt. Cả ba lượt đặc tả trượt, một lượt

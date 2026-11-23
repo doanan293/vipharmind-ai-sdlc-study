@@ -114,7 +114,7 @@ nhiệm vụ lệch nằm ở cả hai phía và ở mọi cỡ; riêng ba nhi�
 
 Các phân tích độ nhạy không làm đổi kết luận. Bỏ \NumResSensUrlRuns{} lượt của nhiệm vụ có đường dẫn tới mã gốc trong nhật ký, H1 thành
 \NumResSensUrlEstPp{} pp [\NumResSensUrlLowPp{}; \NumResSensUrlHighPp{}]. Bỏ cặp nhiệm vụ chung commit
-(\texttt{f08}, \texttt{t03}), H5 thành \NumResSensOverlapEstPp{} pp [\NumResSensOverlapLowPp{};
+(một nhiệm vụ tầng lớn chứa commit của một nhiệm vụ tầng nhỏ), H5 thành \NumResSensOverlapEstPp{} pp [\NumResSensOverlapLowPp{};
 \NumResSensOverlapHighPp{}]. Bỏ \NumResSensPytestRuns{} lượt sửa cấu hình \texttt{pytest}, hoặc dùng số dòng
 được chấm thay số dòng của patch gốc (hệ số \NumResHFiveGradedCoef{} [\NumResHFiveGradedLow{};
 \NumResHFiveGradedHigh{}]), kết luận cũng không đổi.
@@ -185,8 +185,9 @@ mù, cả \NumPassCheckCorrect{} lượt đều đúng thật, nên không thấ
 \input{generated/tables/labels}
 \end{table}
 
-Theo quy tắc chọn trước, ca nghiên cứu là \texttt{f15}: tập tài liệu có chủ sở hữu
-và quy tắc hiển thị. Hiệu số là \NumResCaseDiffPp{} pp: không lượt nào trong \NumResCaseReps{} lượt theo đặc tả
+Theo quy tắc chọn trước, ca nghiên cứu là nhiệm vụ tầng lớn có hiệu số lớn nhất ở
+\texttt{claude-sonnet}: tính năng tập tài liệu có chủ sở hữu và quy tắc ai được xem, với tìm kiếm trong chat chỉ
+đọc các tập người dùng được xem (gọi tắt là nhiệm vụ tập tài liệu). Hiệu số là \NumResCaseDiffPp{} pp: không lượt nào trong \NumResCaseReps{} lượt theo đặc tả
 đạt, một lượt vibe đạt. Cả ba lượt theo đặc tả trượt cùng một test kiểm việc dọn tập tài liệu của tổ chức đã bị
 xóa. Đề bài nêu tên phương thức \texttt{deleted\_with\_releases()} nhưng không nói nó trả về gì. Bản thiết kế
 của agent chốt kiểu trả về là danh sách đối tượng, trong khi bản cài đặt gốc trả về danh sách mã. Kế hoạch và
@@ -245,7 +246,7 @@ nhiệm vụ và H5 chưa kết luận được, tín hiệu này chỉ đủ đ
 
 Phần lớn lượt hỏng đến từ thông tin mà đề không có. \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
 Claude có nguyên nhân là hidden test kiểm một chi tiết đề không chốt hoặc agent nối sai với mã có sẵn, và hai loại này chiếm tỉ lệ như nhau ở hai cách làm. Bước thiết kế không tự biết chi tiết mà đề bỏ ngỏ: như
-ca \texttt{f15}, nó chốt một cách đoán, rồi test viết trước kiểm lại chính cách đoán đó. Ca này gợi ý rằng thông
+ở nhiệm vụ tập tài liệu, nó chốt một cách đoán, rồi test viết trước kiểm lại chính cách đoán đó. Ca này gợi ý rằng thông
 tin còn thiếu chỉ người giao việc có, nên quy trình tự động khó bù.
 
 E2 gợi ý rằng giá trị của spec nằm ở phần do người viết. Đề chi tiết của thí nghiệm chính thực chất là một bản spec do
@@ -271,7 +272,7 @@ của lập kế hoạch ở mức hàm \cite{jiang_2024} không lặp lại ở
 Với người dùng trợ lý lập trình, kết quả gợi ý đầu tư vào đề bài (tên, chữ ký,
 kiểu trả về, trường hợp biên) trước khi đầu tư vào quy trình tự động. Kết quả này không áp dụng trọn cho Superpowers dùng đầy đủ: hai bước mà nhánh đặc
 tả của thí nghiệm phải bỏ, hỏi lại người dùng và để người duyệt spec, chính là hai bước đưa ý của người vào
-spec, và cũng là lúc chỗ đề bỏ ngỏ như ở \texttt{f15} lộ ra. Thí nghiệm chưa đo hai bước này.
+spec, và cũng là lúc chỗ đề bỏ ngỏ như ở nhiệm vụ tập tài liệu lộ ra. Thí nghiệm chưa đo hai bước này.
 
 \subsection{Hạn chế}\label{sec:threats}
 

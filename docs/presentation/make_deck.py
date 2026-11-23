@@ -310,9 +310,9 @@ def s01_title():
 
 def s02_hook():
     s = content(OPEN, "Một ví dụ: tập tài liệu có phân quyền",
-                "Nhiệm vụ f15 của ViPharmind: người dùng và tổ chức tạo tập tài liệu riêng, có quy tắc ai được xem; "
+                "Một tính năng của ViPharmind: người dùng và tổ chức tạo tập tài liệu riêng, có quy tắc ai được xem; "
                 "tìm kiếm trong chat chỉ đọc tập tài liệu người dùng được phép xem.", 55,
-                f"Nhóm em bắt đầu bằng một ví dụ. Đây là một tính năng thật của ViPharmind, mã nhiệm vụ f15: cho người "
+                f"Nhóm em bắt đầu bằng một ví dụ. Đây là một tính năng thật của ViPharmind: cho người "
                 f"dùng và tổ chức tạo tập tài liệu riêng với quy tắc ai được xem, và khi trò chuyện thì công cụ tìm kiếm "
                 f"chỉ đọc những tập tài liệu người đó được phép xem. Claude Sonnet làm theo quy trình spec-driven. Ở "
                 f"một lượt, agent viết spec {N['ResCaseDesignLines']} dòng, chia plan thành {N['ResCasePlanTasks']} "
@@ -711,7 +711,7 @@ def s19_causes():
     s = content(FIND, "Nguyên nhân thất bại",
                 f"{N['LabOutside']}/{N['LabRuns']} lượt hỏng của Claude do đề không nêu chi tiết hoặc nối sai mã có sẵn, với tỉ lệ như "
                 "nhau ở hai cách.", 50,
-                f"Để xem f15 có phải ngoại lệ không, Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt hỏng của Claude, đồng "
+                f"Để xem ví dụ này có phải ngoại lệ không, Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt hỏng của Claude, đồng "
                 f"ý {N['LabAgree']}, kappa {N['LabKappa']}. {N['LabOutside']} trên {N['LabRuns']} lượt hỏng vì đề không "
                 f"nêu chi tiết hoặc nối sai mã có sẵn; chỉ {N['LabLoiLogicTotal']} lượt là lỗi logic. Tỉ lệ này như "
                 f"nhau ở hai cách, {N['LabOutsideSpecPct']} và {N['LabOutsideVibePct']} phần trăm: quy trình spec không "
