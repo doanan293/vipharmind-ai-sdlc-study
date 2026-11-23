@@ -12,8 +12,7 @@ Trần Ngọc Bảo.
 | `docs/` | Tài liệu: `report/` (báo cáo cuối, LaTeX), `presentation/` (slide bảo vệ), `proposal/` (đề cương), `prereg/` (bản đăng ký trước và nhật ký sai lệch), `team/` (bản kê đóng góp, đánh giá chéo, khai báo AI, hỏi đáp), `superpowers/` (thiết kế và kế hoạch) |
 | `data/` | Dữ liệu: `tasks/` (23 nhiệm vụ, đề bài, danh sách hành vi), `results/` (kết quả phân tích, nhãn, phiếu chấm tay, log), `retrospective/` (output của phân tích hồi cứu) |
 
-Sản phẩm nộp: `docs/report/main.pdf` và `docs/presentation/vipharmind-slides.pdf`. Báo cáo lần 1 (17/11)
-nằm ở nhánh `report-lan1`.
+Sản phẩm nộp: `docs/report/main.pdf` và `docs/presentation/vipharmind-slides.pdf`.
 
 Dữ liệu chạy thô (khoảng 750 MB) và gói việc gửi người chấm không nằm trong git mà ở bản Release
 [`data-v1`](https://github.com/doanan293/vipharmind-ai-sdlc-study/releases/tag/data-v1), kèm `SHA256SUMS`
@@ -21,4 +20,4 @@ và hướng dẫn khôi phục.
 
 Lệnh của từng gói chạy trong thư mục của gói đó (`cd code/harness && uv run pytest`). Mọi đường dẫn trong
 tài liệu đã theo bố cục này. Riêng các thẻ git cũ (`prereg-v1`, `prereg-v1.1`, `prereg-v1.2`, ...) giữ nguyên
-bố cục lúc chốt (`results/`, `tasks/`, `harness/` ở gốc), và nhánh `report-lan1` đã chuyển sang bố cục mới.
+bố cục lúc chốt (`results/`, `tasks/`, `harness/` ở gốc).
