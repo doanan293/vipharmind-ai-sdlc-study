@@ -76,7 +76,7 @@ không đổi được kết quả.
 Đúng là có rủi ro này. Tiêu chí 3 của sàng lọc chỉ giữ nhiệm vụ mà test kiểm hành vi qua giao diện đề bài
 nêu được, và đề bài nêu mọi tên công khai mà test cần (rà ở `data/tasks/PROMPT_AUDIT.md`, Fable duyệt tầng vừa
 và lớn). Rủi ro còn lại ảnh hưởng hai cách làm như nhau vì cả hai nhận cùng đề. Nhãn `de_bai_thieu` trong
-phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.5, 5.3).
+phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.5, 4.8).
 
 **B3. ★ Bản gốc của ViPharmind được làm theo đặc tả. Test ẩn có thiên vị nhánh theo đặc tả không?**
 Có thể, và báo cáo ghi rõ là hạn chế. Test ẩn kiểm hành vi qua giao diện đề bài nêu, không kiểm cấu trúc
@@ -334,7 +334,7 @@ chỉnh bằng mô phỏng (0,30). Thay đổi ghi ở mục 11 trước khi xem
 bootstrap này chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58), với quy tắc đọc ghi trước: 33
 trên 40 bộ dữ liệu mô phỏng (82,5%), thấp hơn mức danh nghĩa 95%. Kết quả đạt ngưỡng ≥ 32/40 đã ghi nên mã
 được khóa, không chỉnh. Nghĩa là khoảng của hệ số tương tác hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu của
-hệ số nên không đổi (mục 5.3, Phụ lục G).
+hệ số nên không đổi (mục 4.8, Phụ lục G).
 
 **K6. Nhiều phép so như vậy có bị "câu cá" kết quả không?**
 Chỉ H1 là phép thử xác nhận. Các phép phụ không hiệu chỉnh so sánh nhiều lần, nhưng được báo cáo đủ, không
