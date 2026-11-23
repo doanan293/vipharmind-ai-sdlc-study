@@ -223,7 +223,7 @@ def say(key: str) -> str:
 # named only for their work. build adds the timing cue ("Khoảng ba mươi giây.") in front of each note.
 
 PAGES: list[dict] = []
-OPEN, METHOD, RESULTS, CLOSE, BACKUP = "Mở đầu", "Phương pháp", "Kết quả", "Kết luận", "Dự phòng"
+OPEN, METHOD, RESULTS, CLOSE, BACKUP = "Mở đầu", "Cách kiểm", "Phát hiện", "Kết luận", "Dự phòng"
 PARTS = (OPEN, METHOD, RESULTS, CLOSE)
 
 
@@ -815,6 +815,33 @@ def _(r):
         delete(r, sid)
 
 
+# The deck: (stem, part, seconds). This list alone decides which pages are built and in which order; the
+# part and seconds here override the ones in @page. Backup pages have 0 seconds.
+MAX_TALK = 855  # 14:15 of a 15-minute slot; the rest is for slide changes
+ORDER: list[tuple[str, str, int]] = [
+    ("p01_title", OPEN, 15), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 40),
+    ("p04b_related", METHOD, 30), ("p06_vipharmind", METHOD, 30), ("p07_retro", METHOD, 35),
+    ("p08_arms", METHOD, 25), ("p10_tiers", METHOD, 40), ("p11_grading", METHOD, 30),
+    ("p12_prereg", METHOD, 25), ("p13_threats", METHOD, 30),
+    ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 45), ("p17_h2h3", RESULTS, 40), ("p21_case", RESULTS, 45),
+    ("p22_labels", RESULTS, 35), ("p23_explore", RESULTS, 45),
+    ("p24_limits", CLOSE, 30), ("p25_conclusion", CLOSE, 45), ("p26_thanks", CLOSE, 10),
+    ("p05_hypotheses", BACKUP, 0), ("p09_cohorts", BACKUP, 0), ("p18_h4", BACKUP, 0), ("p19_h5", BACKUP, 0),
+    ("p20_cost", BACKUP, 0), ("p27_bk_funnel", BACKUP, 0), ("p28_bk_reading", BACKUP, 0),
+    ("p29_bk_labels", BACKUP, 0), ("p30_attribution", BACKUP, 0),
+]
+
+
+def deck_pages() -> list[dict]:
+    by_stem = {p["stem"]: p for p in PAGES}
+    out = []
+    for stem, part, secs in ORDER:
+        if stem not in by_stem:
+            sys.exit(f"unknown page {stem}")
+        out.append(dict(by_stem[stem], part=part, secs=secs))
+    return out
+
+
 # Result slots still pending: page -> what fills it. Every result is filled now; kept so a rebuild against
 # an older numbers.json still lists what is missing.
 RESULT_SLOTS: dict[str, str] = {}
@@ -850,8 +877,9 @@ def main():
     for old in notes_dir.glob("*.md"):
         old.unlink()
     plan = []
+    deck = deck_pages()
     parser = etree.XMLParser(remove_blank_text=False, huge_tree=True)
-    for p in PAGES:
+    for p in deck:
         tree = etree.parse(str(SVG_DIR / f"slide_{p['src']:02d}.svg"), parser)
         p["edit"](tree.getroot())
         out = SVG_DIR / f"{p['stem']}.svg"
@@ -862,13 +890,13 @@ def main():
         {"schema": "ppt-master.roundtrip-page-plan.v1", "pages": plan}, indent=2) + "\n", encoding="utf-8")
 
     rows, t = [], 0
-    for i, p in enumerate(PAGES, 1):
+    for i, p in enumerate(deck, 1):
         if p["secs"]:
             t += p["secs"]
             rows.append(f"| {i} | `{p['stem']}` | {p['part']} | {fmt_secs(p['secs'])} | {fmt_secs(t)} |")
         else:
             rows.append(f"| {i} | `{p['stem']}` | {p['part']} | – | – |")
-    by = {s: sum(p["secs"] for p in PAGES if p["part"] == s) for s in PARTS}
+    by = {s: sum(p["secs"] for p in deck if p["part"] == s) for s in PARTS}
     split = ", ".join(f"{s} {fmt_secs(v)}" for s, v in by.items())
     (HERE / "rehearsal.md").write_text(
         "# Tập dượt\n\n"
@@ -884,7 +912,9 @@ def main():
         "và E1 (Haiku). Làm mới bằng `code/refresh-interim.sh`. "
         + (f"Các slide sau còn `{PENDING}`:\n\n" + "\n".join(f"- `{k}`: {v}" for k, v in RESULT_SLOTS.items())
            if RESULT_SLOTS else "Không còn chỗ chờ kết quả.") + "\n", encoding="utf-8")
-    print(f"pages={len(PAGES)} talk={fmt_secs(t)} {by}")
+    print(f"pages={len(deck)} talk={fmt_secs(t)} {by}")
+    if t > MAX_TALK:
+        sys.exit(f"talk {fmt_secs(t)} is over {fmt_secs(MAX_TALK)}")
 
 
 if __name__ == "__main__":
