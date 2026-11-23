@@ -235,7 +235,7 @@ def page(stem, src, part, secs, notes):
 
 
 @page("p01_title", 1, OPEN, 20,
-      f"Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
+      f"(Chuyển người nếu chia ba phần: đây là phần một.) Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
       f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết, một ca cụ thể.")
 def _(r):
     set_text(r, "shape-1431", ["Spec-driven development", "so với vibe coding"], size=46, role="title")
@@ -254,10 +254,10 @@ def _(r):
 
 
 @page("p02_hook", 26, OPEN, 50,
-      f"(Chuyển người nếu chia ba phần: đây là phần một.) Bắt đầu bằng một lượt chạy thật. Agent nhận một "
-      f"nhiệm vụ cỡ một tính năng và làm đúng quy trình spec-driven: viết spec {N['ResCaseDesignLines']} dòng, "
+      f"Bắt đầu bằng một ca thật, nhiệm vụ f15 cỡ một tính năng, chạy ba lần. Ở một lượt, agent làm đúng quy "
+      f"trình spec-driven: viết spec {N['ResCaseDesignLines']} dòng, "
       f"chia plan thành {N['ResCasePlanTasks']} task, tự viết {N['ResCaseSpecTests']} test, và mọi test đó "
-      f"đều đạt. Nhưng khi chấm bằng hidden test, cả {N['ResCaseReps']} lượt đều trượt. Làm đủ quy trình mà "
+      f"đều đạt. Nhưng khi chấm bằng hidden test, cả {N['ResCaseReps']} lượt đều trượt cùng một test. Làm đủ quy trình mà "
       f"vẫn trượt, vì sao? Nhóm em sẽ quay lại câu hỏi này ở giữa bài.")
 def _(r):
     set_text(r, "shape-2285", ["Làm đủ quy trình, vẫn trượt"])
@@ -320,7 +320,7 @@ def _(r):
       f"hơn, nhưng đó là quan sát. FeatBench của Chen và cộng sự chấm agent bằng hidden test nhưng so mô hình với nhau. Mock và Russo "
       f"so bốn cách tương tác khi viết test trước. Agarwal và cộng sự phỏng vấn người làm nghề: đặc tả đáng tin "
       f"hơn nhưng tốn công. Nhóm em giữ nguyên agent, mô hình và đề, chỉ đổi prompt quy trình, rồi đo bằng hidden test và "
-      f"token. Từ đó có năm giả thuyết.")
+      f"token. Tiếp theo là dự án mà nhóm em dùng.")
 def _(r):
     set_text(r, "shape-2122", ["Nghiên cứu liên quan"])
     rows = [("shape-2124", "shape-2123", "Hill", ["Quan sát PR mã nguồn mở: có spec", "không ít lỗi hơn"]),
@@ -464,7 +464,7 @@ def _(r):
       f"Cái giá thì rõ: spec tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token ở mọi ô. "
       f"Đổi lại, spec để lại test: {N['ResSonnetSpecTestsAnyPct']} đến {N['ResCodexSpecTestsAnyPct']} phần trăm "
       f"lượt spec có test agent tự viết, trong khi vibe của Codex không viết test nào. Hidden test không thưởng "
-      f"phần này; giá trị của nó chỉ hiện ra ở lần sửa sau. Về chất lượng mã, kết quả lẫn lộn. Vậy quay lại "
+      f"phần này; nó có thể có giá trị ở lần sửa sau, nhưng nghiên cứu này không đo. Về chất lượng mã, kết quả lẫn lộn. Vậy quay lại "
       f"câu hỏi ban đầu: vì sao f15 trượt?")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 493, 52,
@@ -486,9 +486,9 @@ def _(r):
 @page("p13_decode", 26, RESULTS, 50,
       f"Quay lại f15. Đề nêu tên hàm dọn dữ liệu nhưng không nói nó trả về gì. Spec của agent tự chốt: trả về "
       f"danh sách đối tượng. Bản gốc thì trả về danh sách mã. Plan và test của agent đều dựa trên quyết định "
-      f"đó, nên test của chính nó đạt; hidden test thì trượt. Vibe cũng phải tự đoán, và đạt "
-      f"{N['ResCaseVibePassed']} trên {N['ResCaseReps']} lượt. Spec không sai về quy trình: nó chốt một cách "
-      f"đoán rồi tự kiểm bằng chính cách đoán đó.")
+      f"đó, nên test của chính nó đạt; hidden test thì trượt. Vibe cũng phải tự chọn, và cả ba lượt chọn đúng "
+      f"danh sách mã; {N['ResCaseVibePassed']} lượt đạt hết hidden test. Spec không sai về quy trình: nó chốt "
+      f"một cách đoán rồi tự kiểm bằng chính cách đoán đó. Có phải đây chỉ là chuyện xui?")
 def _(r):
     set_text(r, "shape-2285", ["Giải mã f15"])
     set_text(r, "shape-2287", ["Đề bài"], role="head")
@@ -499,7 +499,8 @@ def _(r):
     set_text(r, "shape-2290", ["Kiểm theo cùng giả định", "nên đạt ✓; hidden test ✗"], size=17)
     set_text(r, "shape-2293", ["Bài học"], role="head")
     set_text(r, "shape-2292", ["Spec chỉ ghi lại cách agent đoán.",
-                               f"Vibe cũng đoán: {N['ResCaseVibePassed']}/{N['ResCaseReps']} lượt đạt."],
+                               f"Vibe đoán đúng kiểu trả về {N['ResCaseReps']}/{N['ResCaseReps']} lượt;",
+                               f"{N['ResCaseVibePassed']}/{N['ResCaseReps']} lượt đạt hết hidden test."],
              size=17)
 
 
@@ -552,11 +553,11 @@ def _(r):
       f"Claude, hiệu số âm hoặc bằng 0 ở mọi tầng, trừ Sonnet tầng vừa, cộng {say('ResSonnetMediumDiffPp')} "
       f"điểm, từ 0 đến 20, chỉ tham khảo. Ô duy nhất được ủng hộ là Codex tầng lớn, "
       f"{N['ResCodexLargeSpecPct']} so với {N['ResCodexLargeVibePct']} phần trăm, nhưng chỉ ba nhiệm vụ, "
-      f"khoảng co về một điểm, và là một trong {N['ResSecondaryComparisons']} phép so phụ không hiệu chỉnh. "
+      f"khoảng tin cậy chỉ còn một điểm vì cả ba task cho cùng hiệu số, và là một trong {N['ResSecondaryComparisons']} phép so phụ không hiệu chỉnh. "
       f"Mô hình mạnh hay yếu hơn, task lớn hay nhỏ, đều chưa kết luận được. Vậy spec tốn gì và để lại gì?")
 def _(r):
     delete_icon_use(r, "imported/flat_slide_12_ill01")
-    set_text(r, "shape-1841", ["Đổi công cụ, mô", "hình, cỡ task?"], role="title")
+    set_text(r, "shape-1841", ["Đổi công cụ,", "mô hình, cỡ task?"], role="title")
     set_text(r, "shape-1842", ["Spec − vibe theo cohort", "và tầng, KTC 95%.", "",
                                "Claude: ≤ 0 ở mọi tầng,", "trừ Sonnet tầng vừa",
                                f"(+{N['ResSonnetMediumDiffPp']} pp, tham khảo).",
@@ -662,8 +663,8 @@ def _(r):
 
 
 @page("p22_labels", 6, RESULTS, 35,
-      f"Phát hiện thứ hai từ gán nhãn. Lợi và Bảo gán độc lập {N['LabRuns']} lượt hỏng của Claude, đồng ý "
-      f"{N['LabAgree']}. {N['LabOutside']} trên {N['LabRuns']} lượt hỏng vì đề không nêu chi tiết, "
+      f"Gán nhãn trả lời câu đó. Lợi và Bảo gán độc lập {N['LabRuns']} lượt hỏng của Claude, đồng ý "
+      f"{N['LabAgree']}, kappa {N['LabKappa']}. {N['LabOutside']} trên {N['LabRuns']} lượt hỏng vì đề không nêu chi tiết, "
       f"{N['LabDeBaiThieuTotal']} lượt, hoặc dùng sai mã có sẵn, {N['LabSaiApiCoSanTotal']} lượt; chỉ "
       f"{N['LabLoiLogicTotal']} lượt là lỗi logic. Tỉ lệ như nhau ở hai cách, {N['LabOutsideSpecPct']} và "
       f"{N['LabOutsideVibePct']} phần trăm: thiết kế chỉ chốt một cách đoán. Vậy nếu đề còn ngắn hơn?")
@@ -723,17 +724,17 @@ def _(r):
 
 
 @page("p25_conclusion", 7, CLOSE, 50,
-      f"Tóm lại. Với đề chi tiết, phép thử chính cho thấy spec do agent tự viết không làm đạt nhiều hơn mà tốn "
+      f"Tóm lại. Với đề chi tiết, phép thử chính không thấy spec do agent tự viết làm đạt nhiều hơn, H1 chưa kết luận được, mà tốn "
       f"gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token. Với đề sơ sài, phần thăm dò cho "
       f"thấy bỏ spec của người làm điểm giảm khoảng {say('ETwoXScoreShiftSpec')} điểm, còn spec của agent chỉ "
       f"bù {say('ETwoPooledSmallPp')} ở task nhỏ. Spec quan trọng, nhưng giá trị nằm ở thông tin người đưa "
-      f"vào: hãy viết spec rõ, hoặc để agent hỏi lại mình. Vòng sau, nhóm em muốn thêm bước hỏi lại và người "
+      f"vào. Nhóm em đề xuất: viết spec rõ, hoặc để agent hỏi lại mình. Vòng sau, nhóm em muốn thêm bước hỏi lại và người "
       f"duyệt spec, và nhiều task cỡ tính năng hơn.")
 def _(r):
     set_text(r, "shape-1634", ["Spec có giá trị nhờ ý của người"])
     set_text(r, "shape-1638", ["Đề chi tiết"])
-    set_text(r, "shape-1636", ["(phép thử chính) Spec", "agent tự viết: không đạt",
-                               f"hơn, tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token."], size=16)
+    set_text(r, "shape-1636", ["(phép thử chính) Spec agent", "tự viết: không thấy lợi ích", "(H1 chưa kết luận được);",
+                               f"tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token."], size=15)
     set_text(r, "shape-1637", ["Đề sơ sài"])
     set_text(r, "shape-1635", ["(thăm dò) Bỏ spec người:", f"−{N['ETwoXScoreShiftSpec']} pp; spec agent",
                                f"bù {sg('ETwoPooledSmallPp')} pp ở task nhỏ."], size=16)
@@ -838,8 +839,8 @@ def _(r):
 # part and seconds here override the ones in @page. Backup pages have 0 seconds.
 MAX_TALK = 855  # 14:15 of a 15-minute slot; the rest is for slide changes
 ORDER: list[tuple[str, str, int]] = [
-    ("p01_title", OPEN, 15), ("p02_hook", OPEN, 50), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 35),
-    ("p04b_related", METHOD, 30), ("p06_project", METHOD, 40), ("p08_arms", METHOD, 30),
+    ("p01_title", OPEN, 20), ("p02_hook", OPEN, 50), ("p03_motivation", OPEN, 50), ("p04_rq", OPEN, 35),
+    ("p04b_related", METHOD, 40), ("p06_project", METHOD, 40), ("p08_arms", METHOD, 30),
     ("p08_scale", METHOD, 45), ("p09_rigor", METHOD, 35),
     ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 50), ("p12_cost_tests", RESULTS, 40),
     ("p13_decode", RESULTS, 50), ("p22_labels", RESULTS, 35), ("p15_human_spec", RESULTS, 60),
