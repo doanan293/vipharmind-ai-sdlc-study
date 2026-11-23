@@ -238,7 +238,7 @@ def page(stem, src, part, secs, notes):
       f"Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
       f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết là phương pháp.")
 def _(r):
-    set_text(r, "shape-1431", ["Phát triển theo đặc tả", "so với vibe coding"], size=46, role="title")
+    set_text(r, "shape-1431", ["Spec-driven development", "so với vibe coding"], size=46, role="title")
     set_text(r, "shape-1430", ["Nghiên cứu tình huống và thực nghiệm đối chứng trên",
                                "một dự án phần mềm AI cho ngành dược Việt Nam"], size=17, y=380)
     add(r, '<g id="school" data-pptx-bounds="124 18 520 58">'
@@ -264,20 +264,26 @@ def _(r):
 
 @page("p03_motivation", 7, METHOD, 40,
       f"Coding agent tự đọc mã, sửa file, chạy test. Phổ biến nhất là vibe coding: vài câu ngắn, phần đề bỏ "
-      f"ngỏ thì agent tự đoán. Phát triển theo đặc tả, kiểu bộ skill Superpowers, hứa bù chỗ đó: agent viết "
-      f"thiết kế, kế hoạch, viết test trước rồi cài đặt và kiểm lại. Nhưng bằng chứng còn ít, chưa có thí "
+      f"ngỏ thì agent tự đoán. Spec-driven development hứa bù chỗ đó; một hiện thực được dùng rộng rãi là Superpowers, một repo "
+      f"GitHub khoảng ba trăm hai mươi tư nghìn sao, tự giới thiệu là một framework skill cho agent và một "
+      f"phương pháp phát triển phần mềm. Theo đó agent viết spec, "
+      f"plan, viết test trước rồi cài đặt và kiểm lại. Nhưng bằng chứng còn ít, chưa có thí "
       f"nghiệm nào chỉ đổi prompt quy trình rồi chấm bằng test mà agent không thấy. Nhóm em làm thí nghiệm đó, với "
       f"sáu câu hỏi sau.")
 def _(r):
-    set_text(r, "shape-1634", ["Đề ngắn và lời hứa của đặc tả"])
+    set_text(r, "shape-1634", ["Đề ngắn và lời hứa của spec-driven"])
     set_text(r, "shape-1638", ["Vibe coding"])
-    set_text(r, "shape-1637", ["Theo đặc tả"])
+    set_text(r, "shape-1637", ["Spec-driven"])
     set_text(r, "shape-1636", ["Vài câu ngắn; agent", "tự đoán phần đề", "bỏ ngỏ."], size=17)
-    set_text(r, "shape-1635", ["Thiết kế → kế hoạch →", "test trước → kiểm lại", "(kiểu Superpowers)."], size=17)
-    add(r, text_block("gap", 189, 405, 600, 60,
+    set_text(r, "shape-1635", ["Spec → plan → TDD", "→ verify, theo quy", "trình Superpowers."], size=17)
+    add(r, text_block("superpowers", 189, 372, 640, 44,
+                      ["Superpowers (github.com/obra/superpowers, 324,5k sao): “An agentic skills",
+                       "framework & software development methodology that works.”"],
+                      size=13, lead=1.35))
+    add(r, text_block("gap", 189, 428, 640, 44,
                       ["Câu hỏi: quy trình có bù được đề thiếu không?",
                        "Chưa có thí nghiệm chỉ đổi prompt quy trình, chấm bằng hidden test."],
-                      size=16, fill=BLUE, bold=True))
+                      size=15, fill=BLUE, bold=True))
 
 
 @page("p04_rq", 11, METHOD, 40,
@@ -289,7 +295,7 @@ def _(r):
     set_text(r, "shape-1762", ["Sáu câu hỏi nghiên cứu"])
     grid = [("shape-1763", "shape-1759", "RQ1", ["AI tham gia từng khâu", "của dự án ra sao?"]),
             ("shape-1764", "shape-1760", "RQ2", ["Mã AI viết phải sửa", "lại ở đâu, bao nhiêu?"]),
-            ("shape-1770", "shape-1767", "RQ3", ["Đặc tả có đạt hơn vibe,", "tốn thêm bao nhiêu?"]),
+            ("shape-1770", "shape-1767", "RQ3", ["Spec có đạt hơn vibe,", "tốn thêm bao nhiêu?"]),
             ("shape-1769", "shape-1765", "RQ4", ["Kết luận có giữ khi", "đổi công cụ, đổi hãng?"]),
             ("shape-1761", "shape-1766", "RQ5", ["Mô hình mạnh hơn thì", "lợi ích đổi ra sao?"]),
             ("shape-1771", "shape-1768", "RQ6", ["Nhiệm vụ lớn dần thì", "khoảng cách đổi ra sao?"])]
@@ -306,14 +312,14 @@ def _(r):
       f"token. Từ đó có năm giả thuyết.")
 def _(r):
     set_text(r, "shape-2122", ["Nghiên cứu liên quan"])
-    rows = [("shape-2124", "shape-2123", "Hill", ["Quan sát PR mã nguồn mở: có đặc tả", "không ít lỗi hơn"]),
+    rows = [("shape-2124", "shape-2123", "Hill", ["Quan sát PR mã nguồn mở: có spec", "không ít lỗi hơn"]),
             ("shape-2127", "shape-2126", "Chen", ["FeatBench: hidden test cho tính năng;", "so mô hình với nhau"]),
             ("shape-2130", "shape-2129", "Mock", ["Mock và Russo: bốn cách tương", "tác khi viết test trước"])]
     for head, body, h, b in rows:
         set_text(r, head, [h], size=22)
         set_text(r, body, b, size=16)
     set_text(r, "shape-2133", ["Agarwal"], size=22)
-    set_text(r, "shape-2132", ["Phỏng vấn: đặc tả đáng tin hơn, tốn công.",
+    set_text(r, "shape-2132", ["Phỏng vấn: spec đáng tin hơn, tốn công.",
                                "Nhóm em: chỉ đổi prompt, đo hidden test, token."], size=16)
 
 
@@ -323,10 +329,10 @@ def _(r):
       f"thử xác nhận duy nhất là H1 trên Sonnet, tầng nhỏ. Tiếp theo là dự án.")
 def _(r):
     set_text(r, "shape-1762", ["Năm giả thuyết, chốt trước khi chạy"])
-    grid = [("shape-1763", "shape-1759", "H1", ["Đặc tả có tỉ lệ đạt", "cao hơn vibe."]),
-            ("shape-1764", "shape-1760", "H2", ["Đặc tả tốn token và", "thời gian hơn."]),
+    grid = [("shape-1763", "shape-1759", "H1", ["Spec có tỉ lệ đạt", "cao hơn vibe."]),
+            ("shape-1764", "shape-1760", "H2", ["Spec tốn token và", "thời gian hơn."]),
             ("shape-1770", "shape-1767", "H3", ["Ít lỗi static analysis,", "ít regression hơn."]),
-            ("shape-1769", "shape-1765", "H4", ["Đặc tả giúp Sonnet", "nhiều hơn giúp Opus."]),
+            ("shape-1769", "shape-1765", "H4", ["Spec giúp Sonnet", "nhiều hơn giúp Opus."]),
             ("shape-1761", "shape-1766", "H5", ["Lợi ích tăng theo", "kích thước nhiệm vụ."]),
             ("shape-1771", "shape-1768", "Chính", ["H1 trên Sonnet, tầng", "nhỏ; còn lại là phụ."])]
     for head, body, h, b in grid:
@@ -378,7 +384,7 @@ def _(r):
     set_text(r, "shape-2217", ["Hai cách làm: chỉ khác prompt quy trình"])
     set_text(r, "shape-2220", ["Vibe coding"])
     set_text(r, "shape-2218", ["Một câu: “Implement the following change in this repository.”"], size=17)
-    set_text(r, "shape-2221", ["Theo đặc tả"])
+    set_text(r, "shape-2221", ["Spec-driven"])
     set_text(r, "shape-2219", ["docs/design.md → docs/plan.md → làm từng phần,",
                                "viết test trước → chạy cả bộ test backend."], size=17)
     add(r, text_block("same", 75, 440, 600, 40,
@@ -507,10 +513,10 @@ def _(r):
       f"nhiệm vụ chưa loại được một lợi ích nhỏ. Các phân tích độ nhạy cho cùng kết luận. Còn ở các nhóm và "
       f"tầng khác?")
 def _(r):
-    add(r, title_block("title", "H1 · Đặc tả có đạt nhiều hơn?", w=600))
+    add(r, title_block("title", "H1 · Spec có đạt nhiều hơn?", w=600))
     set_text(r, "shape-1856", [f"{m(N['ResHOneEstPp'])} pp"], size=64, role="num")
-    set_text(r, "shape-1857", ["Hiệu số tỉ lệ đạt (đặc tả − vibe), Sonnet, tầng nhỏ",
-                               f"Đặc tả {N['ResHOneSpecPct']}% · vibe {N['ResHOneVibePct']}% · "
+    set_text(r, "shape-1857", ["Hiệu số tỉ lệ đạt (spec − vibe), Sonnet, tầng nhỏ",
+                               f"Spec {N['ResHOneSpecPct']}% · vibe {N['ResHOneVibePct']}% · "
                                f"KTC 95% {ci(N['ResHOneLowPp'], N['ResHOneHighPp'])}"], size=18)
     add(r, text_block("verdict", 75, 420, 640, 75,
                       ["Kết luận: chưa kết luận được (KTC chứa 0).",
@@ -551,14 +557,14 @@ H3A_BAD, _ = verdict_count("H3a.", "contrary")
       f"vibe từ 0 đến {N['ResOpusVibeTestsAnyPct']} phần trăm.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 493, 52,
-                      ["H2, H3 · Chi phí và chất lượng", "Đặc tả so với vibe, mọi nhóm và tầng"],
+                      ["H2, H3 · Chi phí và chất lượng", "Spec so với vibe, mọi nhóm và tầng"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
     set_text(r, "shape-1916", [f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token"], size=44, role="num")
     set_text(r, "shape-1917", [f"Thời gian ×{N['ResWallRatioMin']}–{N['ResWallRatioMax']}; H2 ủng hộ ở mọi ô"],
              size=18)
     set_text(r, "shape-1918", [f"{N['ResCodexLargeRegSpecPct']}% / {N['ResCodexLargeRegVibePct']}%"],
              size=44, role="num")
-    set_text(r, "shape-1919", ["Regression, Codex tầng lớn (đặc tả / vibe);",
+    set_text(r, "shape-1919", ["Regression, Codex tầng lớn (spec / vibe);",
                                f"lỗi static analysis: {H3A_BAD} ô trái với H3"], size=18)
     set_text(r, "shape-1920", [f"{H3C_OK}/{H3C_ALL} ô"], size=44, role="num")
     set_text(r, "shape-1921", ["Maintainability index không kém hơn quá 5 điểm (H3)"], size=18)
@@ -575,18 +581,18 @@ def _(r):
     set_text(r, "shape-2199", ["H4 · Sonnet và Opus, tầng nhỏ"])
     set_text(r, "shape-2204", ["Sonnet"], role="head")
     set_text(r, "shape-2205", ["Opus"], role="head")
-    set_text(r, "shape-2210", ["Đặc tả"], size=22, role="head")
+    set_text(r, "shape-2210", ["Spec"], size=22, role="head")
     set_text(r, "shape-2208", [f"{N['ResSonnetSmallSpecPct']}% đạt"], size=20)
     set_text(r, "shape-2207", ["Vibe"], size=22, role="head")
     set_text(r, "shape-2209", [f"{N['ResSonnetSmallVibePct']}% đạt"], size=20)
-    set_text(r, "shape-2203", ["Đặc tả"], size=22, role="head")
+    set_text(r, "shape-2203", ["Spec"], size=22, role="head")
     set_text(r, "shape-2201", [f"{N['ResOpusSmallSpecPct']}% đạt"], size=20)
     set_text(r, "shape-2200", ["Vibe"], size=22, role="head")
     set_text(r, "shape-2202", [f"{N['ResOpusSmallVibePct']}% đạt"], size=20)
     add(r, text_block("diff", 113, 462, 760, 50,
                       [f"Hiệu của hai hiệu số: +{N['ResHFourDiffOfDiffsPp']} pp "
                        f"{ci(N['ResHFourDiffOfDiffsLowPp'], N['ResHFourDiffOfDiffsHighPp'])}: H4 chưa kết luận được.",
-                       f"Sonnet đặc tả và Opus vibe: cùng ước lượng điểm ({N['ResHFourSonnetSpecOpusVibePp']} pp, "
+                       f"Sonnet spec và Opus vibe: cùng ước lượng điểm ({N['ResHFourSonnetSpecOpusVibePp']} pp, "
                        f"KTC rộng), {N['ResHFourCostRatioPct']}% chi phí."],
                       size=14, fill=BLUE, bold=True))
 
@@ -619,11 +625,11 @@ def _(r):
             ("shape-2130", "shape-2129", "Codex", "codex-luna")]
     for head, body, h, c in rows:
         set_text(r, head, [h], size=22)
-        set_text(r, body, [f"Nhỏ: đặc tả {usd(c, 'small', 'spec')} · vibe {usd(c, 'small', 'vibe')}",
-                           f"Lớn: đặc tả {usd(c, 'large', 'spec')} · vibe {usd(c, 'large', 'vibe')}"], size=16)
+        set_text(r, body, [f"Nhỏ: spec {usd(c, 'small', 'spec')} · vibe {usd(c, 'small', 'vibe')}",
+                           f"Lớn: spec {usd(c, 'large', 'spec')} · vibe {usd(c, 'large', 'vibe')}"], size=16)
     set_text(r, "shape-2133", ["Tóm lại"], size=22)
-    set_text(r, "shape-2132", ["Claude: đặc tả đắt hơn ở mọi ô.",
-                               "Codex tầng lớn: đặc tả rẻ hơn vì vibe ít đạt."], size=16)
+    set_text(r, "shape-2132", ["Claude: spec đắt hơn ở mọi ô.",
+                               "Codex tầng lớn: spec rẻ hơn vì vibe ít đạt."], size=16)
 
 
 @page("p21_case", 26, RESULTS, 40,
@@ -639,15 +645,15 @@ def _(r):
     set_text(r, "shape-2286", ["Tập tài liệu có", "chủ, quyền xem.", "Tầng lớn, Sonnet;",
                                f"hiệu {m(N['ResCaseDiffPp'])} pp."], size=15)
     set_text(r, "shape-2289", ["Hai lượt"], role="head")
-    set_text(r, "shape-2288", [f"Đặc tả: {N['ResCaseSpecPassed']}/{N['ResCaseReps']} đạt;",
+    set_text(r, "shape-2288", [f"Spec: {N['ResCaseSpecPassed']}/{N['ResCaseReps']} đạt;",
                                f"{N['ResCaseSpecHidden']}/{N['ResCaseHiddenTotal']} hidden test;",
                                f"{N['ResCaseSpecMin']} phút;", f"{N['ResCaseSpecTokensM']} triệu token.", "",
                                f"Vibe: {N['ResCaseVibePassed']}/{N['ResCaseReps']} đạt;", "đủ hidden test;",
                                f"{N['ResCaseVibeMin']} phút;", f"{N['ResCaseVibeTokensM']} triệu token."], size=14)
-    set_text(r, "shape-2291", ["Thiết kế, kế hoạch", "AI viết"], role="head")
-    set_text(r, "shape-2290", [f"Thiết kế {N['ResCaseDesignLines']} dòng, kế hoạch "
+    set_text(r, "shape-2291", ["Spec, plan", "AI viết"], role="head")
+    set_text(r, "shape-2290", [f"Spec {N['ResCaseDesignLines']} dòng, plan "
                                f"{N['ResCasePlanLines']} dòng,",
-                               f"{N['ResCasePlanTasks']} task. Thiết kế chốt kiểu trả về",
+                               f"{N['ResCasePlanTasks']} task. Spec chốt kiểu trả về",
                                "là đối tượng; bản gốc trả mã."], size=16)
     set_text(r, "shape-2293", ["Chỗ sai, test trượt"], role="head")
     set_text(r, "shape-2292", ["Test của agent theo cùng giả định",
@@ -683,19 +689,19 @@ def _(r):
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
     set_text(r, "shape-1916", [f"−{nv('ETwoXScoreShiftSpec')} / −{nv('ETwoXScoreShiftVibe')}"], size=36,
              role="num")
-    set_text(r, "shape-1917", ["E2 · bỏ chi tiết đề: điểm danh sách giảm (pp), đặc tả / vibe",
+    set_text(r, "shape-1917", ["E2 · bỏ chi tiết đề: điểm checklist giảm (pp), spec / vibe",
                                f"Đạt hết hidden test giảm {nv('ETwoXPassShiftSpec')} / {nv('ETwoXPassShiftVibe')} pp,",
                                "phần lớn vì test gọi tên mà đề không nêu"],
              size=15)
     set_text(r, "shape-1918", [f"{sg('ETwoPooledSmallPp')} pp"], size=40, role="num")
-    set_text(r, "shape-1919", ["E2 · đề sơ sài, tầng nhỏ: điểm danh sách, đặc tả − vibe",
+    set_text(r, "shape-1919", ["E2 · đề sơ sài, tầng nhỏ: điểm checklist, spec − vibe",
                                f"KTC {ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')} · Sonnet "
                                f"{sg('ETwoSonnetSmallPp')} · gộp mọi tầng {sg('ETwoPooledAllPp')} "
                                f"{ci_n('ETwoPooledAllLowPp', 'ETwoPooledAllHighPp')}"], size=15)
     e1 = N.get("EOneSmallSpecPct") is not None
     set_text(r, "shape-1920", [f"{nv('EOneSmallSpecPct')}/{nv('EOneSmallVibePct')}%" if e1 else PENDING],
              size=40, role="num")
-    set_text(r, "shape-1921", ["E1 · Haiku, đề chi tiết, tầng nhỏ: tỉ lệ đạt đặc tả / vibe;",
+    set_text(r, "shape-1921", ["E1 · Haiku, đề chi tiết, tầng nhỏ: tỉ lệ đạt spec / vibe;",
                                f"token mỗi lượt {nv('EOneSmallSpecTokensM')} / {nv('EOneSmallVibeTokensM')} triệu"],
              size=16)
 
@@ -707,7 +713,7 @@ def _(r):
 def _(r):
     set_text(r, "shape-1666", ["Hạn chế"])
     set_text(r, "shape-1671", ["Phạm vi"])
-    set_text(r, "shape-1668", ["Một dự án Python;", "đặc tả tự động,", "không người duyệt"], size=16)
+    set_text(r, "shape-1668", ["Một dự án Python;", "spec-driven tự động,", "không người duyệt"], size=16)
     set_text(r, "shape-1672", ["Đề bài"])
     set_text(r, "shape-1669", ["AI soạn, nhóm duyệt;", "hidden test viết cho", "bản gốc"], size=16)
     set_text(r, "shape-1667", ["Cỡ mẫu"])
@@ -724,13 +730,13 @@ def _(r):
 def _(r):
     set_text(r, "shape-1634", ["Kết luận"])
     set_text(r, "shape-1638", ["Đề chi tiết"])
-    set_text(r, "shape-1636", [f"Đặc tả tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']}",
+    set_text(r, "shape-1636", [f"Spec tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']}",
                                "token, không cho thấy", "đạt nhiều hơn."], size=17)
     set_text(r, "shape-1637", ["Lượt hỏng"])
     set_text(r, "shape-1635", [f"{N['LabOutside']}/{N['LabRuns']}: đề không nêu", "hoặc sai mã có sẵn;",
                                "như nhau ở hai cách."], size=17)
     add(r, text_block("next", 189, 392, 640, 80,
-                      [f"Đề sơ sài (thăm dò): đặc tả có thể bù một phần ở việc",
+                      [f"Đề sơ sài (thăm dò): spec có thể bù một phần ở việc",
                        f"nhỏ ({sg('ETwoPooledSmallPp')} pp), rõ nhất với Sonnet, nhưng không thay",
                        "được thông tin đề thiếu. Nên viết đề rõ trước."],
                       size=15, fill=BLUE, bold=True))
@@ -768,7 +774,7 @@ def _(r):
 def _(r):
     set_text(r, "shape-2217", ["Dự phòng: cách đọc kết quả"])
     set_text(r, "shape-2220", ["Ước lượng"])
-    set_text(r, "shape-2218", ["Hiệu số tỉ lệ đạt (đặc tả − vibe) theo nhiệm vụ;",
+    set_text(r, "shape-2218", ["Hiệu số tỉ lệ đạt (spec − vibe) theo nhiệm vụ;",
                                "KTC 95% bootstrap lấy mẫu lại nhiệm vụ."], size=17)
     set_text(r, "shape-2221", ["Đọc kết quả"])
     set_text(r, "shape-2219", ["KTC nằm hẳn phía giả thuyết: được ủng hộ. Phía ngược",
@@ -795,7 +801,7 @@ def _(r):
     set_text(r, "shape-2219", [f"Kappa của Cohen: {N['LabKappa']} (đồng ý {N['LabAgree']}/{N['LabRuns']})",
                                f"Đề thiếu {N['LabDeBaiThieuTotal']} · API có sẵn {N['LabSaiApiCoSanTotal']} · "
                                f"hỏng cũ {N['LabHongChucNangCuTotal']} · khác {N['LabOther']}",
-                               f"Hai loại đầu: đặc tả {N['LabOutsideSpecPct']}%, vibe {N['LabOutsideVibePct']}%"],
+                               f"Hai loại đầu: spec {N['LabOutsideSpecPct']}%, vibe {N['LabOutsideVibePct']}%"],
              size=17)
 
 
