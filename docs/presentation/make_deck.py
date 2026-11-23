@@ -309,14 +309,18 @@ def s01_title():
 
 
 def s02_hook():
-    s = content(OPEN, "Một ví dụ: nhiệm vụ f15",
-                "Claude Sonnet làm đúng quy trình spec-driven nhưng vẫn không đạt hidden test.", 50,
-                f"Nhóm em bắt đầu bằng một ví dụ: nhiệm vụ f15, cỡ một tính năng, Claude Sonnet làm theo quy trình "
-                f"spec-driven. Ở một lượt, agent viết spec {N['ResCaseDesignLines']} dòng, chia plan thành "
-                f"{N['ResCasePlanTasks']} task, tự viết {N['ResCaseSpecTests']} test và tất cả đều đạt. Nhưng khi "
-                f"chấm bằng hidden test, test mà agent không thấy, bài vẫn trượt; cả ba lượt spec của f15 đều trượt "
-                f"cùng một test. Làm đủ quy trình mà vẫn trượt, vì sao? Nhóm em sẽ quay lại ở phần kết quả.",
-                footer="Hidden test: test mà commit gốc thêm vào, agent không thấy khi làm.")
+    s = content(OPEN, "Một ví dụ: tập tài liệu có phân quyền",
+                "Nhiệm vụ f15 của ViPharmind: người dùng và tổ chức tạo tập tài liệu riêng, có quy tắc ai được xem; "
+                "tìm kiếm trong chat chỉ đọc tập tài liệu người dùng được phép xem.", 55,
+                f"Nhóm em bắt đầu bằng một ví dụ. Đây là một tính năng thật của ViPharmind, mã nhiệm vụ f15: cho người "
+                f"dùng và tổ chức tạo tập tài liệu riêng với quy tắc ai được xem, và khi trò chuyện thì công cụ tìm kiếm "
+                f"chỉ đọc những tập tài liệu người đó được phép xem. Claude Sonnet làm theo quy trình spec-driven. Ở "
+                f"một lượt, agent viết spec {N['ResCaseDesignLines']} dòng, chia plan thành {N['ResCasePlanTasks']} "
+                f"task, tự viết {N['ResCaseSpecTests']} test và tất cả đều đạt. Nhưng khi chấm bằng hidden test, tức "
+                f"test mà agent không thấy, bài vẫn trượt; cả ba lượt spec đều trượt cùng một test. Làm đủ quy trình "
+                f"mà vẫn trượt, vì sao? Nhóm em sẽ quay lại ở phần kết quả.",
+                footer="Hidden test: test do lập trình viên viết kèm tính năng gốc; agent không thấy khi làm, nhóm dùng để "
+                       "chấm.")
     steps = [("1 · Spec", f"Viết spec {N['ResCaseDesignLines']} dòng cho tính năng", SPEC),
              ("2 · Plan", f"Chia {N['ResCasePlanTasks']} task, làm lần lượt theo TDD", SPEC),
              ("3 · Test agent", f"Tự viết {N['ResCaseSpecTests']} test mới: tất cả đạt", OK),
@@ -324,12 +328,12 @@ def s02_hook():
     bw = 2.68
     for i, (t, d, c) in enumerate(steps):
         x = X0 + i * (bw + 0.47)
-        panel(s, x, 2.45, bw, 1.75, t, [d], accent=c, size=15, bullet=False)
+        panel(s, x, 2.6, bw, 1.7, t, [d], accent=c, size=15, bullet=False)
         if i < 3:
-            arrow(s, x + bw + 0.06, 3.2)
-    text(s, X0, 4.6, X1 - X0, 1.8,
+            arrow(s, x + bw + 0.06, 3.3)
+    text(s, X0, 4.65, X1 - X0, 1.7,
          ["Agent làm đúng từng bước của quy trình, và test của chính nó đều đạt.",
-          "Nhưng bài chấm độc lập vẫn trượt: cả ba lượt spec của f15 trượt **cùng một hidden test**.",
+          "Nhưng bài chấm độc lập vẫn trượt: cả ba lượt spec trượt **cùng một hidden test**.",
           ("Vì sao làm đủ quy trình mà vẫn trượt?", {"color": BAD, "bold": True})], size=18, bullet=False,
          space=10)
 
@@ -676,30 +680,31 @@ def s17_tests():
 
 
 def s18_decode():
-    s = content(FIND, "Phân tích ca f15",
-                "Đề không nói hàm trả về gì; spec của agent chọn sai, và test của agent kiểm theo lựa chọn đó.", 55,
-                f"Quay lại f15. Đề nêu tên hàm dọn dữ liệu nhưng không nói nó trả về gì. Spec của agent tự chốt: trả "
-                f"về danh sách đối tượng. Bản gốc thì trả về danh sách mã. Plan và test của agent đều dựa trên quyết "
-                f"định đó, nên test của chính nó đạt; hidden test thì trượt. Vibe cũng phải tự chọn, và cả ba lượt "
-                f"chọn đúng danh sách mã; {N['ResCaseVibePassed']} lượt đạt hết hidden test. Agent làm đúng quy "
-                f"trình, nhưng spec chỉ ghi lại một cách đoán, rồi test kiểm theo chính cách đoán đó. Ca này có phải "
-                f"ngoại lệ không?",
-                footer=f"Vibe cũng phải tự chọn và chọn đúng danh sách mã ở cả {N['ResCaseReps']} lượt; "
+    s = content(FIND, "Vì sao ví dụ tập tài liệu bị trượt",
+                "Đề không nói hàm lấy các tập tài liệu đã xóa trả về gì; spec của agent chọn sai.", 55,
+                f"Quay lại ví dụ tập tài liệu. Hidden test bị trượt kiểm việc dọn các tập tài liệu đã bị xóa. Đề bài có "
+                f"nêu tên hàm deleted_with_releases, hàm lấy ra các tập tài liệu đã xóa, nhưng không nói hàm trả về gì. "
+                f"Spec của agent tự chọn: trả về danh sách đối tượng. Bản gốc thì trả về danh sách mã. Plan và test "
+                f"của agent đều theo lựa chọn đó, nên test của chính nó đạt; còn với hidden test, hàm dọn đọc trường "
+                f"id của một mã, gặp lỗi, lỗi bị bỏ qua, và không tập tài liệu nào được dọn. Vibe cũng phải tự chọn, "
+                f"và cả ba lượt chọn đúng danh sách mã. Agent làm đúng quy trình, nhưng spec chỉ ghi lại một cách "
+                f"đoán. Vậy đây có phải ngoại lệ không?",
+                footer=f"Nhánh vibe cũng phải tự chọn và chọn đúng danh sách mã ở cả {N['ResCaseReps']} lượt; "
                        f"{N['ResCaseVibePassed']}/{N['ResCaseReps']} lượt đạt hết hidden test.")
-    steps = [("Đề bài", "Nêu tên hàm dọn dữ liệu, không nói trả về gì", GRAY),
-             ("Spec của agent", "Tự chốt: trả về danh sách đối tượng", SPEC),
-             ("Test của agent", "Kiểm theo cùng giả định → đạt", OK),
-             ("Hidden test", "Bản gốc trả về danh sách mã → trượt", BAD)]
+    steps = [("Đề bài", "Có hàm lấy tập tài liệu đã xóa, không nói trả về gì", GRAY),
+             ("Spec của agent", "Chọn: trả về danh sách đối tượng tập tài liệu", SPEC),
+             ("Test của agent", "Kiểm theo đúng lựa chọn đó → đạt", OK),
+             ("Hidden test", "Bản gốc trả về danh sách mã (ID) → trượt", BAD)]
     bw = 2.68
     for i, (t, d, c) in enumerate(steps):
         x = X0 + i * (bw + 0.47)
-        panel(s, x, 2.45, bw, 1.75, t, [d], accent=c, size=15, bullet=False)
+        panel(s, x, 2.6, bw, 1.75, t, [d], accent=c, size=15, bullet=False)
         if i < 3:
-            arrow(s, x + bw + 0.06, 3.2)
-    text(s, X0, 4.55, X1 - X0, 2.0,
-         ["Bước spec **biến chỗ đề bỏ ngỏ thành một quyết định cố định**.",
-          "Plan và test viết trước đều dựa trên quyết định đó, nên không bắt được lỗi.",
-          "Spec ghi lại cách agent đoán, không ghi lại ý của người giao việc."], size=17, bullet=True, space=8)
+            arrow(s, x + bw + 0.06, 3.35)
+    text(s, X0, 4.7, X1 - X0, 1.7,
+         ["Hàm dọn đọc trường id của một mã, lỗi bị bỏ qua: không tập tài liệu nào được dọn.",
+          "Spec **biến chỗ đề bỏ ngỏ thành quyết định cố định**; plan và test đều dựa trên quyết định đó.",
+          "Spec ghi lại cách agent đoán, không ghi lại ý của người giao việc."], size=16, bullet=True, space=6)
 
 
 def s19_causes():
