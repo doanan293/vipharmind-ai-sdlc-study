@@ -30,30 +30,26 @@
 \end{titlepage}
 
 \section*{Tóm tắt}\zlabel{chk:abstract}
-Người dùng thường giao việc cho trợ lý lập trình AI bằng vài câu ngắn (vibe coding); phát triển theo đặc
-tả, theo kiểu Superpowers (thiết kế, kế hoạch, viết test trước, kiểm lại), hứa bù cho phần đề bài thiếu.
-Đề tài kiểm lời hứa đó trên ViPharmind, một dự án phần mềm AI cho ngành dược Việt Nam: phần hồi cứu phân
-tích \NumCommits{} commit của dự án, phần thực nghiệm dựng \NumTasksMain{} nhiệm vụ từ commit thật, chia ba
-tầng kích thước, chấm bằng test ẩn, và cho Claude Code (Sonnet 5.5, Opus 5.5) và Codex làm theo hai cách,
-mỗi (nhiệm vụ, cách làm) ba lần; giả thuyết, đề bài và mã phân tích được chốt bằng thẻ git trước khi mở
-kết quả. Khi đề đã nêu đủ tên và chữ ký, chưa thấy quy trình đặc tả giúp gì ở việc nhỏ: phép thử xác
-nhận (Sonnet tầng nhỏ) cho hiệu số tỉ lệ đạt test ẩn \NumResHOneEstPp{} điểm phần trăm (đpt), khoảng tin
-cậy 95\% [\NumResHOneLowPp{}; \NumResHOneHighPp{}], chưa kết luận được; trên cả \NumResRuns{} lượt, quy
-trình tốn gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token. Dấu hiệu có ích duy nhất là
-Codex ở ba nhiệm vụ lớn nhất (chỉ ba nhiệm vụ); \NumResSonnetSpecTestsAnyPct{}--\NumResCodexSpecTestsAnyPct{}\% số lượt theo đặc tả để lại test do tác
-tử tự viết. Gán nhãn nguyên nhân cho thấy \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của Claude đến từ
-chi tiết đề không nêu nhưng test ẩn kiểm, hoặc từ việc nối với mã có sẵn, ở cả hai cách làm như nhau. Câu
-hỏi còn lại là khi đề chỉ một hai câu, việc bắt tác tử tự viết thiết kế, kế hoạch và test có bù được không.
-Thí nghiệm thăm dò E2 (đề sơ sài, thêm sau khi thấy kết quả chính) chấm bằng điểm danh sách hành vi: tỉ
-lệ mục hành vi rút từ test ẩn mà bài đạt, do mô hình chấm và khớp với chấm tay của hai người (kappa theo mục
-\NumETwoHumanLoiJudgeKappa{} và \NumETwoHumanBaoJudgeKappa{}). E2 gợi ý rằng mức chi tiết của đề quan
-trọng hơn nhiều so với cách làm: bỏ chi tiết, điểm này giảm \NumETwoXScoreShiftSpec{} và
-\NumETwoXScoreShiftVibe{} đpt ở hai cách. Với đề sơ sài, đặc tả hơn vibe \NumETwoPooledSmallPp{} đpt ở
-tầng nhỏ [\NumETwoPooledSmallLowPp{}; \NumETwoPooledSmallHighPp{}], rõ nhất ở Sonnet; nhưng gộp mọi tầng
-(\NumETwoPooledAllPp{} đpt [\NumETwoPooledAllLowPp{}; \NumETwoPooledAllHighPp{}]) và tương tác mức chi
-tiết $\times$ cách làm đều có khoảng tin cậy chứa 0, và không thấy lợi ích ở tầng vừa, tầng lớn (chỉ tham
-khảo). Quy trình có thể bù một phần ở việc nhỏ nhưng không thay được thông tin đề thiếu. E1 (Haiku, đề
-chi tiết) cùng hướng với kết quả chính: đặc tả không đạt nhiều hơn và tốn nhiều token hơn.
+Phát triển theo đặc tả, tức để trợ lý lập trình AI viết thiết kế, kế hoạch và test trước khi viết mã, thường
+được giới thiệu như cách bù cho điểm yếu của \emph{vibe coding}, nơi người dùng giao việc bằng vài câu ngắn.
+Bằng chứng định lượng cho lời hứa này còn ít. Nghiên cứu này so sánh hai cách làm trên ViPharmind, một dự án
+phần mềm AI cho ngành dược Việt Nam được xây dựng với trợ lý lập trình. Phần hồi cứu phân tích
+\NumCommits{} commit của dự án. Phần thực nghiệm dựng \NumTasksMain{} nhiệm vụ từ commit thật ở ba tầng kích
+thước, chấm bằng test mà tác tử không thấy (test ẩn), và giao mỗi nhiệm vụ cho ba nhóm chạy (Claude Code với
+Sonnet 5.5 và Opus 5.5, Codex) theo hai cách làm, mỗi cách ba lần, tổng \NumResRuns{} lượt. Giả thuyết, đề
+bài và mã phân tích được chốt bằng thẻ git trước khi mở kết quả.
+
+Khi đề bài đã nêu đủ tên và chữ ký, làm theo đặc tả không làm tăng tỉ lệ đạt. Phép thử xác nhận (Sonnet,
+nhiệm vụ nhỏ) cho hiệu số \NumResHOneEstPp{} điểm phần trăm, khoảng tin cậy 95\%
+[\NumResHOneLowPp{}; \NumResHOneHighPp{}], trong khi chi phí tăng gấp \NumResTokenRatioMin{} đến
+\NumResTokenRatioMax{} lần token. \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của Claude có nguyên nhân là
+chi tiết đề không chốt hoặc nối sai với mã có sẵn, với tỉ lệ như nhau ở hai cách làm. Một thí nghiệm thăm dò
+với đề chỉ một hai câu cho thấy bỏ chi tiết làm điểm hành vi giảm \NumETwoXScoreShiftSpec{} và
+\NumETwoXScoreShiftVibe{} điểm phần trăm, còn quy trình đặc tả chỉ bù lại \NumETwoPooledSmallPp{} điểm ở
+nhiệm vụ nhỏ. Kết quả gợi ý rằng độ rõ của đề quan trọng hơn quy trình: quy trình tự động giúp tác tử tự
+kiểm, nhưng không tạo ra thông tin mà chỉ người giao việc có.
+
+\textbf{Từ khóa:} coding agent, phát triển theo đặc tả, vibe coding, thực nghiệm đối chứng, đăng ký trước.
 
 \clearpage
 \tableofcontents

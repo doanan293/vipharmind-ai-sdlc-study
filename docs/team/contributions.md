@@ -61,9 +61,9 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 - Đăng ký trước và mọi thay đổi sau thẻ (mục 11 của `prereg-v1.md`).
 - Vận hành lượt chạy chính (2026-11-15 đến 2026-11-16): 414 lượt hợp lệ của ba nhóm (138 mỗi nhóm); 0 lượt
   hết giờ, thoát lỗi hay bị loại vì lỗi bộ chạy. `agy-gemini` bị bỏ ở 73/138 lượt vì cả bốn tài khoản hết hạn
-  mức (báo cáo mục 6.1). Thí nghiệm thăm dò: E1 (Haiku) 138/138 lượt hợp lệ; E2 kết thúc thu thập tối
+  mức (báo cáo mục 4.2). Thí nghiệm thăm dò: E1 (Haiku) 138/138 lượt hợp lệ; E2 kết thúc thu thập tối
   2026-11-16 (lượt đề sơ sài cuối bắt đầu 22:46, mốc báo cáo dùng; chạy và chấm xong 23:18), ba nhóm Claude
-  đủ 414 lượt đề sơ sài, Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức (mục 6.9).
+  đủ 414 lượt đề sơ sài, Codex dừng ở 78/90 lượt tầng nhỏ vì hết hạn mức (mục 4.6).
 - Gói phân tích, báo cáo, slide, tài liệu nhóm.
 - Phân xử nhãn lệch; dựng gói và soát lại kiểm tra "đạt test nhưng sai".
 - Điều phối nhóm và duyệt cuối báo cáo, slide (`phan-viec.md` mục 1).

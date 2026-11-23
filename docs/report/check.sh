@@ -36,7 +36,7 @@ if [[ -z $first || -z $last ]]; then
 fi
 pages=$((last - first + 1))
 if ((!draft)) && ((pages < 15 || pages > 20)); then
-  errors+=("mục 1–8 dài $pages trang, cần 15–20 trang")
+  errors+=("mục 1–6 dài $pages trang, cần 15–20 trang")
 fi
 
 # 3. Chỗ còn trống trong toàn bộ PDF.
@@ -48,7 +48,7 @@ if ((!draft)) && grep -qF '[chờ kết quả]' <<<"$alltext"; then
   errors+=("còn [chờ kết quả]: $(grep -oF '[chờ kết quả]' <<<"$alltext" | wc -l) chỗ")
 fi
 
-# 4. Mọi con số trong tóm tắt, mục 1–8 và phụ lục phải đến từ máy (numbers.json, chữ hiện ra của bảng
+# 4. Mọi con số trong tóm tắt, mục 1–6 và phụ lục phải đến từ máy (numbers.json, chữ hiện ra của bảng
 #    sinh ra) hoặc nằm trong check-allow.txt (năm, phiên bản, số mục...). Bìa, mục lục và tài liệu
 #    tham khảo không kiểm.
 abstract=$(abspage chk:abstract)
@@ -120,7 +120,7 @@ fi
 
 if ((${#errors[@]})); then
   printf '%s\n' "${errors[@]}"
-  echo "mục 1–8: $pages trang"
+  echo "mục 1–6: $pages trang"
   exit 1
 fi
-echo "OK: mục 1–8 dài $pages trang$( ((draft)) && echo ' (nháp)')"
+echo "OK: mục 1–6 dài $pages trang$( ((draft)) && echo ' (nháp)')"

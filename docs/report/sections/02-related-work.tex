@@ -1,6 +1,6 @@
 \section{Tổng quan tài liệu}\label{sec:related-work}
 
-\subsection{Quy trình tìm}
+\subsection{Phương pháp tìm tài liệu}
 
 Trợ lý AI tìm tài liệu theo một quy trình ghi lại được: \NumLitQueries{} chuỗi tìm kiếm web, mỗi chuỗi
 nhắm một nhóm chủ đề hoặc nhóm nguồn phương pháp. Máy tìm kiếm chỉ dùng để biết bài nào tồn tại; thông tin
@@ -16,7 +16,7 @@ bước; truy vấn và lý do loại từng bài nằm trong nhật ký tìm t�
 \input{generated/tables/literature}
 \end{table}
 
-\subsection{Bộ đo cho coding agent và hạn chế của chúng}
+\subsection{Đánh giá coding agent bằng test}
 
 SWE-bench đánh giá tác tử bằng \NumLitJimenezTasks{} nhiệm vụ lấy từ issue và pull request thật của các
 repo Python, chấm bằng test \cite{jimenez_2024}; FEA-Bench và FeatBench mở rộng sang cài đặt tính năng mới,
@@ -30,9 +30,9 @@ khác lời giải gốc \cite{wang_2025}. Thứ hai là nhiễm dữ liệu. Ch
 nhiệm vụ mới từ GitHub, và cho thấy kết quả của một số mô hình trên SWE-bench Verified có thể bị thổi
 phồng do nhiễm dữ liệu \cite{badertdinov_2025}.
 
-Đề tài dùng cùng khung chấm (test ẩn hỏng ở mã nền, đạt ở commit gốc, cộng toàn bộ test cũ), với đề bài
-không nêu cách cài đặt, một kho mã có lịch sử bắt đầu sau mốc dữ liệu huấn luyện của các mô hình, và một
-mẫu lượt đạt được đọc tay để tìm trường hợp ``đạt test nhưng sai''.
+Nghiên cứu này dùng cùng khung chấm (test ẩn hỏng ở mã nền, đạt ở commit gốc, cộng toàn bộ test cũ) và
+xử lý hai điểm yếu trên bằng ba cách: đề bài không nêu cách cài đặt, kho mã có lịch sử bắt đầu sau mốc dữ liệu
+huấn luyện của các mô hình, và một mẫu lượt đạt được đọc tay để tìm trường hợp ``đạt test nhưng sai''.
 
 \subsection{Năng suất và chất lượng khi dùng AI}
 
@@ -44,8 +44,8 @@ nhưng cảnh báo phân tích tĩnh và độ phức tạp mã tăng kéo dài 
 \NumLitWatanabePRs{} pull request làm bằng Claude Code, \NumLitWatanabeMergedPct{}\% được nhận, và
 \NumLitWatanabeReworkPct{}\% số được nhận phải sửa thêm \cite{watanabe_2025}.
 
-Các nghiên cứu này so sánh có AI với không có AI; câu hỏi của đề tài nằm bên trong nhóm ``có AI'': giữ
-nguyên tác tử và mô hình, chỉ đổi quy trình. Phần hồi cứu khai thác lịch sử git như \cite{he_2026} và
+Các nghiên cứu này so sánh có AI với không có AI. Câu hỏi của nghiên cứu này nằm bên trong nhóm ``có AI'':
+giữ nguyên tác tử và mô hình, chỉ đổi quy trình. Phần hồi cứu khai thác lịch sử git như \cite{he_2026} và
 \cite{watanabe_2025}, ở quy mô một dự án.
 
 \subsection{Phát triển theo đặc tả, lập kế hoạch và vibe coding}
@@ -61,27 +61,27 @@ xúc xắc'' \cite{chou_2025}; phát triển theo đặc tả làm tác tử đ�
 duyệt \cite{agarwal_2026}. Diaz và cộng sự \cite{diaz_2026} lập luận rằng đặc tả khôi phục trách nhiệm và
 khả năng kiểm chứng, nhưng đó là phân tích khái niệm với nền bằng chứng còn non.
 
-\subsection{Đối chiếu với các nghiên cứu gần nhất}
+\subsection{Vị trí của nghiên cứu này}
 
-Bảng~\ref{tab:closest} đặt cạnh nhau bốn nghiên cứu gần đề tài nhất. Hill \cite{hill_2026} phân tích
+Bảng~\ref{tab:closest} đặt cạnh nhau bốn nghiên cứu gần nhất với nghiên cứu này. Hill \cite{hill_2026} phân tích
 \NumLitHillPRs{} pull request của \NumLitHillRepos{} repo mã nguồn mở; sau khi ghép điểm xu hướng, pull
 request có và không có tài liệu đặc tả không khác nhau về lỗi đưa vào. Trong mẫu không có repo nào commit file do các
-công cụ phát triển theo đặc tả sinh ra, nên tác giả nói việc dùng những công cụ đó chưa được kiểm chứng; đề
-tài này kiểm một phần câu hỏi đó bằng thí nghiệm có đối chứng. FeatBench \cite{chen_2025} gần đề tài về cách dựng nhiệm vụ:
+công cụ phát triển theo đặc tả sinh ra, nên tác giả nói việc dùng những công cụ đó chưa được kiểm chứng; nghiên
+cứu này kiểm một phần câu hỏi đó bằng thí nghiệm có đối chứng. FeatBench \cite{chen_2025} gần nghiên cứu này về cách dựng nhiệm vụ:
 \NumLitChenTasks{} nhiệm vụ tính năng từ \NumLitChenRepos{} repo, đề bài bằng ngôn ngữ tự nhiên, chấm bằng
 test ẩn và test hồi quy; tỉ lệ giải tốt nhất là \NumLitChenBestPct{}\%. Mock và Russo \cite{mock_2026} so
 bốn cách tương tác khi làm phát triển hướng kiểm thử, từ người làm một mình tới tác tử tự động: quy trình
 tác tử cho mã đúng chức năng nhanh nhưng có thể thêm độ phức tạp không được yêu cầu. Agarwal và cộng sự
 \cite{agarwal_2026} phỏng vấn \NumLitAgarwalInterviews{} người làm nghề và phân tích \NumLitAgarwalRepos{}
-repo có file đặc tả: đặc tả làm tác tử đáng tin hơn, đổi lại tốn công lập kế hoạch và duyệt. Đề tài đo
+repo có file đặc tả: đặc tả làm tác tử đáng tin hơn, đổi lại tốn công lập kế hoạch và duyệt. Nghiên cứu này đo
 đúng đánh đổi đó bằng số: tỉ lệ đạt test ẩn và chi phí token của hai cách làm.
 
 \begin{table}[H]
 \centering\small
-\caption{Bốn nghiên cứu gần nhất và điểm khác của đề tài}\label{tab:closest}
+\caption{Bốn nghiên cứu gần nhất và điểm khác của nghiên cứu này}\label{tab:closest}
 \begin{tabularx}{\linewidth}{@{}lXX@{}}
 \toprule
-Nghiên cứu & Cách làm & Điểm khác của đề tài \\
+Nghiên cứu & Cách làm & Điểm khác của nghiên cứu này \\
 \midrule
 Hill \cite{hill_2026} & Quan sát pull request mã nguồn mở, có và không có đặc tả & Thí nghiệm có đối chứng; đặc tả
 do tác tử viết theo quy trình \\
@@ -95,12 +95,10 @@ vụ \\
 \end{tabularx}
 \end{table}
 
-\subsection{Khoảng trống}
-
 Bằng chứng định lượng về phát triển theo đặc tả còn ít và trái chiều. Đánh giá bằng mô hình chấm điểm
 thấy cải thiện nhỏ, \NumLitTaghaviGain{} trên thang 5 \cite{taghavi_2026}; nghiên cứu quan sát lớn nhất
 không thấy giảm lỗi \cite{hill_2026}. Trong các nguồn đã tìm, chưa có thí nghiệm nào giữ nguyên đề bài,
 tác tử và mô hình, chỉ đổi lời dặn quy trình, rồi chấm bằng test ẩn, đo chi phí token, lặp lại trên nhiều
-tác tử và theo nhiều cỡ nhiệm vụ; RQ3 đến RQ6 nhắm vào chỗ này. Thiết kế đối chiếu với hai nguồn phương pháp
+tác tử và theo nhiều cỡ nhiệm vụ; RQ3 đến RQ6 nhắm vào khoảng trống này. Thiết kế đối chiếu với hai nguồn phương pháp
 \cite{baltes_2025,sallou_2024}: ghi phiên bản công cụ và mô hình cho từng lượt, lưu nhật ký, công bố lời
 dặn, và nêu rủi ro trùng dữ liệu huấn luyện.

@@ -496,8 +496,13 @@ def write_tables(src: dict[str, Any], out: Path) -> None:
 
 
 def copy_figures(src: dict[str, Any], out: Path) -> None:
+    """Hình kết quả chính vẽ lại với nhãn tiếng Việt (figures_vi); hình còn lại chép nguyên."""
+    from report_data import figures_vi
+
+    figures_vi.draw(src["dir"], out / "figures")
     for name in FIGURES:
-        shutil.copyfile(src["dir"] / "figures" / f"{name}.pdf", out / "figures" / f"{name}.pdf")
+        if name not in ("pass_diff_by_cohort", "effect_vs_size"):
+            shutil.copyfile(src["dir"] / "figures" / f"{name}.pdf", out / "figures" / f"{name}.pdf")
 
 
 def pending_tables(out: Path, pending: Any) -> None:
