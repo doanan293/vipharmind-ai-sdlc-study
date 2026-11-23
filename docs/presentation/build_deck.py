@@ -236,7 +236,7 @@ def page(stem, src, part, secs, notes):
 
 @page("p01_title", 1, OPEN, 20,
       f"(Chuyển người nếu chia ba phần: đây là phần một.) Em chào thầy và các bạn. Nhóm em gồm An, Lợi và Bảo. Đề tài hỏi: bắt trợ lý lập trình AI làm theo "
-      f"đặc tả có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết, một ca cụ thể.")
+      f"spec có bù được cho đề bài ngắn kiểu vibe coding không. Trước hết, một ca cụ thể.")
 def _(r):
     set_text(r, "shape-1431", ["Spec-driven development", "so với vibe coding"], size=46, role="title")
     set_text(r, "shape-1430", ["Nghiên cứu tình huống và thực nghiệm đối chứng trên",
@@ -299,7 +299,7 @@ def _(r):
 
 @page("p04_rq", 11, METHOD, 40,
       f"Sáu câu hỏi chốt trước. RQ1, RQ2 phân tích lịch sử git: AI tham gia từng khâu ra sao, mã AI viết phải sửa lại "
-      f"bao nhiêu. RQ3 đến RQ6 là thực nghiệm: đặc tả có đạt hơn vibe, tốn thêm bao nhiêu, và kết luận có "
+      f"bao nhiêu. RQ3 đến RQ6 là thực nghiệm: spec có đạt hơn vibe, tốn thêm bao nhiêu, và kết luận có "
       f"giữ khi đổi công cụ, đổi mô hình, khi nhiệm vụ lớn dần. Để chấm bằng hidden test, đề chính phải nêu đủ "
       f"tên hàm; đề ngắn để dành cho phần thăm dò. Trước đó, các nghiên cứu gần nhất đã làm gì.")
 def _(r):
@@ -316,9 +316,9 @@ def _(r):
 
 
 @page("p04b_related", 20, METHOD, 35,
-      f"Bốn nghiên cứu gần nhất. Hill quan sát pull request mã nguồn mở: có tài liệu đặc tả cũng không ít lỗi "
+      f"Bốn nghiên cứu gần nhất. Hill quan sát pull request mã nguồn mở: có tài liệu spec cũng không ít lỗi "
       f"hơn, nhưng đó là quan sát. FeatBench của Chen và cộng sự chấm agent bằng hidden test nhưng so mô hình với nhau. Mock và Russo "
-      f"so bốn cách tương tác khi viết test trước. Agarwal và cộng sự phỏng vấn người làm nghề: đặc tả đáng tin "
+      f"so bốn cách tương tác khi viết test trước. Agarwal và cộng sự phỏng vấn người làm nghề: spec đáng tin "
       f"hơn nhưng tốn công. Nhóm em giữ nguyên agent, mô hình và đề, chỉ đổi prompt quy trình, rồi đo bằng hidden test và "
       f"token. Tiếp theo là dự án mà nhóm em dùng.")
 def _(r):
@@ -335,7 +335,7 @@ def _(r):
 
 
 @page("p05_hypotheses", 11, METHOD, 30,
-      f"Năm giả thuyết cũng ghi trước. H1: đặc tả đạt nhiều hơn. H2: nhưng tốn token và thời gian hơn. H3: "
+      f"Năm giả thuyết cũng ghi trước. H1: spec đạt nhiều hơn. H2: nhưng tốn token và thời gian hơn. H3: "
       f"ít lỗi static analysis, ít regression hơn. H4: giúp Sonnet nhiều hơn Opus. H5: lợi ích tăng theo cỡ nhiệm vụ. Phép "
       f"thử xác nhận duy nhất là H1 trên Sonnet, tầng nhỏ. Tiếp theo là dự án.")
 def _(r):
@@ -353,7 +353,7 @@ def _(r):
 
 @page("p08_arms", 24, METHOD, 25,
       f"Thực nghiệm có hai cách làm, chỉ khác prompt quy trình trước đề bài. Vibe: một câu, hãy cài đặt thay đổi sau. "
-      f"Theo đặc tả: trong cùng phiên, viết file thiết kế, file kế hoạch, làm từng phần theo kiểu viết test "
+      f"Spec-driven: trong cùng phiên, viết file thiết kế, file kế hoạch, làm từng phần theo kiểu viết test "
       f"trước, rồi chạy cả bộ test. Không có người duyệt hay hỏi lại. Quy mô như sau.")
 def _(r):
     set_text(r, "shape-2217", ["Hai cách làm: chỉ khác prompt quy trình"])
@@ -529,7 +529,7 @@ def _(r):
 
 
 @page("p15_h1", 13, RESULTS, 45,
-      f"(Chuyển người nếu chia ba phần: phần hai.) Đây là phép thử xác nhận duy nhất: Sonnet, tầng nhỏ. Đặc tả đạt {N['ResHOneSpecPct']} phần trăm, "
+      f"(Chuyển người nếu chia ba phần: phần hai.) Đây là phép thử xác nhận duy nhất: Sonnet, tầng nhỏ. Spec đạt {N['ResHOneSpecPct']} phần trăm, "
       f"vibe {N['ResHOneVibePct']}, hiệu số {say('ResHOneEstPp')} điểm phần trăm, khoảng tin cậy chín mươi "
       f"lăm phần trăm từ {say('ResHOneLowPp')} đến {say('ResHOneHighPp')}. Khoảng chứa 0 nên H1 chưa kết "
       f"luận được. Cận trên bằng 0, nên dữ liệu không ủng hộ một lợi ích đáng kể, nhưng với {N['Tasks']} "
@@ -573,10 +573,10 @@ H3A_BAD, _ = verdict_count("H3a.", "contrary")
 
 
 @page("p18_h4", 23, RESULTS, 40,
-      f"H4 ở tầng nhỏ: Sonnet đặc tả {N['ResSonnetSmallSpecPct']}, vibe {N['ResSonnetSmallVibePct']} phần "
+      f"H4 ở tầng nhỏ: Sonnet spec {N['ResSonnetSmallSpecPct']}, vibe {N['ResSonnetSmallVibePct']} phần "
       f"trăm; Opus {N['ResOpusSmallSpecPct']} và {N['ResOpusSmallVibePct']}. Cả hai hiệu số đều âm; hiệu của "
       f"hai hiệu số là cộng {say('ResHFourDiffOfDiffsPp')} điểm, từ {say('ResHFourDiffOfDiffsLowPp')} đến "
-      f"{say('ResHFourDiffOfDiffsHighPp')}: chưa kết luận được. Sonnet đặc tả và Opus vibe cùng ước lượng "
+      f"{say('ResHFourDiffOfDiffsHighPp')}: chưa kết luận được. Sonnet spec và Opus vibe cùng ước lượng "
       f"điểm, khoảng rộng, với {N['ResHFourCostRatioPct']} phần trăm chi phí; Sonnet vốn đã gần trần. Còn "
       f"theo kích thước?")
 def _(r):
@@ -617,9 +617,9 @@ def _(r):
 
 
 @page("p20_cost", 20, RESULTS, 20,
-      f"Chi phí quy đổi từ token theo giá API công khai, cho một lượt đạt. Với Claude, đặc tả đắt hơn ở mọi "
+      f"Chi phí quy đổi từ token theo giá API công khai, cho một lượt đạt. Với Claude, spec đắt hơn ở mọi "
       f"ô; Sonnet tầng nhỏ {usd('claude-sonnet', 'small', 'spec')} so với {usd('claude-sonnet', 'small', 'vibe')} "
-      f"đô, gấp đôi. Ở Codex tầng lớn, đặc tả lại rẻ hơn vì vibe gần như không đạt. Giờ là một ca cụ thể.")
+      f"đô, gấp đôi. Ở Codex tầng lớn, spec lại rẻ hơn vì vibe gần như không đạt. Giờ là một ca cụ thể.")
 def _(r):
     set_text(r, "shape-2122", ["Chi phí cho một lượt đạt (USD)"])
     rows = [("shape-2124", "shape-2123", "Sonnet", "claude-sonnet"),
@@ -636,7 +636,7 @@ def _(r):
 
 @page("p21_case", 26, RESULTS, 40,
       f"Theo quy tắc chốt trước, đây là nhiệm vụ lớn của Sonnet có hiệu số trị tuyệt đối lớn nhất, âm 33 "
-      f"điểm. Đặc tả không đạt lượt nào; lượt được chọn đạt {N['ResCaseSpecHidden']} trên "
+      f"điểm. Spec không đạt lượt nào; lượt được chọn đạt {N['ResCaseSpecHidden']} trên "
       f"{N['ResCaseHiddenTotal']} hidden test, {N['ResCaseSpecMin']} phút, {N['ResCaseSpecTokensM']} triệu "
       f"token. Vibe đạt một trên ba, lượt chọn {N['ResCaseVibeMin']} phút, {N['ResCaseVibeTokensM']} triệu. "
       f"Thiết kế {N['ResCaseDesignLines']} dòng, kế hoạch {N['ResCasePlanLines']} dòng, chốt kiểu trả về là "
@@ -678,8 +678,8 @@ def _(r):
 
 @page("p23_explore", 14, RESULTS, 40,
       f"E2 là thăm dò, thêm sau kết quả chính; Codex dừng ở tầng nhỏ. Bỏ chi tiết đề, điểm hành vi giảm "
-      f"{say('ETwoXScoreShiftSpec')} điểm ở đặc tả, {say('ETwoXScoreShiftVibe')} ở vibe; đạt hết hidden test "
-      f"giảm khoảng tám mươi, phần lớn vì test gọi tên đề không nêu. Với đề sơ sài, đặc tả hơn vibe "
+      f"{say('ETwoXScoreShiftSpec')} điểm ở spec, {say('ETwoXScoreShiftVibe')} ở vibe; đạt hết hidden test "
+      f"giảm khoảng tám mươi, phần lớn vì test gọi tên đề không nêu. Với đề sơ sài, spec hơn vibe "
       f"{say('ETwoPooledSmallPp')} điểm ở tầng nhỏ, từ {say('ETwoPooledSmallLowPp')} đến "
       f"{say('ETwoPooledSmallHighPp')}; gộp mọi tầng "
       f"{say('ETwoPooledAllPp')}, khoảng chứa 0. E1 với Haiku: {N['EOneSmallSpecPct']} so với "
@@ -709,8 +709,8 @@ def _(r):
 
 
 @page("p24_limits", 8, RESULTS, 25,
-      f"(Chuyển người nếu chia ba phần: phần ba.) Ba hạn chế. Một dự án Python, đặc tả tự động không người duyệt. Đề do AI soạn, nhóm duyệt; hidden test "
-      f"viết cho bản gốc vốn làm theo đặc tả. Tầng vừa chỉ {N['MediumTasks']}, tầng lớn {N['FeatureTasks']} "
+      f"(Chuyển người nếu chia ba phần: phần ba.) Ba hạn chế. Một dự án Python, spec tự động không người duyệt. Đề do AI soạn, nhóm duyệt; hidden test "
+      f"viết cho bản gốc vốn được làm theo spec. Tầng vừa chỉ {N['MediumTasks']}, tầng lớn {N['FeatureTasks']} "
       f"nhiệm vụ, nên chỉ để tham khảo; E2 thêm sau khi thấy kết quả chính. Để kết lại.")
 def _(r):
     set_text(r, "shape-1666", ["Hạn chế"])
@@ -792,7 +792,7 @@ def _(r):
       f"{N['LabDeBaiThieuTotal']} lượt hỏng vì hidden test kiểm chi tiết đề không nêu, {N['LabSaiApiCoSanTotal']} "
       f"lượt vì dùng sai mã có sẵn của dự án; chỉ {N['LabLoiLogicTotal']} lượt là lỗi logic. Tỉ lệ hai loại đầu "
       f"gần như nhau ở hai cách làm, {N['LabOutsideSpecPct']} và {N['LabOutsideVibePct']} phần trăm, nên quy "
-      f"trình đặc tả không ngăn được chúng. Cả {N['LabHongChucNangCuTotal']} lượt làm hỏng chức năng cũ đều của "
+      f"trình spec không ngăn được chúng. Cả {N['LabHongChucNangCuTotal']} lượt làm hỏng chức năng cũ đều của "
       f"Opus. Fable gán thêm làm người chấm thứ ba, chỉ để đối chiếu: đồng ý với Lợi {N['LabFableAgreeLoi']} và "
       f"với Bảo {N['LabFableAgreeBao']} lượt.")
 def _(r):

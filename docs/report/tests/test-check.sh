@@ -47,8 +47,12 @@ inject() {
 }
 
 expect draft_passes 0 "OK" "$(fresh)" --draft
-expect final_rejects_pending 1 "[chờ kết quả]" "$(fresh)"
-expect final_reports_page_count 1 "trang" "$(fresh)"
+d=$(fresh); inject "$d" '\pending{một kết quả chưa có}'
+expect final_rejects_pending 1 "[chờ kết quả]" "$d"
+
+# Thêm 6 trang trắng vào cuối mục 5: phần chính vượt 20 trang.
+d=$(fresh); for _ in 1 2 3 4 5 6; do printf '\\null\\clearpage\n' >>"$d/sections/05-conclusion.tex"; done
+expect final_reports_page_count 1 "trang" "$d"
 
 d=$(fresh); inject "$d" '\NumDoesNotExist'
 expect undefined_macro_fails_build 1 "build" "$d" --draft
@@ -62,16 +66,16 @@ expect hand_typed_number_rejected 1 "98765" "$d" --draft
 d=$(fresh); inject "$d" 'Một con số thập phân gõ tay 42,7 phần trăm.'
 expect hand_typed_decimal_rejected 1 "42,7" "$d" --draft
 
-d=$(fresh); inject "$d" 'Bảng 12 mục 99 có 37 và 97 dòng.'
-expect number_after_label_word_rejected 1 "99" "$d" --draft
+d=$(fresh); inject "$d" 'Bảng 12 mục 8153 có 37 và 97 dòng.'
+expect number_after_label_word_rejected 1 "8153" "$d" --draft
 
-d=$(fresh); printf '\n\n77\n\n' >>"$d/sections/01-introduction.tex"
-expect standalone_number_line_rejected 1 "77" "$d" --draft
+d=$(fresh); printf '\n\n8642\n\n' >>"$d/sections/01-introduction.tex"
+expect standalone_number_line_rejected 1 "8642" "$d" --draft
 
 d=$(fresh); inject "$d" 'Số 2935909 là một mảnh mã commit trong bảng nhiệm vụ.'
 expect hash_fragment_from_table_rejected 1 "2935909" "$d" --draft
 
-d=$(fresh); sed -i 's/^\\pending{tóm tắt, viết sau cùng}/Tóm tắt có số gõ tay 86420./' "$d/sections/00-frontmatter.tex"
+d=$(fresh); sed -i 's/^\(\\section\*{Tóm tắt}.*\)$/\1\nTóm tắt có số gõ tay 86420./' "$d/sections/00-frontmatter.tex"
 expect number_in_abstract_rejected 1 "86420" "$d" --draft
 
 d=$(fresh); printf 'Phụ lục có số gõ tay 97531.\n' >>"$d/sections/appendix.tex"

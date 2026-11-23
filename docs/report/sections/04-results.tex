@@ -38,7 +38,7 @@ Commit \texttt{feat} có plan đi trước có trung bình \NumReworkWithPlanMea
 lại trong 14 ngày, \NumReworkWithPlanSharePct{}\% có ít nhất một lần sửa; nhóm không có plan có trung bình
 \NumReworkWithoutPlanMean{}, tỉ lệ \NumReworkWithoutPlanSharePct{}\% (Bảng~\ref{tab:rework}). Hai nhóm gần như
 nhau. Nhóm không có plan chỉ có \NumFeatWithoutPlan{} commit và khác nhóm kia về thời điểm và loại việc, nên đây
-là quan sát, không phải quan hệ nhân quả; câu hỏi nhân quả được trả lời bằng thực nghiệm dưới đây.
+chỉ là quan sát; câu hỏi nhân quả được trả lời bằng thực nghiệm dưới đây.
 
 \begin{table}[H]
 \centering\small
@@ -195,7 +195,7 @@ một mã, gặp lỗi, và khối \texttt{except Exception} của chính agent 
 cũng phải tự chọn, và đều chọn danh sách mã. Ca này cho thấy một cơ chế cụ thể: bước thiết kế biến chỗ đề bỏ
 ngỏ thành quyết định cố định, rồi test viết trước kiểm quyết định đó bằng chính giả định của nó.
 
-\label{sec:explore}Hai thí nghiệm thăm dò E2 và E1 được thêm sau khi xem kết quả chính; chúng chỉ đọc theo dấu và độ lớn. Trong E2,
+\label{sec:explore}Hai thí nghiệm thăm dò E1 và E2 được thêm sau khi xem kết quả chính; chúng chỉ đọc theo dấu và độ lớn. Trong E2,
 ba cohort Claude (Sonnet, Opus, Haiku) chạy đủ \NumETwoClaudeBriefJudged{} lượt đề sơ sài; Codex hết quota sau
 \NumETwoCodexSmallJudged{} trên \NumETwoCodexSmallExpected{} lượt tầng nhỏ. Với đề chi tiết, điểm checklist có
 cho \NumETwoJudgeN{} lượt: đủ ba cohort của thí nghiệm chính và \NumETwoHaikuDetailedJudged{} trên
@@ -253,8 +253,8 @@ người viết: tên, chữ ký, quy tắc. E2 tách được hai loại spec: 
 \NumETwoXScoreShiftSpec{} và \NumETwoXScoreShiftVibe{} pp ở cả hai cách, còn spec do agent tự viết chỉ bù
 \NumETwoPooledSmallPp{} pp ở nhiệm vụ nhỏ, rõ nhất với Sonnet, và không thấy lợi ích ở nhiệm vụ vừa, lớn (chỉ tham
 khảo). Agent tự viết spec chỉ ghi lại cách nó đoán; thông tin mà người giao việc có thì nó không tự sinh ra
-được. Vì E2 thêm sau khi thấy kết quả chính và tương tác có KTC chứa 0, đây là xu hướng gợi ý, chưa phải kết
-luận đã kiểm.
+được. Vì E2 thêm sau khi thấy kết quả chính và tương tác có KTC chứa 0, đây là xu hướng gợi ý, cần một thí
+nghiệm có preregistration để kiểm.
 
 Giá trị chưa được đo của quy trình là bộ test để lại. Nhánh theo đặc tả để lại test ở phần lớn số lượt,
 trong khi nhánh vibe của Sonnet và Codex gần như không. Hidden test không đo giá trị này; bộ test có thể có ích ở những
