@@ -1,9 +1,9 @@
 \section{Giới thiệu}\label{sec:introduction}
 
-Trợ lý lập trình AI dạng tác tử (\emph{coding agent}) như Claude Code hay Codex tự đọc mã, sửa file và chạy
+Các \emph{coding agent} như Claude Code hay Codex tự đọc mã, sửa file và chạy
 test trong kho mã của người dùng. Cách giao việc phổ biến nhất là \emph{vibe coding}: mô tả việc cần làm trong
-vài câu rồi để tác tử viết mã ngay \cite{chou_2025,fawzy_2026}. Đề ngắn như vậy bỏ ngỏ nhiều chi tiết, và
-tác tử phải tự đoán. \emph{Phát triển theo đặc tả} được đề xuất để bù chỗ thiếu đó: tác tử viết tài liệu
+vài câu rồi để agent viết mã ngay \cite{chou_2025,fawzy_2026}. Đề ngắn như vậy bỏ ngỏ nhiều chi tiết, và
+agent phải tự đoán. \emph{Phát triển theo đặc tả} (\emph{spec-driven development}) được đề xuất để bù chỗ thiếu đó: agent viết tài liệu
 thiết kế và kế hoạch trước, viết test trước khi viết mã, rồi kiểm lại cả bộ test
 \cite{agarwal_2026,diaz_2026}. Bộ skill Superpowers là một hiện thực công khai của quy trình này.
 
@@ -13,10 +13,10 @@ hình ngôn ngữ \cite{taghavi_2026}, hoặc quan sát pull request mã nguồn
 không thấy pull request có đặc tả ít lỗi hơn \cite{hill_2026}. Các bộ đo như SWE-bench và FeatBench so
 sánh mô hình với nhau trên cùng nhiệm vụ \cite{jimenez_2024,chen_2025}, không so sánh hai quy trình làm
 việc. Trong các nguồn nhóm đã tìm (mục~\ref{sec:related-work}), chưa có thí nghiệm nào giữ nguyên đề bài,
-công cụ và mô hình, chỉ đổi lời dặn về quy trình, rồi chấm bằng test mà tác tử không thấy.
+công cụ và mô hình, chỉ đổi prompt quy trình, rồi chấm bằng test mà agent không thấy.
 
 Nghiên cứu này làm thí nghiệm đó trên một dự án thật. ViPharmind là trợ lý AI tra cứu thuốc cho người Việt,
-gồm một backend tác tử viết bằng Python, một ứng dụng web và bộ công cụ dựng kho tri thức từ Dược thư Quốc
+gồm một backend agent viết bằng Python, một ứng dụng web và bộ công cụ dựng kho tri thức từ Dược thư Quốc
 gia. Dự án do Doãn Văn An (thành viên nhóm, sau đây gọi là \emph{tác giả dự án}) xây dựng theo quy trình
 Superpowers; theo lời tác giả, trợ lý lập trình AI tham gia mọi khâu. Kho mã có \NumCommits{} commit từ \mbox{\NumFirstDate{}}
 đến \mbox{\NumLastDate{}} và bắt đầu sau mốc dữ liệu huấn luyện của các mô hình được thử, nên ít rủi ro mô
@@ -30,7 +30,7 @@ nghiệm đối chứng.
 vết gì trong kho mã?
 \item \textbf{RQ2.} Mã tính năng phải sửa lại bao nhiêu, và mức đó có khác giữa commit có và không có plan
 đi trước?
-\item \textbf{RQ3.} Trên cùng một nhiệm vụ, làm theo đặc tả có đạt test ẩn nhiều hơn vibe coding không, và
+\item \textbf{RQ3.} Trên cùng một nhiệm vụ, làm theo đặc tả có đạt hidden test nhiều hơn vibe coding không, và
 tốn thêm bao nhiêu?
 \item \textbf{RQ4.} Kết luận của RQ3 có giữ nguyên khi đổi sang công cụ và mô hình của hãng khác?
 \item \textbf{RQ5.} Lợi ích của quy trình thay đổi thế nào khi dùng mô hình mạnh hơn (Opus so với Sonnet)?
@@ -38,7 +38,7 @@ tốn thêm bao nhiêu?
 cỡ một tính năng?
 \end{itemize}
 
-Để test ẩn chấm được, đề của thí nghiệm chính phải nêu đủ tên và chữ ký. Vì vậy thí nghiệm chính trả lời câu
+Để hidden test chấm được, đề của thí nghiệm chính phải nêu đủ tên và chữ ký. Vì vậy thí nghiệm chính trả lời câu
 hỏi hẹp hơn: khi đề đã chi tiết, quy trình còn thêm được gì. Câu hỏi rộng hơn, khi đề chỉ một hai câu thì quy
 trình có bù được không, được khảo sát bằng một thí nghiệm thăm dò thêm sau khi thấy kết quả chính và được
 đánh dấu rõ là thăm dò.
@@ -48,11 +48,11 @@ Nghiên cứu có bốn đóng góp:
 \item Một phân tích vòng đời, dựa trên lịch sử git, của một dự án phần mềm AI làm với trợ lý lập trình, nối \NumSpecPlanFiles{}
 file spec và plan với các commit cài đặt.
 \item Một bộ \NumTasksMain{} nhiệm vụ từ commit thật ở ba tầng kích thước (\NumTasks{} nhiệm vụ một commit,
-\NumMediumTasks{} nhiệm vụ hai đến ba commit, \NumFeatureTasks{} nhiệm vụ cỡ một tính năng), có test ẩn và
+\NumMediumTasks{} nhiệm vụ hai đến ba commit, \NumFeatureTasks{} nhiệm vụ cỡ một tính năng), có hidden test và
 quy tắc chọn ghi lại từng bước.
-\item Một thực nghiệm đối chứng đăng ký trước giữa làm theo đặc tả và vibe coding trên hai công cụ và ba mô
+\item Một thực nghiệm đối chứng có preregistration giữa làm theo đặc tả và vibe coding trên hai công cụ và ba mô
 hình, kèm gán nhãn nguyên nhân thất bại bởi hai người độc lập.
-\item Bộ chạy, bộ chấm, gói phân tích, đề bài, lời dặn và kết quả thô được công bố để người khác chạy lại.
+\item Harness, grader, gói phân tích, đề bài, prompt quy trình và kết quả thô được công bố để người khác chạy lại.
 \end{itemize}
 
 Phần còn lại gồm: mục~\ref{sec:related-work} điểm lại các nghiên cứu liên quan; mục~\ref{sec:method}

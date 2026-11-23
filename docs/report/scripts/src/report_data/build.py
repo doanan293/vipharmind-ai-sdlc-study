@@ -28,13 +28,13 @@ STAGES = [
 ]
 COMMIT_TYPES = ["feat", "docs", "fix", "refactor", "chore", "test"]
 LAYERS = ["api", "application", "domain", "infrastructure"]
-# Thứ tự áp tiêu chí sàng lọc của bộ chạy (data/tasks/SCREENING.md): 1, 4, 5, rồi 2.
+# Thứ tự áp tiêu chí sàng lọc của harness (data/tasks/SCREENING.md): 1, 4, 5, rồi 2.
 CRITERIA = [(1, "One"), (4, "Four"), (5, "Five"), (2, "Two")]
 CRITERION_TEXT = {
     1: "1. Không sửa file dùng chung của bộ test",
     4: "4. Phần thay đổi ở \\texttt{backend/src} từ 30 đến 400 dòng",
     5: "5. Không chỉ đổi tên hay di chuyển file",
-    2: "2. Test ẩn hỏng ở commit cha, đạt ở commit gốc",
+    2: "2. Hidden test hỏng ở commit cha, đạt ở commit gốc",
 }
 LIT_STEPS = [
     ("queries", "Queries"),
@@ -233,7 +233,7 @@ SCREENING_KEYS = (
 )
 
 
-# Thiết kế chạy chính (prereg-v1 mục 3, 4): 4 nhóm chạy × 2 cách làm × 3 lần lặp cho mỗi nhiệm vụ.
+# Thiết kế chạy chính (prereg-v1 mục 3, 4): 4 cohort × 2 cách làm × 3 lần lặp cho mỗi nhiệm vụ.
 COHORTS, N_ARMS, REPS = 4, 2, 3
 
 
@@ -337,7 +337,7 @@ def _medium_candidates(rows: list[dict[str, Any]]) -> Numbers:
 def _pilot_runs(rows: list[dict[str, str]]) -> Numbers:
     """Token và số lượt gọi mô hình của lượt chạy thử (data/results/analysis/pilot/runs.csv).
 
-    Lấy mọi lượt có số token, kể cả lượt agy bị ngắt vì hạn mức (nhật ký vẫn ghi lượng dùng).
+    Lấy mọi lượt có số token, kể cả lượt agy bị ngắt vì quota (nhật ký vẫn ghi lượng dùng).
     Token vào gồm token đọc và ghi cache."""
 
     def of(cohort: str) -> list[dict[str, str]]:
@@ -599,7 +599,7 @@ def _tasks_table(
     body += heading("Nhiệm vụ thử (không tính vào kết quả)") + rows(pilots, "pilots")
     return _tabular(
         "llllrrr",
-        ["Mã", "Lớp", "Commit", "Số commit", "Dòng src", "Dòng chấm", "File test ẩn"],
+        ["Mã", "Lớp", "Commit", "Số commit", "Dòng src", "Dòng chấm", "File hidden test"],
         body,
     )
 
@@ -634,7 +634,7 @@ def _pilot_table(units: list[dict[str, Any]]) -> str:
         ]
         for (cohort, arm), v in sorted(by.items())
     ]
-    return _tabular("llr", ["Nhóm chạy", "Cách làm", "Đạt/tổng"], body)
+    return _tabular("llr", ["Cohort", "Cách làm", "Đạt/tổng"], body)
 
 
 # ---------- hình ----------

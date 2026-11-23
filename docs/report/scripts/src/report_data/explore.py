@@ -39,9 +39,9 @@ TIERS = [
 ]
 # chỉ số của bảng 2 x 2: khóa, tên khóa macro, nhãn, hệ số nhân, số chữ số
 X2 = [
-    ("score", "Score", "Điểm danh sách hành vi (\\%)", 100, 1),
-    ("task_pass", "Pass", "Lượt đạt hết test ẩn (\\%)$^\\dagger$", 100, 1),
-    ("regression_any", "Regression", "Lượt có hồi quy (\\%)", 100, 1),
+    ("score", "Score", "Điểm checklist hành vi (\\%)", 100, 1),
+    ("task_pass", "Pass", "Lượt đạt hết hidden test (\\%)$^\\dagger$", 100, 1),
+    ("regression_any", "Regression", "Lượt có regression (\\%)", 100, 1),
     ("ai_tests_added", "Tests", "Test mới mỗi lượt", 1, 1),
     ("ai_changed_line_coverage", "Coverage", "Phủ dòng mới, lượt có test (\\%)", 100, 1),
     ("tokens_total", "Tokens", "Token (triệu)", 1e-6, 2),
@@ -142,7 +142,7 @@ def _e2_keys() -> list[str]:
     return k
 
 
-# mẫu chấm tay E2 (Lợi, Bảo): mức khớp giữa hai người và với người chấm máy, theo từng mục
+# mẫu chấm tay E2 (Lợi, Bảo): mức khớp giữa hai người và với LLM judge, theo từng mục
 HUMAN_KEYS = [
     "ETwoHumanUnits",
     "ETwoHumanItems",

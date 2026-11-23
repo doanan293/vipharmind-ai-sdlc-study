@@ -2,7 +2,7 @@
 
 Nguồn: data/results/analysis/main/labeling/
 - final-labels.csv: code2 (mã vòng 2), unit_id_r1, label_loi, label_bao, label_final,
-  source (agree / An_adjudicated), label_fable (người chấm thứ ba, ngoài bản đăng ký, chỉ mô tả);
+  source (agree / An_adjudicated), label_fable (người chấm thứ ba, chỉ mô tả);
 - key-round2-PRIVATE.csv: code2 -> cohort, task_id, tier, arm (chỉ dùng để gộp).
 Báo cáo chỉ in số gộp, không in khóa của từng lượt. Thiếu nguồn thì mọi khóa là None (\\pending).
 """
@@ -35,7 +35,7 @@ GROUPS = {
     "cohort": [("claude-sonnet", "Sonnet"), ("claude-opus", "Opus")],
     "tier": [("small", "Small"), ("medium", "Medium"), ("large", "Large")],
 }
-# Hai nhãn ngoài phần mã tác tử tự viết: đề không chốt chi tiết, hoặc nối sai với mã có sẵn
+# Hai nhãn ngoài phần mã agent tự viết: đề không chốt chi tiết, hoặc nối sai với mã có sẵn
 OUTSIDE = ("de_bai_thieu", "sai_api_co_san")
 
 

@@ -69,7 +69,7 @@ def pass_diff_forest(estimates: dict, path: Path) -> None:
         [f"{c}, tầng {TIERS[t]} ({e['n_tasks']} nv)" for c, t, e in reversed(rows)], fontsize=12
     )
     ax.set_xlim(-105, 105)
-    ax.set_xlabel("Hiệu số tỉ lệ đạt, đặc tả trừ vibe (đpt), KTC 95%", color=INK, fontsize=13)
+    ax.set_xlabel("Hiệu số tỉ lệ đạt, đặc tả trừ vibe (pp), KTC 95%", color=INK, fontsize=13)
     _save(fig, path)
 
 
@@ -111,8 +111,8 @@ def effect_vs_size(task_diffs: Path, pooled: Path, path: Path) -> None:
     ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_xticks([25, 50, 100, 200, 400, 800, 1600])
     ax.set_ylim(-105, 105)
-    ax.set_xlabel("Số dòng backend/src của bản vá gốc (thang log)", color=INK, fontsize=13)
-    ax.set_ylabel("Đặc tả trừ vibe (đpt)", color=INK, fontsize=13)
+    ax.set_xlabel("Số dòng backend/src của patch gốc (thang log)", color=INK, fontsize=13)
+    ax.set_ylabel("Đặc tả trừ vibe (pp)", color=INK, fontsize=13)
     ax.legend(
         frameon=False,
         fontsize=11,

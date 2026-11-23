@@ -2,7 +2,7 @@
 
 Đọc từ data/results/analysis/main (gói code/analysis/).
 
-Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết luận theo bản đăng ký), runs.csv
+Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết luận theo preregistration), runs.csv
 (một dòng mỗi lượt, dùng cho số mô tả mà summary không có) và figures/*.pdf (chép nguyên).
 Thiếu nguồn thì mọi khóa vẫn được sinh với giá trị None (macro thành \\pending).
 """
@@ -372,7 +372,7 @@ def main_table(s: dict) -> str:
         rows.append(["gộp ba nhóm", vn, "", "", _cell_ci(e), ""])
     return _tabular(
         "llrrlr",
-        ["Nhóm", "Tầng", "Đặc tả (\\%)", "Vibe (\\%)", "Hiệu số (đpt) [KTC 95\\%]", "Kết luận"],
+        ["Nhóm", "Tầng", "Đặc tả (\\%)", "Vibe (\\%)", "Hiệu số (pp) [KTC 95\\%]", "Kết luận"],
         rows,
     )
 
@@ -417,9 +417,9 @@ def secondary_table(s: dict) -> str:
         "Token (triệu)",
         "Phút",
         "H2",
-        "Lỗi tĩnh",
+        "Lỗi static analysis",
         "H3a",
-        "Hồi quy (\\%)",
+        "Regression (\\%)",
         "H3b",
         "$\\Delta$MI",
         "H3c",
@@ -533,7 +533,7 @@ def load(root: Path) -> dict[str, Any] | None:
     if (d / CASE_FILE).exists():
         with (d / CASE_FILE).open(newline="", encoding="utf-8") as f:
             case = {r["key"]: int(r["value"]) for r in csv.DictReader(f)}
-    # bài kiểm tra độ phủ của khoảng bootstrap (code/analysis/calibration/coverage-run.txt):
+    # bài kiểm tra coverage của khoảng bootstrap (code/analysis/calibration/coverage-run.txt):
     # một dòng mỗi bộ
     # dữ liệu mô phỏng, cột cuối True khi khoảng chứa giá trị thật
     coverage: list[bool] = []
