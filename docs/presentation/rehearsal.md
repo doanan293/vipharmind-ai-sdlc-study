@@ -1,42 +1,35 @@
 # Tập dượt
 
-Sinh tự động bởi `build_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.
+Sinh tự động bởi `make_deck.py`; sửa thời lượng ở đó rồi chạy lại `build.sh`.
 
-Tổng thời gian nói: 11:55 (Mở đầu 2:35, Cách kiểm 3:10, Phát hiện 4:40, Kết luận 1:30); phần còn lại của 15 phút (3:05) dành cho chuyển slide. Hỏi đáp 5 phút sau đó. Người thuyết trình chưa phân công: ghi chú viết trung tính ("nhóm em", "em"), một người hay nhiều người đọc đều được; nếu chia người, chuyển người ở đầu một phần. Câu "Khoảng … giây." đầu mỗi ghi chú là nhắc giờ, không đọc thành tiếng.
+Tổng thời gian nói: 17:10 cho 22 slide chính; cộng chuyển slide khoảng 18–19 phút. Ghi chú (notes) mỗi slide bắt đầu bằng nhắc giờ trong ngoặc vuông, không đọc thành tiếng; chỗ chuyển người nếu chia ba phần ghi ở slide 1, 13 và 21.
 
-| Slide | Trang | Phần | Thời lượng | Cộng dồn |
+| Slide | Tiêu đề | Phần | Giây | Cộng dồn |
 | --- | --- | --- | --- | --- |
-| 1 | `p01_title` | Mở đầu | 0:20 | 0:20 |
-| 2 | `p02_hook` | Mở đầu | 0:50 | 1:10 |
-| 3 | `p03_motivation` | Mở đầu | 0:50 | 2:00 |
-| 4 | `p04_rq` | Mở đầu | 0:35 | 2:35 |
-| 5 | `p04b_related` | Cách kiểm | 0:40 | 3:15 |
-| 6 | `p06_project` | Cách kiểm | 0:40 | 3:55 |
-| 7 | `p08_arms` | Cách kiểm | 0:30 | 4:25 |
-| 8 | `p08_scale` | Cách kiểm | 0:45 | 5:10 |
-| 9 | `p09_rigor` | Cách kiểm | 0:35 | 5:45 |
-| 10 | `p15_h1` | Phát hiện | 0:45 | 6:30 |
-| 11 | `p16_rq4` | Phát hiện | 0:50 | 7:20 |
-| 12 | `p12_cost_tests` | Phát hiện | 0:40 | 8:00 |
-| 13 | `p13_decode` | Phát hiện | 0:50 | 8:50 |
-| 14 | `p22_labels` | Phát hiện | 0:35 | 9:25 |
-| 15 | `p15_human_spec` | Phát hiện | 1:00 | 10:25 |
-| 16 | `p24_limits` | Kết luận | 0:30 | 10:55 |
-| 17 | `p25_conclusion` | Kết luận | 0:50 | 11:45 |
-| 18 | `p26_thanks` | Kết luận | 0:10 | 11:55 |
-| 19 | `p05_hypotheses` | Dự phòng | – | – |
-| 20 | `p09_cohorts` | Dự phòng | – | – |
-| 21 | `p18_h4` | Dự phòng | – | – |
-| 22 | `p19_h5` | Dự phòng | – | – |
-| 23 | `p20_cost` | Dự phòng | – | – |
-| 24 | `p23_explore` | Dự phòng | – | – |
-| 25 | `p21_case` | Dự phòng | – | – |
-| 26 | `p27_bk_funnel` | Dự phòng | – | – |
-| 27 | `p28_bk_reading` | Dự phòng | – | – |
-| 28 | `p29_bk_labels` | Dự phòng | – | – |
-| 29 | `p31_bk_judge` | Dự phòng | – | – |
-| 30 | `p30_attribution` | Dự phòng | – | – |
-
-## Số liệu
-
-Mọi số trên slide lấy từ `docs/report/generated/numbers.json`: thí nghiệm chính (Sonnet, Opus, Codex; đề chi tiết), nhãn nguyên nhân thất bại, E2 (đề sơ sài; thu thập đã kết thúc, Codex dừng ở tầng nhỏ) và E1 (Haiku). Làm mới bằng `code/refresh-interim.sh`. Không còn chỗ chờ kết quả.
+| 1 | Tiêu đề | Mở đầu | 20 | 0:20 |
+| 2 | Làm đủ quy trình, vẫn trượt | Mở đầu | 50 | 1:10 |
+| 3 | Vibe coding và lời hứa của spec-driven | Mở đầu | 50 | 2:00 |
+| 4 | Sáu câu hỏi nghiên cứu | Mở đầu | 45 | 2:45 |
+| 5 | Nghiên cứu liên quan và khoảng trống | Bối cảnh | 50 | 3:35 |
+| 6 | ViPharmind: dự án thật làm theo Superpowers | Cách kiểm | 45 | 4:20 |
+| 7 | Lịch sử git: có plan nhưng không ít sửa hơn | Cách kiểm | 50 | 5:10 |
+| 8 | Hai nhánh chỉ khác prompt quy trình | Cách kiểm | 45 | 5:55 |
+| 9 | 23 nhiệm vụ cắt từ commit thật, ba cỡ | Cách kiểm | 55 | 6:50 |
+| 10 | Ba cohort, 414 lượt chạy | Cách kiểm | 45 | 7:35 |
+| 11 | Chấm bằng hidden test | Cách kiểm | 45 | 8:20 |
+| 12 | Không tự lừa mình: chốt trước khi chạy | Cách kiểm | 45 | 9:05 |
+| 13 | H1: với đề chi tiết, spec không đạt nhiều hơn | Phát hiện | 55 | 10:00 |
+| 14 | Đổi công cụ hay mô hình: không đổi hướng | Phát hiện | 55 | 10:55 |
+| 15 | Nhiệm vụ lớn hơn: lợi ích không tăng rõ | Phát hiện | 45 | 11:40 |
+| 16 | Cái giá: gấp 1,3–2,2 lần token | Phát hiện | 45 | 12:25 |
+| 17 | Cái spec để lại: bộ test | Phát hiện | 50 | 13:15 |
+| 18 | Giải mã f15: spec chốt một cách đoán | Phát hiện | 55 | 14:10 |
+| 19 | Không phải chuyện xui: 23/30 lượt hỏng do đề thiếu | Phát hiện | 50 | 15:00 |
+| 20 | Spec của người vs spec của agent | Phát hiện | 60 | 16:00 |
+| 21 | Kết luận: spec có giá trị nhờ ý của người | Kết luận | 60 | 17:00 |
+| 22 | Cảm ơn | Kết luận | 10 | 17:10 |
+| 23 | Dự phòng: Sonnet và Opus (H4), nhiệm vụ nhỏ | Dự phòng | – | – |
+| 24 | Dự phòng: E1, Claude Haiku với đề chi tiết | Dự phòng | – | – |
+| 25 | Dự phòng: LLM judge của E2 có tin được? | Dự phòng | – | – |
+| 26 | Dự phòng: chọn nhiệm vụ tầng nhỏ | Dự phòng | – | – |
+| 27 | Dự phòng: chi phí cho một lượt đạt (USD) | Dự phòng | – | – |

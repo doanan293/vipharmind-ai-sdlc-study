@@ -52,6 +52,8 @@ def slide_text(slide) -> str:
 
 
 def _shape_text(shape):
+    if shape.name == "pageno":  # slide number, not a result
+        return
     if shape.shape_type == 6:  # group
         for s in shape.shapes:
             yield from _shape_text(s)
