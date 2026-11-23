@@ -102,7 +102,7 @@ Hiệu số cũng không tăng rõ theo kích thước nhiệm vụ (RQ6, H5). H
 [\NumResHFiveLowPp{}; \NumResHFiveHighPp{}]. Hệ số tương tác (cách làm $\times$ log số dòng) của mô hình hỗn hợp
 là \NumResHFiveCoef{} trên thang logit, KTC [\NumResHFiveCoefLow{}; \NumResHFiveCoefHigh{}]. H5
 \textbf{chưa kết luận được}. Hình~\ref{fig:effect-size} cho thấy hiệu số của phần lớn nhiệm vụ bằng không; các
-nhiệm vụ lệch nằm ở cả hai phía và ở mọi cỡ, trừ ba nhiệm vụ tầng lớn của Codex đều lệch về phía đặc tả.
+nhiệm vụ lệch nằm ở cả hai phía và ở mọi cỡ; riêng ba nhiệm vụ tầng lớn của Codex đều lệch về phía đặc tả.
 
 \begin{figure}[H]
 \centering
@@ -155,8 +155,8 @@ test ở \NumResSonnetSpecTestsAnyPct{}--\NumResCodexSpecTestsAnyPct{}\% số l�
 viết test nào (\NumResCodexVibeTestsAnyPct{}\%) và hầu như không chạy \texttt{pytest}
 (\NumResCodexVibePytestPct{}\% số lượt), Sonnet viết test ở \NumResSonnetVibeTestsAnyPct{}\% số lượt, còn Opus
 tự viết test ở \NumResOpusVibeTestsAnyPct{}\% số lượt dù không được yêu cầu. Phần chênh này là hệ quả trực tiếp
-của lời dặn, nên nó xác nhận quy trình được làm hơn là một phát hiện. Điểm đáng chú ý là test ẩn không thưởng
-cho phần test này.
+của lời dặn và cho thấy tác tử làm đúng quy trình. Test ẩn không thưởng cho phần test này: tỉ lệ đạt của hai
+nhánh gần như nhau.
 
 \begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
@@ -194,7 +194,7 @@ một mã, gặp lỗi, và khối \texttt{except Exception} của chính tác t
 cũng phải tự chọn, và đều chọn danh sách mã. Ca này cho thấy một cơ chế cụ thể: bước thiết kế biến chỗ đề bỏ
 ngỏ thành quyết định cố định, rồi test viết trước kiểm quyết định đó bằng chính giả định của nó.
 
-\label{sec:explore}Hai thí nghiệm thăm dò E2 và E1 được thêm \textbf{sau khi xem kết quả chính}; chúng chỉ đọc theo dấu và độ lớn. Trong E2,
+\label{sec:explore}Hai thí nghiệm thăm dò E2 và E1 được thêm sau khi xem kết quả chính; chúng chỉ đọc theo dấu và độ lớn. Trong E2,
 ba nhóm Claude chạy đủ \NumETwoClaudeBriefJudged{} lượt; Codex hết hạn mức sau \NumETwoCodexSmallJudged{} trên
 \NumETwoCodexSmallExpected{} lượt tầng nhỏ (Phụ lục~\ref{app:e2-coverage}).
 
@@ -227,22 +227,20 @@ khớp nhau với kappa \NumETwoHumanLoiBaoKappa{}, người chấm máy khớp 
 E1 lặp lại thiết kế gốc với Haiku 5.5 (\NumEOneRuns{} lượt). Hiệu số đặc tả trừ vibe là \NumEOneSmallDiffPp{} đpt
 ở tầng nhỏ [\NumEOneSmallLowPp{}; \NumEOneSmallHighPp{}], \NumEOneMediumDiffPp{} ở tầng vừa và
 \NumEOneLargeDiffPp{} ở tầng lớn; một lượt đặc tả tầng nhỏ tốn \NumEOneSmallSpecTokensM{} triệu token so với
-\NumEOneSmallVibeTokensM{} triệu của vibe. Kết quả cùng hướng với thí nghiệm chính: mô hình yếu hơn cũng không
-được quy trình nâng lên khi đề đã chi tiết.
+\NumEOneSmallVibeTokensM{} triệu của vibe. Kết quả cùng hướng với thí nghiệm chính: với đề chi tiết, không thấy quy
+trình nâng mô hình yếu hơn lên.
 
 \subsection{Thảo luận}\label{sec:discussion}
 
 Khi đề đã chi tiết, quy trình chủ yếu thêm chi phí. Với đề nêu đủ tên, chữ ký và quy tắc, làm theo đặc
 tả không làm tác tử đạt test ẩn nhiều hơn: H1 chưa kết luận được, nhưng KTC không chứa giá trị dương nào, còn
-chi phí tăng rõ ở mọi ô (H2). Với hai mô hình Claude, hiệu số âm hoặc bằng không ở gần như mọi tầng. Cách giải
-thích hợp lý nhất là phần lợi của bản thiết kế, tức nêu rõ giao diện, trường hợp biên và chia bước
+chi phí tăng rõ ở mọi ô (H2). Với hai mô hình Claude, hiệu số âm hoặc bằng không ở gần như mọi tầng. Một cách giải
+thích là phần lợi của bản thiết kế, tức nêu rõ giao diện, trường hợp biên và chia bước
 \cite{zi_2025}, đã nằm sẵn trong đề bài. Dấu hiệu có ích duy nhất nằm ở Codex trên ba nhiệm vụ tầng lớn; với ba
-nhiệm vụ và H5 chưa kết luận được, đây là giả thuyết cho nghiên cứu sau, không phải bằng chứng rằng quy trình
-``trả vốn'' khi việc đủ lớn.
+nhiệm vụ và H5 chưa kết luận được, tín hiệu này chỉ đủ để đặt giả thuyết cho nghiên cứu sau.
 
 Phần lớn lượt hỏng đến từ thông tin mà đề không có. \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
-Claude không do logic tác tử tự viết sai, mà do test ẩn kiểm một chi tiết đề không chốt hoặc do nối sai với mã có
-sẵn, và hai loại này chiếm tỉ lệ như nhau ở hai cách làm. Bước thiết kế không tự biết chi tiết mà đề bỏ ngỏ: như
+Claude có nguyên nhân là test ẩn kiểm một chi tiết đề không chốt hoặc tác tử nối sai với mã có sẵn, và hai loại này chiếm tỉ lệ như nhau ở hai cách làm. Bước thiết kế không tự biết chi tiết mà đề bỏ ngỏ: như
 ca \texttt{f15}, nó chốt một cách đoán, rồi test viết trước kiểm lại chính cách đoán đó. Thông tin còn thiếu chỉ
 người giao việc có, nên quy trình tự động không bù được.
 
@@ -267,13 +265,13 @@ Với người dùng trợ lý lập trình, kết quả gợi ý đầu tư và
 kiểu trả về, trường hợp biên) trước khi đầu tư vào quy trình tự động. Nếu dùng quy trình đặc tả, bước có giá
 trị nhất có lẽ là để người duyệt bản thiết kế, vì đó là lúc chỗ đề bỏ ngỏ như ở \texttt{f15} lộ ra.
 
-\label{sec:threats}Nghiên cứu có một số hạn chế cần lưu ý khi đọc kết quả.
+\label{sec:threats}Các kết quả trên có năm hạn chế chính.
 
 Về tính hợp lệ cấu trúc, để test ẩn chấm được, đề của thí nghiệm chính phải nêu tên và chữ ký, nên nhánh
 vibe nhận một yêu cầu đầy đủ hơn vibe coding thật. Thí nghiệm chính đo tác dụng của riêng quy trình khi yêu cầu
 đã rõ; E2 được thêm để nhìn vào phần còn lại. Nhánh theo đặc tả là bản rút gọn của Superpowers
-(Bảng~\ref{tab:superpowers}): không hỏi đáp với người dùng, không tác tử con, không bước duyệt. Đây chính là
-những phần có thể bắt được chỗ đề bỏ ngỏ, và thí nghiệm không đo chúng. Test ẩn cũng kiểm cả chi tiết đề không
+(Bảng~\ref{tab:superpowers}): không hỏi đáp với người dùng, không tác tử con, không bước duyệt. Những phần
+này có thể bắt được chỗ đề bỏ ngỏ, và thí nghiệm không đo chúng. Test ẩn cũng kiểm cả chi tiết đề không
 chốt, nhưng chúng hạ tỉ lệ đạt ở hai nhánh như nhau nên ít ảnh hưởng hiệu số. Các giới hạn khác của cách đo ở
 Phụ lục~\ref{app:validity}.
 

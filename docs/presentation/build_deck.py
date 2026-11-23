@@ -268,7 +268,7 @@ def _(r):
       f"nghiệm nào chỉ đổi lời dặn rồi chấm bằng test mà agent không thấy. Nhóm em làm thí nghiệm đó, với "
       f"sáu câu hỏi sau.")
 def _(r):
-    set_text(r, "shape-1634", ["Đề ngắn, và lời hứa của đặc tả"])
+    set_text(r, "shape-1634", ["Đề ngắn và lời hứa của đặc tả"])
     set_text(r, "shape-1638", ["Vibe coding"])
     set_text(r, "shape-1637", ["Theo đặc tả"])
     set_text(r, "shape-1636", ["Vài câu ngắn; agent", "tự đoán phần đề", "bỏ ngỏ."], size=17)
@@ -596,14 +596,14 @@ def _(r):
     set_text(r, "shape-2122", ["Chi phí cho một lượt đạt (USD)"])
     rows = [("shape-2124", "shape-2123", "Sonnet", "claude-sonnet"),
             ("shape-2127", "shape-2126", "Opus", "claude-opus"),
-            ("shape-2130", "shape-2129", "Luna", "codex-luna")]
+            ("shape-2130", "shape-2129", "Codex", "codex-luna")]
     for head, body, h, c in rows:
         set_text(r, head, [h], size=22)
         set_text(r, body, [f"Nhỏ: đặc tả {usd(c, 'small', 'spec')} · vibe {usd(c, 'small', 'vibe')}",
                            f"Lớn: đặc tả {usd(c, 'large', 'spec')} · vibe {usd(c, 'large', 'vibe')}"], size=16)
     set_text(r, "shape-2133", ["Tóm lại"], size=22)
     set_text(r, "shape-2132", ["Claude: đặc tả đắt hơn ở mọi ô.",
-                               "Luna tầng lớn: đặc tả rẻ hơn vì vibe ít đạt."], size=16)
+                               "Codex tầng lớn: đặc tả rẻ hơn vì vibe ít đạt."], size=16)
 
 
 @page("p21_case", 26, RESULTS, 45,
@@ -681,7 +681,7 @@ def _(r):
 
 
 @page("p24_limits", 8, RESULTS, 25,
-      f"Ba hạn chế. Một dự án Python, đặc tả tự động không người duyệt. Đề do AI soạn, An duyệt; test ẩn "
+      f"Ba hạn chế. Một dự án Python, đặc tả tự động không người duyệt. Đề do AI soạn, nhóm duyệt; test ẩn "
       f"viết cho bản gốc vốn làm theo đặc tả. Tầng vừa chỉ {N['MediumTasks']}, tầng lớn {N['FeatureTasks']} "
       f"nhiệm vụ, nên chỉ để tham khảo. Để kết lại.")
 def _(r):
@@ -689,7 +689,7 @@ def _(r):
     set_text(r, "shape-1671", ["Phạm vi"])
     set_text(r, "shape-1668", ["Một dự án Python;", "đặc tả tự động,", "không người duyệt"], size=16)
     set_text(r, "shape-1672", ["Đề bài"])
-    set_text(r, "shape-1669", ["AI soạn, An duyệt;", "test ẩn viết cho", "bản gốc"], size=16)
+    set_text(r, "shape-1669", ["AI soạn, nhóm duyệt;", "test ẩn viết cho", "bản gốc"], size=16)
     set_text(r, "shape-1667", ["Cỡ mẫu"])
     set_text(r, "shape-1670", [f"Tầng vừa {N['MediumTasks']}, lớn {N['FeatureTasks']}",
                                "nhiệm vụ: chỉ để", "tham khảo"], size=16)
@@ -785,7 +785,8 @@ def _(r):
     set_text(r, "shape-2412", ["Ghi nguồn"], role="title")
     set_text(r, "shape-2411", ["Mẫu slide: Slidesgo, Freepik", "Nhóm: Doãn Văn An, Lê Xuân Lợi,",
                                "Trần Ngọc Bảo"], size=20)
-    set_text(r, "shape-2413", ["Slide này được giữ để ghi nguồn template."])
+    for sid in ("shape-2413", "shape-2414", "shape-2417", "shape-2424"):  # ghi chú nội bộ, icon mạng xã hội của mẫu
+        delete(r, sid)
 
 
 # Result slots still pending: page -> what fills it. Every result is filled now; kept so a rebuild against

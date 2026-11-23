@@ -1,6 +1,8 @@
 \section{Các nghiên cứu liên quan}\label{sec:related-work}
 
-Trợ lý AI tìm tài liệu theo một quy trình ghi lại được: \NumLitQueries{} chuỗi tìm kiếm web, mỗi chuỗi
+Mục này điểm lại hai nhóm nghiên cứu: cách đánh giá trợ lý lập trình AI, và các nghiên cứu về phát triển
+theo đặc tả và vibe coding. Nguồn được tìm theo một quy trình ghi lại được: trợ lý AI chạy
+\NumLitQueries{} chuỗi tìm kiếm web, mỗi chuỗi
 nhắm một nhóm chủ đề hoặc nhóm nguồn phương pháp. Máy tìm kiếm chỉ dùng để biết bài nào tồn tại; thông tin
 về bài (tác giả, năm, nơi đăng, số liệu) lấy từ trang gốc (arXiv, DOI, chương trình hội nghị). Một bài
 được giữ khi nói trực tiếp về chủ đề, có phương pháp mô tả được, đăng trong giai đoạn 2023 đến 2026 (trừ
@@ -16,7 +18,7 @@ bước; truy vấn và lý do loại từng bài nằm trong nhật ký tìm t�
 
 \subsection{Đánh giá trợ lý lập trình AI}
 
-Cách đánh giá phổ biến nhất là chấm bằng test. SWE-bench đánh giá tác tử bằng \NumLitJimenezTasks{} nhiệm vụ lấy từ issue và pull request thật của các
+Cách đánh giá phổ biến là chấm bằng test. SWE-bench đánh giá tác tử bằng \NumLitJimenezTasks{} nhiệm vụ lấy từ issue và pull request thật của các
 repo Python, chấm bằng test \cite{jimenez_2024}; FEA-Bench và FeatBench mở rộng sang cài đặt tính năng mới,
 đúng loại việc của một commit \texttt{feat} \cite{li_2025,chen_2025}. Cách chấm này có hai điểm yếu đã được
 đo. Thứ nhất là test yếu và lời giải rò rỉ. Trong các bản vá được tính là thành công,

@@ -5,7 +5,7 @@ Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn A
 
 Ký hiệu: **[L]** Lợi trả lời chính (phần bối cảnh, phương pháp), **[B]** Bảo trả lời chính (phần kết quả). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
-`summary.json` của `data/results/analysis/`); "mục 4.3", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
+`summary.json` của `data/results/analysis/`); "mục 4.2", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.
 
 ## Cách trả lời
@@ -76,7 +76,7 @@ không đổi được kết quả.
 Đúng là có rủi ro này. Tiêu chí 3 của sàng lọc chỉ giữ nhiệm vụ mà test kiểm hành vi qua giao diện đề bài
 nêu được, và đề bài nêu mọi tên công khai mà test cần (rà ở `data/tasks/PROMPT_AUDIT.md`, Fable duyệt tầng vừa
 và lớn). Rủi ro còn lại ảnh hưởng hai cách làm như nhau vì cả hai nhận cùng đề. Nhãn `de_bai_thieu` trong
-phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.5, 4.8).
+phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.3, 4.4).
 
 **B3. ★ Bản gốc của ViPharmind được làm theo đặc tả. Test ẩn có thiên vị nhánh theo đặc tả không?**
 Có thể, và báo cáo ghi rõ là hạn chế. Test ẩn kiểm hành vi qua giao diện đề bài nêu, không kiểm cấu trúc
@@ -91,7 +91,7 @@ làm. Kết luận chỉ áp cho quy trình tự động, không cho quy trình 
 **B5. ★ Lời dặn theo đặc tả còn bắt viết test trước và chạy pytest. Vậy cái gì gây ra khác biệt?**
 Đúng, can thiệp là **một gói** (thiết kế, kế hoạch, test trước, chạy cả bộ test), và `prereg-v1` mục 2 ghi
 rõ thí nghiệm ước lượng tác dụng của cả gói, không tách được phần của riêng tài liệu đặc tả. Để mô tả cơ
-chế, nhóm đếm số lượt mỗi cách có chạy `pytest` và số test AI viết (Bảng 10, mục 4.4). Chạy `pytest`: nhánh
+chế, nhóm đếm số lượt mỗi cách có chạy `pytest` và số test AI viết (Bảng 10, mục 4.2). Chạy `pytest`: nhánh
 đặc tả 100% ở cả ba nhóm; nhánh vibe Sonnet 64%, Opus 100%, Codex 6%. Viết test: nhánh đặc tả 72–78% số lượt;
 nhánh vibe Sonnet 7%, Opus 52%, Codex 0%. Đây là mô tả, không
 phải phép thử.
@@ -138,12 +138,12 @@ của phần đã xong cũng đã được xem; báo cáo nêu điều này
 **C4. Phép thử chính là gì? Sao không gộp mọi nhóm?**
 Duy nhất một phép thử xác nhận: H1 trên `claude-sonnet`, tầng nhỏ, 15 nhiệm vụ. Chọn Sonnet vì là mô hình
 hạng giữa, ít bị chạm trần hơn Opus. Mọi phép khác là phụ, báo cáo đủ kèm khoảng tin cậy và nói rõ số phép
-so đã làm (57 phép so phụ, mục 4.3).
+so đã làm (57 phép so phụ, mục 4.2).
 
 **C5. Có phân tích nào thêm sau khi thấy số liệu không?**
 Có. Sau khi mở kết quả chính, nhóm thêm hai thí nghiệm thăm dò bằng bản bổ sung `prereg-v1.2`: E1 (Claude
 Haiku 5.5 theo thiết kế gốc) và E2 (đề sơ sài). Báo cáo ghi rõ chúng được thêm **sau khi đã xem kết quả
-chính**, không dùng để xác nhận hay bác bỏ H1–H5, chỉ đọc theo dấu và độ lớn (mục 4.6). Mã phân tích E1, E2
+chính**, không dùng để xác nhận hay bác bỏ H1–H5, chỉ đọc theo dấu và độ lớn (mục 4.3). Mã phân tích E1, E2
 được chốt bằng thẻ `e2-analysis-locked` trước khi xem kết quả E1, E2. Ngoài bản đăng ký còn có Fable 5.2 gán
 nhãn làm người chấm thứ ba, chỉ để đối chiếu. Quy tắc: phân tích nào không có trong mục 9 thì ghi nhãn "khám
 phá, thêm sau khi thấy số liệu" trong báo cáo.
@@ -164,13 +164,13 @@ tầng và cách làm: 0 lượt hết giờ ở mọi nhóm, tầng và cách l
 Phép thử chính vẫn tính lượt đó theo cách làm được giao (phân tích theo phân bổ, giống thử nghiệm lâm
 sàng). Bỏ các lượt không tuân thủ chỉ là phân tích độ nhạy. Tỉ lệ tuân thủ: 100%, mọi lượt theo đặc tả để
 lại cả `docs/design.md` lẫn `docs/plan.md`; số lượt vibe tự viết hai file này: 0 (mục 4.2). Vì không có lượt
-không tuân thủ, phân tích độ nhạy này không đổi gì (mục 4.3).
+không tuân thủ, phân tích độ nhạy này không đổi gì (mục 4.2).
 
 **D4. Chạy song song nhiều lượt có làm lệch thời gian không?**
 Có thể làm tăng `wall_s`: từ 19:58 tầng vừa và lớn chạy cùng tầng nhỏ, tối đa 24 phiên thay vì 8. Thứ tự
 xáo trộn nên ảnh hưởng hai cách như nhau. Báo cáo so số lượt hết giờ trong và ngoài khoảng chạy chồng:
 0 ở cả hai phía (328 lượt bắt đầu trong khoảng chạy chồng), nên việc chạy chồng không ảnh hưởng kết cục
-(mục 4.3).
+(mục 4.2).
 
 ## E. Truy cập web và rò rỉ lời giải [L]
 
@@ -179,7 +179,7 @@ Có thể, và đó là hạn chế đã chấp nhận (ruling R11): ở chạy 
 một cách ngang nhau (agy có `--sandbox` nhưng `curl` vẫn chạy), nên An chọn để cả bốn nhóm chạy agent mặc
 định, mạng mở, như người dùng thật. Bộ chạy ghi `upstream_urls` cho từng lượt, và phân tích độ nhạy chạy lại
 H1, H5 sau khi bỏ các lượt đó: 8 lượt có cờ (Opus 2 đặc tả, 3 vibe; Sonnet 3 đặc tả; Codex 0). Bỏ 8 lượt
-đó, H1 thành −2,4 đpt [−7,1; 0,0], kết luận không đổi (mục 4.3). Cờ này chỉ bắt được đường dẫn hiện trong nhật
+đó, H1 thành −2,4 đpt [−7,1; 0,0], kết luận không đổi (mục 4.2). Cờ này chỉ bắt được đường dẫn hiện trong nhật
 ký, nên là cận dưới.
 
 **E2. AI có đọc được lịch sử git hay plan cũ trong repo không?**
@@ -227,13 +227,13 @@ trần, không dựa trên hiệu số (2 đề, chênh 1 lượt, không có ý
 ủng hộ" khi cả phép thử chính lẫn hệ số tương tác của mô hình logistic (thang logit, không bị trần ép) cùng
 hướng, và khoảng tin cậy của phép thử chính không chứa 0. Kết quả: H5 chưa kết luận được. Phép thử chính
 (hiệu số gộp tầng lớn trừ tầng nhỏ) là 3,7 đpt [−3,0; 11,1], chứa 0; hệ số tương tác trên thang logit 0,16
-[−0,43; 0,44] (mục 4.3). Hiệu số gộp là 3,7 đpt ở tầng lớn và 0,0 đpt ở tầng nhỏ.
+[−0,43; 0,44] (mục 4.2). Hiệu số gộp là 3,7 đpt ở tầng lớn và 0,0 đpt ở tầng nhỏ.
 
 **G3. Opus chạm trần thì RQ5 có hỏng không?**
 Không. Nếu Opus đạt gần hết ở cả hai cách, đó chính là câu trả lời cho RQ5: với mô hình mạnh, lời dặn quy
 trình ít tác dụng. Kết quả 2 × 2 ở tầng nhỏ: Sonnet đặc tả/vibe 89/91%, Opus 84/89%; hiệu của hai hiệu số
 2,2 đpt [−8,9; 13,3], H4 chưa kết luận được ở cả ba tầng. Opus tầng vừa đạt 100% ở cả hai cách. Sonnet theo
-đặc tả đạt ngang Opus vibe (0,0 đpt [−17,8; 20,0]) với khoảng 45% chi phí quy đổi (mục 4.3).
+đặc tả đạt ngang Opus vibe (0,0 đpt [−17,8; 20,0]) với khoảng 45% chi phí quy đổi (mục 4.2).
 
 ## H. Ít nhiệm vụ lớn, sức mạnh của H5 [B]
 
@@ -250,7 +250,7 @@ vụ, nên tăng số lần lặp không thay được số nhiệm vụ.
 **H3. Các tầng có chung commit, chung test. Có làm sai lệch không?**
 Có chồng lấn: f08 chứa commit của t03; f14 bắt đầu từ commit của t01; f15 có test ẩn của t11. Phân tích độ
 nhạy của H5 bỏ các cặp có commit nằm trong nhau (chỉ f08–t03): phép thử chính thành 6,3 đpt [−2,4; 15,1],
-vẫn chưa kết luận được (mục 4.3). Báo cáo nêu chồng lấn là
+vẫn chưa kết luận được (mục 4.2). Báo cáo nêu chồng lấn là
 hạn chế.
 
 **H4. Ngưỡng "tối đa 35 tên" của tầng lớn đếm thế nào?**
@@ -276,7 +276,7 @@ Thiếu hạn mức thì ưu tiên hai nhóm Claude. Trạng thái thật: `agy-
 ngày 2026-11-16 ở 73/138 lượt, theo quyết định của An. Quyết định này đến sau khi số đếm thô của phần agy đã
 xong đã được xem, nên không hoàn toàn độc lập với kết quả, dù lý do nêu ra là thời gian và hạn mức (mục 4.2,
 Phụ lục G). Vì vậy RQ4 chỉ còn Claude Code và Codex. Ba nhóm còn lại đủ 138/138. Trong E2, Codex hết hạn mức
-và dừng ở 78/90 lượt tầng nhỏ; tầng vừa và lớn của E2 chỉ có ba nhóm Claude (mục 4.6).
+và dừng ở 78/90 lượt tầng nhỏ; tầng vừa và lớn của E2 chỉ có ba nhóm Claude (mục 4.3).
 
 **I3. Chi phí đô la lấy ở đâu? Có trả tiền thật không?**
 Không trả theo lượng: chạy bằng gói thuê bao. Chi phí là số **quy đổi**: token của từng lượt, tách vào
@@ -324,7 +324,7 @@ nhiên theo nhiệm vụ bắt độ khó khác nhau. Không hội tụ hoặc s
 thứ tự chốt trước. Mức mô hình đã dùng: mức dự phòng thứ nhất, hiệu ứng ngẫu nhiên chặn và dốc theo nhiệm
 vụ không tương quan, vì statsmodels không ước lượng được hiệu ứng tương quan. Độ lệch chuẩn ước lượng 2,02
 (chặn) và 0,32 (dốc). Hệ số tương tác 0,16, khoảng bootstrap cụm [−0,43; 0,44] (999 lần): chưa kết luận được
-(mục 4.3).
+(mục 4.2).
 
 **K5. ★ Sao đổi từ `lme4` sang statsmodels? Khoảng tin cậy có tin được không?**
 Máy không có R. Gói statsmodels ước lượng bằng Bayes biến phân, và người duyệt độc lập mô phỏng cho thấy độ
@@ -334,18 +334,18 @@ chỉnh bằng mô phỏng (0,30). Thay đổi ghi ở mục 11 trước khi xem
 bootstrap này chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58), với quy tắc đọc ghi trước: 33
 trên 40 bộ dữ liệu mô phỏng (82,5%), thấp hơn mức danh nghĩa 95%. Kết quả đạt ngưỡng ≥ 32/40 đã ghi nên mã
 được khóa, không chỉnh. Nghĩa là khoảng của hệ số tương tác hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu của
-hệ số nên không đổi (mục 4.8, Phụ lục G).
+hệ số nên không đổi (mục 4.4, Phụ lục G).
 
 **K6. Nhiều phép so như vậy có bị "câu cá" kết quả không?**
 Chỉ H1 là phép thử xác nhận. Các phép phụ không hiệu chỉnh so sánh nhiều lần, nhưng được báo cáo đủ, không
-chỉ số nào bị bỏ vì kết quả, và báo cáo nói rõ số phép so: 57 phép so phụ (mục 4.3). Vì vậy ô "được ủng
+chỉ số nào bị bỏ vì kết quả, và báo cáo nói rõ số phép so: 57 phép so phụ (mục 4.2). Vì vậy ô "được ủng
 hộ" duy nhất về tỉ lệ đạt (Codex tầng lớn) cũng có thể là ngẫu nhiên. Thêm nữa, khoảng tin cậy của ô đó co
-về một điểm vì cả ba nhiệm vụ cho cùng hiệu số, nên nó không phản ánh độ bất định thật (mục 4.3).
+về một điểm vì cả ba nhiệm vụ cho cùng hiệu số, nên nó không phản ánh độ bất định thật (mục 4.2).
 
 **K7. Ba lần lặp có đủ không?**
 Cho mỗi ô thì ít, nhưng mục đích của lặp là trung bình hóa độ ngẫu nhiên của mô hình trong một nhiệm vụ.
 Độ chính xác chủ yếu đến từ số nhiệm vụ. Báo cáo tỉ lệ ô có các lần lặp không cùng kết quả: 3/30 ô (10%)
-ở `claude-sonnet` tầng nhỏ, 24/138 ô (17%) khi tính mọi nhóm và tầng (mục 4.3).
+ở `claude-sonnet` tầng nhỏ, 24/138 ô (17%) khi tính mọi nhóm và tầng (mục 4.2).
 
 ## L. Chất lượng mã AI viết và phân loại lỗi [B]
 
@@ -357,7 +357,7 @@ cho An; đổi sang hai người mù cách làm được ghi ở mục 11.)
 
 **L2. Ngoài đạt hay không, còn đo chất lượng mã không?**
 Có (H3): lỗi `ruff` và `pyrefly`, tỉ lệ lượt làm hỏng test cũ, chỉ số bảo trì `radon mi` so với mã nền với
-biên "không kém hơn" là −5 điểm. Kết quả lẫn lộn (mục 4.4, Bảng 8). Lỗi tĩnh: "trái với giả thuyết" ở hai ô,
+biên "không kém hơn" là −5 điểm. Kết quả lẫn lộn (mục 4.2, Bảng 8). Lỗi tĩnh: "trái với giả thuyết" ở hai ô,
 nhánh đặc tả nhiều lỗi hơn ở `claude-sonnet` tầng vừa và `codex-luna` tầng nhỏ; "được ủng hộ" ở `codex-luna`
 tầng lớn (35,1 so với 74,9 lỗi mỗi lượt). Hồi quy: `codex-luna` tầng lớn đặc tả 0% so với vibe 78% số lượt
 làm hỏng test cũ; hai mô hình Claude gần như không làm hỏng test cũ ở cách nào. Chỉ số bảo trì: nhánh đặc tả
@@ -389,10 +389,10 @@ Codex, chưa đủ để kiểm máy chấm có nghiêng về bài của Claude 
 E1 hỏi mô hình yếu hơn có cần quy trình hơn không, với đề chi tiết, đủ 138/138 lượt. Đặc tả trừ vibe: tầng
 nhỏ −4,4 đpt [−13,3; 4,4], tầng vừa 0,0, tầng lớn −11,1 [−33,3; 0,0]. Không tầng nào đặc tả đạt hơn, cùng
 hướng với thí nghiệm chính, và tầng nhỏ tốn 3,3 so với 1,5 triệu token mỗi lượt. E1 thêm sau khi thấy kết
-quả chính nên chỉ là thăm dò (mục 4.6).
+quả chính nên chỉ là thăm dò (mục 4.3).
 
 **L7. [B] Sao ở tầng lớn đặc tả lại kém hơn với Sonnet, Opus?**
-Hiệu số tầng lớn là −11,1 đpt ở cả hai nhóm, chỉ tham khảo vì ba nhiệm vụ. Ca `f15` (mục 4.5) cho một cơ
+Hiệu số tầng lớn là −11,1 đpt ở cả hai nhóm, chỉ tham khảo vì ba nhiệm vụ. Ca `f15` (mục 4.3) cho một cơ
 chế cụ thể. Đề nêu tên `deleted_with_releases()` nhưng không nói trả về gì.
 Bản thiết kế của agent chốt là danh sách đối tượng, trong khi bản gốc trả về danh sách mã; kế hoạch và test
 của agent đều dựa trên quyết định đó nên đều đạt, còn test ẩn thì trượt. Cả ba lượt đặc tả trượt, một lượt
