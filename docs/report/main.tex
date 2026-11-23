@@ -66,6 +66,7 @@
 % Phụ lục: tiêu đề và mục lục ghi "Phụ lục A." thay vì chỉ "A".
 \titleformat{\section}{\large\bfseries}{Phụ lục \thesection.}{0.5em}{}
 \addtocontents{toc}{\protect\let\protect\numberline\protect\appendixnumberline}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 \zlabel{app:first}
 \input{sections/appendix}
 

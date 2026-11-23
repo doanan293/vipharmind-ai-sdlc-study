@@ -5,7 +5,7 @@ Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn A
 
 Ký hiệu: **[L]** Lợi trả lời chính (phần bối cảnh, phương pháp), **[B]** Bảo trả lời chính (phần kết quả). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
-`summary.json` của `data/results/analysis/`); "mục 4.2", "Phụ lục G" là mục của báo cáo. **[An điền: ...]** là chỗ
+`summary.json` của `data/results/analysis/`); "mục 4.2", "Phụ lục B" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.
 
 ## Cách trả lời
@@ -133,7 +133,7 @@ chính bắt đầu lúc 18:54 ngày 2026-11-15 (15 giây sau thẻ `prereg-v1`;
 khoảng 09:30, sau thẻ `prereg-v1.1` (2026-11-15 19:57) và `prereg-v1-analysis` (2026-11-16 08:59). Lúc mở,
 `agy-gemini` mới chạy xong một phần và hai lượt Opus chạy lại (f15 vibe) chưa xong (Opus 136/138), và số đếm thô
 của phần đã xong cũng đã được xem; báo cáo nêu điều này
-(mục 4.2, Phụ lục G).
+(mục 4.2, Phụ lục B).
 
 **C4. Phép thử chính là gì? Sao không gộp mọi nhóm?**
 Duy nhất một phép thử xác nhận: H1 trên `claude-sonnet`, tầng nhỏ, 15 nhiệm vụ. Chọn Sonnet vì là mô hình
@@ -201,7 +201,7 @@ Quét lại ngày 2026-11-17 trên `data/results/raw` của thí nghiệm chính
 
 **F1. Làm sao biết AI tham gia mọi khâu của ViPharmind?**
 Không đo được chính xác: 0 commit có dấu ghi công AI, và An đã xóa phần lớn lịch sử chat (còn 12 phiên
-Claude Code chính và 21 nhật ký subagent, 25/10 đến 9/11, Phụ lục C). Nhận định dựa trên lời khai của tác giả và phần nhật ký còn lại; báo cáo nói rõ là hạn chế.
+Claude Code chính và 21 nhật ký subagent, 25/10 đến 9/11, báo cáo mục 4.1). Nhận định dựa trên lời khai của tác giả và phần nhật ký còn lại; báo cáo nói rõ là hạn chế.
 Điều đo được là dấu vết quy trình: 43 file spec, plan và tỉ lệ commit tính năng có plan đi trước.
 
 **F2. Quy tắc nối commit với plan đúng đến đâu?**
@@ -261,13 +261,13 @@ và việc loại F07 phụ thuộc vào đơn vị đếm.
 ## I. Quota agy và lượng token [B]
 
 **I1. Vì sao agy tốn nhiều token thế?**
-Ở chạy thử (Phụ lục C), trung vị token vào mỗi lượt của agy là 3,4 triệu với 50 lượt gọi mô hình (4 lượt có
+Ở chạy thử (số mô tả, không in trong báo cáo), trung vị token vào mỗi lượt của agy là 3,4 triệu với 50 lượt gọi mô hình (4 lượt có
 nhật ký, gồm cả lượt bị ngắt vì quota), gấp khoảng 9 lần mức 0,37 triệu với 12 lượt gọi của Sonnet, và 94%
 token vào của agy là token đọc cache. Tài khoản agy đầu tiên hết quota tuần ngay trong chạy thử
 (`docs/pilot-report.md` §5.2), nên agy chạy xoay vòng 4 tài khoản. Thí nghiệm chính: cả bốn tài khoản agy hết
 quota tuần khi nhóm mới chấm xong 73/138 lượt (nhỏ 59/90, vừa 12/30, lớn 2/18), và An bỏ nhóm `agy-gemini`
 (mục 4.2). Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào quota
-thuê bao (Phụ lục C).
+thuê bao.
 
 **I2. Nếu agy hoặc Codex không chạy xong trước hạn thì sao?**
 Quy tắc chốt trước: (nhóm, tầng) chưa đủ ở hạn 2026-11-29 bị loại khỏi phép thử xác nhận và phép thử gộp,
@@ -275,7 +275,7 @@ chỉ báo cáo mô tả kèm số lượt còn thiếu. Lượt bị ngắt vì
 Thiếu quota thì ưu tiên hai nhóm Claude. Trạng thái thật: `agy-gemini` không chờ tới hạn mà bị bỏ hẳn
 ngày 2026-11-16 ở 73/138 lượt, theo quyết định của An. Quyết định này đến sau khi số đếm thô của phần agy đã
 xong đã được xem, nên không hoàn toàn độc lập với kết quả, dù lý do nêu ra là thời gian và quota (mục 4.2,
-Phụ lục G). Vì vậy RQ4 chỉ còn Claude Code và Codex. Ba nhóm còn lại đủ 138/138. Trong E2, Codex hết quota
+Phụ lục B). Vì vậy RQ4 chỉ còn Claude Code và Codex. Ba nhóm còn lại đủ 138/138. Trong E2, Codex hết quota
 và dừng ở 78/90 lượt tầng nhỏ; tầng vừa và lớn của E2 chỉ có ba nhóm Claude (mục 4.3).
 
 **I3. Chi phí đô la lấy ở đâu? Có trả tiền thật không?**
@@ -334,7 +334,7 @@ chỉnh bằng mô phỏng (0,30). Thay đổi ghi ở mục 11 trước khi xem
 bootstrap này chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58), với quy tắc đọc ghi trước: 33
 trên 40 bộ dữ liệu mô phỏng (82,5%), thấp hơn mức danh nghĩa 95%. Kết quả đạt ngưỡng ≥ 32/40 đã ghi nên mã
 được khóa, không chỉnh. Nghĩa là khoảng của hệ số tương tác hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu của
-hệ số nên không đổi (mục 4.4, Phụ lục G).
+hệ số nên không đổi (mục 4.4, Phụ lục B).
 
 **K6. Nhiều phép so như vậy có bị "câu cá" kết quả không?**
 Chỉ H1 là phép thử xác nhận. Các phép phụ không hiệu chỉnh so sánh nhiều lần, nhưng được báo cáo đủ, không
@@ -426,7 +426,7 @@ agy tự cập nhật từ 1.5.8 lên 1.5.9 trong chạy thử và không tắt 
 báo cáo liệt kê mọi phiên bản gặp và số lượt mỗi phiên bản theo cách làm. Thí nghiệm chính: mỗi nhóm chỉ
 gặp một phiên bản, Claude Code 2.1.325 và Codex CLI 0.162.1, 69 lượt mỗi cách làm mỗi nhóm (mục 4.2). E1, E2
 cũng chỉ có hai phiên bản này. Codex tự cập nhật lên 0.169.0 lúc 18:01 ngày 2026-11-16, ngay sau khi Codex
-trong E2 dừng vì hết quota; đó là một lý do An không chạy nốt 12 lượt còn thiếu (Phụ lục G).
+trong E2 dừng vì hết quota; đó là một lý do An không chạy nốt 12 lượt còn thiếu (Phụ lục B).
 
 ## N. Đạo đức, dùng AI, làm việc nhóm
 

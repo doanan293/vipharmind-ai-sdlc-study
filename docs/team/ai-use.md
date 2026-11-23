@@ -15,7 +15,7 @@ nhau:
    cứu (RQ1, RQ2) nghiên cứu chính quá trình đó.
 
 Ký hiệu: An đã kiểm lại mọi chỗ cần xác nhận (17/11). Số liệu khác lấy từ báo cáo
-(`docs/report/generated/numbers.json`); "mục 6.1", "Phụ lục G" là mục của báo cáo.
+(`docs/report/generated/numbers.json`); "mục 6.1", "Phụ lục B" là mục của báo cáo.
 
 ## 1. Công cụ và mô hình
 
@@ -35,7 +35,7 @@ Phiên bản công cụ thực tế của từng lượt chạy được bộ ch
 chính chỉ gặp một phiên bản: Claude Code 2.1.325 và Codex CLI 0.162.1 (báo cáo mục 6.1). E1, E2 cũng chỉ có
 hai phiên bản này; mọi lượt `agy-gemini` (đã bỏ) chạy Antigravity 1.5.9. Codex tự cập nhật lên 0.169.0 lúc
 18:01 ngày 2026-11-16, sau khi Codex trong E2 đã dừng vì hết hạn mức, nên không lượt nào chạy bằng bản này
-(Phụ lục G).
+(Phụ lục B).
 
 **Lưu ý về xung đột:** trợ lý nghiên cứu (Claude Opus 5.5) cùng mô hình với một nhóm được đo
 (`claude-opus`), và cùng hãng với nhóm `claude-sonnet`. Trợ lý đã soạn nháp đề bài và hai lời dặn mà các mô
@@ -99,7 +99,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 
 ViPharmind được An phát triển với trợ lý lập trình AI ở mọi khâu: nghiên cứu, dữ liệu, mã, kiểm thử, triển
 khai. Commit của ViPharmind không mang dấu ghi công AI (0 commit có `Co-Authored-By`), và nhật ký phiên chỉ
-còn một phần (12 phiên Claude Code chính và 21 nhật ký tác tử con, Phụ lục C; nhật ký Codex 2 dòng). Vì vậy báo cáo **không** đo được tỉ lệ mã do AI
+còn một phần (12 phiên Claude Code chính và 21 nhật ký tác tử con, báo cáo mục 4.1; nhật ký Codex 2 dòng). Vì vậy báo cáo **không** đo được tỉ lệ mã do AI
 viết; nhận định "AI tham gia mọi khâu" dựa trên lời khai của tác giả và phần nhật ký còn lại. Báo cáo nêu
 điều này ở phần hạn chế.
 

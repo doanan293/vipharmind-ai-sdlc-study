@@ -1,14 +1,16 @@
-\section{Prompt quy trình của hai cách làm}\label{app:prompts}
+\section{Chi tiết thực nghiệm}\label{app:details}
+
+\subsection{Prompt quy trình của hai cách làm}\label{app:prompts}
 
 Prompt quy trình đặt trước đề bài của mỗi nhiệm vụ, chép nguyên văn từ thư mục \texttt{code/prompts/} của kho mã.
 
-\subsection*{Vibe coding (\texttt{code/prompts/vibe.md})}
+\textit{Vibe coding} (\texttt{code/prompts/vibe.md}):
 {\small\VerbatimInput[breaklines]{../../code/prompts/vibe.md}}
 
-\subsection*{Theo đặc tả (\texttt{code/prompts/spec.md})}
+\textit{Theo đặc tả} (\texttt{code/prompts/spec.md}):
 {\small\VerbatimInput[breaklines]{../../code/prompts/spec.md}}
 
-\section{Danh sách nhiệm vụ}\label{app:tasks}
+\subsection{Nhiệm vụ và cách chọn}\label{app:tasks}
 
 Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của patch gốc (\texttt{src\_lines}). Cột
 ``Dòng chấm'' là \texttt{graded\_src\_lines}: số dòng mã mà patch gốc thêm hoặc sửa và có hidden test được
@@ -21,8 +23,6 @@ trong \texttt{data/tasks/*/task.toml}.
 \input{generated/tables/tasks}
 \end{table}
 
-
-\subsection*{Chọn nhiệm vụ}
 
 Phễu sàng lọc tầng nhỏ ở Bảng~\ref{tab:funnel}.
 
@@ -60,7 +60,7 @@ thông báo lỗi mà test so khớp, nên gần như đã là đặc tả. Đ�
 \texttt{f14} bắt đầu từ commit của \texttt{t01}, \texttt{f15} nối tiếp \texttt{f14}; một số nhiệm vụ tầng
 vừa chung đường dẫn file test với tầng khác nhưng không chung commit.
 
-\section{Cấu hình chạy của từng công cụ}\label{app:conditions}
+\subsection{Cấu hình chạy của từng công cụ}\label{app:conditions}
 
 Cấu hình của lượt chạy chính, do An chốt sau chạy thử. Chung cho cả ba công cụ: agent và bộ công cụ mặc
 định, kể cả công cụ web; gọi thẳng CLI, không proxy; mỗi lần chạy một thư mục \texttt{HOME} mới chỉ có
@@ -92,29 +92,7 @@ cập nhật phiên bản & mô hình được phục vụ không ghi được c
 \end{tabularx}
 \end{table}
 
-Lượng token khác nhau rất xa giữa các công cụ. Ở chạy thử, trung vị token vào mỗi lượt của
-\texttt{agy-gemini} là \NumPilotAgyInputMedianM{} triệu với \NumPilotAgyTurnsMedian{} lượt gọi mô hình
-(\NumPilotAgyRuns{} lượt có nhật ký, gồm cả lượt bị ngắt vì quota), gấp khoảng \NumPilotAgyInputRatio{}
-lần mức \NumPilotSonnetInputMedianM{} triệu với \NumPilotSonnetTurnsMedian{} lượt gọi của
-\texttt{claude-sonnet}; \NumPilotAgyCacheReadPct{}\% token vào của \texttt{agy-gemini} là token đọc cache.
-Token đọc cache rẻ khi quy đổi theo giá API nhưng vẫn bị tính vào quota thuê bao; điều này phù hợp với
-việc cả bốn tài khoản Antigravity hết quota tuần trước khi nhóm này chạy xong. Chạy thử dùng cấu hình cũ trên hai nhiệm
-vụ, nên đây chỉ là số mô tả, không phải kết quả. Số lượt gọi mô hình của một số lượt Claude chỉ lấy từ sự kiện kết quả
-cuối, nên bị đếm thiếu khi agent chạy nhiều phiên trong một lượt; token thì được cộng đủ.
-
-\section{Session log của ViPharmind}\label{sec:sessions}
-
-Nhật ký còn lại gồm \NumSessionsMain{} phiên chính và \NumSessionsSub{} nhật ký subagent, bắt đầu từ
-\mbox{\NumSessionFirstDate{}} đến \mbox{\NumSessionLastDate{}}, tức chỉ phủ vài tuần cuối của dự án. Trong các phiên
-chính, người dùng gửi \NumSessionUserMessages{} tin nhắn. Tính cả subagent, mô hình trả lời
-\NumSessionAssistantTurns{} lượt và gọi công cụ \NumSessionToolCalls{} lần, trong đó lệnh shell
-(\texttt{Bash}) chiếm \NumToolBashPct{}\%.
-
-Số lần người dùng ngắt ngang agent, số đo thay thế cho việc người sửa hướng, là
-\NumSessionInterrupts{}; đây chỉ là cận dưới, vì người dùng cũng sửa hướng bằng tin nhắn thường. Các con
-số ở mục này chỉ mô tả phần nhật ký còn lại, không suy rộng ra toàn dự án.
-
-\section{Thí nghiệm E2: thiết kế \texorpdfstring{$2\times 2$}{2 x 2} và số lượt chạy}\label{app:e2-coverage}
+\subsection{Số liệu bổ sung của E2}\label{app:e2-coverage}
 
 \begin{table}[H]
 \centering\small
@@ -134,7 +112,7 @@ Bảng~\ref{tab:e2-coverage} cho số lượt đề sơ sài đã chạy xong / 
 \input{generated/tables/e2_coverage}
 \end{table}
 
-\section{Giới hạn của phép đo}\label{app:validity}
+\subsection{Giới hạn của phép đo}\label{app:validity}
 
 ``Đạt'' là đạt hidden test không mang nhãn \texttt{integration}; kho lưu trữ (repository)
 Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
