@@ -39,15 +39,15 @@ thước, chấm bằng test mà agent không thấy (hidden test), và giao m�
 Sonnet 5.5 và Opus 5.5, Codex) theo hai cách làm, mỗi cách ba lần, tổng \NumResRuns{} lượt. Giả thuyết, đề
 bài và mã phân tích được chốt bằng git tag trước khi mở kết quả.
 
-Khi đề bài đã nêu đủ tên và chữ ký, làm theo đặc tả không làm tăng tỉ lệ đạt. Phép thử xác nhận (Sonnet,
+Khi đề bài đã nêu đủ tên và chữ ký, làm theo đặc tả không cho thấy tăng tỉ lệ đạt. Phép thử xác nhận (Sonnet,
 nhiệm vụ nhỏ) cho hiệu số \NumResHOneEstPp{} điểm phần trăm, khoảng tin cậy 95\%
 [\NumResHOneLowPp{}; \NumResHOneHighPp{}], trong khi chi phí tăng gấp \NumResTokenRatioMin{} đến
 \NumResTokenRatioMax{} lần token. \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của Claude có nguyên nhân là
-chi tiết đề không chốt hoặc nối sai với mã có sẵn, với tỉ lệ như nhau ở hai cách làm. Một thí nghiệm thăm dò
-với đề chỉ một hai câu cho thấy bỏ chi tiết làm điểm hành vi giảm \NumETwoXScoreShiftSpec{} và
+chi tiết đề không chốt hoặc nối sai với mã có sẵn, với tỉ lệ như nhau ở hai cách làm. Một thí nghiệm thăm dò, thêm sau khi xem kết quả chính,
+với đề chỉ một hai câu cho thấy bỏ chi tiết làm điểm checklist hành vi giảm \NumETwoXScoreShiftSpec{} và
 \NumETwoXScoreShiftVibe{} điểm phần trăm, còn quy trình đặc tả chỉ bù lại \NumETwoPooledSmallPp{} điểm ở
-nhiệm vụ nhỏ. Kết quả gợi ý rằng độ rõ của đề quan trọng hơn quy trình: quy trình tự động giúp agent tự
-kiểm, nhưng không tạo ra thông tin mà chỉ người giao việc có.
+nhiệm vụ nhỏ. Đề bài chi tiết thực chất là một bản spec do người viết; kết quả gợi ý rằng giá trị của spec
+nằm ở thông tin người đưa vào, không ở việc agent tự viết spec.
 
 \textbf{Từ khóa:} coding agent, phát triển theo đặc tả, vibe coding, thực nghiệm đối chứng, preregistration.
 

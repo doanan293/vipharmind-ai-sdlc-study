@@ -24,6 +24,10 @@ hay bản tóm tắt của bên thứ ba.
 mở lại một lần vì một kết quả tìm kiếm hiện tên khác ("SpecMine...") cho cùng mã arXiv; trang arXiv
 (bản v4, 2026-10-15) xác nhận tên và 5 tác giả như trong mục nhập đã có.
 
+Ngoài quy trình tìm: `vincent_superpowers` (https://github.com/obra/superpowers, mở ngày 2026-11-23) là
+phần mềm mà nhánh theo đặc tả tái hiện, không phải bài nghiên cứu, nên không tính vào các bước và tổng
+nguồn ở Bảng 1 của báo cáo. Tên và mô tả chép từ trang GitHub.
+
 ### Chuỗi tìm kiếm (theo thứ tự đã chạy, cùng ngày 2026-11-15)
 
 | # | Chuỗi tìm kiếm | Nhóm |

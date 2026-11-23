@@ -29,7 +29,6 @@
 \setlength{\parindent}{0pt}
 \urlstyle{same}
 \setlength{\emergencystretch}{3em}
-\newcommand{\appendixnumberline}[1]{\makebox[5.6em][l]{Phụ lục #1.}}
 
 % Chỗ chờ kết quả. check.sh --draft cho phép, check.sh (bản nộp) báo lỗi.
 \newcommand{\pending}[1]{\textcolor{gray}{[chờ kết quả]}}
@@ -53,8 +52,12 @@
 \input{sections/05-conclusion}
 \zlabel{sec:last}
 
-\clearpage
-{\small
+\input{sections/06-ai-use}
+
+{\footnotesize
+% Tài liệu tham khảo gọn hơn: bỏ khoảng trống giữa các mục.
+\let\OldBib\thebibliography
+\renewcommand{\thebibliography}[1]{\OldBib{#1}\setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}}
 \renewcommand{\refname}{Tài liệu tham khảo}
 \phantomsection\addcontentsline{toc}{section}{Tài liệu tham khảo}
 \bibliographystyle{plain}
@@ -62,10 +65,10 @@
 }
 
 \clearpage
-\appendix
-% Phụ lục: tiêu đề và mục lục ghi "Phụ lục A." thay vì chỉ "A".
-\titleformat{\section}{\large\bfseries}{Phụ lục \thesection.}{0.5em}{}
-\addtocontents{toc}{\protect\let\protect\numberline\protect\appendixnumberline}
+% Một phụ lục duy nhất, không đánh chữ; các mục con đánh số 1, 2, ...
+\setcounter{subsection}{0}
+\renewcommand{\thesubsection}{\arabic{subsection}}
+\renewcommand{\theHsubsection}{app.\arabic{subsection}}
 \addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 \zlabel{app:first}
 \input{sections/appendix}

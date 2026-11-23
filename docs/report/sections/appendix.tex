@@ -1,21 +1,21 @@
-\section{Chi tiết thực nghiệm}\label{app:details}
+\section*{Phụ lục: Chi tiết thực nghiệm}\label{app:details}
+\addcontentsline{toc}{section}{Phụ lục: Chi tiết thực nghiệm}
 
 \subsection{Prompt quy trình của hai cách làm}\label{app:prompts}
 
-Prompt quy trình đặt trước đề bài của mỗi nhiệm vụ, chép nguyên văn từ thư mục \texttt{code/prompts/} của kho mã.
+Prompt quy trình được đặt trước đề bài của mỗi nhiệm vụ; dưới đây là nguyên văn.
 
-\textit{Vibe coding} (\texttt{code/prompts/vibe.md}):
-{\small\VerbatimInput[breaklines]{../../code/prompts/vibe.md}}
+\textit{Vibe coding}:
+{\footnotesize\VerbatimInput[breaklines]{../../code/prompts/vibe.md}}
 
-\textit{Theo đặc tả} (\texttt{code/prompts/spec.md}):
-{\small\VerbatimInput[breaklines]{../../code/prompts/spec.md}}
+\textit{Theo đặc tả}:
+{\footnotesize\VerbatimInput[breaklines]{../../code/prompts/spec.md}}
 
 \subsection{Nhiệm vụ và cách chọn}\label{app:tasks}
 
-Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của patch gốc (\texttt{src\_lines}). Cột
-``Dòng chấm'' là \texttt{graded\_src\_lines}: số dòng mã mà patch gốc thêm hoặc sửa và có hidden test được
-chấm chạy tới (mục~\ref{sec:tasks}). Nhiệm vụ nhiều commit ghi \texttt{base..end}. Mã commit đầy đủ nằm
-trong \texttt{data/tasks/*/task.toml}.
+Cột ``Dòng src'' là số dòng thay đổi ở \texttt{backend/src} của patch gốc. Cột ``Dòng chấm'' là số dòng mã
+mà patch gốc thêm hoặc sửa và có hidden test được chấm chạy tới (mục~\ref{sec:tasks}). Nhiệm vụ nhiều commit
+ghi \texttt{base..end}.
 
 \begin{table}[H]
 \centering\small
@@ -24,49 +24,13 @@ trong \texttt{data/tasks/*/task.toml}.
 \end{table}
 
 
-Phễu sàng lọc tầng nhỏ ở Bảng~\ref{tab:funnel}.
-
-\begin{table}[H]
-\centering\small
-\caption{Phễu sàng lọc nhiệm vụ tầng nhỏ}\label{tab:funnel}
-\input{generated/tables/funnel}
-\end{table}
-
-
-Đề một commit nhỏ hơn nhiều so với một plan của ViPharmind, và chạy thử cho
-thấy Claude gần đạt trần ở đề nhỏ với cả hai cách làm, nên đề tài thêm hai tầng lớn hơn. Vì commit của các
-plan đan xen nhau, phần lõi của từng plan backend được cắt thành 16 đoạn commit liền nhau và bộ test được
-chạy ở đầu và cuối mỗi đoạn. Tầng lớn nhận đoạn có từ 750 dòng \texttt{backend/src} trở lên mà đề bài nêu
-được mọi tên hidden test cần với tối đa 35 tên: \texttt{f08}, \texttt{f14}, \texttt{f15}
-(\NumFeatureCommitsMin{} đến \NumFeatureCommitsMax{} commit, \NumFeatureSrcLinesMin{} đến
-\NumFeatureSrcLinesMax{} dòng). Hai đoạn F04 và F07 (mã đoạn viết hoa, mã nhiệm vụ viết thường) bị loại vì cần khoảng 60 và 70 tên. Đoạn F09 giữ quyết định loại có
-từ trước chạy thử, vì đề của nó gần như là một bản thiết kế viết sẵn. Tầng vừa xét
-\NumMediumWindows{} cửa sổ hai đến ba commit trong 16 đoạn theo chín tiêu chí cố định, gồm: chỉ commit
-\texttt{feat}, 300 đến 700 dòng, không chung commit với nhiệm vụ tầng khác, patch gốc chấm đạt, ít nhất năm
-hidden test được chấm trượt ở base commit, tối đa 50\% số dòng chỉ do test \texttt{integration} kiểm, tối đa 20 tên
-đếm bằng script. Quy tắc chọn tham lam theo lớp mã rồi theo số tên lấy \texttt{m01} đến \texttt{m05} trong
-\NumMediumEligible{} cửa sổ hợp lệ (\NumMediumSrcLinesMin{} đến \NumMediumSrcLinesMax{} dòng). Quy tắc này
-được viết sau khi xem số liệu dựng nhiệm vụ của ứng viên nhưng trước mọi lượt AI trên tầng vừa, và được ghi
-là một thay đổi so với preregistration (Phụ lục~\ref{app:deviations}); người phản biện dựng lại việc chọn
-bằng mã riêng và ra đúng năm cửa sổ.
-
-Đề bài hai tầng này có thêm mục ``giao diện bắt buộc'' liệt kê các tên hidden test cần, và đi qua bốn bước:
-soạn nháp, đối chiếu từng tên với hidden test, phản biện độc lập bởi Fable 5.2 (không đề nào bị bác, phần lớn
-được duyệt kèm sửa để nêu rõ hành vi test ghim chặt), rồi An duyệt. Đề \texttt{m01} nêu nguyên danh sách
-thông báo lỗi mà test so khớp, nên gần như đã là đặc tả. Đề tài còn đo \emph{số dòng được chấm}
-(\texttt{graded\_src\_lines}): số dòng mà patch gốc thêm hoặc sửa và có hidden test được chấm chạy tới. Ở
-\NumGradedMediumMinTasks{} con số này chỉ là \NumGradedMediumMin{}, vì phần lớn mã chỉ có test
-\texttt{integration}. Về chồng lấn, \texttt{f08} chứa commit của \texttt{t03} và \texttt{p02},
-\texttt{f14} bắt đầu từ commit của \texttt{t01}, \texttt{f15} nối tiếp \texttt{f14}; một số nhiệm vụ tầng
-vừa chung đường dẫn file test với tầng khác nhưng không chung commit.
+Tầng lớn nhận các đoạn commit có từ 750 dòng \texttt{backend/src} trở lên mà đề bài nêu được mọi tên
+hidden test cần với tối đa 35 tên; F04 và F07 bị loại vì cần khoảng 60 và 70 tên, F09 bị loại vì đề gần như
+là bản thiết kế viết sẵn. Tầng vừa chọn \texttt{m01}--\texttt{m05} trong \NumMediumEligible{} cửa sổ hai đến
+ba commit hợp lệ, theo quy tắc tham lam (lớp mã, rồi số tên) được ghi trước mọi lượt AI trên tầng này. Về chồng lấn,
+\texttt{f08} chứa commit của \texttt{t03} và \texttt{p02}, \texttt{f14} bắt đầu từ commit của \texttt{t01}.
 
 \subsection{Cấu hình chạy của từng công cụ}\label{app:conditions}
-
-Cấu hình của lượt chạy chính, do An chốt sau chạy thử. Chung cho cả ba công cụ: agent và bộ công cụ mặc
-định, kể cả công cụ web; gọi thẳng CLI, không proxy; mỗi lần chạy một thư mục \texttt{HOME} mới chỉ có
-thông tin đăng nhập của một tài khoản; biến môi trường lọc theo cùng một danh sách cho phép; không
-sandbox, mạng mở; cây mã không lịch sử git, đã bỏ \texttt{superpowers/}, \texttt{skills-lock.json} và file
-hướng dẫn cho AI.
 
 \begin{table}[H]
 \centering\small
@@ -102,117 +66,3 @@ sơ sài, vì hidden test gọi tên mà đề không nêu.}
 \label{tab:e2-x2}
 \input{generated/tables/e2_x2}
 \end{table}
-
-Bảng~\ref{tab:e2-coverage} cho số lượt đề sơ sài đã chạy xong / đã được chấm / dự kiến, tính đến
-\NumETwoCutoff{} (\NumETwoStatus{}). Lượt chưa được chấm không vào điểm và không được điền thay.
-
-\begin{table}[H]
-\centering\small
-\caption{E2: lượt đề sơ sài đã chạy / đã chấm / dự kiến}\label{tab:e2-coverage}
-\input{generated/tables/e2_coverage}
-\end{table}
-
-\subsection{Giới hạn của phép đo}\label{app:validity}
-
-``Đạt'' là đạt hidden test không mang nhãn \texttt{integration}; kho lưu trữ (repository)
-Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được chấm. Ở
-\NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của patch gốc, nên
-theo \texttt{task\_pass} hai nhiệm vụ này gần tầng nhỏ hơn số dòng gợi ý; phân tích độ nhạy với
-\texttt{graded\_src\_lines} kiểm điều này. Các tầng khác nhau không chỉ ở số dòng mà còn ở số test, giới
-hạn thời gian và độ chi tiết của đề, nên H5 là bằng chứng về ``nhiệm vụ cỡ tính năng'', không về riêng số
-dòng. Ngưỡng 35 tên của tầng lớn không có đơn vị đếm cố định và được áp bằng phán đoán. Chi phí bằng tiền là số quy đổi theo giá API, không
-phải số tiền đã trả; với \texttt{codex-luna} chỉ có cận dưới và cận trên.
-
-\section{Sai lệch so với preregistration}\label{app:deviations}
-
-Chép lại mục 11 của preregistration \texttt{prereg-v1}. Các mục từ đầu đến ``Coverage của khoảng bootstrap'' ghi ngày
-\mbox{2026-11-15}, trước khi mở bất kỳ kết quả chính nào; các mục từ ``Mở kết quả chính'' trở đi ghi sau
-đó, kèm những gì đã xem.
-
-\begin{itemize}[leftmargin=*]
-\item \textbf{Quy tắc chọn tầng vừa.} Thay bằng quy tắc của \texttt{prereg-v1.1}: loại ứng viên chung commit
-với nhiệm vụ tầng khác; thêm tiêu chí chỉ commit tính năng, tối thiểu năm hidden test trượt ở base commit, tối đa
-50\% dòng chỉ do test \texttt{integration} kiểm; ngưỡng 20 tên đổi đơn vị sang số đếm bằng script; thứ tự
-chọn mới; quy tắc thay thế nhiệm vụ chỉ dùng trước thẻ (thực tế không phải dùng). \textit{Đã xem:} số liệu dựng
-nhiệm vụ của ứng viên và một danh sách chọn tay đầu tiên; chưa kết quả AI nào.
-\item \textbf{Thời điểm thẻ \texttt{prereg-v1.1}.} Lượt chạy chính tầng nhỏ bắt đầu trước thẻ; theo trường
-hợp dự phòng, kết quả tầng nhỏ bị che tới khi có thẻ phân tích. \textit{Đã xem:} nhiều nhất là số lượt theo
-trạng thái.
-\item \textbf{F09.} Giữ quyết định loại của đợt chọn đầu, không xét lại theo ngưỡng 35 tên. \textit{Đã xem:}
-như mục đầu.
-\item \textbf{Vận hành.} Tầng vừa và tầng lớn chạy cùng lúc với tầng nhỏ (tổng tối đa 24 phiên thay vì
-tám), mỗi lệnh một thư mục làm việc riêng; báo cáo so số lượt hết giờ trong và ngoài khoảng này.
-\textit{Đã xem:} số lượt theo trạng thái.
-\item \textbf{Mô hình hỗn hợp của H5.} \texttt{glmer} (R) đổi sang \texttt{BinomialBayesMixedGLM}
-(statsmodels); thứ tự lùi bắt đầu từ mô hình không tương quan; khoảng tin cậy là bootstrap cụm theo nhiệm
-vụ (999 lần); ngưỡng suy biến 0,30 hiệu chỉnh bằng mô phỏng. Dữ liệu của mô hình chỉ gồm các nhóm đủ ở cả
-ba tầng, như phép thử chính của H5. \textit{Đã xem:} chỉ dữ liệu chạy thử và mô phỏng.
-\item \textbf{Giá \texttt{gpt-6-luna}.} Codex chỉ ghi lượng dùng cho cả lượt, nên ngưỡng 272.000 token không
-xét được theo lời gọi: báo cáo chi phí cận dưới và cận trên. \textit{Đã xem:} chưa kết quả chính nào.
-\item \textbf{Ghi cache của Claude.} Token ghi cache không tách thời gian giữ được tính theo giá giữ một giờ
-(cận trên). \textit{Đã xem:} chưa kết quả chính nào.
-\item \textbf{Chồng lấn (làm rõ).} Hai nhiệm vụ chồng lấn khi tập commit \texttt{base..end} giao nhau; chỉ
-có cặp \texttt{f08}--\texttt{t03}. \textit{Đã xem:} chưa kết quả chính nào.
-\item \textbf{Coverage của khoảng bootstrap.} Quy tắc đọc bài kiểm tra mô phỏng được ghi trước khi có kết quả;
-kết quả \NumResCoverageHits{}/\NumResCoverageSets{} đạt ngưỡng đã ghi và mã được khóa không chỉnh.
-\textit{Đã xem:} chưa kết quả chính nào.
-\item \textbf{Mở kết quả chính.} Sau khi có thẻ \texttt{prereg-v1-analysis}, An và trợ lý xem số đếm thô
-theo nhóm, tầng và cách làm, khi \texttt{agy-gemini} mới chạy xong một phần và hai lượt Opus chạy lại (f15,
-vibe) chưa xong. \textit{Đã xem:} số đếm thô của các lượt đã xong (Opus còn thiếu hai lượt); hai lượt kia chạy tiếp bằng
-đúng lệnh đã chốt, phân tích chính thức có đủ.
-\item \textbf{Bỏ \texttt{agy-gemini}.} An quyết định bỏ nhóm này vì cả bốn tài khoản hết quota và không kịp
-chạy đủ; dữ liệu thô giữ nguyên, phân tích chạy với ba nhóm. \textit{Đã xem:} như mục trên; lý do nêu ra là
-thời gian và quota.
-\item \textbf{Bản bổ sung \texttt{prereg-v1.2} (thăm dò).} Thêm nhóm Claude Haiku 5.5 theo thiết kế gốc
-(E1) và đề bài sơ sài cho bốn nhóm (E2), chấm E2 bằng checklist hành vi rút từ hidden test; người chấm đổi từ
-Codex sang Fable 5.2 trước lượt chấm đầu tiên. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính; đây là
-lý do thêm, nên mọi kết quả E1, E2 chỉ là thăm dò.
-\item \textbf{Phạm vi chấm của E1.} Khi hết quota Fable, An cắt phạm vi chấm: chỉ chấm tiếp lượt đề sơ sài;
-với lượt đề chi tiết của Haiku, chỉ \NumETwoHaikuDetailedJudged{} trên \NumETwoHaikuDetailedExpected{} lượt
-được chấm, vì chỉ số chính của E1 là hidden test. \textit{Đã xem:} số lượt đã chấm.
-\item \textbf{Dừng Codex trong E2.} Mọi tài khoản Codex hết quota tới sau hạn nộp; An quyết định không mua
-thêm và không chạy nốt các lượt dở bằng khóa API, vì tốn tiền và Codex CLI trên máy đã tự cập nhật phiên
-bản, nên lượt chạy thêm sẽ khác phiên bản. Codex dừng ở \NumETwoCodexSmallJudged{} trên
-\NumETwoCodexSmallExpected{} lượt tầng nhỏ; tầng vừa và tầng lớn của E2 chỉ có ba nhóm Claude. Mẫu chấm tay
-rút từ các lượt đã có. \textit{Đã xem:} số lượt theo trạng thái và kết quả E2 tạm thời.
-\item \textbf{Gán nhãn vòng hai.} Vòng một bị loại theo đề nghị của Lợi và Bảo vì điền chưa kỹ, và không
-dùng trong báo cáo. Vòng hai gán lại cả \NumLabRuns{} lượt với mã và thứ tự mới, kèm mã nguồn hidden test, và
-thêm một thứ tự quyết định cố định vào hướng dẫn (bảng nhãn không đổi); quyết định này có trước khi có phiếu
-vòng hai. Fable 5.2 gán thêm làm người chấm thứ ba, chỉ để mô tả. \textit{Đã xem:} phiếu vòng một.
-\item \textbf{Người kiểm tra lượt đạt.} An giao việc đối chiếu \NumPassCheckRuns{} lượt đạt cho Lợi và Bảo
-(mỗi người \NumPassCheckLoi{}, chia ngẫu nhiên), gói che cách làm; An chỉ soát lại. Khác preregistration: người kiểm tra mù cách
-làm, mỗi lượt một người đọc. \textit{Đã xem:} kết quả mô tả của thí nghiệm chính.
-\end{itemize}
-
-\section{Khai báo sử dụng AI và bản kê đóng góp}\label{app:ai}
-Đề tài có AI ở bốn vai trò, được tách riêng: trợ lý nghiên cứu, người duyệt độc lập, đối tượng được đo, và
-công cụ đã làm ra ViPharmind (đối tượng của phần phân tích lịch sử git). Bản khai đầy đủ theo từng việc nằm ở
-\texttt{docs/team/ai-use.md}; dưới đây là phần chính.
-
-\textit{Trợ lý nghiên cứu} (Claude Code với Claude Opus 5.5) tìm tài liệu theo quy trình ghi lại được, soạn
-nháp đề bài và hai prompt quy trình, viết toàn bộ mã của harness, grader, gói phân tích và script sinh số liệu cho
-báo cáo, viết nháp các mục của báo cáo và dựng slide. An quyết định thiết kế, phạm vi, tiêu chí và mọi thay
-đổi so với preregistration; An duyệt gộp đề bài do AI soạn. Mọi con số trong báo cáo được sinh bằng máy từ file
-kết quả, và \texttt{check.sh} chặn số gõ tay.
-
-\textit{Người duyệt độc lập} (Fable 5.2, chạy trong ngữ cảnh riêng) phản biện preregistration, đề
-bài tầng vừa và tầng lớn, và mã phân tích khi chưa có kết quả chính; trong E2, Fable 5.2 cũng là người chấm danh sách
-hành vi, không biết lượt thuộc cách làm nào, và gán nhãn nguyên nhân thất bại như người chấm thứ ba trên
-cùng gói che cách làm (chỉ để đối chiếu, không thay nhãn của người).
-
-\textit{Đối tượng được đo} là các tổ hợp công cụ và mô hình ở mục~\ref{sec:conditions} (và Claude Haiku 5.5
-trong E1). Trợ lý nghiên cứu cùng mô hình với nhóm \texttt{claude-opus} và đã soạn đề bài mà nhóm này nhận;
-đây là một xung đột lợi ích được nêu ở mục~\ref{sec:threats}.
-
-Nhãn dùng trong phân tích do người gán (Lợi, Bảo; An phân xử); nhãn của Fable chỉ để đối chiếu.
-\textit{Không dùng AI} ở chấm tay mẫu kiểm tra E2 (Lợi, Bảo) và phiếu đánh giá chéo trong nhóm. Commit trong các repo không có dòng ghi công AI theo quy ước của An; bản khai này thay
-cho dòng đó.
-
-\textit{Đóng góp.} Doãn Văn An là nhóm trưởng, điều phối và giao việc, làm phần lớn nghiên cứu (thiết kế
-chính, bộ nhiệm vụ, harness, chạy thí nghiệm, phân tích, báo cáo, slide) với trợ lý AI như trên. Lê Xuân Lợi
-và Trần Ngọc Bảo cùng hỗ trợ chọn đề tài, góp ý thiết kế và làm phần đo bằng người, độc lập với nhau (gán
-nhãn mù nguyên nhân thất bại, kiểm tra lượt đạt, chấm tay mẫu kiểm tra E2). Mỗi người phụ trách riêng một
-phần: Lợi phụ trách phần bối cảnh và phương pháp (kiểm lại trích dẫn của các nguồn tham khảo, phản biện
-mục 1--3); Bảo phụ trách phần kết quả (tính lại độc lập tỉ lệ đạt và token từ dữ
-liệu từng lượt, phản biện mục 4--5). Bản kê chi tiết ở
-\texttt{docs/team/contributions.md}.

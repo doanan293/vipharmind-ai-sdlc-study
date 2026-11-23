@@ -369,7 +369,7 @@ def main_table(s: dict) -> str:
             )
     for tier, _, vn in TIERS:
         e = _est(E, f"pooled.pass_diff.{tier}")
-        rows.append(["gộp ba nhóm", vn, "", "", _cell_ci(e), ""])
+        rows.append(["gộp ba cohort", vn, "–", "–", _cell_ci(e), "–"])
     return _tabular(
         "llrrlr",
         ["Nhóm", "Tầng", "Đặc tả (\\%)", "Vibe (\\%)", "Hiệu số (pp) [KTC 95\\%]", "Kết luận"],

@@ -5,7 +5,7 @@ Dành cho Lê Xuân Lợi và Trần Ngọc Bảo. Người soạn: Doãn Văn A
 
 Ký hiệu: **[L]** Lợi trả lời chính (phần bối cảnh, phương pháp), **[B]** Bảo trả lời chính (phần kết quả). Người kia bổ sung nếu cần. Câu đánh dấu ★ là
 câu khó nhất, nên tập trước. Mọi con số lấy từ báo cáo (`docs/report/generated/numbers.json`, các file
-`summary.json` của `data/results/analysis/`); "mục 4.2", "Phụ lục B" là mục của báo cáo. **[An điền: ...]** là chỗ
+`summary.json` của `data/results/analysis/`); "mục 4.2", "Phụ lục A" là mục của báo cáo. **[An điền: ...]** là chỗ
 chỉ người trong nhóm trả lời được.
 
 ## Cách trả lời
@@ -76,7 +76,7 @@ không đổi được kết quả.
 Đúng là có rủi ro này. Tiêu chí 3 của sàng lọc chỉ giữ nhiệm vụ mà test kiểm hành vi qua giao diện đề bài
 nêu được, và đề bài nêu mọi tên công khai mà test cần (rà ở `data/tasks/PROMPT_AUDIT.md`, Fable duyệt tầng vừa
 và lớn). Rủi ro còn lại ảnh hưởng hai cách làm như nhau vì cả hai nhận cùng đề. Nhãn `de_bai_thieu` trong
-phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.3, 4.4).
+phân loại lỗi đo đúng phần này: 14 trên 30 lượt hỏng của hai nhóm Claude (8 đặc tả, 6 vibe; mục 4.3, 4.5).
 
 **B3. ★ Bản gốc của ViPharmind được làm theo đặc tả. Hidden test có thiên vị nhánh theo đặc tả không?**
 Có thể, và báo cáo ghi rõ là hạn chế. Hidden test kiểm hành vi qua giao diện đề bài nêu, không kiểm cấu trúc
@@ -133,7 +133,7 @@ chính bắt đầu lúc 18:54 ngày 2026-11-15 (15 giây sau thẻ `prereg-v1`;
 khoảng 09:30, sau thẻ `prereg-v1.1` (2026-11-15 19:57) và `prereg-v1-analysis` (2026-11-16 08:59). Lúc mở,
 `agy-gemini` mới chạy xong một phần và hai lượt Opus chạy lại (f15 vibe) chưa xong (Opus 136/138), và số đếm thô
 của phần đã xong cũng đã được xem; báo cáo nêu điều này
-(mục 4.2, Phụ lục B).
+(mục 4.2, mục 11 của `docs/prereg/prereg-v1.md`).
 
 **C4. Phép thử chính là gì? Sao không gộp mọi nhóm?**
 Duy nhất một phép thử xác nhận: H1 trên `claude-sonnet`, tầng nhỏ, 15 nhiệm vụ. Chọn Sonnet vì là mô hình
@@ -275,7 +275,7 @@ chỉ báo cáo mô tả kèm số lượt còn thiếu. Lượt bị ngắt vì
 Thiếu quota thì ưu tiên hai nhóm Claude. Trạng thái thật: `agy-gemini` không chờ tới hạn mà bị bỏ hẳn
 ngày 2026-11-16 ở 73/138 lượt, theo quyết định của An. Quyết định này đến sau khi số đếm thô của phần agy đã
 xong đã được xem, nên không hoàn toàn độc lập với kết quả, dù lý do nêu ra là thời gian và quota (mục 4.2,
-Phụ lục B). Vì vậy RQ4 chỉ còn Claude Code và Codex. Ba nhóm còn lại đủ 138/138. Trong E2, Codex hết quota
+mục 11 của `docs/prereg/prereg-v1.md`). Vì vậy RQ4 chỉ còn Claude Code và Codex. Ba nhóm còn lại đủ 138/138. Trong E2, Codex hết quota
 và dừng ở 78/90 lượt tầng nhỏ; tầng vừa và lớn của E2 chỉ có ba nhóm Claude (mục 4.3).
 
 **I3. Chi phí đô la lấy ở đâu? Có trả tiền thật không?**
@@ -334,7 +334,7 @@ chỉnh bằng mô phỏng (0,30). Thay đổi ghi ở mục 11 trước khi xem
 bootstrap này chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58), với quy tắc đọc ghi trước: 33
 trên 40 bộ dữ liệu mô phỏng (82,5%), thấp hơn mức danh nghĩa 95%. Kết quả đạt ngưỡng ≥ 32/40 đã ghi nên mã
 được khóa, không chỉnh. Nghĩa là khoảng của hệ số tương tác hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu của
-hệ số nên không đổi (mục 4.4, Phụ lục B).
+hệ số nên không đổi (mục 4.5, mục 11 của `docs/prereg/prereg-v1.md`).
 
 **K6. Nhiều phép so như vậy có bị "câu cá" kết quả không?**
 Chỉ H1 là phép thử xác nhận. Các phép phụ không hiệu chỉnh so sánh nhiều lần, nhưng được báo cáo đủ, không
@@ -426,7 +426,7 @@ agy tự cập nhật từ 1.5.8 lên 1.5.9 trong chạy thử và không tắt 
 báo cáo liệt kê mọi phiên bản gặp và số lượt mỗi phiên bản theo cách làm. Thí nghiệm chính: mỗi nhóm chỉ
 gặp một phiên bản, Claude Code 2.1.325 và Codex CLI 0.162.1, 69 lượt mỗi cách làm mỗi nhóm (mục 4.2). E1, E2
 cũng chỉ có hai phiên bản này. Codex tự cập nhật lên 0.169.0 lúc 18:01 ngày 2026-11-16, ngay sau khi Codex
-trong E2 dừng vì hết quota; đó là một lý do An không chạy nốt 12 lượt còn thiếu (Phụ lục B).
+trong E2 dừng vì hết quota; đó là một lý do An không chạy nốt 12 lượt còn thiếu (mục 11 của `docs/prereg/prereg-v1.md`).
 
 ## N. Đạo đức, dùng AI, làm việc nhóm
 

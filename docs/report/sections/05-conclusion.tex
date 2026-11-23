@@ -2,17 +2,19 @@
 
 Nghiên cứu so sánh phát triển theo đặc tả với vibe coding trên ViPharmind, bằng phân tích lịch sử git
 và một thực nghiệm đối chứng có preregistration với \NumResRuns{} lượt chạy. Lịch sử git cho thấy nếp spec, plan rõ:
-khoảng \NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên), và commit có hay không có plan
-bị sửa lại gần như ngang nhau (RQ1, RQ2).
+\NumFeatWithPlanPct{}\% commit tính năng nối được với một plan (cận trên), và commit có hay không có plan
+bị sửa lại gần như ngang nhau (RQ1, RQ2). Mức tham gia của AI ở từng khâu thì git không đo được; nhận định
+``AI tham gia mọi khâu dựa trên lời khai của tác giả dự án.
 
-Khi đề đã nêu đủ tên và chữ ký, quy trình đặc tả không làm agent đạt hidden test nhiều hơn (H1, H4, H5 chưa kết
+Khi đề đã nêu đủ tên và chữ ký, không thấy quy trình đặc tả làm agent đạt hidden test nhiều hơn (H1, H4, H5 chưa kết
 luận được) nhưng tốn gấp \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token (H2); ở tầng nhỏ, KTC của cả
 Claude Code và Codex đều chứa 0, và dấu hiệu có ích duy nhất là Codex trên ba nhiệm vụ lớn nhất (RQ3--RQ6). Phần lớn lượt hỏng
 đến từ chi tiết đề không chốt hoặc từ việc nối với mã có sẵn, như nhau ở hai cách làm. Khi đề chỉ một hai câu,
 thí nghiệm thăm dò gợi ý rằng mức chi tiết của đề tác động lớn hơn nhiều so với cách làm, và quy trình chỉ bù
 một phần nhỏ ở việc nhỏ.
 
-Nhìn chung, quy trình đặc tả tự động không thay được thông tin mà đề bài thiếu. Nó giúp
-agent tự kiểm và để lại test, nhưng khi agent phải đoán, nó chỉ chốt cách đoán đó sớm hơn. Hướng tiếp theo
-gồm: thêm bước người duyệt bản thiết kế vào nhánh đặc tả, kiểm lại giả thuyết thăm dò về đề sơ sài bằng một
+Nhìn chung, spec quan trọng, nhưng giá trị của nó nằm ở thông tin người đưa vào. Spec do agent tự viết để lại
+bộ test (giá trị của bộ test này chưa được đo), nhưng như ca \texttt{f15} gợi ý, khi agent phải đoán, spec chỉ
+chốt cách đoán đó sớm hơn. Hướng tiếp theo
+gồm: thêm bước hỏi lại người dùng và người duyệt spec vào nhánh đặc tả, kiểm lại giả thuyết thăm dò về đề sơ sài bằng một
 thí nghiệm có preregistration, và mở rộng sang nhiều dự án và nhiều nhiệm vụ cỡ tính năng hơn.

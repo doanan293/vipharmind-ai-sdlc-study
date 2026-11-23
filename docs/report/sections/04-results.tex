@@ -27,7 +27,7 @@ cuối của dự án).
 \caption{Số commit theo tuần và theo khâu}\label{fig:lifecycle}
 \end{figure}
 
-Theo quy tắc nối ở mục~\ref{sec:method}, \NumFeatWithPlan{} trong
+Theo quy tắc nối ở mục~\ref{sec:method}.1, \NumFeatWithPlan{} trong
 \NumCommitsFeat{} commit \texttt{feat} (\NumFeatWithPlanPct{}\%) có plan đi trước. Quy tắc đúng ở
 \NumLinkCorrect{} trên \NumLinkChecked{} commit kiểm tay (\NumLinkCorrectPct{}\%); trong các lần sai,
 \NumLinkFalsePositive{} lần nối thừa và \NumLinkFalseNegative{} lần bỏ sót. Vì sai lệch nghiêng về nối thừa,
@@ -56,14 +56,14 @@ nào viết hai file này, nên can thiệp được thực hiện đúng.
 
 Nhóm \texttt{agy-gemini} bị loại: cả bốn tài khoản Antigravity hết quota tuần khi nhóm này mới xong
 \NumResAgyDone{} trên \NumResRunsPerCohort{} lượt. Số đếm thô của phần đã xong được xem trước quyết định loại
-(Phụ lục~\ref{app:deviations}), nên quyết định này không hoàn toàn độc lập với kết quả. RQ4 vì vậy chỉ còn hai
+(và được ghi trong nhật ký sai lệch), nên quyết định này không hoàn toàn độc lập với kết quả. RQ4 vì vậy chỉ còn hai
 công cụ.
 
 Bảng~\ref{tab:main} và Hình~\ref{fig:by-cohort} tóm tắt tỉ lệ đạt theo nhóm và tầng.
 
 \begin{table}[H]
 \centering\small
-\caption{Tỉ lệ đạt theo nhóm, tầng và cách làm. Hiệu số là đặc tả trừ vibe (pp), KTC 95\% bootstrap theo
+\caption{Tỉ lệ đạt theo cohort, tầng và cách làm. Hiệu số là đặc tả trừ vibe (pp), KTC 95\% bootstrap theo
 nhiệm vụ. Tầng vừa và tầng lớn dưới sáu nhiệm vụ nên KTC chỉ để tham khảo.}
 \label{tab:main}
 \input{generated/tables/results_main}
@@ -72,7 +72,7 @@ nhiệm vụ. Tầng vừa và tầng lớn dưới sáu nhiệm vụ nên KTC c
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{generated/figures/pass_diff_by_cohort.pdf}
-\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo nhóm và tầng, kèm KTC 95\%}
+\caption{Hiệu số tỉ lệ đạt (đặc tả trừ vibe) theo cohort và tầng, kèm KTC 95\%; màu theo tầng, ``nv là số nhiệm vụ}
 \label{fig:by-cohort}
 \end{figure}
 
@@ -108,7 +108,7 @@ nhiệm vụ lệch nằm ở cả hai phía và ở mọi cỡ; riêng ba nhi�
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\linewidth]{generated/figures/effect_vs_size.pdf}
-\caption{Hiệu số tỉ lệ đạt theo số dòng của patch gốc; mỗi điểm là một nhiệm vụ của một nhóm}
+\caption{Hiệu số tỉ lệ đạt theo số dòng của patch gốc; điểm nhạt là một nhiệm vụ của một cohort, điểm đậm là trung bình các cohort; màu theo tầng}
 \label{fig:effect-size}
 \end{figure}
 
@@ -161,7 +161,7 @@ nhánh gần như nhau.
 
 \begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
-\caption{Test do agent viết, theo nhóm và cách làm (mọi tầng). Coverage là tỉ lệ dòng mới ở
+\caption{Test do agent viết, theo cohort và cách làm (mọi tầng). Coverage là tỉ lệ dòng mới ở
 \texttt{backend/src} được test của chính agent chạy qua, tính 0 khi lượt không viết test.}
 \label{tab:tests}
 \input{generated/tables/results_tests}
@@ -174,7 +174,7 @@ Hai người gán nhãn độc lập \NumLabRuns{} lượt không đạt của h
 lượt lệch được phân xử (Bảng~\ref{tab:labels}). \NumLabOutside{} lượt hỏng không do logic agent tự viết:
 \NumLabDeBaiThieuTotal{} vì hidden test kiểm chi tiết đề không chốt, \NumLabSaiApiCoSanTotal{} vì nối sai với mã có
 sẵn. Hai loại này chiếm tỉ lệ gần như nhau ở hai nhánh (\NumLabOutsideSpecPct{}\% và \NumLabOutsideVibePct{}\%):
-quy trình đặc tả không làm giảm chúng. Fable 5.2, gán nhãn như người thứ ba chỉ để đối chiếu, đồng ý với hai
+không thấy quy trình đặc tả làm giảm chúng (\NumLabRuns{} lượt). Fable 5.2, gán nhãn như người thứ ba chỉ để đối chiếu, đồng ý với hai
 người ở mức kappa \NumLabFableKappaLoi{} và \NumLabFableKappaBao{}. Trong \NumPassCheckRuns{} lượt đạt được đọc
 mù, cả \NumPassCheckCorrect{} lượt đều đúng thật, nên không thấy trường hợp ``đạt test nhưng sai''.
 
@@ -196,8 +196,11 @@ cũng phải tự chọn, và đều chọn danh sách mã. Ca này cho thấy m
 ngỏ thành quyết định cố định, rồi test viết trước kiểm quyết định đó bằng chính giả định của nó.
 
 \label{sec:explore}Hai thí nghiệm thăm dò E2 và E1 được thêm sau khi xem kết quả chính; chúng chỉ đọc theo dấu và độ lớn. Trong E2,
-ba nhóm Claude chạy đủ \NumETwoClaudeBriefJudged{} lượt; Codex hết quota sau \NumETwoCodexSmallJudged{} trên
-\NumETwoCodexSmallExpected{} lượt tầng nhỏ (Phụ lục~\ref{app:e2-coverage}).
+ba cohort Claude (Sonnet, Opus, Haiku) chạy đủ \NumETwoClaudeBriefJudged{} lượt đề sơ sài; Codex hết quota sau
+\NumETwoCodexSmallJudged{} trên \NumETwoCodexSmallExpected{} lượt tầng nhỏ. Với đề chi tiết, điểm checklist có
+cho \NumETwoJudgeN{} lượt: đủ ba cohort của thí nghiệm chính và \NumETwoHaikuDetailedJudged{} trên
+\NumETwoHaikuDetailedExpected{} lượt Haiku, vì LLM judge hết quota. Hai cột đề chi tiết và đề sơ sài vì vậy không
+gộp cùng một tập lượt, nên tương tác ở Bảng~\ref{tab:e2-x2} (Phụ lục) chỉ để tham khảo.
 
 Trong E2, mức chi tiết của đề lấn át cách làm: bỏ chi tiết, điểm checklist giảm
 \NumETwoXScoreShiftSpec{} pp ở nhánh đặc tả và \NumETwoXScoreShiftVibe{} pp ở nhánh vibe; tỉ lệ lượt làm hỏng
@@ -242,39 +245,45 @@ nhiệm vụ và H5 chưa kết luận được, tín hiệu này chỉ đủ đ
 
 Phần lớn lượt hỏng đến từ thông tin mà đề không có. \NumLabOutside{} trên \NumLabRuns{} lượt hỏng của
 Claude có nguyên nhân là hidden test kiểm một chi tiết đề không chốt hoặc agent nối sai với mã có sẵn, và hai loại này chiếm tỉ lệ như nhau ở hai cách làm. Bước thiết kế không tự biết chi tiết mà đề bỏ ngỏ: như
-ca \texttt{f15}, nó chốt một cách đoán, rồi test viết trước kiểm lại chính cách đoán đó. Thông tin còn thiếu chỉ
-người giao việc có, nên quy trình tự động không bù được.
+ca \texttt{f15}, nó chốt một cách đoán, rồi test viết trước kiểm lại chính cách đoán đó. Ca này gợi ý rằng thông
+tin còn thiếu chỉ người giao việc có, nên quy trình tự động khó bù.
 
-Khi đề sơ sài, độ rõ của đề quan trọng hơn quy trình. E2 gợi ý rằng bỏ tên và chữ ký làm điểm hành vi
-giảm mạnh ở cả hai cách, lớn hơn nhiều mọi khác biệt giữa hai cách. Quy trình bù lại vài điểm ở việc nhỏ, rõ
-nhất với Sonnet, có lẽ vì bước thiết kế buộc agent tự nêu điều đề không nói. Vì E2 thêm sau khi thấy kết quả
-chính và tương tác có KTC chứa 0, đây là xu hướng gợi ý, chưa phải kết luận đã kiểm.
+E2 gợi ý rằng giá trị của spec nằm ở phần do người viết. Đề chi tiết của thí nghiệm chính thực chất là một bản spec do
+người viết: tên, chữ ký, quy tắc. E2 tách được hai loại spec: bỏ spec của người làm điểm checklist giảm
+\NumETwoXScoreShiftSpec{} và \NumETwoXScoreShiftVibe{} pp ở cả hai cách, còn spec do agent tự viết chỉ bù
+\NumETwoPooledSmallPp{} pp ở nhiệm vụ nhỏ, rõ nhất với Sonnet, và không thấy lợi ích ở nhiệm vụ vừa, lớn (chỉ tham
+khảo). Agent tự viết spec chỉ ghi lại cách nó đoán; thông tin mà người giao việc có thì nó không tự sinh ra
+được. Vì E2 thêm sau khi thấy kết quả chính và tương tác có KTC chứa 0, đây là xu hướng gợi ý, chưa phải kết
+luận đã kiểm.
 
 Giá trị chưa được đo của quy trình là bộ test để lại. Nhánh theo đặc tả để lại test ở phần lớn số lượt,
-trong khi nhánh vibe của Sonnet và Codex gần như không. Hidden test không đo giá trị này; nó chỉ hiện ra ở những lần
-sửa sau, ngoài phạm vi thí nghiệm.
+trong khi nhánh vibe của Sonnet và Codex gần như không. Hidden test không đo giá trị này; bộ test có thể có ích ở những
+lần sửa sau, nhưng thí nghiệm không đo điều đó.
 
 Kết quả khớp với nghiên cứu quan sát lớn nhất: Hill \cite{hill_2026} không thấy pull request có tài liệu đặc tả
 đưa vào ít lỗi hơn; ở đây nhánh theo đặc tả cũng không đạt nhiều hidden test hơn và không ít regression hơn với hai mô
 hình Claude. Lịch sử git (RQ2) cùng hướng: commit có hay không có plan bị sửa lại gần như ngang nhau. Đánh đổi
 mà Agarwal và cộng sự \cite{agarwal_2026} mô tả qua phỏng vấn (đáng tin hơn, đổi lại tốn công) hiện ra chủ yếu
-ở vế chi phí; vế ``đáng tin hơn'' chỉ thấy ở Codex tầng lớn. Mock và Russo \cite{mock_2026} thấy quy trình tác
-tử có thể thêm độ phức tạp không được yêu cầu; ở đây nhánh theo đặc tả có nhiều lỗi static analysis hơn ở hai ô. Lợi ích
+ở vế chi phí; vế ``đáng tin hơn'' chỉ thấy ở Codex tầng lớn. Mock và Russo \cite{mock_2026} thấy quy trình
+agent có thể thêm độ phức tạp không được yêu cầu; ở đây nhánh theo đặc tả có nhiều lỗi static analysis hơn ở hai ô. Lợi ích
 của lập kế hoạch ở mức hàm \cite{jiang_2024} không lặp lại ở mức tính năng khi đề đã chi tiết.
 
 Với người dùng trợ lý lập trình, kết quả gợi ý đầu tư vào đề bài (tên, chữ ký,
-kiểu trả về, trường hợp biên) trước khi đầu tư vào quy trình tự động. Nếu dùng quy trình đặc tả, bước có giá
-trị nhất có lẽ là để người duyệt bản thiết kế, vì đó là lúc chỗ đề bỏ ngỏ như ở \texttt{f15} lộ ra.
+kiểu trả về, trường hợp biên) trước khi đầu tư vào quy trình tự động. Kết quả này không áp dụng trọn cho Superpowers dùng đầy đủ: hai bước mà nhánh đặc
+tả của thí nghiệm phải bỏ, hỏi lại người dùng và để người duyệt spec, chính là hai bước đưa ý của người vào
+spec, và cũng là lúc chỗ đề bỏ ngỏ như ở \texttt{f15} lộ ra. Thí nghiệm chưa đo hai bước này.
 
-\label{sec:threats}Các kết quả trên có năm hạn chế chính.
+\subsection{Hạn chế}\label{sec:threats}
+
+Các kết quả trên có năm hạn chế chính.
 
 Về tính hợp lệ cấu trúc, để hidden test chấm được, đề của thí nghiệm chính phải nêu tên và chữ ký, nên nhánh
 vibe nhận một yêu cầu đầy đủ hơn vibe coding thật. Thí nghiệm chính đo tác dụng của riêng quy trình khi yêu cầu
 đã rõ; E2 được thêm để nhìn vào phần còn lại. Nhánh theo đặc tả là bản rút gọn của Superpowers
 (Bảng~\ref{tab:superpowers}): không hỏi đáp với người dùng, không subagent, không bước duyệt. Những phần
 này có thể bắt được chỗ đề bỏ ngỏ, và thí nghiệm không đo chúng. Hidden test cũng kiểm cả chi tiết đề không
-chốt, nhưng chúng hạ tỉ lệ đạt ở hai nhánh như nhau nên ít ảnh hưởng hiệu số. Các giới hạn khác của phép đo ở
-Phụ lục~\ref{app:validity}.
+chốt, nhưng chúng hạ tỉ lệ đạt ở hai nhánh như nhau nên ít ảnh hưởng hiệu số. Repository Postgres, migration và lệnh quản trị chỉ có test \texttt{integration} nên không được
+chấm; ở \NumGradedMediumMinTasks{}, test được chấm chỉ chạy tới \NumGradedMediumMin{} dòng mã của patch gốc.
 
 Về tính hợp lệ nội, đề bài do AI soạn sau khi đã biết lời giải. Hidden test được viết cho bản cài đặt gốc,
 vốn làm theo đặc tả, nên có thể thiên vị nhánh này. Agent có mạng mở; \texttt{upstream\_urls} chỉ là cận dưới
@@ -288,9 +297,9 @@ tế; vì H1 và H5 vốn đã chưa kết luận được, điều này không 
 sánh nhiều lần.
 
 Về tính hợp lệ ngoại, kết quả đến từ một dự án, một ngôn ngữ (Python), \NumTasksMain{} nhiệm vụ backend, và
-tác giả dự án cũng là thành viên nhóm nghiên cứu. Hai công cụ dùng mô hình khác hãng và khác hạng.
+tác giả dự án cũng là thành viên nhóm nghiên cứu. Claude Code và Codex khác nhau cả về hãng lẫn hạng mô hình, nên không tách được hai yếu tố này.
 
 Cuối cùng, nhóm \texttt{agy-gemini} bị loại sau khi kết quả chính đã mở, và E1, E2
-được thêm sau đó. Cả ba việc được ghi trong nhật ký sai lệch (Phụ lục~\ref{app:deviations}); chúng không đổi
+được thêm sau đó. Cả ba việc được ghi trong nhật ký sai lệch của preregistration; chúng không đổi
 phép thử xác nhận nhưng làm phần thăm dò dễ bị chọn theo kết quả hơn. Trong E2, LLM judge cùng họ Claude
 với ba nhóm và mẫu chấm tay chỉ có sáu lượt Codex, quá ít để kiểm độ nghiêng này.

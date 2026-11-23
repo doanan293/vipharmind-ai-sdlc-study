@@ -613,7 +613,7 @@ def _literature_table(lit: dict[str, Any]) -> str:
         "dropped_by_abstract": "Loại sau sàng lọc",
         "kept_new": "Giữ lại, đã mở trang gốc và kiểm tra",
         "prior": "Nguồn đã kiểm tra từ đề cương",
-        "total": "Tổng nguồn trong \\texttt{references.bib}",
+        "total": "Tổng nguồn nghiên cứu được trích dẫn",
     }
     body = [[labels[k], fmt.number(int(lit[k]))] for k, _ in LIT_STEPS]
     body += [["\\midrule\\multicolumn{2}{l}{\\textit{Theo nhóm}}"]]

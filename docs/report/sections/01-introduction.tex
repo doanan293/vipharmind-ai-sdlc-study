@@ -5,7 +5,7 @@ test trong kho mã của người dùng. Cách giao việc phổ biến nhất l
 vài câu rồi để agent viết mã ngay \cite{chou_2025,fawzy_2026}. Đề ngắn như vậy bỏ ngỏ nhiều chi tiết, và
 agent phải tự đoán. \emph{Phát triển theo đặc tả} (\emph{spec-driven development}) được đề xuất để bù chỗ thiếu đó: agent viết tài liệu
 thiết kế và kế hoạch trước, viết test trước khi viết mã, rồi kiểm lại cả bộ test
-\cite{agarwal_2026,diaz_2026}. Bộ skill Superpowers là một hiện thực công khai của quy trình này.
+\cite{agarwal_2026,diaz_2026}. Bộ skill Superpowers \cite{vincent_superpowers} là một hiện thực công khai của quy trình này.
 
 Bằng chứng định lượng so sánh hai cách làm còn ít và trái chiều. Nghiên cứu về vibe coding chủ yếu là định
 tính \cite{chou_2025,fawzy_2026}. Nghiên cứu về đặc tả dựa trên phỏng vấn \cite{agarwal_2026}, chấm bằng mô
@@ -52,10 +52,16 @@ file spec và plan với các commit cài đặt.
 quy tắc chọn ghi lại từng bước.
 \item Một thực nghiệm đối chứng có preregistration giữa làm theo đặc tả và vibe coding trên hai công cụ và ba mô
 hình, kèm gán nhãn nguyên nhân thất bại bởi hai người độc lập.
-\item Harness, grader, gói phân tích, đề bài, prompt quy trình và kết quả thô được công bố để người khác chạy lại.
+\item Harness, grader, gói phân tích, đề bài, prompt quy trình và kết quả thô được nộp kèm báo cáo để người khác chạy lại.
 \end{itemize}
+
+Kết quả chính như sau. Khi đề đã chi tiết, phép thử xác nhận không cho thấy quy trình đặc tả làm agent đạt
+nhiều hơn (H1 chưa kết luận được, khoảng tin cậy loại các lợi ích dương lớn), trong khi chi phí token tăng gấp
+\NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần. Đề chi tiết thực chất là một bản spec do người viết;
+thí nghiệm thăm dò E2 gợi ý rằng bỏ phần spec này làm điểm giảm mạnh, còn spec do agent tự viết chỉ bù lại một
+phần nhỏ ở nhiệm vụ nhỏ. Nói cách khác, giá trị của spec nằm ở thông tin người đưa vào.
 
 Phần còn lại gồm: mục~\ref{sec:related-work} điểm lại các nghiên cứu liên quan; mục~\ref{sec:method}
 trình bày phương pháp; mục~\ref{sec:results} báo cáo kết quả, thảo luận và hạn chế; mục~\ref{sec:conclusion}
-kết luận. Việc dùng AI trong chính nghiên cứu này được khai báo ở
-Phụ lục~\ref{app:ai}.
+kết luận. Việc dùng AI trong chính nghiên cứu này được khai báo ở mục
+``Khai báo sử dụng AI và đóng góp'' cuối báo cáo.

@@ -7,6 +7,11 @@ và RQ2. Phần thứ hai là thực nghiệm: lấy nhiệm vụ từ commit th
 giao cùng một đề bài cho agent theo hai cách làm chỉ khác nhau ở prompt quy trình. Mỗi tổ hợp (nhiệm vụ,
 cách làm, cohort) chạy ba lần và được chấm tự động bằng hidden test.
 
+Nghiên cứu không xây trọn một ứng dụng nhỏ theo hai cách, vì cách đó chỉ cho một cặp so sánh, không lặp lại
+đủ để ước lượng biến thiên giữa các lần chạy, và phải chấm chất lượng bằng phán đoán. Cắt nhiệm vụ từ commit
+thật cho nhiều cặp so sánh trên cùng một kho mã, mỗi nhiệm vụ có sẵn test gốc để chấm khách quan; chất lượng
+mã, test do agent viết và khả năng bảo trì vẫn được đo trên từng lượt (mục~\ref{sec:analysis}).
+
 \begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{%
@@ -118,7 +123,7 @@ tầng lớn, tổng \NumRunsTotal{} lượt. Nhóm Antigravity hết quota trư
 \caption{Các cohort}\label{tab:cohorts}
 \begin{tabularx}{\linewidth}{@{}lllX@{}}
 \toprule
-Nhóm & Công cụ (phiên bản) & Mô hình & Vai trò \\
+Cohort & Công cụ (phiên bản) & Mô hình & Vai trò \\
 \midrule
 \texttt{claude-sonnet} & Claude Code 2.1.325 & Claude Sonnet 5.5 & H1, RQ3, RQ5 \\
 \texttt{claude-opus} & Claude Code 2.1.325 & Claude Opus 5.5 & RQ3, RQ5 \\
@@ -173,7 +178,7 @@ ngẫu nhiên để tìm lượt đạt test nhưng sai. Ca nghiên cứu địn
 \texttt{prereg-v1.1} (nhiệm vụ và đề bài tầng vừa, tầng lớn, trước mọi lượt AI trên hai tầng này) và
 \texttt{prereg-v1-analysis} (gói phân tích, đã chạy được trên dữ liệu chạy thử). Không kết quả chính nào được
 mở trước thẻ phân tích. Mọi thay đổi sau khi chốt được ghi kèm lý do và những gì đã xem
-(Phụ lục~\ref{app:deviations}). Một agent AI chạy tách khỏi phiên soạn thảo (Fable 5.2) phản biện bản đăng
+trong nhật ký sai lệch của bản đăng ký. Một agent AI chạy tách khỏi phiên soạn thảo (Fable 5.2) phản biện bản đăng
 ký, đề bài và mã phân tích khi chưa có kết quả.
 
 Bản bổ sung \texttt{prereg-v1.2}, viết \emph{sau} khi mở kết quả chính, thêm hai thí nghiệm thăm dò. E2 cho
