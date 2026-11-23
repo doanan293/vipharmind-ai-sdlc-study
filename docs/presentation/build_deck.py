@@ -587,6 +587,73 @@ def _(r):
                       size=13, fill=BLUE, bold=True))
 
 
+@page("p12_cost_tests", 14, RESULTS, 40,
+      f"Cái giá thì rõ: spec tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token ở mọi ô. "
+      f"Đổi lại, spec để lại test: {N['ResSonnetSpecTestsAnyPct']} đến {N['ResCodexSpecTestsAnyPct']} phần trăm "
+      f"lượt spec có test agent tự viết, trong khi vibe của Codex không viết test nào. Hidden test không thưởng "
+      f"phần này; giá trị của nó chỉ hiện ra ở lần sửa sau. Về chất lượng mã, kết quả lẫn lộn. Vậy quay lại "
+      f"câu hỏi ban đầu: vì sao f15 trượt?")
+def _(r):
+    add(r, text_block("kicker", 247.61, 14, 493, 52,
+                      ["H2, H3 · Cái giá và cái để lại", "Spec so với vibe, mọi cohort và tầng"],
+                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
+    set_text(r, "shape-1916", [f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token"], size=44, role="num")
+    set_text(r, "shape-1917", [f"Thời gian ×{N['ResWallRatioMin']}–{N['ResWallRatioMax']}; H2 được ủng hộ ở mọi ô"],
+             size=17)
+    set_text(r, "shape-1918", [f"{N['ResSonnetSpecTestsAnyPct']}–{N['ResCodexSpecTestsAnyPct']}%"], size=44,
+             role="num")
+    set_text(r, "shape-1919", ["lượt spec có test agent tự viết (vibe: Codex "
+                               f"{N['ResCodexVibeTestsAnyPct']}%,",
+                               f"Sonnet {N['ResSonnetVibeTestsAnyPct']}%); hidden test không thưởng phần này"],
+             size=15)
+    set_text(r, "shape-1920", [f"{H3A_BAD} ô"], size=44, role="num")
+    set_text(r, "shape-1921", ["lỗi static analysis trái với H3: chất lượng mã lẫn lộn"], size=17)
+
+
+@page("p13_decode", 26, RESULTS, 50,
+      f"Quay lại f15. Đề nêu tên hàm dọn dữ liệu nhưng không nói nó trả về gì. Spec của agent tự chốt: trả về "
+      f"danh sách đối tượng. Bản gốc thì trả về danh sách mã. Plan và test của agent đều dựa trên quyết định "
+      f"đó, nên test của chính nó đạt; hidden test thì trượt. Vibe cũng phải tự đoán, và đạt "
+      f"{N['ResCaseVibePassed']} trên {N['ResCaseReps']} lượt. Spec không sai về quy trình: nó chốt một cách "
+      f"đoán rồi tự kiểm bằng chính cách đoán đó.")
+def _(r):
+    set_text(r, "shape-2285", ["Giải mã f15"])
+    set_text(r, "shape-2287", ["Đề bài"], role="head")
+    set_text(r, "shape-2286", ["Nêu tên hàm dọn", "dữ liệu, không nói", "trả về gì"], size=16)
+    set_text(r, "shape-2289", ["Spec agent"], role="head")
+    set_text(r, "shape-2288", ["Tự chốt: trả về", "danh sách", "đối tượng.", "Bản gốc:", "trả về mã."], size=16)
+    set_text(r, "shape-2291", ["Test của agent"], role="head")
+    set_text(r, "shape-2290", ["Kiểm theo cùng giả định", "nên đạt ✓; hidden test ✗"], size=17)
+    set_text(r, "shape-2293", ["Bài học"], role="head")
+    set_text(r, "shape-2292", ["Spec chỉ ghi lại cách agent đoán.",
+                               f"Vibe cũng đoán: {N['ResCaseVibePassed']}/{N['ResCaseReps']} lượt đạt."],
+             size=17)
+
+
+@page("p15_human_spec", 14, RESULTS, 60,
+      f"Đây là cú lật. Đề chi tiết của thí nghiệm chính thực chất là một bản spec do người viết: tên hàm, chữ ký, "
+      f"quy tắc. Thí nghiệm thăm dò E2 bỏ phần đó, chỉ giữ một hai câu, rồi chấm bằng checklist hành vi. Bỏ "
+      f"spec của người, điểm giảm {say('ETwoXScoreShiftSpec')} và {say('ETwoXScoreShiftVibe')} điểm. Còn spec "
+      f"agent tự viết chỉ bù lại {say('ETwoPooledSmallPp')} điểm ở task nhỏ, và gần như không gì ở task vừa, "
+      f"lớn. Spec quan trọng, nhưng phần quý là thông tin người đưa vào. Lưu ý: E2 thêm sau khi thấy kết quả "
+      f"chính, nên là thăm dò.")
+def _(r):
+    add(r, text_block("kicker", 247.61, 14, 560, 52,
+                      ["Spec của người vs spec của agent", "E2 · thăm dò, thêm sau kết quả chính · điểm checklist"],
+                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
+    set_text(r, "shape-1916", [f"−{N['ETwoXScoreShiftSpec']} / −{N['ETwoXScoreShiftVibe']} pp"], size=40,
+             role="num")
+    set_text(r, "shape-1917", ["Bỏ spec người viết khỏi đề (chỉ còn", "một hai câu), spec / vibe"], size=16)
+    set_text(r, "shape-1918", [f"{sg('ETwoPooledSmallPp')} pp"], size=40, role="num")
+    set_text(r, "shape-1919", ["Spec agent tự viết bù lại, task nhỏ, KTC "
+                               f"{ci_n('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}"], size=17)
+    set_text(r, "shape-1920", ["≈ 0 pp"], size=40, role="num")
+    set_text(r, "shape-1921", [f"Task vừa {sg('ETwoPooledMediumRefPp')}, lớn {sg('ETwoPooledLargeRefPp')} pp "
+                               "(chỉ tham khảo)",
+                               f"Hidden test giảm ~{N['ETwoXPassShiftSpec']} pp: test gọi tên đề sơ sài không nêu"],
+             size=14)
+
+
 @page("p14_results", 4, RESULTS, 10,
       f"Phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
 def _(r):
@@ -596,7 +663,7 @@ def _(r):
 
 
 @page("p15_h1", 13, RESULTS, 45,
-      f"Đây là phép thử xác nhận duy nhất: Sonnet, tầng nhỏ. Đặc tả đạt {N['ResHOneSpecPct']} phần trăm, "
+      f"(Chuyển người nếu chia ba phần: phần hai.) Đây là phép thử xác nhận duy nhất: Sonnet, tầng nhỏ. Đặc tả đạt {N['ResHOneSpecPct']} phần trăm, "
       f"vibe {N['ResHOneVibePct']}, hiệu số {say('ResHOneEstPp')} điểm phần trăm, khoảng tin cậy chín mươi "
       f"lăm phần trăm từ {say('ResHOneLowPp')} đến {say('ResHOneHighPp')}. Khoảng chứa 0 nên H1 chưa kết "
       f"luận được. Cận trên bằng 0, nên dữ liệu không ủng hộ một lợi ích đáng kể, nhưng với {N['Tasks']} "
@@ -621,16 +688,17 @@ def _(r):
       f"điểm, từ 0 đến 20, chỉ tham khảo. Ô duy nhất được ủng hộ là Codex tầng lớn, "
       f"{N['ResCodexLargeSpecPct']} so với {N['ResCodexLargeVibePct']} phần trăm, nhưng chỉ ba nhiệm vụ, "
       f"khoảng co về một điểm, và là một trong {N['ResSecondaryComparisons']} phép so phụ không hiệu chỉnh. "
-      f"Về chi phí và chất lượng:")
+      f"Mô hình mạnh hay yếu hơn, task lớn hay nhỏ, đều chưa kết luận được. Vậy spec tốn gì và để lại gì?")
 def _(r):
     delete_icon_use(r, "imported/flat_slide_12_ill01")
-    set_text(r, "shape-1841", ["RQ4: đổi công cụ,", "kết luận có giữ?"], role="title")
-    set_text(r, "shape-1842", ["Hiệu số tỉ lệ đạt theo", "nhóm và tầng, KTC 95%.", "",
+    set_text(r, "shape-1841", ["Đổi công cụ, mô", "hình, cỡ task?"], role="title")
+    set_text(r, "shape-1842", ["Spec − vibe theo cohort", "và tầng, KTC 95%.", "",
                                "Claude: ≤ 0 ở mọi tầng,", "trừ Sonnet tầng vừa",
-                               f"(+{N['ResSonnetMediumDiffPp']} pp, tham khảo).", "",
-                               "Codex: chỉ ô tầng lớn", f"“ủng hộ” ({N['ResCodexLargeSpecPct']}% so với "
-                               f"{N['ResCodexLargeVibePct']}%),", "chỉ 3 nhiệm vụ."],
-             size=16)
+                               f"(+{N['ResSonnetMediumDiffPp']} pp, tham khảo).",
+                               "Codex tầng lớn: "
+                               f"{N['ResCodexLargeSpecPct']}% vs {N['ResCodexLargeVibePct']}%", "(chỉ 3 task).", "",
+                               "H4 (Sonnet vs Opus),", "H5 (theo cỡ task):", "chưa kết luận được."],
+             size=15)
     add(r, figure_slot("figure", "slot_pass_diff_by_cohort.png"))
 
 
@@ -912,11 +980,12 @@ ORDER: list[tuple[str, str, int]] = [
     ("p01_title", OPEN, 15), ("p02_hook", OPEN, 50), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 35),
     ("p04b_related", METHOD, 30), ("p06_project", METHOD, 40), ("p08_arms", METHOD, 30),
     ("p08_scale", METHOD, 45), ("p09_rigor", METHOD, 35),
-    ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 45), ("p17_h2h3", RESULTS, 40), ("p21_case", RESULTS, 45),
-    ("p22_labels", RESULTS, 35), ("p23_explore", RESULTS, 45),
+    ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 50), ("p12_cost_tests", RESULTS, 40),
+    ("p13_decode", RESULTS, 50), ("p22_labels", RESULTS, 35), ("p15_human_spec", RESULTS, 60),
     ("p24_limits", CLOSE, 30), ("p25_conclusion", CLOSE, 45), ("p26_thanks", CLOSE, 10),
     ("p05_hypotheses", BACKUP, 0), ("p09_cohorts", BACKUP, 0), ("p18_h4", BACKUP, 0), ("p19_h5", BACKUP, 0),
-    ("p20_cost", BACKUP, 0), ("p27_bk_funnel", BACKUP, 0), ("p28_bk_reading", BACKUP, 0),
+    ("p20_cost", BACKUP, 0), ("p23_explore", BACKUP, 0), ("p21_case", BACKUP, 0),
+    ("p27_bk_funnel", BACKUP, 0), ("p28_bk_reading", BACKUP, 0),
     ("p29_bk_labels", BACKUP, 0), ("p30_attribution", BACKUP, 0),
 ]
 
