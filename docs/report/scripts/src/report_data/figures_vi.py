@@ -25,7 +25,7 @@ def _style(ax):
         ax.spines[s].set_visible(False)
     for s in ("left", "bottom"):
         ax.spines[s].set_color(MUTED)
-    ax.tick_params(colors=MUTED, labelsize=9)
+    ax.tick_params(colors=MUTED, labelsize=12)
     ax.set_axisbelow(True)
 
 
@@ -45,7 +45,7 @@ def pass_diff_forest(estimates: dict, path: Path) -> None:
             e = estimates.get(f"pass_diff.{c}.{t}")
             if e and e.get("estimate") is not None:
                 rows.append((c, t, e))
-    fig, ax = plt.subplots(figsize=(6.4, 0.32 * len(rows) + 0.9))
+    fig, ax = plt.subplots(figsize=(5.4, 0.36 * len(rows) + 1.0))
     _style(ax)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     ax.axvline(0, color=MUTED, linewidth=1)
@@ -66,10 +66,10 @@ def pass_diff_forest(estimates: dict, path: Path) -> None:
         )
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels(
-        [f"{c}, tầng {TIERS[t]} ({e['n_tasks']} nv)" for c, t, e in reversed(rows)], fontsize=9
+        [f"{c}, tầng {TIERS[t]} ({e['n_tasks']} nv)" for c, t, e in reversed(rows)], fontsize=12
     )
     ax.set_xlim(-105, 105)
-    ax.set_xlabel("Hiệu số tỉ lệ đạt, đặc tả trừ vibe (đpt), KTC 95%", color=INK, fontsize=10)
+    ax.set_xlabel("Hiệu số tỉ lệ đạt, đặc tả trừ vibe (đpt), KTC 95%", color=INK, fontsize=13)
     _save(fig, path)
 
 
@@ -111,14 +111,14 @@ def effect_vs_size(task_diffs: Path, pooled: Path, path: Path) -> None:
     ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_xticks([25, 50, 100, 200, 400, 800, 1600])
     ax.set_ylim(-105, 105)
-    ax.set_xlabel("Số dòng backend/src của bản vá gốc (thang log)", color=INK, fontsize=10)
-    ax.set_ylabel("Đặc tả trừ vibe (đpt)", color=INK, fontsize=10)
+    ax.set_xlabel("Số dòng backend/src của bản vá gốc (thang log)", color=INK, fontsize=13)
+    ax.set_ylabel("Đặc tả trừ vibe (đpt)", color=INK, fontsize=13)
     ax.legend(
         frameon=False,
-        fontsize=8,
+        fontsize=11,
         loc="lower right",
         title="đậm: trung bình các nhóm; nhạt: từng nhóm",
-        title_fontsize=7,
+        title_fontsize=10,
     )
     _save(fig, path)
 

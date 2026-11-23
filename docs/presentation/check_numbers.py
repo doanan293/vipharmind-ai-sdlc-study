@@ -25,7 +25,7 @@ ALLOW = {
     "1": "one commit per small task (design)",
     "2": "two arms (design)",
     "3": "three repetitions (design)",
-    "4": "four cohorts (design)",
+    "4": "four cohorts (design)", "5": "step number on the prereg timeline",
     "95": "95% confidence interval (prereg)",
     "01": "list numbering", "02": "list or section numbering", "03": "list numbering", "04": "list numbering",
     "5.5": "model version Claude Sonnet/Opus 5.5", "5.2": "model version Fable 5.2",

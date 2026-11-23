@@ -254,11 +254,12 @@ def _(r):
 
 
 @page("p02_part1", 4, METHOD, 10,
-      f"Phần một gồm bối cảnh, kết quả hồi cứu trên lịch sử git của dự án, và thiết kế thí nghiệm.")
+      f"Phần một gồm bối cảnh, các nghiên cứu liên quan, kết quả hồi cứu trên lịch sử git của dự án, và "
+      f"thiết kế thí nghiệm.")
 def _(r):
     set_text(r, "shape-1483", ["01"], role="num")
     set_text(r, "shape-1491", ["Phương pháp"], role="title")
-    set_text(r, "shape-1484", ["Vấn đề, hồi cứu, thiết kế thí nghiệm"])
+    set_text(r, "shape-1484", ["Bối cảnh, nghiên cứu liên quan, thiết kế"])
 
 
 @page("p03_motivation", 7, METHOD, 40,
@@ -283,7 +284,7 @@ def _(r):
       f"Sáu câu hỏi chốt trước. RQ1, RQ2 là hồi cứu: AI tham gia từng khâu ra sao, mã AI viết phải sửa lại "
       f"bao nhiêu. RQ3 đến RQ6 là thực nghiệm: đặc tả có đạt hơn vibe, tốn thêm bao nhiêu, và kết luận có "
       f"giữ khi đổi công cụ, đổi mô hình, khi nhiệm vụ lớn dần. Để chấm bằng test ẩn, đề chính phải nêu đủ "
-      f"tên hàm; đề ngắn để dành cho phần thăm dò. Từ đó có năm giả thuyết.")
+      f"tên hàm; đề ngắn để dành cho phần thăm dò. Trước đó, các nghiên cứu gần nhất đã làm gì.")
 def _(r):
     set_text(r, "shape-1762", ["Sáu câu hỏi nghiên cứu"])
     grid = [("shape-1763", "shape-1759", "RQ1", ["AI tham gia từng khâu", "của dự án ra sao?"]),
@@ -295,6 +296,25 @@ def _(r):
     for head, body, h, b in grid:
         set_text(r, head, [h])
         set_text(r, body, b, size=16)
+
+
+@page("p04b_related", 20, METHOD, 35,
+      f"Bốn nghiên cứu gần nhất. Hill quan sát pull request mã nguồn mở: có tài liệu đặc tả cũng không ít lỗi "
+      f"hơn, nhưng đó là quan sát. FeatBench của Chen và cộng sự chấm tác tử bằng test ẩn nhưng so mô hình với nhau. Mock và Russo "
+      f"so bốn cách tương tác khi viết test trước. Agarwal và cộng sự phỏng vấn người làm nghề: đặc tả đáng tin "
+      f"hơn nhưng tốn công. Nhóm em giữ nguyên tác tử, mô hình và đề, chỉ đổi lời dặn, rồi đo bằng test ẩn và "
+      f"token. Từ đó có năm giả thuyết.")
+def _(r):
+    set_text(r, "shape-2122", ["Nghiên cứu liên quan"])
+    rows = [("shape-2124", "shape-2123", "Hill", ["Quan sát PR mã nguồn mở: có đặc tả", "không ít lỗi hơn"]),
+            ("shape-2127", "shape-2126", "Chen", ["FeatBench: test ẩn cho tính năng;", "so mô hình với nhau"]),
+            ("shape-2130", "shape-2129", "Mock", ["Mock và Russo: bốn cách tương", "tác khi viết test trước"])]
+    for head, body, h, b in rows:
+        set_text(r, head, [h], size=22)
+        set_text(r, body, b, size=16)
+    set_text(r, "shape-2133", ["Agarwal"], size=22)
+    set_text(r, "shape-2132", ["Phỏng vấn: đặc tả đáng tin hơn, tốn công.",
+                               "Nhóm em: chỉ đổi lời dặn, đo test ẩn, token."], size=16)
 
 
 @page("p05_hypotheses", 11, METHOD, 30,
@@ -389,7 +409,7 @@ def _(r):
                       size=14, fill=BLUE, bold=True))
 
 
-@page("p10_tiers", 25, METHOD, 45,
+@page("p10_tiers", 25, METHOD, 40,
       f"Nhiệm vụ lấy từ commit thật, chia ba tầng: nhỏ {N['Tasks']} nhiệm vụ, một commit, "
       f"{N['TaskSrcLinesMin']} đến {N['TaskSrcLinesMax']} dòng; vừa {N['MediumTasks']} nhiệm vụ, hai đến ba "
       f"commit; lớn {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba nhóm, hai cách, ba lần lặp: "
@@ -436,18 +456,18 @@ def _(r):
 
 @page("p12_prereg", 21, METHOD, 25,
       f"Để không chọn đề hay phép phân tích sau khi thấy số, thẻ git chốt trước tầng nhỏ, giả thuyết và kế "
-      f"hoạch phân tích, rồi tầng vừa, tầng lớn. Fable, một tác tử AI riêng, phản biện độc lập. Mã phân tích "
-      f"chốt trước khi mở kết quả. Dù vậy vẫn còn rủi ro.")
+      f"hoạch phân tích, rồi tầng vừa, tầng lớn, rồi mã phân tích, tất cả trước khi mở kết quả. Trước mỗi "
+      f"thẻ, Fable, một tác tử AI riêng, phản biện độc lập. Dù vậy vẫn còn rủi ro.")
 def _(r):
     set_text(r, "shape-2150", ["Chốt trước khi chạy"])
-    steps = [("shape-2151", "shape-2147", "v1", ["Tầng nhỏ, giả thuyết,", "kế hoạch phân tích"]),
-             ("shape-2152", "shape-2148", "Chạy", ["Chạy tầng nhỏ; chỉ", "xem trạng thái lượt"]),
-             ("shape-2153", "shape-2149", "v1.1", ["Chốt nhiệm vụ tầng", "vừa và tầng lớn"]),
-             ("shape-2155", "shape-2154", "Duyệt", ["Fable 5.2 phản biện", "độc lập"]),
-             ("shape-2157", "shape-2156", "Mã", ["Chốt mã phân tích", "trước khi mở"]),
-             ("shape-2159", "shape-2158", "Mở", ["Mở kết quả; thay", "đổi đều ghi lại"])]
+    steps = [("shape-2151", "shape-2147", "1 · v1", ["Tầng nhỏ, giả thuyết,", "kế hoạch phân tích"]),
+             ("shape-2152", "shape-2148", "2 · Chạy", ["Chạy tầng nhỏ; chỉ", "xem trạng thái lượt"]),
+             ("shape-2153", "shape-2149", "3 · v1.1", ["Chốt nhiệm vụ tầng", "vừa và tầng lớn"]),
+             ("shape-2155", "shape-2154", "4 · Mã", ["Chốt mã phân tích", "trước khi mở"]),
+             ("shape-2157", "shape-2156", "5 · Mở", ["Mở kết quả; thay", "đổi đều ghi lại"]),
+             ("shape-2159", "shape-2158", "Mỗi thẻ", ["Fable 5.2 phản biện", "độc lập trước khi chốt"])]
     for head, body, h, b in steps:
-        set_text(r, head, [h], size=22, role="head")
+        set_text(r, head, [h], size=20, role="head")
         top = body in ("shape-2147", "shape-2148", "shape-2149")
         set_text(r, body, b, size=16, y=(176 - 22 * len(b)) if top else None)
 
@@ -499,7 +519,7 @@ def _(r):
                       size=16, fill=BLUE, bold=True))
 
 
-@page("p16_rq4", 12, RESULTS, 45,
+@page("p16_rq4", 12, RESULTS, 40,
       f"Mỗi hàng là một nhóm ở một tầng; chấm là hiệu số, vạch ngang là khoảng tin cậy, đường dọc là 0. Với "
       f"Claude, hiệu số âm hoặc bằng 0 ở mọi tầng, trừ Sonnet tầng vừa, cộng {say('ResSonnetMediumDiffPp')} "
       f"điểm, từ 0 đến 20, chỉ tham khảo. Ô duy nhất được ủng hộ là Codex tầng lớn, "
@@ -522,7 +542,7 @@ H3C_OK, H3C_ALL = verdict_count("H3c.", "supported")
 H3A_BAD, _ = verdict_count("H3a.", "contrary")
 
 
-@page("p17_h2h3", 14, RESULTS, 45,
+@page("p17_h2h3", 14, RESULTS, 40,
       f"H2 được ủng hộ ở mọi ô: đặc tả tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần "
       f"token, {N['ResWallRatioMin']} đến {N['ResWallRatioMax']} lần thời gian. H3 lẫn lộn: lỗi tĩnh có hai "
       f"ô trái giả thuyết; ở Codex tầng lớn, đặc tả không hỏng test cũ lượt nào, vibe hỏng "
@@ -606,7 +626,7 @@ def _(r):
                                "Codex tầng lớn: đặc tả rẻ hơn vì vibe ít đạt."], size=16)
 
 
-@page("p21_case", 26, RESULTS, 45,
+@page("p21_case", 26, RESULTS, 40,
       f"Theo quy tắc chốt trước, đây là nhiệm vụ lớn của Sonnet có hiệu số trị tuyệt đối lớn nhất, âm 33 "
       f"điểm. Đặc tả không đạt lượt nào; lượt được chọn đạt {N['ResCaseSpecHidden']} trên "
       f"{N['ResCaseHiddenTotal']} test ẩn, {N['ResCaseSpecMin']} phút, {N['ResCaseSpecTokensM']} triệu "
