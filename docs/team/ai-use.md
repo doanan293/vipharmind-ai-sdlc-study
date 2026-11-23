@@ -57,9 +57,9 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
 
 | # | Việc | AI đã làm gì | Người đã làm và quyết gì | Bằng chứng |
 | --- | --- | --- | --- | --- |
-| 3.1 | Chọn đề tài, câu hỏi nghiên cứu | Trợ lý đề xuất ba hướng tiếp cận và phân tích được mất | An chọn cách 2 (hồi cứu cộng thực nghiệm đối chứng), chọn ba công cụ, hai mô hình Claude, mức effort medium | Bản thiết kế nghiên cứu, mục 6 |
+| 3.1 | Chọn đề tài, câu hỏi nghiên cứu | Trợ lý đề xuất ba hướng tiếp cận và phân tích được mất | An chọn cách 2 (phân tích lịch sử git cộng thực nghiệm đối chứng), chọn ba công cụ, hai mô hình Claude, mức effort medium | Bản thiết kế nghiên cứu, mục 6 |
 | 3.2 | Tổng quan tài liệu | Trợ lý chạy 15 chuỗi tìm kiếm, mở trang abstract, DOI hoặc trang hội nghị của từng nguồn, chép tên bài, tác giả, năm, nơi đăng, số liệu từ abstract, viết nhật ký tìm kiếm và mục BibTeX | An đọc nhật ký và danh sách 24 nguồn; An đã xác nhận (17/11) | `docs/report/literature-log.md`, `docs/report/references.bib` |
-| 3.3 | Phân tích hồi cứu ViPharmind | Trợ lý viết mã đọc lịch sử git, phân khâu commit, nối commit với plan, đo mức sửa lại; trợ lý gợi ý nhận định cho từng commit trong mẫu kiểm tra | An kiểm tra tay mẫu ngẫu nhiên 20 commit cho quy tắc nối commit với plan (kết quả 15/20) **có tham khảo gợi ý của AI**, nên đây không phải kiểm tra hoàn toàn độc lập | `code/retrospective/` (nhánh `retrospective`) |
+| 3.3 | Phân tích lịch sử git ViPharmind | Trợ lý viết mã đọc lịch sử git, phân khâu commit, nối commit với plan, đo mức sửa lại; trợ lý gợi ý nhận định cho từng commit trong mẫu kiểm tra | An kiểm tra tay mẫu ngẫu nhiên 20 commit cho quy tắc nối commit với plan (kết quả 15/20) **có tham khảo gợi ý của AI**, nên đây không phải kiểm tra hoàn toàn độc lập | `code/retrospective/` (nhánh `retrospective`) |
 | 3.4 | Sàng lọc commit | Trợ lý viết lệnh `sdlc-harness screen`, chạy và ghi phễu 110 → 64 → 47 → 47 → 43 | An duyệt tiêu chí sàng lọc (theo bản thiết kế); độ lệch ở tiêu chí 1 (46 thay vì 39) được ghi lại | `data/tasks/SCREENING.md`, `data/tasks/screening.json` |
 | 3.5 | Tiêu chí 3 và đề bài tầng nhỏ | Trợ lý đề xuất đạt hoặc không đạt tiêu chí 3 và soạn nháp đề bài tiếng Anh cho 32 commit đầu theo thứ tự duyệt ngẫu nhiên | **An duyệt gộp** ngày 2026-11-15: chấp nhận nguyên văn mọi đề xuất và mọi đề bài, không sửa từng mục. Ba mục (#12, #20, #30) bị loại theo khuyến nghị của trợ lý vì test hành vi chỉ thuộc loại `integration`. Một tác tử duyệt đối chiếu mẫu vài đề với commit gốc | `data/tasks/REVIEW.md` (dòng "Review record") |
 | 3.6 | Rà đề bài tầng nhỏ | Trợ lý đối chiếu mọi tên công khai mà test ẩn dùng với đề bài; tìm ra chỗ thiếu chặn ở t05, t07, t13 (và p01) | An duyệt lại ba đề đã bổ sung tên giao diện, cùng ngày duyệt `prereg-v1` | `data/tasks/PROMPT_AUDIT.md`, commit `bc25b7a` |
@@ -95,7 +95,7 @@ hình này nhận. Mục 6 nêu rủi ro này và cách đã giảm.
   không xuất hiện trong kết quả đã lưu (kiểm bằng `gitleaks` và so khớp chính xác, `docs/pilot-report.md`
   mục 8). Quét lại ngày 2026-11-17 trên `data/results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
 
-## 5. AI trong ViPharmind (đối tượng của phần hồi cứu)
+## 5. AI trong ViPharmind (đối tượng của phần phân tích lịch sử git)
 
 ViPharmind được An phát triển với trợ lý lập trình AI ở mọi khâu: nghiên cứu, dữ liệu, mã, kiểm thử, triển
 khai. Commit của ViPharmind không mang dấu ghi công AI (0 commit có `Co-Authored-By`), và nhật ký phiên chỉ
@@ -113,7 +113,7 @@ viết; nhận định "AI tham gia mọi khâu" dựa trên lời khai của t�
 | Mã bộ chạy, mã phân tích do AI viết có lỗi | Test tự động; chạy thử 2 nhiệm vụ; `regrade` cho ra kết quả không đổi (38 lượt, 0 thay đổi); Fable duyệt mã phân tích, các lỗi chặn đã sửa trước thẻ `prereg-v1-analysis` | Phép thử độ phủ của khoảng bootstrap cho mô hình hỗn hợp đã chạy xong ngay trước thẻ `prereg-v1-analysis` (2026-11-16 08:58): 33/40 (82,5%), thấp hơn danh nghĩa 95%, đạt quy tắc ≥ 32/40 ghi trước. Khoảng của hệ số tương tác vì vậy hẹp hơn thực tế; kết luận H5 chỉ dựa vào dấu (báo cáo mục 7.5) |
 | Người duyệt độc lập cũng là AI | Fable chạy trong ngữ cảnh riêng, đọc trực tiếp mã và test, tự dựng lại tính toán; An đọc và quyết từng điểm | Độc lập với người soạn, không độc lập với AI nói chung |
 | Trích dẫn sai do AI | Mọi nguồn được mở trực tiếp, số liệu chỉ lấy từ abstract hoặc trang đã mở; không trích theo trí nhớ |; An đã tự kiểm tra |
-| Báo cáo thổi phồng kết luận | Số liệu sinh bằng máy; quy tắc đọc ba kết cục chốt trước; mọi phép thử phụ được báo cáo dù kết quả thế nào | |
+| Báo cáo thổi phồng kết luận | Số liệu sinh bằng máy; quy tắc đọc ba cách đọc kết quả chốt trước; mọi phép thử phụ được báo cáo dù kết quả thế nào | |
 
 ## 7. Những việc không giao cho AI
 

@@ -1,8 +1,8 @@
 \section{Kết quả}\label{sec:results}
 % Mọi con số lấy từ data/results/analysis/main (gói code/analysis/ tại thẻ prereg-v1-analysis) qua report-data
-% build. Kết cục ghi đúng như gói phân tích đọc theo bản đăng ký.
+% build. Kết luận ghi đúng như gói phân tích đọc theo bản đăng ký.
 
-\subsection{Hồi cứu (RQ1, RQ2)}\label{sec:retrospective}
+\subsection{Lịch sử phát triển của ViPharmind (RQ1, RQ2)}\label{sec:retrospective}
 
 Bảng~\ref{tab:lifecycle} phân bổ \NumCommits{} commit và \NumLinesChanged{} dòng thay đổi
 theo khâu. Công việc dồn vào hai đợt: giữa tháng 9, khi backend, frontend, kho dữ liệu và phần đánh giá được
@@ -85,7 +85,7 @@ kể.
 
 Đổi công cụ cũng không cho hướng rõ ràng (RQ4). Ở tầng nhỏ, hiệu số của \texttt{claude-opus} là \NumResOpusSmallDiffPp{} đpt và của
 \texttt{codex-luna} là \NumResCodexSmallDiffPp{} đpt; cả hai KTC đều chứa 0. Hướng hiệu số âm với hai mô hình
-Claude và dương với Codex. Ô duy nhất có kết cục ``ủng hộ'' là \texttt{codex-luna} tầng lớn: đặc tả
+Claude và dương với Codex. Ô duy nhất được đọc là ``ủng hộ'' là \texttt{codex-luna} tầng lớn: đặc tả
 \NumResCodexLargeSpecPct{}\%, vibe \NumResCodexLargeVibePct{}\%. KTC của ô này suy biến thành một điểm vì cả ba
 nhiệm vụ cho cùng hiệu số, và gói phân tích đếm \NumResSecondaryComparisons{} phép so phụ không hiệu chỉnh, nên
 ô này cần được đọc thận trọng.
@@ -116,7 +116,7 @@ Các phân tích độ nhạy không làm đổi kết luận. Bỏ \NumResSensU
 (\texttt{f08}, \texttt{t03}), H5 thành \NumResSensOverlapEstPp{} đpt [\NumResSensOverlapLowPp{};
 \NumResSensOverlapHighPp{}]. Bỏ \NumResSensPytestRuns{} lượt sửa cấu hình \texttt{pytest}, hoặc dùng số dòng
 được chấm thay số dòng của bản vá gốc (hệ số \NumResHFiveGradedCoef{} [\NumResHFiveGradedLow{};
-\NumResHFiveGradedHigh{}]), kết cục cũng không đổi.
+\NumResHFiveGradedHigh{}]), kết luận cũng không đổi.
 
 Về chi phí, H2 \textbf{được ủng hộ} ở mọi nhóm và tầng (Bảng~\ref{tab:secondary}). Nhánh theo đặc tả dùng gấp
 \NumResTokenRatioMin{} đến \NumResTokenRatioMax{} lần token và gấp \NumResWallRatioMin{} đến
@@ -255,7 +255,7 @@ sửa sau, ngoài phạm vi thí nghiệm.
 
 Kết quả khớp với nghiên cứu quan sát lớn nhất: Hill \cite{hill_2026} không thấy pull request có tài liệu đặc tả
 đưa vào ít lỗi hơn; ở đây nhánh theo đặc tả cũng không đạt nhiều test ẩn hơn và không ít hồi quy hơn với hai mô
-hình Claude. Phần hồi cứu (RQ2) cùng hướng: commit có hay không có plan bị sửa lại gần như ngang nhau. Đánh đổi
+hình Claude. Lịch sử git (RQ2) cùng hướng: commit có hay không có plan bị sửa lại gần như ngang nhau. Đánh đổi
 mà Agarwal và cộng sự \cite{agarwal_2026} mô tả qua phỏng vấn (đáng tin hơn, đổi lại tốn công) hiện ra chủ yếu
 ở vế chi phí; vế ``đáng tin hơn'' chỉ thấy ở Codex tầng lớn. Mock và Russo \cite{mock_2026} thấy quy trình tác
 tử có thể thêm độ phức tạp không được yêu cầu; ở đây nhánh theo đặc tả có nhiều lỗi tĩnh hơn ở hai ô. Lợi ích
@@ -283,7 +283,7 @@ này nhận. Việc làm mù khi gán nhãn chỉ là một phần.
 Về tính hợp lệ kết luận, tầng vừa có \NumMediumTasks{} và tầng lớn có \NumFeatureTasks{} nhiệm vụ, nên
 KTC ở hai tầng này chỉ để tham khảo. Mô phỏng cho độ phủ thật của KTC bootstrap cụm là \NumResCoverageHits{} trên
 \NumResCoverageSets{} bộ dữ liệu (\NumResCoveragePct{}\%), thấp hơn mức danh nghĩa, nên KTC có thể hẹp hơn thực
-tế; kết cục của H1 và H5 vốn đã là chưa kết luận được nên không đổi. Các phép thử phụ không được hiệu chỉnh so
+tế; vì H1 và H5 vốn đã chưa kết luận được, điều này không đổi kết luận. Các phép thử phụ không được hiệu chỉnh so
 sánh nhiều lần.
 
 Về tính hợp lệ ngoại, kết quả đến từ một dự án, một ngôn ngữ (Python), \NumTasksMain{} nhiệm vụ backend, và

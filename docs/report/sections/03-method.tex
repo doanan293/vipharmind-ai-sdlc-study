@@ -2,8 +2,8 @@
 
 \subsection{Thiết kế nghiên cứu}
 
-Nghiên cứu có hai phần (Hình~\ref{fig:design}). Phần hồi cứu đọc lịch sử git của ViPharmind để trả lời RQ1
-và RQ2. Phần thực nghiệm lấy nhiệm vụ từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi
+Nghiên cứu có hai phần (Hình~\ref{fig:design}). Phần thứ nhất phân tích lịch sử git của ViPharmind để trả lời RQ1
+và RQ2. Phần thứ hai là thực nghiệm: lấy nhiệm vụ từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi
 giao cùng một đề bài cho tác tử theo hai cách làm chỉ khác nhau ở lời dặn về quy trình. Mỗi tổ hợp (nhiệm vụ,
 cách làm, nhóm chạy) chạy ba lần và được chấm tự động bằng test ẩn.
 
@@ -14,7 +14,7 @@ cách làm, nhóm chạy) chạy ba lần và được chấm tự động bằn
   box/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, text width=24mm, fill=gray!6},
   arr/.style={-latex, thick}]
 \node[box, text width=22mm] (repo) {Kho mã\\ViPharmind};
-\node[box, right=of repo, yshift=9mm] (retro) {Phân tích hồi cứu\\(RQ1, RQ2)};
+\node[box, right=of repo, yshift=9mm] (retro) {Phân tích lịch sử\\git (RQ1, RQ2)};
 \node[box, right=of repo, yshift=-9mm] (tasks) {Nhiệm vụ ba tầng\\đề bài + test ẩn};
 \node[box, right=of tasks, text width=27mm] (arms) {Hai cách làm\\đặc tả / vibe\\$\times$ nhóm $\times$ ba lần};
 \node[box, right=of arms] (grade) {Bộ chấm\\test ẩn, token,\\lỗi tĩnh};
@@ -25,7 +25,7 @@ cách làm, nhóm chạy) chạy ba lần và được chấm tự động bằn
 \draw[arr] (arms) -- (grade);
 \draw[arr] (grade) -- (ana);
 \end{tikzpicture}}
-\caption{Thiết kế nghiên cứu: phần hồi cứu và phần thực nghiệm dùng chung một kho mã}\label{fig:design}
+\caption{Thiết kế nghiên cứu: phân tích lịch sử git và thực nghiệm dùng chung một kho mã}\label{fig:design}
 \end{figure}
 
 Năm giả thuyết được ghi nguyên văn trong bản đăng ký trước (mục~\ref{sec:prereg}):
@@ -41,7 +41,7 @@ Phép thử xác nhận duy nhất là H1 trên nhóm Claude Sonnet ở tầng n
 nó kiểm lập luận rằng chi phí cố định của việc viết thiết kế chỉ đáng khi nhiệm vụ đủ lớn. Các phép so còn
 lại là phụ.
 
-Trong phần hồi cứu, kho mã ViPharmind được đọc ở hai mốc cố định: nhánh \texttt{main} tại \texttt{3baae61d764f} (sản phẩm) và
+Để phân tích lịch sử, kho mã ViPharmind được đọc ở hai mốc cố định: nhánh \texttt{main} tại \texttt{3baae61d764f} (sản phẩm) và
 nhánh \texttt{camera-ready} tại \texttt{61d10db85f0f} (nghiên cứu). Tập commit là hợp của hai mốc, gồm
 \NumCommits{} commit (\NumCommitsFeat{} \texttt{feat}, \NumCommitsFix{} \texttt{fix},
 \NumCommitsRefactor{} \texttt{refactor}). Mỗi commit được gán vào khâu có nhiều dòng thay đổi nhất theo luật

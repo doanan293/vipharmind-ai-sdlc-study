@@ -25,7 +25,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
 | Thiết kế nghiên cứu (câu hỏi, giả thuyết, hai cách làm, tầng kích thước) | C | H | H | An thiết kế chính; Lợi, Bảo góp ý thiết kế |
 | Đề cương 1–2 trang (`docs/proposal/`) | C | – | – | |
 | Tổng quan tài liệu (tìm, mở, kiểm tra 24 nguồn; `docs/report/literature-log.md`) | C | – | – | AI hỗ trợ tìm kiếm; An kiểm tra |
-| Phân tích hồi cứu ViPharmind (RQ1, RQ2; 505 commit, 43 file spec/plan) | C | – | – | Gồm kiểm tra tay 20 commit cho quy tắc nối |
+| Phân tích lịch sử git ViPharmind (RQ1, RQ2; 505 commit, 43 file spec/plan) | C | – | – | Gồm kiểm tra tay 20 commit cho quy tắc nối |
 | Sàng lọc và dựng bộ nhiệm vụ (110 → 43 commit; 15 + 5 + 3 nhiệm vụ) | C | – | – | Đề bài do AI soạn, An duyệt (xem `ai-use.md`) |
 | Bộ chạy và bộ chấm (`code/harness/`) | C | – | – | Mã do AI viết theo kế hoạch An duyệt |
 | Chạy thử, ruling R11, đăng ký trước (`prereg-v1`, `prereg-v1.1`, `prereg-v1-analysis`) | C | – | – | |
@@ -52,7 +52,7 @@ Ký hiệu: **C** = làm chính; **H** = hỗ trợ, góp ý; **–** = không t
   (Lợi, Bảo góp ý).
 - Tổng quan tài liệu: quy trình tìm có ghi lại (47 → 31 → 18 nguồn mới, cộng 6 nguồn cũ; 24 nguồn trong
   `references.bib`).
-- Phân tích hồi cứu ViPharmind: bản đồ vòng đời, dấu vết spec/plan, mức sửa lại, kiểm tra tay 20 commit.
+- Phân tích lịch sử git ViPharmind: bản đồ vòng đời, dấu vết spec/plan, mức sửa lại, kiểm tra tay 20 commit.
 - Bộ nhiệm vụ: phễu sàng lọc 110 → 64 → 47 → 47 → 43; lấy mẫu phân tầng 15 nhiệm vụ nhỏ; quy tắc chọn
   tầng vừa (93 cửa sổ → 21 hợp lệ → 5); tầng lớn f08, f14, f15. Duyệt đề bài (duyệt gộp, xem
   `ai-use.md` mục 3).

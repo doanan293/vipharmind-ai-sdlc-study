@@ -8,9 +8,9 @@ Trần Ngọc Bảo.
 
 | Thư mục | Nội dung |
 | --- | --- |
-| `code/` | Mã: `harness/` (bộ chạy và bộ chấm), `analysis/` (phân tích thống kê), `retrospective/` (phân tích hồi cứu lịch sử git), `prompts/` (hai lời dặn và lời dặn người chấm), `refresh-interim.sh` (làm mới số liệu thăm dò trong báo cáo và slide) |
+| `code/` | Mã: `harness/` (bộ chạy và bộ chấm), `analysis/` (phân tích thống kê), `retrospective/` (phân tích lịch sử git), `prompts/` (hai lời dặn và lời dặn người chấm), `refresh-interim.sh` (làm mới số liệu thăm dò trong báo cáo và slide) |
 | `docs/` | Tài liệu: `report/` (báo cáo cuối, LaTeX), `presentation/` (slide bảo vệ), `proposal/` (đề cương), `prereg/` (bản đăng ký trước và nhật ký sai lệch), `team/` (bản kê đóng góp, đánh giá chéo, khai báo AI, hỏi đáp), `superpowers/` (thiết kế và kế hoạch) |
-| `data/` | Dữ liệu: `tasks/` (23 nhiệm vụ, đề bài, danh sách hành vi), `results/` (kết quả phân tích, nhãn, phiếu chấm tay, log), `retrospective/` (output của phân tích hồi cứu) |
+| `data/` | Dữ liệu: `tasks/` (23 nhiệm vụ, đề bài, danh sách hành vi), `results/` (kết quả phân tích, nhãn, phiếu chấm tay, log), `retrospective/` (output của phân tích lịch sử git) |
 
 Sản phẩm nộp: `docs/report/main.pdf` và `docs/presentation/vipharmind-slides.pdf`.
 

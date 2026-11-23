@@ -254,7 +254,7 @@ def _(r):
 
 
 @page("p02_part1", 4, METHOD, 10,
-      f"Phần một gồm bối cảnh, các nghiên cứu liên quan, kết quả hồi cứu trên lịch sử git của dự án, và "
+      f"Phần một gồm bối cảnh, các nghiên cứu liên quan, kết quả phân tích lịch sử git của dự án, và "
       f"thiết kế thí nghiệm.")
 def _(r):
     set_text(r, "shape-1483", ["01"], role="num")
@@ -281,7 +281,7 @@ def _(r):
 
 
 @page("p04_rq", 11, METHOD, 40,
-      f"Sáu câu hỏi chốt trước. RQ1, RQ2 là hồi cứu: AI tham gia từng khâu ra sao, mã AI viết phải sửa lại "
+      f"Sáu câu hỏi chốt trước. RQ1, RQ2 phân tích lịch sử git: AI tham gia từng khâu ra sao, mã AI viết phải sửa lại "
       f"bao nhiêu. RQ3 đến RQ6 là thực nghiệm: đặc tả có đạt hơn vibe, tốn thêm bao nhiêu, và kết luận có "
       f"giữ khi đổi công cụ, đổi mô hình, khi nhiệm vụ lớn dần. Để chấm bằng test ẩn, đề chính phải nêu đủ "
       f"tên hàm; đề ngắn để dành cho phần thăm dò. Trước đó, các nghiên cứu gần nhất đã làm gì.")
@@ -337,8 +337,8 @@ def _(r):
 @page("p06_vipharmind", 14, METHOD, 30,
       f"Dự án là ViPharmind, trợ lý AI tra cứu thuốc do An xây dựng: backend tác tử bằng Python, ứng dụng "
       f"web, kho tri thức từ Dược thư Quốc gia. Kho mã có {N['Commits']} commit trong bốn tháng, "
-      f"{N['CommitsFeat']} commit tính năng và {N['SpecPlanFiles']} file spec, plan. Lịch sử đó cho kết quả "
-      f"hồi cứu sau.")
+      f"{N['CommitsFeat']} commit tính năng và {N['SpecPlanFiles']} file spec, plan. Lịch sử đó cho các kết "
+      f"quả sau.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 493, 52,
                       ["ViPharmind: trợ lý AI tra cứu thuốc", "AI tham gia mọi khâu, theo lời tác giả"],
@@ -352,14 +352,14 @@ def _(r):
 
 
 @page("p07_retro", 14, METHOD, 35,
-      f"Hồi cứu có ba ý. {N['FeatWithPlanPct']} phần trăm commit tính năng, {N['FeatWithPlan']} trên "
+      f"Lịch sử git cho ba ý. {N['FeatWithPlanPct']} phần trăm commit tính năng, {N['FeatWithPlan']} trên "
       f"{N['CommitsFeat']}, có plan đi trước nêu đúng file. Quy tắc nối đúng {N['LinkCorrect']} trên "
       f"{N['LinkChecked']} lần An kiểm tay, hay nối thừa, nên đó là cận trên. Số commit sửa lại gần như bằng "
       f"nhau, {say('ReworkWithPlanMean')} khi có plan, {say('ReworkWithoutPlanMean')} khi không. Đây là quan "
       f"sát; nhân quả cần thực nghiệm.")
 def _(r):
     add(r, text_block("kicker", 247.61, 14, 493, 52,
-                      ["Kết quả hồi cứu (RQ1, RQ2)", f"{N['Commits']} commit, lịch sử git của ViPharmind"],
+                      ["Lịch sử git (RQ1, RQ2)", f"{N['Commits']} commit, lịch sử git của ViPharmind"],
                       size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
     set_text(r, "shape-1916", [f"{N['FeatWithPlanPct']}%"], role="num")
     set_text(r, "shape-1917", [f"commit feat có plan đi trước ({N['FeatWithPlan']}/{N['CommitsFeat']})"],

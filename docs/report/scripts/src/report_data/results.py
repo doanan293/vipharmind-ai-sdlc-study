@@ -2,7 +2,7 @@
 
 Đọc từ data/results/analysis/main (gói code/analysis/).
 
-Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết cục theo bản đăng ký), runs.csv
+Nguồn: summary.json (ước lượng, khoảng tin cậy bootstrap, kết luận theo bản đăng ký), runs.csv
 (một dòng mỗi lượt, dùng cho số mô tả mà summary không có) và figures/*.pdf (chép nguyên).
 Thiếu nguồn thì mọi khóa vẫn được sinh với giá trị None (macro thành \\pending).
 """
@@ -372,7 +372,7 @@ def main_table(s: dict) -> str:
         rows.append(["gộp ba nhóm", vn, "", "", _cell_ci(e), ""])
     return _tabular(
         "llrrlr",
-        ["Nhóm", "Tầng", "Đặc tả (\\%)", "Vibe (\\%)", "Hiệu số (đpt) [KTC 95\\%]", "Kết cục"],
+        ["Nhóm", "Tầng", "Đặc tả (\\%)", "Vibe (\\%)", "Hiệu số (đpt) [KTC 95\\%]", "Kết luận"],
         rows,
     )
 
@@ -406,7 +406,7 @@ def _secondary_row(E: dict, V: dict, cohort: str, tier: str, vn: str) -> list[st
 
 
 def secondary_table(s: dict) -> str:
-    """H2 và H3: trung bình theo cách làm (đặc tả / vibe) và kết cục."""
+    """H2 và H3: trung bình theo cách làm (đặc tả / vibe) và kết luận."""
     E, V = s["estimates"], s["verdicts"]
     rows = [
         _secondary_row(E, V, cohort, tier, vn) for cohort, _ in COHORTS for tier, _, vn in TIERS

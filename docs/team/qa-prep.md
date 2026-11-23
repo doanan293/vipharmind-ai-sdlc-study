@@ -23,7 +23,7 @@ chỉ người trong nhóm trả lời được.
 | Mục | Số |
 | --- | --- |
 | ViPharmind | 505 commit, 2026-07-23 đến 2026-11-10; 221 commit `feat`; 43 file spec, plan; 0 commit ghi công AI |
-| Hồi cứu | 88,7% commit tính năng có plan đi trước; quy tắc nối đúng 15/20 khi kiểm tay (khớp `data/retrospective/summary.md`; mục 4.1) |
+| Lịch sử git | 88,7% commit tính năng có plan đi trước; quy tắc nối đúng 15/20 khi kiểm tay (khớp `data/retrospective/summary.md`; mục 4.1) |
 | Phễu tầng nhỏ | 110 → 64 → 47 → 47 → 43 commit; chọn 15, phân tầng theo lớp (api 1, application 2, domain 5, infrastructure 7); 43–311 dòng |
 | Tầng vừa | 93 cửa sổ → 21 hợp lệ → 5 nhiệm vụ m01–m05, 335–515 dòng, 2–3 commit |
 | Tầng lớn | f08 764 dòng (6 commit), f14 1.464 (4), f15 1.367 (5) |
@@ -49,7 +49,7 @@ thầy, mở rộng sang B4, B1, F2.
 
 **A2. Vì sao dùng ViPharmind mà không dùng SWE-bench?**
 ViPharmind là sản phẩm thật, đã triển khai, được làm với AI theo đúng quy trình spec, plan mà nhánh "theo
-đặc tả" tái hiện, nên vừa nghiên cứu được quá trình (hồi cứu) vừa lấy được nhiệm vụ thật. Mã của nó ra đời
+đặc tả" tái hiện, nên vừa nghiên cứu được quá trình (qua lịch sử git) vừa lấy được nhiệm vụ thật. Mã của nó ra đời
 từ 2026-07-23, sau mốc dữ liệu huấn luyện của mọi mô hình được đo, nên khó bị nhớ sẵn như các bộ đo công khai.
 Cái giá là chỉ một dự án, một ngôn ngữ, và tác giả nghiên cứu cũng là tác giả dự án.
 
@@ -62,7 +62,7 @@ trình đặc tả tự động" vì không có người duyệt đặc tả.
 **A4. Đóng góp mới của đề tài là gì?**
 Một thí nghiệm có đối chứng trên commit thật, chấm bằng test ẩn, phân tích ba tổ hợp công cụ và mô hình
 (thiết kế bốn, vì `agy-gemini` bị bỏ do hết hạn mức; thêm Haiku ở phần thăm dò E1, E2), và trải ba cỡ nhiệm vụ từ một commit tới cỡ một tính năng (H5). Toàn bộ thiết kế, nhiệm vụ, mã chấm và kế
-hoạch phân tích được chốt trước bằng thẻ git. Phần hồi cứu cho thấy quy trình mà thí nghiệm tái hiện thực
+hoạch phân tích được chốt trước bằng thẻ git. Phân tích lịch sử git cho thấy quy trình mà thí nghiệm tái hiện thực
 sự đã được dùng.
 
 ## B. Tính hợp lệ của thiết kế [L]
@@ -169,7 +169,7 @@ không tuân thủ, phân tích độ nhạy này không đổi gì (mục 4.2).
 **D4. Chạy song song nhiều lượt có làm lệch thời gian không?**
 Có thể làm tăng `wall_s`: từ 19:58 tầng vừa và lớn chạy cùng tầng nhỏ, tối đa 24 phiên thay vì 8. Thứ tự
 xáo trộn nên ảnh hưởng hai cách như nhau. Báo cáo so số lượt hết giờ trong và ngoài khoảng chạy chồng:
-0 ở cả hai phía (328 lượt bắt đầu trong khoảng chạy chồng), nên việc chạy chồng không ảnh hưởng kết cục
+0 ở cả hai phía (328 lượt bắt đầu trong khoảng chạy chồng), nên việc chạy chồng không ảnh hưởng kết luận
 (mục 4.2).
 
 ## E. Truy cập web và rò rỉ lời giải [L]
@@ -197,7 +197,7 @@ công bố của nhà cung cấp.
 trong nhật ký là dữ liệu mẫu của mã ViPharmind. Repo nghiên cứu để riêng tư cho tới khi lọc xong nhật ký.
 Quét lại ngày 2026-11-17 trên `data/results/raw` của thí nghiệm chính, E1, E2 (`gitleaks detect --no-git`, 8.24.3): 183 cảnh báo, 58 chuỗi khác nhau, đều là token thử của chính ứng dụng ViPharmind khi agent chạy test (JWT có `aud`, `exp`, `user_id`/`sub`; cookie CSRF của fastapi-users; khóa giả trong test); không chuỗi nào trùng thông tin đăng nhập thật của các tài khoản Claude, Codex. Email tài khoản: 0 lần. Email git của An: 11 lần trong 6 transcript tầng nhỏ t04 (đề sơ sài), do agent đọc một tài liệu của repo ViPharmind có ghi email này; cần lọc trước khi công khai dữ liệu thô.
 
-## F. Phần hồi cứu [L]
+## F. Phân tích lịch sử git [L]
 
 **F1. Làm sao biết AI tham gia mọi khâu của ViPharmind?**
 Không đo được chính xác: 0 commit có dấu ghi công AI, và An đã xóa phần lớn lịch sử chat (còn 12 phiên
@@ -314,7 +314,7 @@ sẽ coi 90 lượt như 90 quan sát độc lập và cho khoảng tin cậy h�
 
 **K3. "Được ủng hộ" nghĩa là gì?**
 Khoảng tin cậy 95% nằm hoàn toàn về phía giả thuyết. Nằm hoàn toàn phía ngược lại là "trái với giả
-thuyết"; còn lại (chứa 0) là "chưa kết luận được". Ba kết cục báo cáo ngang nhau, chốt trước khi chạy.
+thuyết"; còn lại (chứa 0) là "chưa kết luận được". Ba cách đọc kết quả báo cáo ngang nhau, chốt trước khi chạy.
 Ví dụ: khoảng có cận đúng bằng 0 vẫn là "chưa kết luận được".
 
 **K4. Mô hình hỗn hợp `pass ~ arm × log(src_lines) + cohort + (1 + arm | task)` để làm gì?**
