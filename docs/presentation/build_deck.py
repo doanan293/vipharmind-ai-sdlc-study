@@ -399,7 +399,7 @@ def _(r):
 @page("p08_arms", 24, METHOD, 25,
       f"Thực nghiệm có hai cách làm, chỉ khác prompt quy trình trước đề bài. Vibe: một câu, hãy cài đặt thay đổi sau. "
       f"Theo đặc tả: trong cùng phiên, viết file thiết kế, file kế hoạch, làm từng phần theo kiểu viết test "
-      f"trước, rồi chạy cả bộ test. Không có người duyệt. Ba cohort như sau.")
+      f"trước, rồi chạy cả bộ test. Không có người duyệt hay hỏi lại. Quy mô như sau.")
 def _(r):
     set_text(r, "shape-2217", ["Hai cách làm: chỉ khác prompt quy trình"])
     set_text(r, "shape-2220", ["Vibe coding"])
@@ -515,6 +515,76 @@ def _(r):
     set_text(r, "shape-2201", ["Không lịch sử git;", "ghi upstream_urls"], size=16)
     set_text(r, "shape-2200", ["Chốt trước"], size=22, role="head")
     set_text(r, "shape-2202", ["Xáo đề, hạt cố định;", "git tag; độ nhạy"], size=16)
+
+
+@page("p06_project", 14, METHOD, 40,
+      f"Dự án là ViPharmind, trợ lý AI tra cứu thuốc do An xây dựng theo đúng quy trình Superpowers. Kho mã có "
+      f"{N['Commits']} commit từ tháng bảy đến tháng mười một. Lịch sử git cho thấy nếp spec, plan rõ: "
+      f"{N['FeatWithPlanPct']} phần trăm commit tính năng có plan đi trước, đây là cận trên vì quy tắc nối hay "
+      f"nối thừa. Nhưng commit có plan và không có plan bị sửa lại gần như bằng nhau, {say('ReworkWithPlanMean')} "
+      f"và {say('ReworkWithoutPlanMean')}. Đây là quan sát; muốn biết nhân quả thì phải làm thí nghiệm.")
+def _(r):
+    add(r, text_block("kicker", 247.61, 14, 493, 52,
+                      ["ViPharmind và lịch sử git (RQ1, RQ2)", "Trợ lý AI tra cứu thuốc, làm theo Superpowers"],
+                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
+    set_text(r, "shape-1916", [f"{N['Commits']} commit"], role="num")
+    set_text(r, "shape-1917", [f"từ {N['FirstDate']} đến {N['LastDate']};", "AI tham gia mọi khâu (theo tác giả)"],
+             size=16)
+    set_text(r, "shape-1918", [f"{N['FeatWithPlanPct']}%"], role="num")
+    set_text(r, "shape-1919", [f"commit feat có plan đi trước ({N['FeatWithPlan']}/{N['CommitsFeat']}, cận trên)"],
+             size=17)
+    set_text(r, "shape-1920", [f"{N['ReworkWithPlanMean']} ≈ {N['ReworkWithoutPlanMean']}"], role="num")
+    set_text(r, "shape-1921", ["commit sửa lại: có plan ≈ không plan"], size=17)
+
+
+@page("p08_scale", 25, METHOD, 45,
+      f"Nhiệm vụ lấy từ commit thật của backend, ba tầng: nhỏ {N['Tasks']} nhiệm vụ một commit, vừa "
+      f"{N['MediumTasks']}, lớn {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba cohort: Claude Code với "
+      f"Sonnet và với Opus, và Codex; mỗi ô chạy ba lần, tổng {N['ResRuns']} lượt. Chấm bằng hidden test: test "
+      f"mà commit gốc thêm vào, agent không thấy; test cũ được đưa về bản gốc trước khi chấm nên không lách "
+      f"được. Antigravity hết quota giữa chừng nên bị loại.")
+def _(r):
+    set_text(r, "shape-2228", [f"{N['TasksMain']} task thật, {N['ResRuns']} lượt, chấm bằng hidden test"])
+    cols = [("shape-2263", "shape-2259", "shape-2260", N["Tasks"], "Nhỏ",
+             ["1 commit", f"{N['TaskSrcLinesMin']}–{N['TaskSrcLinesMax']} dòng"]),
+            ("shape-2268", "shape-2261", "shape-2262", N["MediumTasks"], "Vừa",
+             [f"{N['MediumCommitsMin']}–{N['MediumCommitsMax']} commit",
+              f"{N['MediumSrcLinesMin']}–{N['MediumSrcLinesMax']} dòng"]),
+            ("shape-2269", "shape-2264", "shape-2265", N["FeatureTasks"], "Lớn",
+             [f"{N['FeatureCommitsMin']}–{N['FeatureCommitsMax']} commit",
+              f"{N['FeatureSrcLinesMin']}–{N['FeatureSrcLinesMax']} dòng"]),
+            ("shape-2270", "shape-2266", "shape-2267", N["ResRuns"], "Lượt",
+             ["3 cohort × 2 cách", "× 3 lần lặp", f"× {N['TasksMain']} task"])]
+    for num, head, body, k, h, b in cols:
+        set_text(r, num, [k], role="numo")
+        set_text(r, head, [h])
+        set_text(r, body, b, size=17)
+    add(r, text_block("grading", 75, 468, 820, 40,
+                      ["Cohort: Claude Code + Sonnet 5.5, Claude Code + Opus 5.5, Codex CLI + gpt-6-luna.",
+                       "Hidden test: trượt ở base commit, đạt ở bản gốc, agent không thấy; test cũ đưa về bản gốc."],
+                      size=13, fill=BLUE, bold=True))
+
+
+@page("p09_rigor", 21, METHOD, 35,
+      f"Để không tự lừa mình, mọi thứ được chốt bằng git tag trước khi mở kết quả: giả thuyết và kế hoạch phân "
+      f"tích, rồi nhiệm vụ tầng vừa và lớn, rồi mã phân tích. Trước mỗi tag, một agent AI riêng là Fable phản "
+      f"biện độc lập. Cây mã giao cho agent không có lịch sử git hay spec cũ, để không lộ lời giải. Giờ là "
+      f"kết quả.")
+def _(r):
+    set_text(r, "shape-2150", ["Không tự lừa mình: chốt trước khi chạy"])
+    steps = [("shape-2151", "shape-2147", "1 · v1", ["Tầng nhỏ, giả thuyết,", "kế hoạch phân tích"]),
+             ("shape-2152", "shape-2148", "2 · Chạy", ["Chạy tầng nhỏ; chỉ", "xem trạng thái lượt"]),
+             ("shape-2153", "shape-2149", "3 · v1.1", ["Chốt nhiệm vụ tầng", "vừa và tầng lớn"]),
+             ("shape-2155", "shape-2154", "4 · Mã", ["Chốt mã phân tích", "trước khi mở"]),
+             ("shape-2157", "shape-2156", "5 · Mở", ["Mở kết quả; thay", "đổi đều ghi lại"]),
+             ("shape-2159", "shape-2158", "Mỗi tag", ["Fable 5.2 phản biện", "độc lập trước khi chốt"])]
+    for head, body, h, b in steps:
+        set_text(r, head, [h], size=20, role="head")
+        top = body in ("shape-2147", "shape-2148", "shape-2149")
+        set_text(r, body, b, size=16, y=(176 - 22 * len(b)) if top else None)
+    add(r, text_block("leak", 75, 496, 820, 24,
+                      ["Chống lộ lời giải: cây mã không lịch sử git, không spec/plan cũ; ghi mọi đường dẫn tới repo gốc."],
+                      size=13, fill=BLUE, bold=True))
 
 
 @page("p14_results", 4, RESULTS, 10,
@@ -840,9 +910,8 @@ def _(r):
 MAX_TALK = 855  # 14:15 of a 15-minute slot; the rest is for slide changes
 ORDER: list[tuple[str, str, int]] = [
     ("p01_title", OPEN, 15), ("p02_hook", OPEN, 50), ("p03_motivation", OPEN, 40), ("p04_rq", OPEN, 35),
-    ("p04b_related", METHOD, 30), ("p06_vipharmind", METHOD, 30), ("p07_retro", METHOD, 35),
-    ("p08_arms", METHOD, 25), ("p10_tiers", METHOD, 40), ("p11_grading", METHOD, 30),
-    ("p12_prereg", METHOD, 25), ("p13_threats", METHOD, 30),
+    ("p04b_related", METHOD, 30), ("p06_project", METHOD, 40), ("p08_arms", METHOD, 30),
+    ("p08_scale", METHOD, 45), ("p09_rigor", METHOD, 35),
     ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 45), ("p17_h2h3", RESULTS, 40), ("p21_case", RESULTS, 45),
     ("p22_labels", RESULTS, 35), ("p23_explore", RESULTS, 45),
     ("p24_limits", CLOSE, 30), ("p25_conclusion", CLOSE, 45), ("p26_thanks", CLOSE, 10),
