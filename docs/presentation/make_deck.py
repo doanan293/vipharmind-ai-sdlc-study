@@ -286,8 +286,8 @@ def figure_png(name: str) -> Path:
 
 # ---------------------------------------------------------------- slides
 
-OPEN, CONTEXT, METHOD, FIND, CLOSE, BACKUP = ("Mở đầu", "Bối cảnh", "Cách kiểm", "Phát hiện", "Kết luận",
-                                              "Dự phòng")
+OPEN, CONTEXT, METHOD, FIND, CLOSE, BACKUP = ("Giới thiệu", "Nghiên cứu liên quan", "Phương pháp", "Kết quả",
+                                              "Kết luận", "Dự phòng")
 
 
 def s01_title():
@@ -309,10 +309,9 @@ def s01_title():
 
 
 def s02_hook():
-    s = content(OPEN, "Làm đủ quy trình, vẫn trượt",
-                "Một lượt thật của nhiệm vụ f15 (cỡ một tính năng): Claude Sonnet làm theo đúng quy trình "
-                "spec-driven.", 50,
-                f"Bắt đầu bằng một ca thật: nhiệm vụ f15, cỡ một tính năng, Claude Sonnet làm theo quy trình "
+    s = content(OPEN, "Một ví dụ: nhiệm vụ f15",
+                "Claude Sonnet làm đúng quy trình spec-driven nhưng vẫn không đạt hidden test.", 50,
+                f"Nhóm em bắt đầu bằng một ví dụ: nhiệm vụ f15, cỡ một tính năng, Claude Sonnet làm theo quy trình "
                 f"spec-driven. Ở một lượt, agent viết spec {N['ResCaseDesignLines']} dòng, chia plan thành "
                 f"{N['ResCasePlanTasks']} task, tự viết {N['ResCaseSpecTests']} test và tất cả đều đạt. Nhưng khi "
                 f"chấm bằng hidden test, test mà agent không thấy, bài vẫn trượt; cả ba lượt spec của f15 đều trượt "
@@ -336,28 +335,27 @@ def s02_hook():
 
 
 def s03_promise():
-    s = content(OPEN, "Vibe coding và lời hứa của spec-driven",
-                "Spec-driven development hứa bù cho phần đề bài còn thiếu bằng một quy trình có kỷ luật.", 50,
-                "Ca đó chạm vào một lời hứa lớn. Cách giao việc phổ biến nhất cho coding agent là vibe coding: vài "
-                "câu ngắn, phần đề bỏ ngỏ thì agent tự đoán. Spec-driven development hứa bù chỗ đó: viết spec, plan, "
+    s = content(OPEN, "Vibe coding và spec-driven development",
+                "Spec-driven development được kỳ vọng bù cho phần đề bài còn thiếu bằng các bước spec, plan và test.", 50,
+                "Ca này liên quan trực tiếp tới cách spec-driven được giới thiệu. Cách giao việc phổ biến nhất cho coding agent là vibe coding: vài "
+                "câu ngắn, phần đề bỏ ngỏ thì agent tự đoán. Spec-driven development được kỳ vọng bù chỗ đó: viết spec, plan, "
                 "viết test trước rồi mới cài đặt và kiểm lại. Một hiện thực được dùng rộng rãi là Superpowers, repo "
-                "GitHub khoảng ba trăm hai mươi tư nghìn sao. Câu hỏi của nhóm em: lời hứa đó có đúng không, và đúng "
-                "đến đâu?",
-                footer="Superpowers: github.com/obra/superpowers (324,5k sao) — “An agentic skills framework & software "
+                "GitHub khoảng ba trăm hai mươi tư nghìn sao. Nhóm em kiểm tra kỳ vọng này đúng đến đâu.",
+                footer="Superpowers: github.com/obra/superpowers (324,5k sao): “An agentic skills framework & software "
                        "development methodology that works.”")
     panel(s, X0, 2.4, 5.85, 2.9, "Vibe coding",
           ["Giao việc bằng vài câu; agent viết mã ngay.", "Chi tiết đề bỏ ngỏ thì agent tự đoán.",
            "Nhanh, nhưng dễ lệch khỏi ý người giao việc."], accent=VIBE, size=17)
     panel(s, X0 + 6.28, 2.4, 5.85, 2.9, "Spec-driven (Superpowers)",
           ["Spec (thiết kế) → plan → viết test trước (TDD) → cài đặt → chạy lại toàn bộ test.",
-           "Hứa: agent ít đoán sai hơn và để lại bộ test.", "Đổi lại: tốn thêm thời gian và token."],
+           "Kỳ vọng: agent ít đoán sai hơn và để lại bộ test.", "Chi phí: thêm thời gian và token."],
           accent=SPEC, size=17)
     text(s, X0, 5.6, X1 - X0, 1.0, [("Câu hỏi: quy trình này có thật sự làm agent làm đúng hơn không, và đổi lại "
                                      "tốn bao nhiêu?", {"bold": True, "color": NAVY})], size=18)
 
 
 def s04_rq():
-    s = content(OPEN, "Sáu câu hỏi nghiên cứu",
+    s = content(OPEN, "Câu hỏi nghiên cứu",
                 "Lịch sử git của một dự án thật trả lời RQ1–2; thực nghiệm đối chứng trả lời RQ3–6.", 45,
                 "Nhóm em chia thành hai phần. Phần một đọc lịch sử git của một dự án thật để trả lời RQ1 và RQ2. "
                 "Phần hai là thực nghiệm đối chứng cho RQ3 đến RQ6: spec có đạt hơn không, tốn bao nhiêu, và kết luận "
@@ -378,7 +376,7 @@ def s04_rq():
 
 
 def s05_related():
-    s = content(CONTEXT, "Nghiên cứu liên quan và khoảng trống",
+    s = content(CONTEXT, "Nghiên cứu liên quan",
                 "Chưa có thí nghiệm nào giữ nguyên đề, agent và mô hình, chỉ đổi prompt quy trình, rồi chấm bằng "
                 "hidden test.", 50,
                 "Bốn nghiên cứu gần nhất. Hill quan sát pull request mã nguồn mở: có tài liệu spec cũng không ít lỗi "
@@ -403,7 +401,7 @@ def s05_related():
 
 
 def s06_project():
-    s = content(METHOD, "ViPharmind: dự án thật làm theo Superpowers",
+    s = content(METHOD, "Dự án ViPharmind",
                 "Nhiệm vụ của thí nghiệm lấy từ một dự án được làm bằng chính quy trình cần kiểm.", 45,
                 f"Dự án nhóm em dùng là ViPharmind, trợ lý AI tra cứu thuốc cho người Việt, do An xây dựng theo quy "
                 f"trình Superpowers. Kho mã có {N['Commits']} commit trong khoảng bốn tháng và {N['SpecPlanFiles']} "
@@ -424,8 +422,8 @@ def s06_project():
 
 
 def s07_git():
-    s = content(METHOD, "Lịch sử git: có plan nhưng không ít sửa hơn",
-                "RQ1–2: nếp spec → plan rất rõ, nhưng commit có plan vẫn bị sửa lại nhiều như commit không có plan.",
+    s = content(METHOD, "Kết quả phân tích lịch sử git (RQ1, RQ2)",
+                "Đa số commit tính năng có plan đi trước, nhưng vẫn bị sửa lại nhiều như commit không có plan.",
                 50,
                 f"Lịch sử git cho hai ý. Thứ nhất, nếp spec, plan rất rõ: {N['FeatWithPlanPct']} phần trăm commit "
                 f"tính năng có plan đi trước nêu đúng file. Quy tắc nối đúng {N['LinkCorrect']} trên "
@@ -448,7 +446,7 @@ def s07_git():
 
 
 def s08_prompts():
-    s = content(METHOD, "Hai nhánh chỉ khác prompt quy trình",
+    s = content(METHOD, "Thiết kế thí nghiệm: hai cách làm",
                 "Cùng đề bài, mô hình, công cụ và giới hạn thời gian; chỉ khác đoạn prompt đặt trước đề bài.", 45,
                 "Thí nghiệm có hai nhánh, chỉ khác một đoạn prompt quy trình đặt trước đề bài. Vibe: một câu, hãy cài "
                 "đặt thay đổi sau. Spec-driven: trong cùng một phiên, viết docs/design.md, viết docs/plan.md, làm từng "
@@ -457,11 +455,11 @@ def s08_prompts():
                 footer="Prompt viết lại từ các bước của Superpowers để chạy y hệt trên Claude Code và Codex; nguyên văn "
                        "ở phụ lục báo cáo.")
     panel(s, X0, 2.4, 5.85, 2.6, "Vibe coding",
-          ["Một câu: “Implement the following change in this repository.”", "Rồi tới đề bài."], accent=VIBE,
+          ["Một câu: “Implement the following change in this repository.”", "Sau đó là đề bài."], accent=VIBE,
           size=17, bullet=False)
     panel(s, X0 + 6.28, 2.4, 5.85, 2.6, "Spec-driven",
           ["Viết docs/design.md (spec) → docs/plan.md → làm từng phần, viết test trước → chạy cả bộ test "
-           "backend trước khi dừng.", "Rồi tới đề bài (giống hệt nhánh vibe)."], accent=SPEC, size=17,
+           "backend trước khi dừng.", "Sau đó là đề bài (giống hệt nhánh vibe)."], accent=SPEC, size=17,
           bullet=False)
     text(s, X0, 5.3, X1 - X0, 1.3,
          ["Chạy không người: bỏ bước hỏi lại người dùng và bước người duyệt spec của Superpowers.",
@@ -470,8 +468,8 @@ def s08_prompts():
 
 
 def s09_tasks():
-    s = content(METHOD, f"{N['TasksMain']} nhiệm vụ cắt từ commit thật, ba cỡ",
-                "Mỗi nhiệm vụ gồm mã nền (commit cha), đề bài và hidden test (test mà commit gốc thêm vào).", 55,
+    s = content(METHOD, "Bộ nhiệm vụ",
+                f"{N['TasksMain']} nhiệm vụ lấy từ commit thật của ViPharmind, chia ba tầng theo kích thước.", 55,
                 f"Nhiệm vụ cắt từ commit thật của backend, ba cỡ: {N['Tasks']} nhiệm vụ nhỏ một commit, "
                 f"{N['MediumTasks']} vừa, {N['FeatureTasks']} lớn cỡ một tính năng. Mỗi nhiệm vụ có mã nền là commit "
                 f"cha, một đề bài năm đến mười câu, và hidden test là test mà commit gốc thêm vào. Để hidden test chấm "
@@ -497,7 +495,7 @@ def s09_tasks():
 
 
 def s10_runs():
-    s = content(METHOD, f"Ba cohort, {N['ResRuns']} lượt chạy",
+    s = content(METHOD, "Cohort và số lượt chạy",
                 f"3 cohort × 2 cách làm × 3 lần lặp × {N['TasksMain']} nhiệm vụ = {N['ResRuns']} lượt hợp lệ.", 45,
                 f"Ba cohort: Claude Code với Sonnet và với Opus để so mô hình, Codex để so hãng. Ba cohort, hai cách, "
                 f"ba lần lặp, {N['TasksMain']} nhiệm vụ: {N['ResRuns']} lượt. Mỗi lượt có một thư mục HOME sạch, không "
@@ -517,7 +515,7 @@ def s10_runs():
 
 
 def s11_grading():
-    s = content(METHOD, "Chấm bằng hidden test",
+    s = content(METHOD, "Cách chấm",
                 "Một lượt đạt khi mọi hidden test đạt và không test cũ nào hỏng.", 45,
                 "Một lượt đạt khi mọi hidden test đạt và không test cũ nào hỏng. Trước khi chấm, grader bỏ hai file "
                 "spec, đưa mọi test cũ về bản gốc rồi mới chép hidden test vào, nên agent không thể đạt bằng cách sửa "
@@ -540,9 +538,9 @@ def s11_grading():
 
 
 def s12_prereg():
-    s = content(METHOD, "Không tự lừa mình: chốt trước khi chạy",
+    s = content(METHOD, "Preregistration",
                 "Giả thuyết, nhiệm vụ và mã phân tích được chốt bằng git tag trước khi mở kết quả.", 45,
-                "Để không tự lừa mình, mọi thứ được chốt bằng git tag trước khi mở kết quả: giả thuyết và kế hoạch "
+                "Để tránh chọn kết quả sau khi đã thấy số liệu, mọi thứ được chốt bằng git tag trước khi mở kết quả: giả thuyết và kế hoạch "
                 "phân tích, rồi nhiệm vụ tầng vừa và lớn, rồi mã phân tích. Trước mỗi tag, một agent AI riêng là "
                 "Fable phản biện độc lập. Cây mã giao cho agent không có lịch sử git hay spec cũ, để không lộ lời "
                 "giải. Kết quả được đọc theo quy tắc chốt trước: khoảng tin cậy nằm hẳn về một phía mới kết luận.",
@@ -558,13 +556,13 @@ def s12_prereg():
             arrow(s, x + bw + 0.03, 3.07, w=0.32)
     text(s, X0, 4.35, X1 - X0, 2.3,
          ["Trước mỗi tag, Fable 5.2 (một agent AI chạy riêng) phản biện độc lập.",
-          "Chống lộ lời giải: cây mã không có lịch sử git, spec hay plan cũ; ghi mọi đường dẫn tới repo gốc để "
+          "Tránh lộ lời giải: cây mã không có lịch sử git, spec hay plan cũ; ghi mọi đường dẫn tới repo gốc để "
           "phân tích độ nhạy."], size=16, bullet=True)
 
 
 def s13_h1():
-    s = content(FIND, "H1: với đề chi tiết, spec không đạt nhiều hơn",
-                "Phép thử chính (Sonnet, nhiệm vụ nhỏ) chưa kết luận được, và không ủng hộ một lợi ích đáng kể.", 55,
+    s = content(FIND, "Kết quả H1: tỉ lệ đạt với đề chi tiết",
+                "Phép thử chính (Sonnet, nhiệm vụ nhỏ) chưa kết luận được; dữ liệu không ủng hộ một lợi ích đáng kể của spec.", 55,
                 f"(Chuyển người nếu chia ba phần: phần hai.) Đây là phép thử chính: Sonnet, nhiệm vụ nhỏ. Spec đạt "
                 f"{N['ResHOneSpecPct']} phần trăm, vibe {N['ResHOneVibePct']}, hiệu số {say('ResHOneEstPp')} điểm phần "
                 f"trăm, khoảng tin cậy từ {say('ResHOneLowPp')} đến {say('ResHOneHighPp')}. Khoảng chứa 0 nên H1 chưa "
@@ -584,9 +582,8 @@ def s13_h1():
 
 
 def s14_cohorts(forest: Path):
-    s = content(FIND, "Đổi công cụ hay mô hình: không đổi hướng",
-                "Hiệu số spec − vibe theo cohort và tầng: Claude ≤ 0 gần như mọi nơi; chỉ Codex tầng lớn nghiêng về "
-                "spec.", 55,
+    s = content(FIND, "Kết quả theo cohort (RQ4, RQ5)",
+                "Với Claude, hiệu số spec − vibe âm hoặc bằng 0 ở gần như mọi tầng; chỉ Codex ở tầng lớn nghiêng về spec.", 55,
                 f"Mỗi hàng là một cohort ở một tầng; chấm là hiệu số, vạch ngang là khoảng tin cậy, đường dọc là 0. "
                 f"Với Claude, hiệu số âm hoặc bằng 0 ở gần như mọi tầng. Ô duy nhất nghiêng về spec là Codex tầng lớn, "
                 f"{N['ResCodexLargeSpecPct']} so với {N['ResCodexLargeVibePct']} phần trăm, nhưng chỉ ba nhiệm vụ và "
@@ -605,8 +602,8 @@ def s14_cohorts(forest: Path):
 
 
 def s15_size(scatter: Path):
-    s = content(FIND, "Nhiệm vụ lớn hơn: lợi ích không tăng rõ",
-                "H5: hiệu số không tăng theo cỡ nhiệm vụ một cách rõ ràng; chưa kết luận được.", 45,
+    s = content(FIND, "Kết quả theo kích thước nhiệm vụ (RQ6)",
+                "Hiệu số không tăng rõ khi nhiệm vụ lớn hơn; H5 chưa kết luận được.", 45,
                 f"Mỗi điểm là một nhiệm vụ: đậm là trung bình ba cohort, nhạt là từng cohort; trục ngang là số dòng "
                 f"của patch gốc. Hiệu số gộp ở tầng lớn trừ tầng nhỏ là {say('ResHFiveEstPp')} điểm, khoảng từ "
                 f"{say('ResHFiveLowPp')} đến {say('ResHFiveHighPp')}. Hệ số tương tác của mô hình hỗn hợp cũng chứa 0. "
@@ -622,11 +619,11 @@ def s15_size(scatter: Path):
 
 
 def s16_cost():
-    s = content(FIND, f"Cái giá: gấp {N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} lần token",
+    s = content(FIND, "Chi phí (H2)",
                 f"Spec tốn gấp {N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} lần token và "
                 f"{N['ResWallRatioMin']}–{N['ResWallRatioMax']} lần thời gian ở mọi cohort và tầng (H2 được ủng hộ).",
                 45,
-                f"Cái giá thì rõ: spec tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token và "
+                f"Về chi phí, spec tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token và "
                 f"{N['ResWallRatioMin']} đến {N['ResWallRatioMax']} lần thời gian, ở mọi ô. Quy đổi theo giá API, một "
                 f"lượt đạt của Sonnet ở nhiệm vụ nhỏ tốn {usd('claude-sonnet', 'small', 'spec')} đô với spec, so với "
                 f"{usd('claude-sonnet', 'small', 'vibe')} đô với vibe. Chỉ ở Codex tầng lớn spec mới rẻ hơn, vì vibe "
@@ -654,9 +651,9 @@ def s16_cost():
 
 
 def s17_tests():
-    s = content(FIND, "Cái spec để lại: bộ test",
-                "Khác biệt rõ nhất giữa hai cách là test do agent tự viết; còn chất lượng mã thì lẫn lộn.", 50,
-                f"Thứ spec để lại rõ nhất là test: {N['ResSonnetSpecTestsAnyPct']} đến {N['ResCodexSpecTestsAnyPct']} "
+    s = content(FIND, "Test do agent viết và chất lượng mã (H3)",
+                "Nhánh spec để lại test ở phần lớn số lượt; các chỉ số chất lượng mã cho kết quả lẫn lộn.", 50,
+                f"Khác biệt rõ nhất giữa hai cách là test do agent tự viết: {N['ResSonnetSpecTestsAnyPct']} đến {N['ResCodexSpecTestsAnyPct']} "
                 f"phần trăm lượt spec có test do agent tự viết, trong khi vibe của Codex không viết test nào và Sonnet "
                 f"chỉ {N['ResSonnetVibeTestsAnyPct']} phần trăm. Đây là hệ quả trực tiếp của prompt, và hidden test "
                 f"không thưởng phần này; nó có thể có giá trị ở lần sửa sau, nhưng nghiên cứu này không đo. Về chất "
@@ -679,14 +676,14 @@ def s17_tests():
 
 
 def s18_decode():
-    s = content(FIND, "Giải mã f15: spec chốt một cách đoán",
-                "Đề không nói hàm trả về gì; spec của agent tự chốt sai, rồi test của chính nó kiểm theo cùng giả "
-                "định.", 55,
+    s = content(FIND, "Phân tích ca f15",
+                "Đề không nói hàm trả về gì; spec của agent chọn sai, và test của agent kiểm theo lựa chọn đó.", 55,
                 f"Quay lại f15. Đề nêu tên hàm dọn dữ liệu nhưng không nói nó trả về gì. Spec của agent tự chốt: trả "
                 f"về danh sách đối tượng. Bản gốc thì trả về danh sách mã. Plan và test của agent đều dựa trên quyết "
                 f"định đó, nên test của chính nó đạt; hidden test thì trượt. Vibe cũng phải tự chọn, và cả ba lượt "
-                f"chọn đúng danh sách mã; {N['ResCaseVibePassed']} lượt đạt hết hidden test. Spec không sai về quy "
-                f"trình: nó chốt một cách đoán rồi tự kiểm bằng chính cách đoán đó. Có phải chỉ là chuyện xui?",
+                f"chọn đúng danh sách mã; {N['ResCaseVibePassed']} lượt đạt hết hidden test. Agent làm đúng quy "
+                f"trình, nhưng spec chỉ ghi lại một cách đoán, rồi test kiểm theo chính cách đoán đó. Ca này có phải "
+                f"ngoại lệ không?",
                 footer=f"Vibe cũng phải tự chọn và chọn đúng danh sách mã ở cả {N['ResCaseReps']} lượt; "
                        f"{N['ResCaseVibePassed']}/{N['ResCaseReps']} lượt đạt hết hidden test.")
     steps = [("Đề bài", "Nêu tên hàm dọn dữ liệu, không nói trả về gì", GRAY),
@@ -700,16 +697,16 @@ def s18_decode():
         if i < 3:
             arrow(s, x + bw + 0.06, 3.2)
     text(s, X0, 4.55, X1 - X0, 2.0,
-         ["Spec không sai về quy trình: nó **biến chỗ đề bỏ ngỏ thành một quyết định cố định**.",
+         ["Bước spec **biến chỗ đề bỏ ngỏ thành một quyết định cố định**.",
           "Plan và test viết trước đều dựa trên quyết định đó, nên không bắt được lỗi.",
           "Spec ghi lại cách agent đoán, không ghi lại ý của người giao việc."], size=17, bullet=True, space=8)
 
 
 def s19_causes():
-    s = content(FIND, f"Không phải chuyện xui: {N['LabOutside']}/{N['LabRuns']} lượt hỏng do đề thiếu",
-                "Phần lớn lượt hỏng của Claude đến từ chi tiết đề không chốt hoặc nối sai mã có sẵn, như nhau ở hai "
-                "cách.", 50,
-                f"Có phải f15 chỉ là chuyện xui? Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt hỏng của Claude, đồng "
+    s = content(FIND, "Nguyên nhân thất bại",
+                f"{N['LabOutside']}/{N['LabRuns']} lượt hỏng của Claude do đề không nêu chi tiết hoặc nối sai mã có sẵn, với tỉ lệ như "
+                "nhau ở hai cách.", 50,
+                f"Để xem f15 có phải ngoại lệ không, Lợi và Bảo gán nhãn độc lập {N['LabRuns']} lượt hỏng của Claude, đồng "
                 f"ý {N['LabAgree']}, kappa {N['LabKappa']}. {N['LabOutside']} trên {N['LabRuns']} lượt hỏng vì đề không "
                 f"nêu chi tiết hoặc nối sai mã có sẵn; chỉ {N['LabLoiLogicTotal']} lượt là lỗi logic. Tỉ lệ này như "
                 f"nhau ở hai cách, {N['LabOutsideSpecPct']} và {N['LabOutsideVibePct']} phần trăm: quy trình spec không "
@@ -752,14 +749,14 @@ def s19_causes():
 
 
 def s20_human_spec():
-    s = content(FIND, "Spec của người vs spec của agent",
+    s = content(FIND, "Thí nghiệm thăm dò E2: đề sơ sài",
                 "Bỏ phần spec do người viết khỏi đề làm điểm giảm mạnh; spec do agent tự viết chỉ bù lại một phần "
                 "nhỏ.", 60,
-                f"Đây là cú lật. Đề chi tiết của thí nghiệm chính thực chất là một bản spec do người viết: tên hàm, "
+                f"Kết quả tiếp theo đến từ thí nghiệm thăm dò E2. Đề chi tiết của thí nghiệm chính thực chất là một bản spec do người viết: tên hàm, "
                 f"chữ ký, quy tắc. Thí nghiệm thăm dò E2 bỏ phần đó, chỉ giữ một hai câu, rồi chấm bằng checklist hành "
                 f"vi. Bỏ spec của người, điểm giảm {say('ETwoXScoreShiftSpec')} và {say('ETwoXScoreShiftVibe')} điểm. "
                 f"Còn spec agent tự viết chỉ bù lại {say('ETwoPooledSmallPp')} điểm ở nhiệm vụ nhỏ, và gần như không gì "
-                f"ở nhiệm vụ vừa, lớn. Spec quan trọng, nhưng phần quý là thông tin người đưa vào. Lưu ý: E2 thêm sau "
+                f"ở nhiệm vụ vừa, lớn. Như vậy giá trị của spec nằm ở thông tin người viết đưa vào. Lưu ý: E2 thêm sau "
                 f"khi thấy kết quả chính, nên là thăm dò.",
                 footer=f"E2 · thăm dò, thêm sau khi xem kết quả chính. Điểm checklist do LLM judge chấm khi không biết "
                        f"cách làm; khớp chấm tay của hai người (kappa {N['ETwoHumanLoiJudgeKappa']}, "
@@ -770,19 +767,19 @@ def s20_human_spec():
          color=BAD, bold=True)
     text(s, X0 + 0.3, 3.85, 5.3, 2.6,
          ["Đề chi tiết = spec do người viết. Bỏ tên, chữ ký, quy tắc khỏi đề: điểm checklist giảm (spec / vibe).",
-          "Đây là hiệu ứng lớn nhất cả bài, ở cả hai cách làm."], size=16, bullet=True)
+          "Đây là chênh lệch lớn nhất trong nghiên cứu, ở cả hai cách làm."], size=16, bullet=True)
     panel(s, X0 + 6.28, 2.4, 5.85, 3.3, "Spec của agent", None, accent=SPEC)
     text(s, X0 + 6.58, 3.0, 5.3, 1.0, f"{sg('ETwoPooledSmallPp')} pp", size=40, color=SPEC, bold=True)
     text(s, X0 + 6.58, 3.85, 5.3, 2.6,
          [f"Đề sơ sài, agent tự viết spec: bù lại ở nhiệm vụ nhỏ, KTC {ci('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}.",
           f"Nhiệm vụ vừa {sg('ETwoPooledMediumRefPp')}, lớn {sg('ETwoPooledLargeRefPp')} pp (chỉ tham khảo)."],
          size=16, bullet=True)
-    text(s, X0, 5.95, X1 - X0, 0.7, [("Đề chi tiết chính là một bản spec do người viết; agent tự viết spec chỉ ghi "
-                                      "lại cách nó đoán.", {"bold": True, "color": NAVY})], size=17)
+    text(s, X0, 5.95, X1 - X0, 0.7, [("Đề chi tiết là một bản spec do người viết; spec do agent tự viết chỉ ghi lại "
+                                      "cách agent đoán.", {"bold": True, "color": NAVY})], size=17)
 
 
 def s21_conclusion():
-    s = content(CLOSE, "Kết luận: spec có giá trị nhờ ý của người",
+    s = content(CLOSE, "Kết luận",
                 "Giá trị của spec nằm ở thông tin người đưa vào, không ở việc agent tự viết spec.", 60,
                 f"(Chuyển người nếu chia ba phần: phần ba.) Tóm lại. Với đề chi tiết, phép thử chính không thấy spec "
                 f"do agent tự viết làm đạt nhiều hơn, H1 chưa kết luận được, mà tốn gấp {N['ResTokenRatioMin']} đến "
@@ -800,12 +797,12 @@ def s21_conclusion():
               f"(Thăm dò) Bỏ spec của người: −{N['ETwoXScoreShiftSpec']} pp; spec của agent chỉ bù {sg('ETwoPooledSmallPp')} pp ở "
               f"nhiệm vụ nhỏ.", VIBE),
              ("Đề xuất",
-              "Viết spec rõ, hoặc để agent hỏi lại bạn. Vòng sau: thêm bước hỏi lại, người duyệt spec, nhiều nhiệm "
-              "vụ lớn hơn.", OK)]
+              "Viết spec rõ, hoặc để agent hỏi lại người dùng. Hướng tiếp: thêm bước hỏi lại và người duyệt spec, "
+              "thêm nhiệm vụ lớn.", OK)]
     for i, (t, d, c) in enumerate(items):
         panel(s, X0 + i * 4.1, 2.4, 3.85, 3.0, t, [d], accent=c, size=17, bullet=False)
-    text(s, X0, 5.65, X1 - X0, 0.9, [("Spec quan trọng, nhưng phần quý là thông tin người đưa vào: agent không tự "
-                                      "sinh ra ý của bạn.", {"bold": True, "color": NAVY})], size=18)
+    text(s, X0, 5.65, X1 - X0, 0.9, [("Giá trị của spec nằm ở thông tin người viết đưa vào; agent không tự suy ra được "
+                                      "thông tin đó.", {"bold": True, "color": NAVY})], size=18)
 
 
 def s22_thanks():
@@ -815,7 +812,7 @@ def s22_thanks():
     rect(s, 1.3, 3.15, 2.2, 0.06, fill=VIBE)
     text(s, 1.3, 3.4, 11, 0.6, "Hỏi đáp", size=24, color=INK, bold=True)
     text(s, 1.3, 4.1, 10.5, 1.2,
-         ["Spec có giá trị nhờ ý của người: viết spec rõ, hoặc để agent hỏi lại bạn.",
+         ["Giá trị của spec nằm ở thông tin do người viết đưa vào.",
           "Mã, dữ liệu, prompt và kết quả thô được nộp kèm báo cáo."], size=16, color=INK)
 
 
@@ -853,7 +850,7 @@ def b_e1():
 
 
 def b_judge():
-    s = content(BACKUP, "Dự phòng: LLM judge của E2 có tin được?",
+    s = content(BACKUP, "Dự phòng: độ tin cậy của LLM judge (E2)",
                 "Judge khớp tốt với chấm tay theo từng mục, khớp vừa với hidden test theo cả lượt.", 0,
                 "Slide dự phòng cho câu hỏi về LLM judge.",
                 footer=f"Mẫu chấm tay chỉ có sáu lượt Codex: quá ít để kiểm độ nghiêng của judge (cùng họ Claude).")
