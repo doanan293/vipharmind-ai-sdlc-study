@@ -253,15 +253,6 @@ def _(r):
                        "Trần Ngọc Bảo (20251227M)"], size=14, lead=1.5))
 
 
-@page("p02_part1", 4, METHOD, 10,
-      f"Phần một gồm bối cảnh, các nghiên cứu liên quan, kết quả phân tích lịch sử git của dự án, và "
-      f"thiết kế thí nghiệm.")
-def _(r):
-    set_text(r, "shape-1483", ["01"], role="num")
-    set_text(r, "shape-1491", ["Phương pháp"], role="title")
-    set_text(r, "shape-1484", ["Bối cảnh, nghiên cứu liên quan, thiết kế"])
-
-
 @page("p02_hook", 26, OPEN, 50,
       f"(Chuyển người nếu chia ba phần: đây là phần một.) Bắt đầu bằng một lượt chạy thật. Agent nhận một "
       f"nhiệm vụ cỡ một tính năng và làm đúng quy trình spec-driven: viết spec {N['ResCaseDesignLines']} dòng, "
@@ -360,42 +351,6 @@ def _(r):
         set_text(r, body, b, size=16)
 
 
-@page("p06_vipharmind", 14, METHOD, 30,
-      f"Dự án là ViPharmind, trợ lý AI tra cứu thuốc do An xây dựng: backend agent bằng Python, ứng dụng "
-      f"web, kho tri thức từ Dược thư Quốc gia. Kho mã có {N['Commits']} commit trong bốn tháng, "
-      f"{N['CommitsFeat']} commit tính năng và {N['SpecPlanFiles']} file spec, plan. Lịch sử đó cho các kết "
-      f"quả sau.")
-def _(r):
-    add(r, text_block("kicker", 247.61, 14, 493, 52,
-                      ["ViPharmind: trợ lý AI tra cứu thuốc", "AI tham gia mọi khâu, theo lời tác giả"],
-                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"{N['Commits']} commit"], role="num")
-    set_text(r, "shape-1917", [f"từ {N['FirstDate']} đến {N['LastDate']}"])
-    set_text(r, "shape-1918", [f"{N['CommitsFeat']} feat"], role="num")
-    set_text(r, "shape-1919", ["commit thêm tính năng"])
-    set_text(r, "shape-1920", [f"{N['SpecPlanFiles']} file"], role="num")
-    set_text(r, "shape-1921", ["spec và plan trong lịch sử git"])
-
-
-@page("p07_retro", 14, METHOD, 35,
-      f"Lịch sử git cho ba ý. {N['FeatWithPlanPct']} phần trăm commit tính năng, {N['FeatWithPlan']} trên "
-      f"{N['CommitsFeat']}, có plan đi trước nêu đúng file. Quy tắc nối đúng {N['LinkCorrect']} trên "
-      f"{N['LinkChecked']} lần An kiểm tay, hay nối thừa, nên đó là cận trên. Số commit sửa lại gần như bằng "
-      f"nhau, {say('ReworkWithPlanMean')} khi có plan, {say('ReworkWithoutPlanMean')} khi không. Đây là quan "
-      f"sát; nhân quả cần thực nghiệm.")
-def _(r):
-    add(r, text_block("kicker", 247.61, 14, 493, 52,
-                      ["Lịch sử git (RQ1, RQ2)", f"{N['Commits']} commit, lịch sử git của ViPharmind"],
-                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"{N['FeatWithPlanPct']}%"], role="num")
-    set_text(r, "shape-1917", [f"commit feat có plan đi trước ({N['FeatWithPlan']}/{N['CommitsFeat']})"],
-             size=18)
-    set_text(r, "shape-1918", [f"{N['LinkCorrect']}/{N['LinkChecked']}"], role="num")
-    set_text(r, "shape-1919", ["quy tắc nối đúng khi kiểm tay"], size=18)
-    set_text(r, "shape-1920", [f"{N['ReworkWithPlanMean']} ≈ {N['ReworkWithoutPlanMean']}"], role="num")
-    set_text(r, "shape-1921", ["commit sửa lại: có plan ≈ không plan"], size=18)
-
-
 @page("p08_arms", 24, METHOD, 25,
       f"Thực nghiệm có hai cách làm, chỉ khác prompt quy trình trước đề bài. Vibe: một câu, hãy cài đặt thay đổi sau. "
       f"Theo đặc tả: trong cùng phiên, viết file thiết kế, file kế hoạch, làm từng phần theo kiểu viết test "
@@ -433,88 +388,6 @@ def _(r):
                        "Thăm dò, thêm sau kết quả chính (prereg-v1.2): E1 Haiku 5.5, đề",
                        f"chi tiết; E2 đề ≤30 từ, không tên hàm, 4 nhóm."],
                       size=14, fill=BLUE, bold=True))
-
-
-@page("p10_tiers", 25, METHOD, 40,
-      f"Nhiệm vụ lấy từ commit thật, chia ba tầng: nhỏ {N['Tasks']} nhiệm vụ, một commit, "
-      f"{N['TaskSrcLinesMin']} đến {N['TaskSrcLinesMax']} dòng; vừa {N['MediumTasks']} nhiệm vụ, hai đến ba "
-      f"commit; lớn {N['FeatureTasks']} nhiệm vụ cỡ một tính năng. Ba nhóm, hai cách, ba lần lặp: "
-      f"{N['ResRuns']} lượt. Thăm dò thêm {N['EOneRuns']} lượt Haiku và {N['ETwoBriefJudged']} lượt đề sơ "
-      f"sài, chấm theo checklist hành vi rút từ hidden test; {N['ETwoHumanUnits']} lượt được chấm tay để kiểm máy "
-      f"chấm. Còn đề chính thì chấm thế này.")
-def _(r):
-    set_text(r, "shape-2228", [f"Ba tầng nhiệm vụ, {N['ResRuns']} lượt"])
-    cols = [("shape-2263", "shape-2259", "shape-2260", N["Tasks"], "Nhỏ",
-             ["1 commit", f"{N['TaskSrcLinesMin']}–{N['TaskSrcLinesMax']} dòng"]),
-            ("shape-2268", "shape-2261", "shape-2262", N["MediumTasks"], "Vừa",
-             [f"{N['MediumCommitsMin']}–{N['MediumCommitsMax']} commit",
-              f"{N['MediumSrcLinesMin']}–{N['MediumSrcLinesMax']} dòng"]),
-            ("shape-2269", "shape-2264", "shape-2265", N["FeatureTasks"], "Lớn",
-             [f"{N['FeatureCommitsMin']}–{N['FeatureCommitsMax']} commit",
-              f"{N['FeatureSrcLinesMin']}–{N['FeatureSrcLinesMax']} dòng"]),
-            ("shape-2270", "shape-2266", "shape-2267", N["ResRuns"], "Tổng",
-             ["3 nhóm × 2 cách", "× 3 lần lặp", f"× {N['TasksMain']} nhiệm vụ"])]
-    for num, head, body, k, h, b in cols:
-        set_text(r, num, [k], role="numo")
-        set_text(r, head, [h])
-        set_text(r, body, b, size=17)
-    add(r, text_block("explore", 75, 494, 820, 30,
-                      [f"Thăm dò: E1 Haiku {N['EOneRuns']} lượt · E2 đề sơ sài {N['ETwoBriefJudged']} lượt "
-                       f"(Codex dừng sớm), chấm theo checklist hành vi, kiểm tay {N['ETwoHumanUnits']} lượt"],
-                      size=13, fill=BLUE, bold=True))
-
-
-@page("p11_grading", 19, METHOD, 30,
-      f"Hidden test là test commit gốc thêm vào: trượt ở base commit, đạt ở bản gốc, agent không thấy. Một lượt đạt "
-      f"khi mọi hidden test đạt và không test cũ nào hỏng. Test cũ được đưa về bản gốc trước khi chấm, nên không "
-      f"lách được. Cây mã không có lịch sử git hay spec, plan cũ. Mọi thứ được chốt trước.")
-def _(r):
-    set_text(r, "shape-2101", ["Chấm bằng hidden test"])
-    set_text(r, "shape-2104", ["Hidden test"], role="head")
-    set_text(r, "shape-2113", ["Trượt ở base commit, đạt", "ở commit gốc; agent", "không thấy"], size=16)
-    set_text(r, "shape-2105", ["Đạt"], role="head")
-    set_text(r, "shape-2102", ["Mọi hidden test đạt và", "không test cũ hỏng"], size=16)
-    set_text(r, "shape-2108", ["Không lách"], role="head")
-    set_text(r, "shape-2106", ["Test cũ đưa về bản", "gốc trước khi chấm"], size=16)
-    set_text(r, "shape-2103", ["Không lộ"], role="head")
-    set_text(r, "shape-2107", ["Không lịch sử git,", "không spec, plan cũ"], size=16)
-
-
-@page("p12_prereg", 21, METHOD, 25,
-      f"Để không chọn đề hay phép phân tích sau khi thấy số, git tag chốt trước tầng nhỏ, giả thuyết và kế "
-      f"hoạch phân tích, rồi tầng vừa, tầng lớn, rồi mã phân tích, tất cả trước khi mở kết quả. Trước mỗi "
-      f"thẻ, Fable, một agent AI riêng, phản biện độc lập. Dù vậy vẫn còn rủi ro.")
-def _(r):
-    set_text(r, "shape-2150", ["Chốt trước khi chạy"])
-    steps = [("shape-2151", "shape-2147", "1 · v1", ["Tầng nhỏ, giả thuyết,", "kế hoạch phân tích"]),
-             ("shape-2152", "shape-2148", "2 · Chạy", ["Chạy tầng nhỏ; chỉ", "xem trạng thái lượt"]),
-             ("shape-2153", "shape-2149", "3 · v1.1", ["Chốt nhiệm vụ tầng", "vừa và tầng lớn"]),
-             ("shape-2155", "shape-2154", "4 · Mã", ["Chốt mã phân tích", "trước khi mở"]),
-             ("shape-2157", "shape-2156", "5 · Mở", ["Mở kết quả; thay", "đổi đều ghi lại"]),
-             ("shape-2159", "shape-2158", "Mỗi thẻ", ["Fable 5.2 phản biện", "độc lập trước khi chốt"])]
-    for head, body, h, b in steps:
-        set_text(r, head, [h], size=20, role="head")
-        top = body in ("shape-2147", "shape-2148", "shape-2149")
-        set_text(r, body, b, size=16, y=(176 - 22 * len(b)) if top else None)
-
-
-@page("p13_threats", 23, METHOD, 30,
-      f"Hai rủi ro lớn nhất. Lộ lời giải, vì repo công khai: cây mã không có lịch sử git, mốc dữ liệu huấn "
-      f"luyện của các mô hình chính đều trước commit đầu tiên, và lượt lộ đường dẫn tới repo gốc được tách "
-      f"ra phân tích độ nhạy. Thiên vị khi chọn đề, chọn số: thứ tự đề xáo với hạt giống cố định. Sang kết "
-      f"quả.")
-def _(r):
-    set_text(r, "shape-2199", ["Rủi ro và cách kiểm soát"])
-    set_text(r, "shape-2204", ["Rủi ro"], role="head")
-    set_text(r, "shape-2205", ["Kiểm soát"], role="head")
-    set_text(r, "shape-2210", ["Rò rỉ lời giải"], size=22, role="head")
-    set_text(r, "shape-2208", ["Repo công khai, lịch", "sử chứa lời giải"], size=16)
-    set_text(r, "shape-2207", ["Thiên vị"], size=22, role="head")
-    set_text(r, "shape-2209", ["Chọn đề, chọn số", "sau khi thấy kết quả"], size=16)
-    set_text(r, "shape-2203", ["Cây sạch"], size=22, role="head")
-    set_text(r, "shape-2201", ["Không lịch sử git;", "ghi upstream_urls"], size=16)
-    set_text(r, "shape-2200", ["Chốt trước"], size=22, role="head")
-    set_text(r, "shape-2202", ["Xáo đề, hạt cố định;", "git tag; độ nhạy"], size=16)
 
 
 @page("p06_project", 14, METHOD, 40,
@@ -654,14 +527,6 @@ def _(r):
              size=14)
 
 
-@page("p14_results", 4, RESULTS, 10,
-      f"Phần hai: hai phát hiện khi đề đã chi tiết, và một câu hỏi mở khi đề chỉ một hai câu.")
-def _(r):
-    set_text(r, "shape-1483", ["02"], role="num")
-    set_text(r, "shape-1491", ["Kết quả"], role="title")
-    set_text(r, "shape-1484", ["Hai phát hiện, một câu hỏi mở"])
-
-
 @page("p15_h1", 13, RESULTS, 45,
       f"(Chuyển người nếu chia ba phần: phần hai.) Đây là phép thử xác nhận duy nhất: Sonnet, tầng nhỏ. Đặc tả đạt {N['ResHOneSpecPct']} phần trăm, "
       f"vibe {N['ResHOneVibePct']}, hiệu số {say('ResHOneEstPp')} điểm phần trăm, khoảng tin cậy chín mươi "
@@ -704,28 +569,6 @@ def _(r):
 
 H3C_OK, H3C_ALL = verdict_count("H3c.", "supported")
 H3A_BAD, _ = verdict_count("H3a.", "contrary")
-
-
-@page("p17_h2h3", 14, RESULTS, 40,
-      f"H2 được ủng hộ ở mọi ô: đặc tả tốn gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần "
-      f"token, {N['ResWallRatioMin']} đến {N['ResWallRatioMax']} lần thời gian. H3 lẫn lộn: lỗi static analysis có hai "
-      f"ô trái giả thuyết; ở Codex tầng lớn, đặc tả không hỏng test cũ lượt nào, vibe hỏng "
-      f"{N['ResCodexLargeRegVibePct']} phần trăm, nhưng chỉ ba nhiệm vụ. Maintainability index không kém quá năm "
-      f"điểm ở tám trên chín ô. Rõ nhất là test agent tự viết: khoảng ba phần tư lượt đặc tả để lại test, "
-      f"vibe từ 0 đến {N['ResOpusVibeTestsAnyPct']} phần trăm.")
-def _(r):
-    add(r, text_block("kicker", 247.61, 14, 493, 52,
-                      ["H2, H3 · Chi phí và chất lượng", "Spec so với vibe, mọi nhóm và tầng"],
-                      size=16, fill=BLUE, bold=True, family=MONO, lead=1.4))
-    set_text(r, "shape-1916", [f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token"], size=44, role="num")
-    set_text(r, "shape-1917", [f"Thời gian ×{N['ResWallRatioMin']}–{N['ResWallRatioMax']}; H2 ủng hộ ở mọi ô"],
-             size=18)
-    set_text(r, "shape-1918", [f"{N['ResCodexLargeRegSpecPct']}% / {N['ResCodexLargeRegVibePct']}%"],
-             size=44, role="num")
-    set_text(r, "shape-1919", ["Regression, Codex tầng lớn (spec / vibe);",
-                               f"lỗi static analysis: {H3A_BAD} ô trái với H3"], size=18)
-    set_text(r, "shape-1920", [f"{H3C_OK}/{H3C_ALL} ô"], size=44, role="num")
-    set_text(r, "shape-1921", ["Maintainability index không kém hơn quá 5 điểm (H3)"], size=18)
 
 
 @page("p18_h4", 23, RESULTS, 40,
@@ -798,7 +641,7 @@ def _(r):
       f"Thiết kế {N['ResCaseDesignLines']} dòng, kế hoạch {N['ResCasePlanLines']} dòng, chốt kiểu trả về là "
       f"đối tượng, điều đề không nói, còn bản gốc trả mã. Test của agent cùng giả định nên đạt.")
 def _(r):
-    set_text(r, "shape-2285", ["Ca nghiên cứu: f15"])
+    set_text(r, "shape-2285", ["Dự phòng: số liệu đầy đủ ca f15"])
     set_text(r, "shape-2287", ["Nhiệm vụ"], role="head")
     set_text(r, "shape-2286", ["Tập tài liệu có", "chủ, quyền xem.", "Tầng lớn, Sonnet;",
                                f"hiệu {m(N['ResCaseDiffPp'])} pp."], size=15)
@@ -865,38 +708,39 @@ def _(r):
 
 
 @page("p24_limits", 8, RESULTS, 25,
-      f"Ba hạn chế. Một dự án Python, đặc tả tự động không người duyệt. Đề do AI soạn, nhóm duyệt; hidden test "
+      f"(Chuyển người nếu chia ba phần: phần ba.) Ba hạn chế. Một dự án Python, đặc tả tự động không người duyệt. Đề do AI soạn, nhóm duyệt; hidden test "
       f"viết cho bản gốc vốn làm theo đặc tả. Tầng vừa chỉ {N['MediumTasks']}, tầng lớn {N['FeatureTasks']} "
-      f"nhiệm vụ, nên chỉ để tham khảo. Để kết lại.")
+      f"nhiệm vụ, nên chỉ để tham khảo; E2 thêm sau khi thấy kết quả chính. Để kết lại.")
 def _(r):
     set_text(r, "shape-1666", ["Hạn chế"])
     set_text(r, "shape-1671", ["Phạm vi"])
-    set_text(r, "shape-1668", ["Một dự án Python;", "spec-driven tự động,", "không người duyệt"], size=16)
+    set_text(r, "shape-1668", ["Một dự án Python;", "spec-driven tự động:", "không hỏi lại, không", "người duyệt spec"], size=16)
     set_text(r, "shape-1672", ["Đề bài"])
     set_text(r, "shape-1669", ["AI soạn, nhóm duyệt;", "hidden test viết cho", "bản gốc"], size=16)
     set_text(r, "shape-1667", ["Cỡ mẫu"])
     set_text(r, "shape-1670", [f"Tầng vừa {N['MediumTasks']}, lớn {N['FeatureTasks']}",
-                               "nhiệm vụ: chỉ để", "tham khảo"], size=16)
+                               "task: chỉ tham khảo;", "E2 thêm sau (thăm dò)"], size=16)
 
 
-@page("p25_conclusion", 7, CLOSE, 40,
-      f"Tóm lại. Khi đề đã chi tiết, quy trình đặc tả tốn gấp {N['ResTokenRatioMin']} đến "
-      f"{N['ResTokenRatioMax']} lần token mà không cho thấy đạt nhiều hơn. {N['LabOutside']} trên "
-      f"{N['LabRuns']} lượt hỏng đến từ chi tiết đề không nêu hoặc sai mã có sẵn, ở cả hai cách. Khi đề sơ "
-      f"sài, quy trình có thể bù một phần ở việc nhỏ, {say('ETwoPooledSmallPp')} điểm, rõ nhất với Sonnet, "
-      f"nhưng không thay được thông tin đề thiếu; đây là thăm dò. Vì vậy nên viết đề rõ trước.")
+@page("p25_conclusion", 7, CLOSE, 50,
+      f"Tóm lại. Với đề chi tiết, phép thử chính cho thấy spec do agent tự viết không làm đạt nhiều hơn mà tốn "
+      f"gấp {N['ResTokenRatioMin']} đến {N['ResTokenRatioMax']} lần token. Với đề sơ sài, phần thăm dò cho "
+      f"thấy bỏ spec của người làm điểm giảm khoảng {say('ETwoXScoreShiftSpec')} điểm, còn spec của agent chỉ "
+      f"bù {say('ETwoPooledSmallPp')} ở task nhỏ. Spec quan trọng, nhưng giá trị nằm ở thông tin người đưa "
+      f"vào: hãy viết spec rõ, hoặc để agent hỏi lại mình. Vòng sau, nhóm em muốn thêm bước hỏi lại và người "
+      f"duyệt spec, và nhiều task cỡ tính năng hơn.")
 def _(r):
-    set_text(r, "shape-1634", ["Kết luận"])
+    set_text(r, "shape-1634", ["Spec có giá trị nhờ ý của người"])
     set_text(r, "shape-1638", ["Đề chi tiết"])
-    set_text(r, "shape-1636", [f"Spec tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']}",
-                               "token, không cho thấy", "đạt nhiều hơn."], size=17)
-    set_text(r, "shape-1637", ["Lượt hỏng"])
-    set_text(r, "shape-1635", [f"{N['LabOutside']}/{N['LabRuns']}: đề không nêu", "hoặc sai mã có sẵn;",
-                               "như nhau ở hai cách."], size=17)
-    add(r, text_block("next", 189, 392, 640, 80,
-                      [f"Đề sơ sài (thăm dò): spec có thể bù một phần ở việc",
-                       f"nhỏ ({sg('ETwoPooledSmallPp')} pp), rõ nhất với Sonnet, nhưng không thay",
-                       "được thông tin đề thiếu. Nên viết đề rõ trước."],
+    set_text(r, "shape-1636", ["(phép thử chính) Spec", "agent tự viết: không đạt",
+                               f"hơn, tốn ×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token."], size=16)
+    set_text(r, "shape-1637", ["Đề sơ sài"])
+    set_text(r, "shape-1635", ["(thăm dò) Bỏ spec người:", f"−{N['ETwoXScoreShiftSpec']} pp; spec agent",
+                               f"bù {sg('ETwoPooledSmallPp')} pp ở task nhỏ."], size=16)
+    add(r, text_block("next", 189, 392, 660, 80,
+                      ["Viết spec rõ, hoặc để agent hỏi lại bạn:",
+                       "agent không tự sinh ra ý của bạn.",
+                       "Vòng sau: thêm bước hỏi lại, người duyệt spec, nhiều task lớn hơn."],
                       size=15, fill=BLUE, bold=True))
 
 
@@ -963,6 +807,23 @@ def _(r):
              size=17)
 
 
+@page("p31_bk_judge", 24, BACKUP, 0,
+      f"Slide dự phòng, khi được hỏi LLM judge của E2 có tin được không. Trên {N['ETwoJudgeN']} lượt đề chi "
+      f"tiết, judge khớp hidden test với kappa {N['ETwoJudgeKappa']}, mức vừa. Trên {N['ETwoHumanUnits']} lượt "
+      f"đề sơ sài, Lợi và Bảo chấm tay độc lập: hai người khớp nhau {N['ETwoHumanLoiBaoKappa']}, judge khớp "
+      f"từng người {N['ETwoHumanLoiJudgeKappa']} và {N['ETwoHumanBaoJudgeKappa']}; máy khắt khe hơn.")
+def _(r):
+    set_text(r, "shape-2217", ["Dự phòng: LLM judge có tin được?"])
+    set_text(r, "shape-2220", ["Với hidden test"])
+    set_text(r, "shape-2218", [f"{N['ETwoJudgeN']} lượt đề chi tiết: kappa {N['ETwoJudgeKappa']} (mức vừa)"],
+             size=17)
+    set_text(r, "shape-2221", ["Với người chấm"])
+    set_text(r, "shape-2219", [f"{N['ETwoHumanUnits']} lượt đề sơ sài, chấm tay độc lập: người–người "
+                               f"{N['ETwoHumanLoiBaoKappa']};",
+                               f"judge–người {N['ETwoHumanLoiJudgeKappa']} và {N['ETwoHumanBaoJudgeKappa']}; "
+                               "máy khắt khe hơn."], size=17)
+
+
 @page("p30_attribution", 30, BACKUP, 0,
       "Slide ghi nguồn template Slidesgo, giữ lại theo điều kiện của bản miễn phí.")
 def _(r):
@@ -982,11 +843,11 @@ ORDER: list[tuple[str, str, int]] = [
     ("p08_scale", METHOD, 45), ("p09_rigor", METHOD, 35),
     ("p15_h1", RESULTS, 45), ("p16_rq4", RESULTS, 50), ("p12_cost_tests", RESULTS, 40),
     ("p13_decode", RESULTS, 50), ("p22_labels", RESULTS, 35), ("p15_human_spec", RESULTS, 60),
-    ("p24_limits", CLOSE, 30), ("p25_conclusion", CLOSE, 45), ("p26_thanks", CLOSE, 10),
+    ("p24_limits", CLOSE, 30), ("p25_conclusion", CLOSE, 50), ("p26_thanks", CLOSE, 10),
     ("p05_hypotheses", BACKUP, 0), ("p09_cohorts", BACKUP, 0), ("p18_h4", BACKUP, 0), ("p19_h5", BACKUP, 0),
     ("p20_cost", BACKUP, 0), ("p23_explore", BACKUP, 0), ("p21_case", BACKUP, 0),
     ("p27_bk_funnel", BACKUP, 0), ("p28_bk_reading", BACKUP, 0),
-    ("p29_bk_labels", BACKUP, 0), ("p30_attribution", BACKUP, 0),
+    ("p29_bk_labels", BACKUP, 0), ("p31_bk_judge", BACKUP, 0), ("p30_attribution", BACKUP, 0),
 ]
 
 
