@@ -30,15 +30,27 @@ SUMMARY = json.loads((HERE.parents[1] / "data" / "results" / "analysis" / "main"
 WORK = HERE / "deck"  # git-ignored scratch: rendered figure PNGs
 OUT = HERE / "vipharmind-slides.pptx"
 
-FONT = "Arial"
-NAVY = RGBColor(0x1B, 0x2A, 0x4A)
-INK = RGBColor(0x2B, 0x33, 0x45)
+FONT = "Be Vietnam Pro"
+TITLE_FONT = "IBM Plex Mono"
+TEMPLATE = HERE / "template-vi.pptx"
+K = 10 / 13.333  # the grid below is drawn in 13.333 x 7.5 in; the template slide is 10 x 5.625 in
+
+
+def I(v: float):  # noqa: E743
+    return Inches(v * K)
+
+
+def P(v: float):
+    return Pt(v * K)
+NAVY = RGBColor(0x0C, 0x0A, 0x9E)  # template blue
+INK = RGBColor(0x1D, 0x1D, 0x1D)
 GRAY = RGBColor(0x6B, 0x72, 0x80)
-LIGHT = RGBColor(0xF3, 0xF5, 0xFA)
-LINE = RGBColor(0xD9, 0xDE, 0xEA)
+LIGHT = RGBColor(0xFF, 0xFF, 0xFF)  # panels: white on the template's pale background
+LINE = RGBColor(0xD6, 0xD2, 0xF4)
+PURPLE = RGBColor(0x82, 0x08, 0xD5)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-SPEC = RGBColor(0x2F, 0x5B, 0xEA)  # spec-driven arm, everywhere
-VIBE = RGBColor(0xE8, 0x83, 0x3A)  # vibe arm, everywhere
+SPEC = RGBColor(0x2C, 0x28, 0xC8)  # spec-driven arm, everywhere (template blue, a shade lighter)
+VIBE = RGBColor(0xEB, 0x91, 0x09)  # vibe arm, everywhere (template orange)
 OK = RGBColor(0x2E, 0x9E, 0x6A)
 BAD = RGBColor(0xC0, 0x39, 0x2B)
 
@@ -84,13 +96,24 @@ H3A_BAD = sum(v == "contrary" for k, v in SUMMARY["verdicts"].items() if k.start
 
 # ---------------------------------------------------------------- drawing helpers
 
-PRS = Presentation()
-PRS.slide_width, PRS.slide_height = Inches(W), Inches(H)
-BLANK = PRS.slide_layouts[6]
+PRS = Presentation(str(TEMPLATE))
+for _sid in list(PRS.slides._sldIdLst):  # keep masters and layouts (the template's look), drop its slides
+    PRS.part.drop_rel(_sid.rId)
+    PRS.slides._sldIdLst.remove(_sid)
+LAYOUT = {l.name: l for l in PRS.slide_layouts}
+# Layouts whose decoration stays clear of the content area and the footer strip (measured on renders).
+CONTENT_LAYOUTS = ["TITLE_ONLY", "CUSTOM_10_1_1", "CUSTOM_6_1", "CUSTOM_7", "CUSTOM_9", "CUSTOM_10_1_1_1"]
+
+
+def new_slide(layout: str):
+    s = PRS.slides.add_slide(LAYOUT[layout])
+    for ph in list(s.placeholders):
+        ph._element.getparent().remove(ph._element)
+    return s
 PAGES: list[dict] = []
 
 
-def _runs(p, text: str, size: float, color, bold: bool):
+def _runs(p, text: str, size: float, color, bold: bool, font: str = FONT):
     """**bold** spans become bold runs."""
     for i, part in enumerate(re.split(r"\*\*", text)):
         if not part:
@@ -98,13 +121,13 @@ def _runs(p, text: str, size: float, color, bold: bool):
         r = p.add_run()
         r.text = part
         f = r.font
-        f.name, f.size, f.color.rgb = FONT, Pt(size), color
+        f.name, f.size, f.color.rgb = font, P(size), color
         f.bold = bold or i % 2 == 1
 
 
 def text(slide, x, y, w, h, paras, size=16, color=INK, bold=False, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
-         space=6, line=1.12, bullet=False, name=None):
-    tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+         space=6, line=1.12, bullet=False, name=None, font=None):
+    tb = slide.shapes.add_textbox(I(x), I(y), I(w), I(h))
     if name:
         tb.name = name
     tf = tb.text_frame
@@ -115,24 +138,24 @@ def text(slide, x, y, w, h, paras, size=16, color=INK, bold=False, align=PP_ALIG
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.alignment = align
         p.line_spacing = line
-        p.space_after = Pt(space)
+        p.space_after = P(space)
         c, b, s = color, bold, size
         if isinstance(item, tuple):
             item, opt = item
             c, b, s = opt.get("color", c), opt.get("bold", b), opt.get("size", s)
-        _runs(p, ("•  " if bullet else "") + item, s, c, b)
+        _runs(p, ("•  " if bullet else "") + item, s, c, b, font or FONT)
     return tb
 
 
 def rect(slide, x, y, w, h, fill=LIGHT, line=None, shape=MSO_SHAPE.RECTANGLE, radius=None):
-    sh = slide.shapes.add_shape(shape, Inches(x), Inches(y), Inches(w), Inches(h))
+    sh = slide.shapes.add_shape(shape, I(x), I(y), I(w), I(h))
     sh.fill.solid()
     sh.fill.fore_color.rgb = fill
     if line is None:
         sh.line.fill.background()
     else:
         sh.line.color.rgb = line
-        sh.line.width = Pt(1.25)
+        sh.line.width = P(1.25)
     if radius is not None and shape == MSO_SHAPE.ROUNDED_RECTANGLE:
         sh.adjustments[0] = radius
     style = sh._element.find(qn("p:style"))  # drop the theme style: no shadow, no default effects
@@ -142,9 +165,10 @@ def rect(slide, x, y, w, h, fill=LIGHT, line=None, shape=MSO_SHAPE.RECTANGLE, ra
 
 
 def panel(slide, x, y, w, h, title, items, accent=SPEC, size=15, bullet=True, title_size=16):
-    rect(slide, x, y, w, h, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.06)
+    rect(slide, x, y, w, h, fill=LIGHT, line=LINE, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.06)
     rect(slide, x, y + 0.12, 0.07, h - 0.24, fill=accent)
-    text(slide, x + 0.28, y + 0.18, w - 0.45, 0.4, title, size=title_size, color=accent, bold=True)
+    text(slide, x + 0.28, y + 0.18, w - 0.45, 0.4, title, size=title_size, color=accent, bold=True,
+         font=TITLE_FONT)
     if items:
         text(slide, x + 0.28, y + 0.62, w - 0.45, h - 0.75, items, size=size, bullet=bullet)
 
@@ -155,7 +179,7 @@ def arrow(slide, x, y, w=0.36, h=0.3, color=GRAY):
 
 
 def bignum(slide, x, y, w, value, label, color=SPEC, size=40, label_size=14):
-    text(slide, x, y, w, 0.75, value, size=size, color=color, bold=True)
+    text(slide, x, y, w, 0.75, value, size=size, color=color, bold=True, font=TITLE_FONT)
     text(slide, x, y + 0.8, w, 0.9, label, size=label_size, color=INK)
 
 
@@ -163,7 +187,7 @@ def chip(slide, x, y, label, color=VIBE, w=None):
     w = w or 0.12 * len(label) + 0.35
     sh = rect(slide, x, y, w, 0.32, fill=color, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5)
     tf = sh.text_frame
-    tf.margin_left = tf.margin_right = Inches(0.08)
+    tf.margin_left = tf.margin_right = I(0.08)
     tf.margin_top = tf.margin_bottom = 0
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
@@ -172,8 +196,8 @@ def chip(slide, x, y, label, color=VIBE, w=None):
 
 
 def picture(slide, png: Path, x, y, w=None, h=None):
-    return slide.shapes.add_picture(str(png), Inches(x), Inches(y),
-                                    Inches(w) if w else None, Inches(h) if h else None)
+    return slide.shapes.add_picture(str(png), I(x), I(y),
+                                    I(w) if w else None, I(h) if h else None)
 
 
 def vn(v: float, dec: int = 1, suffix: str = "") -> str:
@@ -186,9 +210,9 @@ def bar_chart(slide, x, y, w, h, cats, series, colors, vmax=100, fmt='0.0', lege
     data.categories = cats
     for name, vals in series:
         data.add_series(name, vals)
-    gf = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(x), Inches(y), Inches(w), Inches(h), data)
+    gf = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, I(x), I(y), I(w), I(h), data)
     ch = gf.chart
-    ch.font.name, ch.font.size, ch.font.color.rgb = FONT, Pt(size), INK
+    ch.font.name, ch.font.size, ch.font.color.rgb = FONT, P(size), INK
     ch.has_legend = legend and len(series) > 1
     if ch.has_legend:
         ch.legend.position = XL_LEGEND_POSITION.TOP
@@ -198,7 +222,7 @@ def bar_chart(slide, x, y, w, h, cats, series, colors, vmax=100, fmt='0.0', lege
     va.has_major_gridlines = True
     va.major_gridlines.format.line.color.rgb = LINE
     va.format.line.fill.background()
-    va.tick_labels.font.size = Pt(size - 1)
+    va.tick_labels.font.size = P(size - 1)
     ch.category_axis.format.line.color.rgb = LINE
     plot = ch.plots[0]
     plot.gap_width = 60
@@ -207,7 +231,7 @@ def bar_chart(slide, x, y, w, h, cats, series, colors, vmax=100, fmt='0.0', lege
     dl = plot.data_labels
     dl.number_format, dl.number_format_is_linked = fmt, False
     dl.position = XL_LABEL_POSITION.OUTSIDE_END
-    dl.font.size, dl.font.bold = Pt(size), True
+    dl.font.size, dl.font.bold = P(size), True
     for (name, vals), s, c in zip(series, plot.series, colors):
         s.format.fill.solid()
         s.format.fill.fore_color.rgb = c
@@ -215,7 +239,7 @@ def bar_chart(slide, x, y, w, h, cats, series, colors, vmax=100, fmt='0.0', lege
             tf = s.points[i].data_label.text_frame
             tf.text = vn(v, dec, suffix)
             r = tf.paragraphs[0].runs[0]
-            r.font.size, r.font.bold, r.font.name = Pt(size), True, FONT
+            r.font.size, r.font.bold, r.font.name = P(size), True, FONT
             s.points[i].data_label.position = XL_LABEL_POSITION.OUTSIDE_END
     ch.has_title = False
     return ch
@@ -227,27 +251,24 @@ def notes_cue(secs: int) -> str:
 
 def content(section: str, title: str, claim: str | None, secs: int, notes: str, footer: str | None = None):
     """A content slide on the grid: section tag, title, claim sentence, footer note, page number."""
-    s = PRS.slides.add_slide(BLANK)
-    rect(s, 0, 0, W, H, fill=WHITE)
-    rect(s, X0, 0.42, 0.09, 0.32, fill=SPEC)
-    text(s, X0 + 0.22, 0.42, 6, 0.32, section.upper(), size=11, color=GRAY, bold=True, anchor=MSO_ANCHOR.MIDDLE)
-    text(s, X0, 0.82, X1 - X0, 0.7, title, size=28, color=NAVY, bold=True)
+    s = new_slide(CONTENT_LAYOUTS[len(PRS.slides) % len(CONTENT_LAYOUTS)])
+    text(s, X0, 0.42, 6, 0.32, section.upper(), size=11, color=VIBE, bold=True, anchor=MSO_ANCHOR.MIDDLE,
+         font=TITLE_FONT)
+    text(s, X0, 0.82, X1 - X0, 0.7, title, size=26, color=NAVY, bold=True, font=TITLE_FONT)
     if claim:
         text(s, X0, 1.52, X1 - X0, 0.7, claim, size=17, color=INK)
-    rect(s, X0, 6.78, X1 - X0, 0.012, fill=LINE)
+    rect(s, X0, 6.42, X1 - X0, 0.012, fill=LINE)
     if footer:
-        text(s, X0, 6.86, X1 - X0 - 0.6, 0.5, footer, size=11.5, color=GRAY)
-    text(s, X1 - 0.5, 6.86, 0.5, 0.3, str(len(PRS.slides)), size=11, color=GRAY, align=PP_ALIGN.RIGHT,
+        text(s, X0, 6.5, X1 - X0 - 0.6, 0.5, footer, size=11.5, color=GRAY)
+    text(s, X1 - 0.5, 6.5, 0.5, 0.3, str(len(PRS.slides)), size=11, color=GRAY, align=PP_ALIGN.RIGHT,
          name="pageno")
     s.notes_slide.notes_text_frame.text = notes_cue(secs) + notes
     PAGES.append(dict(title=title, section=section, secs=secs))
     return s
 
 
-def dark(title: str, sub: list[str], secs: int, notes: str, section: str):
-    s = PRS.slides.add_slide(BLANK)
-    rect(s, 0, 0, W, H, fill=NAVY)
-    rect(s, 0, 0, 0.18, H, fill=SPEC)
+def dark(title: str, sub: list[str], secs: int, notes: str, section: str, layout: str = "TITLE"):
+    s = new_slide(layout)
     s.notes_slide.notes_text_frame.text = notes_cue(secs) + notes
     PAGES.append(dict(title=title, section=section, secs=secs))
     return s
@@ -274,17 +295,17 @@ def s01_title():
              "(Chuyển người nếu chia ba phần: đây là phần một.) Em chào thầy và các bạn. Nhóm em gồm An, Lợi và "
              "Bảo. Đề tài hỏi: bắt coding agent làm theo quy trình spec-driven có bù được cho đề bài ngắn kiểu vibe "
              "coding không. Trước hết, một ca cụ thể.", OPEN)
-    picture(s, REPORT / "images" / "logo-hust.png", 0.75, 0.6, h=0.95)
-    text(s, 1.65, 0.68, 8, 0.4, "Đại học Bách khoa Hà Nội · Chuyên đề nghiên cứu 1 (IT5421)", size=14,
-         color=WHITE, bold=True)
-    text(s, 1.65, 1.08, 8, 0.4, "Giảng viên: TS. Nguyễn Thanh Hùng", size=13, color=RGBColor(0xC9, 0xD3, 0xF0))
-    text(s, 0.75, 2.35, 11.5, 1.8, ["Spec-driven development", "so với vibe coding"], size=48, color=WHITE,
-         bold=True, space=0, line=1.0)
-    text(s, 0.75, 4.25, 11, 0.9, "Nghiên cứu tình huống và thực nghiệm đối chứng trên một dự án phần mềm AI "
-         "cho ngành dược Việt Nam", size=19, color=RGBColor(0xC9, 0xD3, 0xF0))
-    rect(s, 0.75, 5.35, 2.2, 0.05, fill=VIBE)
-    text(s, 0.75, 5.6, 11, 0.9, ["Doãn Văn An (20252778M) · Lê Xuân Lợi (20252781M) · Trần Ngọc Bảo "
-                                 "(20251227M)"], size=15, color=WHITE)
+    picture(s, REPORT / "images" / "logo-hust.png", 1.3, 0.75, h=0.95)
+    text(s, 2.2, 0.83, 9, 0.4, "Đại học Bách khoa Hà Nội · Chuyên đề nghiên cứu 1 (IT5421)", size=14,
+         color=NAVY, bold=True, font=TITLE_FONT)
+    text(s, 2.2, 1.23, 9, 0.4, "Giảng viên: TS. Nguyễn Thanh Hùng", size=13, color=INK)
+    text(s, 1.3, 2.35, 11, 1.8, ["Spec-driven development", "so với vibe coding"], size=46, color=NAVY,
+         bold=True, space=0, line=1.05, font=TITLE_FONT)
+    rect(s, 1.3, 4.3, 2.2, 0.06, fill=VIBE)
+    text(s, 1.3, 4.55, 10.5, 0.9, "Nghiên cứu tình huống và thực nghiệm đối chứng trên một dự án phần mềm AI "
+         "cho ngành dược Việt Nam", size=18, color=INK)
+    text(s, 1.3, 5.6, 11, 0.9, ["Doãn Văn An (20252778M) · Lê Xuân Lợi (20252781M) · Trần Ngọc Bảo "
+                                "(20251227M)"], size=15, color=INK, bold=True)
 
 
 def s02_hook():
@@ -299,7 +320,7 @@ def s02_hook():
                 footer="Hidden test: test mà commit gốc thêm vào, agent không thấy khi làm.")
     steps = [("1 · Spec", f"Viết spec {N['ResCaseDesignLines']} dòng cho tính năng", SPEC),
              ("2 · Plan", f"Chia {N['ResCasePlanTasks']} task, làm lần lượt theo TDD", SPEC),
-             ("3 · Test của agent", f"Tự viết {N['ResCaseSpecTests']} test mới: tất cả đạt", OK),
+             ("3 · Test agent", f"Tự viết {N['ResCaseSpecTests']} test mới: tất cả đạt", OK),
              ("4 · Hidden test", f"Trượt: {N['ResCaseSpecPassed']}/{N['ResCaseReps']} lượt đạt", BAD)]
     bw = 2.68
     for i, (t, d, c) in enumerate(steps):
@@ -327,7 +348,7 @@ def s03_promise():
     panel(s, X0, 2.4, 5.85, 2.9, "Vibe coding",
           ["Giao việc bằng vài câu; agent viết mã ngay.", "Chi tiết đề bỏ ngỏ thì agent tự đoán.",
            "Nhanh, nhưng dễ lệch khỏi ý người giao việc."], accent=VIBE, size=17)
-    panel(s, X0 + 6.28, 2.4, 5.85, 2.9, "Spec-driven (ví dụ: Superpowers)",
+    panel(s, X0 + 6.28, 2.4, 5.85, 2.9, "Spec-driven (Superpowers)",
           ["Spec (thiết kế) → plan → viết test trước (TDD) → cài đặt → chạy lại toàn bộ test.",
            "Hứa: agent ít đoán sai hơn và để lại bộ test.", "Đổi lại: tốn thêm thời gian và token."],
           accent=SPEC, size=17)
@@ -397,7 +418,7 @@ def s06_project():
           "Làm theo Superpowers: spec → plan → TDD; theo tác giả, AI tham gia mọi khâu.",
           "Có test thật để chấm, và lịch sử bắt đầu sau mốc dữ liệu huấn luyện của các mô hình được thử."],
          size=18, bullet=True, space=14)
-    rect(s, 8.3, 2.4, 4.43, 4.0, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
+    rect(s, 8.3, 2.4, 4.43, 3.85, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
     bignum(s, 8.65, 2.6, 3.9, N["Commits"], f"commit, từ {N['FirstDate']} đến {N['LastDate']}")
     bignum(s, 8.65, 4.45, 3.9, N["SpecPlanFiles"], "file spec và plan trong lịch sử git")
 
@@ -551,10 +572,10 @@ def s13_h1():
                 f"{N['Tasks']} nhiệm vụ thì chưa loại được một lợi ích nhỏ. Các phân tích độ nhạy cho cùng kết luận.",
                 footer=f"Hiệu số theo nhiệm vụ, KTC 95% bootstrap lấy mẫu lại {N['Tasks']} nhiệm vụ. Ba lần lặp cho kết "
                        f"quả khác nhau ở {N['ResVarDisagree']}/{N['ResVarCells']} ô.")
-    bar_chart(s, X0, 2.3, 5.4, 4.3, ["Sonnet, nhiệm vụ nhỏ"],
+    bar_chart(s, X0, 2.3, 5.4, 3.95, ["Sonnet, nhiệm vụ nhỏ"],
               [("Spec-driven", [fnum("ResHOneSpecPct")]), ("Vibe", [fnum("ResHOneVibePct")])], [SPEC, VIBE],
               vmax=100, fmt='0.0"%"', size=13, dec=1, suffix="%")
-    rect(s, 6.45, 2.45, 6.28, 4.1, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
+    rect(s, 6.45, 2.45, 6.28, 3.8, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
     bignum(s, 6.8, 2.6, 5.7, f"{m(N['ResHOneEstPp'])} pp",
            f"spec − vibe, KTC 95% {ci('ResHOneLowPp', 'ResHOneHighPp')}", size=44, label_size=16)
     text(s, 6.8, 4.25, 5.7, 2.2,
@@ -613,7 +634,7 @@ def s16_cost():
                 footer="Chi phí quy đổi theo bảng giá API công khai; mọi lượt chạy bằng gói thuê bao. Codex chỉ có cận "
                        "dưới và cận trên của giá.")
     rows = [("Sonnet", "claude-sonnet"), ("Opus", "claude-opus"), ("Codex", "codex-luna")]
-    bar_chart(s, X0, 2.3, 6.6, 4.3, ["Sonnet, nhỏ", "Opus, nhỏ", "Sonnet, lớn", "Opus, lớn"],
+    bar_chart(s, X0, 2.3, 6.6, 3.95, ["Sonnet, nhỏ", "Opus, nhỏ", "Sonnet, lớn", "Opus, lớn"],
               [("Spec-driven", [float(usd(c, t, "spec").replace(",", ".")) for c, t in
                                 [("claude-sonnet", "small"), ("claude-opus", "small"), ("claude-sonnet", "large"),
                                  ("claude-opus", "large")]]),
@@ -622,7 +643,7 @@ def s16_cost():
                           ("claude-opus", "large")]])],
               [SPEC, VIBE], vmax=9, fmt='0.00', size=12, dec=2)
     text(s, X0, 2.12, 6.6, 0.3, "USD quy đổi cho một lượt đạt (Claude)", size=12, color=GRAY, bold=True)
-    rect(s, 7.6, 2.45, 5.13, 4.1, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
+    rect(s, 7.6, 2.45, 5.13, 3.8, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
     bignum(s, 7.95, 2.6, 4.5, f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']}",
            "token mỗi lượt, spec so với vibe, mọi cohort và tầng", size=40, label_size=15)
     text(s, 7.95, 4.35, 4.5, 2.1,
@@ -642,7 +663,7 @@ def s17_tests():
                 f"lượng mã, kết quả lẫn lộn.",
                 footer="Giá trị của bộ test này ở những lần sửa sau chưa được đo; hidden test không thưởng cho nó.")
     cats = ["Sonnet", "Opus", "Codex"]
-    bar_chart(s, X0, 2.3, 6.6, 4.3, cats,
+    bar_chart(s, X0, 2.3, 6.6, 3.95, cats,
               [("Spec-driven", [fnum("ResSonnetSpecTestsAnyPct"), fnum("ResOpusSpecTestsAnyPct"),
                                 fnum("ResCodexSpecTestsAnyPct")]),
                ("Vibe", [fnum("ResSonnetVibeTestsAnyPct"), fnum("ResOpusVibeTestsAnyPct"),
@@ -700,9 +721,9 @@ def s19_causes():
     data.categories = cats
     data.add_series("Lượt hỏng", [fnum("LabDeBaiThieuTotal"), fnum("LabSaiApiCoSanTotal"),
                                    fnum("LabHongChucNangCuTotal"), fnum("LabOther") + fnum("LabLoiLogicTotal")])
-    gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, Inches(X0), Inches(2.3), Inches(6.6), Inches(4.3), data)
+    gf = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, I(X0), I(2.3), I(6.6), I(3.95), data)
     ch = gf.chart
-    ch.font.name, ch.font.size, ch.font.color.rgb = FONT, Pt(13), INK
+    ch.font.name, ch.font.size, ch.font.color.rgb = FONT, P(13), INK
     ch.has_legend = False
     ch.has_title = False
     ch.value_axis.visible = False
@@ -712,7 +733,7 @@ def s19_causes():
     pl = ch.plots[0]
     pl.gap_width = 55
     pl.has_data_labels = True
-    pl.data_labels.font.size, pl.data_labels.font.bold = Pt(14), True
+    pl.data_labels.font.size, pl.data_labels.font.bold = P(14), True
     pl.data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
     ser = pl.series[0]
     ser.format.fill.solid()
@@ -721,7 +742,7 @@ def s19_causes():
         pt = ser.points[idx]
         pt.format.fill.solid()
         pt.format.fill.fore_color.rgb = BAD
-    rect(s, 7.6, 2.45, 5.13, 4.1, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
+    rect(s, 7.6, 2.45, 5.13, 3.8, fill=LIGHT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05)
     bignum(s, 7.95, 2.6, 4.5, f"{N['LabOutsideSpecPct']}% / {N['LabOutsideVibePct']}%",
            "tỉ lệ lượt hỏng do đề thiếu hoặc mã có sẵn: spec / vibe", size=36, label_size=15)
     text(s, 7.95, 4.35, 4.5, 2.1,
@@ -744,16 +765,16 @@ def s20_human_spec():
                        f"cách làm; khớp chấm tay của hai người (kappa {N['ETwoHumanLoiJudgeKappa']}, "
                        f"{N['ETwoHumanBaoJudgeKappa']}).")
     chip(s, X1 - 1.5, 0.42, "thăm dò", color=VIBE, w=1.5)
-    panel(s, X0, 2.4, 5.85, 3.3, "Spec của người (đề chi tiết)", None, accent=NAVY)
+    panel(s, X0, 2.4, 5.85, 3.3, "Spec của người", None, accent=NAVY)
     text(s, X0 + 0.3, 3.0, 5.3, 1.0, f"−{N['ETwoXScoreShiftSpec']} / −{N['ETwoXScoreShiftVibe']} pp", size=40,
          color=BAD, bold=True)
     text(s, X0 + 0.3, 3.85, 5.3, 2.6,
-         ["Điểm checklist giảm khi bỏ tên, chữ ký, quy tắc khỏi đề (spec / vibe).",
+         ["Đề chi tiết = spec do người viết. Bỏ tên, chữ ký, quy tắc khỏi đề: điểm checklist giảm (spec / vibe).",
           "Đây là hiệu ứng lớn nhất cả bài, ở cả hai cách làm."], size=16, bullet=True)
-    panel(s, X0 + 6.28, 2.4, 5.85, 3.3, "Spec của agent (đề sơ sài)", None, accent=SPEC)
+    panel(s, X0 + 6.28, 2.4, 5.85, 3.3, "Spec của agent", None, accent=SPEC)
     text(s, X0 + 6.58, 3.0, 5.3, 1.0, f"{sg('ETwoPooledSmallPp')} pp", size=40, color=SPEC, bold=True)
     text(s, X0 + 6.58, 3.85, 5.3, 2.6,
-         [f"Spec agent tự viết bù lại, nhiệm vụ nhỏ, KTC {ci('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}.",
+         [f"Đề sơ sài, agent tự viết spec: bù lại ở nhiệm vụ nhỏ, KTC {ci('ETwoPooledSmallLowPp', 'ETwoPooledSmallHighPp')}.",
           f"Nhiệm vụ vừa {sg('ETwoPooledMediumRefPp')}, lớn {sg('ETwoPooledLargeRefPp')} pp (chỉ tham khảo)."],
          size=16, bullet=True)
     text(s, X0, 5.95, X1 - X0, 0.7, [("Đề chi tiết chính là một bản spec do người viết; agent tự viết spec chỉ ghi "
@@ -772,11 +793,11 @@ def s21_conclusion():
                 f"thêm bước hỏi lại và người duyệt spec, và nhiều nhiệm vụ cỡ tính năng hơn.",
                 footer="Hạn chế: một dự án Python · spec-driven chạy tự động, không hỏi lại, không người duyệt · tầng "
                        f"vừa {N['MediumTasks']}, lớn {N['FeatureTasks']} nhiệm vụ; E2 thêm sau khi xem kết quả chính.")
-    items = [("Đề chi tiết (phép thử chính)",
-              f"Spec do agent tự viết không cho thấy đạt nhiều hơn (H1 chưa kết luận được), mà tốn "
+    items = [("Đề chi tiết",
+              f"(Phép thử chính) Spec do agent tự viết không cho thấy đạt nhiều hơn (H1 chưa kết luận được), mà tốn "
               f"×{N['ResTokenRatioMin']}–{N['ResTokenRatioMax']} token.", SPEC),
-             ("Đề sơ sài (thăm dò)",
-              f"Bỏ spec của người: −{N['ETwoXScoreShiftSpec']} pp; spec của agent chỉ bù {sg('ETwoPooledSmallPp')} pp ở "
+             ("Đề sơ sài",
+              f"(Thăm dò) Bỏ spec của người: −{N['ETwoXScoreShiftSpec']} pp; spec của agent chỉ bù {sg('ETwoPooledSmallPp')} pp ở "
               f"nhiệm vụ nhỏ.", VIBE),
              ("Đề xuất",
               "Viết spec rõ, hoặc để agent hỏi lại bạn. Vòng sau: thêm bước hỏi lại, người duyệt spec, nhiều nhiệm "
@@ -789,13 +810,13 @@ def s21_conclusion():
 
 def s22_thanks():
     s = dark("Cảm ơn", [], 10, "Phần trình bày của nhóm em đến đây là hết. Em cảm ơn thầy và các bạn; nhóm em xin nhận "
-             "câu hỏi.", CLOSE)
-    text(s, 0.75, 2.5, 11.5, 1.2, "Xin cảm ơn!", size=54, color=WHITE, bold=True)
-    text(s, 0.75, 3.8, 11.5, 0.6, "Hỏi đáp", size=24, color=RGBColor(0xC9, 0xD3, 0xF0))
-    rect(s, 0.75, 4.6, 2.2, 0.05, fill=VIBE)
-    text(s, 0.75, 4.85, 11.5, 1.2,
+             "câu hỏi.", CLOSE, layout="CUSTOM_3")
+    text(s, 1.3, 1.9, 11, 1.2, "Xin cảm ơn!", size=56, color=NAVY, bold=True, font=TITLE_FONT)
+    rect(s, 1.3, 3.15, 2.2, 0.06, fill=VIBE)
+    text(s, 1.3, 3.4, 11, 0.6, "Hỏi đáp", size=24, color=INK, bold=True)
+    text(s, 1.3, 4.1, 10.5, 1.2,
          ["Spec có giá trị nhờ ý của người: viết spec rõ, hoặc để agent hỏi lại bạn.",
-          "Mã, dữ liệu, prompt và kết quả thô được nộp kèm báo cáo."], size=16, color=WHITE)
+          "Mã, dữ liệu, prompt và kết quả thô được nộp kèm báo cáo."], size=16, color=INK)
 
 
 # ---------------------------------------------------------------- backup slides
@@ -806,7 +827,7 @@ def b_h4():
                 "Slide dự phòng cho câu hỏi về H4.",
                 footer=f"Sonnet spec và Opus vibe: cùng ước lượng điểm ({N['ResHFourSonnetSpecOpusVibePp']} pp, KTC rộng), "
                        f"chi phí bằng {N['ResHFourCostRatioPct']}%.")
-    bar_chart(s, X0, 2.3, 7.0, 4.3, ["Sonnet", "Opus"],
+    bar_chart(s, X0, 2.3, 7.0, 3.95, ["Sonnet", "Opus"],
               [("Spec-driven", [fnum("ResSonnetSmallSpecPct"), fnum("ResOpusSmallSpecPct")]),
                ("Vibe", [fnum("ResSonnetSmallVibePct"), fnum("ResOpusSmallVibePct")])], [SPEC, VIBE], vmax=100,
               fmt='0"%"', size=13, dec=0, suffix="%")
@@ -821,7 +842,7 @@ def b_e1():
                 "Mô hình yếu hơn cũng không được quy trình spec nâng lên khi đề đã chi tiết (thăm dò).", 0,
                 "Slide dự phòng cho câu hỏi về mô hình yếu hơn.",
                 footer=f"E1 · thăm dò, thêm sau khi xem kết quả chính; {N['EOneRuns']} lượt hợp lệ.")
-    bar_chart(s, X0, 2.3, 7.0, 4.3, ["Nhỏ", "Vừa", "Lớn"],
+    bar_chart(s, X0, 2.3, 7.0, 3.95, ["Nhỏ", "Vừa", "Lớn"],
               [("Spec-driven", [fnum("EOneSmallSpecPct"), fnum("EOneMediumSpecPct"), fnum("EOneLargeSpecPct")]),
                ("Vibe", [fnum("EOneSmallVibePct"), fnum("EOneMediumVibePct"), fnum("EOneLargeVibePct")])],
               [SPEC, VIBE], vmax=100, fmt='0"%"', size=13, dec=0, suffix="%")
@@ -866,14 +887,14 @@ def b_cost_table():
     for name, c in [("Sonnet", "claude-sonnet"), ("Opus", "claude-opus"), ("Codex", "codex-luna")]:
         rows.append((name, usd(c, "small", "spec"), usd(c, "small", "vibe"), usd(c, "large", "spec"),
                      usd(c, "large", "vibe")))
-    tbl = s.shapes.add_table(len(rows), 5, Inches(X0), Inches(2.5), Inches(10), Inches(2.4)).table
+    tbl = s.shapes.add_table(len(rows), 5, I(X0), I(2.5), I(10), I(2.4)).table
     for i, row in enumerate(rows):
         for j, v in enumerate(row):
             cell = tbl.cell(i, j)
             cell.text = v
             for p in cell.text_frame.paragraphs:
                 for r in p.runs:
-                    r.font.name, r.font.size, r.font.bold = FONT, Pt(16), i == 0
+                    r.font.name, r.font.size, r.font.bold = FONT, P(16), i == 0
                     r.font.color.rgb = WHITE if i == 0 else INK
             cell.fill.solid()
             cell.fill.fore_color.rgb = NAVY if i == 0 else (LIGHT if i % 2 else WHITE)
