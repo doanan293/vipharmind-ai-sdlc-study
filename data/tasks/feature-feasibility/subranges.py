@@ -1,7 +1,7 @@
 """Step 1b: dense cores of each backend plan, split at natural boundaries to 400-2500 src lines.
 Also builds ranges.json = whole-plan ranges + sub-ranges with metrics."""
 import json, subprocess, sys
-sys.path.insert(0, "/home/andv/personal/vipharmind-ai-sdlc-study/code/retrospective/src")
+sys.path.insert(0, "/home/andv/personal/HUST/research-topic-1/code/retrospective/src")
 from retro.gitlog import _new_path
 REPO = "/home/andv/personal/vipharmind-camera-ready"
 rows = json.load(open("sequence.json"))

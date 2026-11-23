@@ -172,7 +172,7 @@ Chạy từ thư mục gốc repo nghiên cứu, tại commit mang thẻ `prereg
 lệnh (bốn nhóm có hạn mức riêng nên chạy song song với nhau):
 
 ```
-cd /home/andv/personal/vipharmind-ai-sdlc-study
+cd /home/andv/personal/HUST/research-topic-1
 code/harness/.venv/bin/sdlc-harness run \
   --repo /home/andv/personal/vipharmind \
   --cohorts claude-sonnet,claude-opus,agy-gemini,codex-luna \

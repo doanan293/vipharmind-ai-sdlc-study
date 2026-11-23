@@ -262,12 +262,12 @@
     },
     "roots": {
       "detailed": [
-        "/home/andv/personal/vipharmind-ai-sdlc-study-run/results/raw/main",
-        "/home/andv/personal/vipharmind-ai-sdlc-study-run2/results/raw/main-tiers",
-        "/home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/haiku"
+        "/home/andv/personal/HUST/research-topic-1-run/results/raw/main",
+        "/home/andv/personal/HUST/research-topic-1-run2/results/raw/main-tiers",
+        "/home/andv/personal/HUST/research-topic-1-run3/results/raw/haiku"
       ],
       "brief": [
-        "/home/andv/personal/vipharmind-ai-sdlc-study-run3/results/raw/brief"
+        "/home/andv/personal/HUST/research-topic-1-run3/results/raw/brief"
       ]
     }
   },

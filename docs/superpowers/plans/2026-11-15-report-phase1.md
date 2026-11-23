@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Làm trong worktree `/home/andv/personal/vipharmind-ai-sdlc-study-report`, nhánh `report` tách từ `harness` (đã commit), đã gộp nhánh `retrospective` để có `data/retrospective/`.
+- Làm trong worktree `/home/andv/personal/HUST/research-topic-1-report`, nhánh `report` tách từ `harness` (đã commit), đã gộp nhánh `retrospective` để có `data/retrospective/`.
 - Tiếng Việt khoa học, câu ngắn, không thổi phồng; "vibe coding", "coding agent", tên công cụ, tên mô hình giữ tiếng Anh; số thập phân dấu phẩy.
 - Times New Roman 12pt, A4, lề 2,5 cm, giãn dòng 1,2; trang bìa: tên đề tài, "Chuyên đề nghiên cứu 1 (IT5421)", "Giảng viên: TS. Nguyễn Thanh Hùng", ba thành viên kèm mã (Doãn Văn An 20252778M, Lê Xuân Lợi 20252781M, Trần Ngọc Bảo 20251227M), tháng 11/2026; không logo.
 - Mọi con số trong văn bản là macro từ `generated/numbers.tex`; không gõ số kết quả bằng tay (số đếm cố định trong câu chữ như "ba nhóm" được phép).

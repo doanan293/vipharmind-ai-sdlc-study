@@ -282,7 +282,7 @@ Both are exploratory ("thăm dò, thêm sau khi thấy kết quả chính") and 
 directories; the confirmatory `sdlc-analysis` above is unchanged.
 
 ```
-R=/home/andv/personal/vipharmind-ai-sdlc-study/.worktrees  # chạy từ code/analysis
+R=/home/andv/personal/HUST/research-topic-1/.worktrees  # chạy từ code/analysis
 # E1: the locked analysis with claude-haiku as one more cohort -> data/results/analysis/e1/
 uv run sdlc-e1 --results $R/run/results/raw/main \
     $R/run2/results/raw/main-tiers \
