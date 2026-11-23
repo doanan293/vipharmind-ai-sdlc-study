@@ -1,7 +1,5 @@
 \section{Các nghiên cứu liên quan}\label{sec:related-work}
 
-\subsection{Phương pháp tìm tài liệu}
-
 Trợ lý AI tìm tài liệu theo một quy trình ghi lại được: \NumLitQueries{} chuỗi tìm kiếm web, mỗi chuỗi
 nhắm một nhóm chủ đề hoặc nhóm nguồn phương pháp. Máy tìm kiếm chỉ dùng để biết bài nào tồn tại; thông tin
 về bài (tác giả, năm, nơi đăng, số liệu) lấy từ trang gốc (arXiv, DOI, chương trình hội nghị). Một bài
@@ -16,9 +14,9 @@ bước; truy vấn và lý do loại từng bài nằm trong nhật ký tìm t�
 \input{generated/tables/literature}
 \end{table}
 
-\subsection{Đánh giá coding agent bằng test}
+\subsection{Đánh giá trợ lý lập trình AI}
 
-SWE-bench đánh giá tác tử bằng \NumLitJimenezTasks{} nhiệm vụ lấy từ issue và pull request thật của các
+Cách đánh giá phổ biến nhất là chấm bằng test. SWE-bench đánh giá tác tử bằng \NumLitJimenezTasks{} nhiệm vụ lấy từ issue và pull request thật của các
 repo Python, chấm bằng test \cite{jimenez_2024}; FEA-Bench và FeatBench mở rộng sang cài đặt tính năng mới,
 đúng loại việc của một commit \texttt{feat} \cite{li_2025,chen_2025}. Cách chấm này có hai điểm yếu đã được
 đo. Thứ nhất là test yếu và lời giải rò rỉ. Trong các bản vá được tính là thành công,
@@ -34,8 +32,6 @@ Nghiên cứu này dùng cùng khung chấm (test ẩn hỏng ở mã nền, đ�
 xử lý hai điểm yếu trên bằng ba cách: đề bài không nêu cách cài đặt, kho mã có lịch sử bắt đầu sau mốc dữ liệu
 huấn luyện của các mô hình, và một mẫu lượt đạt được đọc tay để tìm trường hợp ``đạt test nhưng sai''.
 
-\subsection{Năng suất và chất lượng khi dùng AI}
-
 Kết quả về năng suất không thống nhất: với một nhiệm vụ đơn lẻ, nhóm dùng Copilot xong nhanh hơn
 \NumLitPengFasterPct{}\% \cite{peng_2023}, còn lập trình viên giàu kinh nghiệm làm trên repo của chính họ
 lại chậm hơn khoảng \NumLitBeckerSlowerPct{}\% khi dùng AI, dù tin là nhanh hơn \cite{becker_2025}. Về chất lượng, phân tích các repo bắt đầu dùng Cursor thấy tốc độ tăng tạm thời
@@ -48,7 +44,7 @@ Các nghiên cứu này so sánh có AI với không có AI. Câu hỏi của ng
 giữ nguyên tác tử và mô hình, chỉ đổi quy trình. Phần hồi cứu khai thác lịch sử git như \cite{he_2026} và
 \cite{watanabe_2025}, ở quy mô một dự án.
 
-\subsection{Phát triển theo đặc tả, lập kế hoạch và vibe coding}
+\subsection{Phát triển theo đặc tả và vibe coding}
 
 Ở mức sinh mã một hàm, cho mô hình lập kế hoạch trước làm Pass@1 tăng tương đối tới
 \NumLitJiangGainPct{}\% so với sinh mã trực tiếp \cite{jiang_2024}. Độ cụ thể của prompt cũng ảnh hưởng
@@ -60,8 +56,6 @@ liệu thiết kế viết trước có thể cung cấp chính những thông t
 xúc xắc'' \cite{chou_2025}; phát triển theo đặc tả làm tác tử đáng tin hơn nhưng tốn công lập kế hoạch và
 duyệt \cite{agarwal_2026}. Diaz và cộng sự \cite{diaz_2026} lập luận rằng đặc tả khôi phục trách nhiệm và
 khả năng kiểm chứng, nhưng đó là phân tích khái niệm với nền bằng chứng còn non.
-
-\subsection{Vị trí của nghiên cứu này}
 
 Bảng~\ref{tab:closest} đặt cạnh nhau bốn nghiên cứu gần nhất với nghiên cứu này. Hill \cite{hill_2026} phân tích
 \NumLitHillPRs{} pull request của \NumLitHillRepos{} repo mã nguồn mở; sau khi ghép điểm xu hướng, pull

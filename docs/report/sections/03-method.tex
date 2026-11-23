@@ -1,6 +1,6 @@
 \section{Phương pháp}\label{sec:method}
 
-\subsection{Thiết kế tổng thể và giả thuyết}
+\subsection{Thiết kế nghiên cứu}
 
 Nghiên cứu có hai phần (Hình~\ref{fig:design}). Phần hồi cứu đọc lịch sử git của ViPharmind để trả lời RQ1
 và RQ2. Phần thực nghiệm lấy nhiệm vụ từ commit thật của backend, giấu các test mà commit gốc thêm vào, rồi
@@ -41,9 +41,7 @@ Phép thử xác nhận duy nhất là H1 trên nhóm Claude Sonnet ở tầng n
 nó kiểm lập luận rằng chi phí cố định của việc viết thiết kế chỉ đáng khi nhiệm vụ đủ lớn. Các phép so còn
 lại là phụ.
 
-\subsection{Dữ liệu và phân tích hồi cứu}
-
-Kho mã ViPharmind được đọc ở hai mốc cố định: nhánh \texttt{main} tại \texttt{3baae61d764f} (sản phẩm) và
+Trong phần hồi cứu, kho mã ViPharmind được đọc ở hai mốc cố định: nhánh \texttt{main} tại \texttt{3baae61d764f} (sản phẩm) và
 nhánh \texttt{camera-ready} tại \texttt{61d10db85f0f} (nghiên cứu). Tập commit là hợp của hai mốc, gồm
 \NumCommits{} commit (\NumCommitsFeat{} \texttt{feat}, \NumCommitsFix{} \texttt{fix},
 \NumCommitsRefactor{} \texttt{refactor}). Mỗi commit được gán vào khâu có nhiều dòng thay đổi nhất theo luật
@@ -52,7 +50,7 @@ nhánh \texttt{camera-ready} tại \texttt{61d10db85f0f} (nghiên cứu). Tập 
 14 ngày; quy tắc này được kiểm tay trên \NumLinkChecked{} commit ngẫu nhiên. Mức sửa lại (RQ2) là số commit
 \texttt{fix} hoặc \texttt{refactor} chạm cùng file trong 14 ngày sau mỗi commit \texttt{feat}.
 
-\subsection{Bộ nhiệm vụ ba tầng}\label{sec:tasks}
+\subsection{Nhiệm vụ và hai cách làm}\label{sec:tasks}
 
 Mỗi nhiệm vụ gồm mã nền, đề bài và test ẩn. Ở \emph{tầng nhỏ}, nhiệm vụ là một commit: mã nền là commit cha,
 test ẩn là file test mà commit thêm hoặc sửa. Ở \emph{tầng vừa} và \emph{tầng lớn}, nhiệm vụ là một đoạn
@@ -76,8 +74,6 @@ cứu thêm hai tầng lớn hơn, cắt từ 16 đoạn commit của các plan 
 khai mà test ẩn dùng với mã nền và đề bài tìm ra tên thiếu ở ba đề (\texttt{t05}, \texttt{t07},
 \texttt{t13}); ba đề được bổ sung trước khi chốt. Đề tầng vừa và lớn có thêm mục ``giao diện bắt buộc'' và
 được một tác tử AI độc lập phản biện trước khi chốt. Danh sách đủ nhiệm vụ ở Phụ lục~\ref{app:tasks}.
-
-\subsection{Hai cách làm}
 
 Hai cách làm nhận cùng đề bài, mô hình, công cụ và giới hạn thời gian; chỉ khác lời dặn đặt trước đề bài
 (Phụ lục~\ref{app:prompts}). Lời dặn \emph{vibe coding} chỉ có một câu: cài đặt thay đổi sau đây. Lời dặn
@@ -110,7 +106,7 @@ có tác tử con, không có bước duyệt giữa các task \\
 \end{tabular}
 \end{table}
 
-\subsection{Nhóm chạy và điều kiện chạy}\label{sec:conditions}
+\subsection{Điều kiện chạy và chấm}\label{sec:conditions}
 
 Bản đăng ký có bốn nhóm chạy (Bảng~\ref{tab:cohorts}), đều ở mức suy luận medium. Ba lần lặp, hai cách làm và
 bốn nhóm cho \NumRunsSmallTotal{} lượt ở tầng nhỏ, \NumRunsMediumTotal{} ở tầng vừa và \NumRunsLargeTotal{} ở
@@ -138,16 +134,16 @@ dẫn riêng (Phụ lục~\ref{app:conditions}). Giới hạn thời gian là 36
 ba ở tầng lớn. Thứ tự lượt được xáo ngẫu nhiên để hai cách làm xen kẽ theo thời gian. Lượt bị ngắt vì hạn mức
 được chạy lại từ đầu; quyết định chạy lại chỉ dựa trên trạng thái, không dựa trên kết quả.
 
-\textit{Chống rò rỉ lời giải.} Cây mã giao cho tác tử không có lịch sử git và đã bỏ mọi spec, plan cũ; bộ chạy
+Để chống rò rỉ lời giải, cây mã giao cho tác tử không có lịch sử git và đã bỏ mọi spec, plan cũ; bộ chạy
 từ chối chạy nếu cây còn sót. Mạng mở là hạn chế được chấp nhận: bộ chạy ghi mọi đường dẫn tới repo gốc xuất
 hiện trong nhật ký (\texttt{upstream\_urls}) để phân tích độ nhạy.
 
-\textit{Chấm.} Trên một bản sao đã bỏ hai file đặc tả, bộ chấm đưa mọi file test có sẵn về bản của mã nền,
+Trên một bản sao đã bỏ hai file đặc tả, bộ chấm đưa mọi file test có sẵn về bản của mã nền,
 chép test ẩn vào và chạy toàn bộ test không mang nhãn \texttt{integration}; tác tử vì vậy không thể ``đạt''
 bằng cách sửa test. Bộ chấm cũng đo lỗi tĩnh (\texttt{ruff}, \texttt{pyrefly}), chỉ số bảo trì
 (\texttt{radon}), test do tác tử viết và token.
 
-\subsection{Chỉ số và phân tích thống kê}\label{sec:analysis}
+\subsection{Phân tích}\label{sec:analysis}
 
 Chỉ số chính là \emph{đạt nhiệm vụ}: mọi test ẩn đạt và không test cũ nào hỏng. Chỉ số phụ gồm tỉ lệ test ẩn
 đạt, hồi quy, lỗi tĩnh, chỉ số bảo trì, test do tác tử viết, token, thời gian và chi phí quy đổi theo bảng giá
@@ -167,15 +163,13 @@ bootstrap cụm (\NumResModelBootstrapB{} lần). H5 chỉ được ủng hộ k
 tầng nhỏ chạm trần. Phân tích độ nhạy chạy lại H1 và H5 sau khi bỏ lượt có \texttt{upstream\_urls}, lượt sửa
 cấu hình \texttt{pytest}, hoặc cặp nhiệm vụ chung commit.
 
-\textit{Gán nhãn nguyên nhân thất bại.} Hai thành viên (Lê Xuân Lợi, Trần Ngọc Bảo) gán nhãn độc lập mọi lượt
+Để tìm nguyên nhân thất bại, hai thành viên (Lê Xuân Lợi, Trần Ngọc Bảo) gán nhãn độc lập mọi lượt
 không đạt của hai nhóm Claude theo chín nhãn, trên bản vá đã bỏ file đặc tả và mang mã ngẫu nhiên; tác giả dự
 án phân xử chỗ lệch. Độ đồng thuận đo bằng kappa của Cohen. Hai người cũng đọc mù \NumPassCheckRuns{} lượt đạt
 ngẫu nhiên để tìm lượt đạt test nhưng sai. Ca nghiên cứu định tính là nhiệm vụ tầng lớn có hiệu số lớn nhất ở
 \texttt{claude-sonnet}.
 
-\subsection{Đăng ký trước và thí nghiệm thăm dò}\label{sec:prereg}
-
-Thiết kế được chốt bằng ba thẻ git: \texttt{prereg-v1} (giả thuyết, chỉ số, kế hoạch phân tích, tầng nhỏ),
+\label{sec:prereg}Thiết kế được chốt bằng ba thẻ git: \texttt{prereg-v1} (giả thuyết, chỉ số, kế hoạch phân tích, tầng nhỏ),
 \texttt{prereg-v1.1} (nhiệm vụ và đề bài tầng vừa, tầng lớn, trước mọi lượt AI trên hai tầng này) và
 \texttt{prereg-v1-analysis} (gói phân tích, đã chạy được trên dữ liệu chạy thử). Không kết quả chính nào được
 mở trước thẻ phân tích. Mọi thay đổi sau khi chốt được ghi kèm lý do và những gì đã xem
